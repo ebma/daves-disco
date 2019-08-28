@@ -20,7 +20,8 @@
   "homepage": "https://github.com/Marcel-Ebert/InteractiveDiscordBot#readme",
   "main": "src/index.js",
   "scripts": {
-    "start": "node . NODE_ENV=development",
+    "start": "node .",
+    "dev": "NODE_ENV=dev node .",
     "lint": "eslint ./src"
   },
   "dependencies": {
