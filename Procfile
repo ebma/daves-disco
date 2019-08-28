@@ -1,1 +1,2 @@
-worker: node bot.js
+worker: node src/index.js
+default: npm start
