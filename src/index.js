@@ -9,6 +9,15 @@ const { prefix } = require("./config.json");
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
 
+client.music = require("discord.js-musicbot-addon");
+client.music.start(client, {
+  youtubeKey: process.env.YOUTUBE_API_KEY,
+
+  help: {
+    exclude: true
+  }
+});
+
 const commandFiles = fs
   .readdirSync("./src/commands")
   .filter(file => file.endsWith(".js"));
