@@ -22,6 +22,7 @@
   "scripts": {
     "start": "node .",
     "dev": "NODE_ENV=dev node .",
+    "debug": "node inspect .",
     "lint": "eslint ./src"
   },
   "dependencies": {
