@@ -1,5 +1,14 @@
 const { prefix } = require("../config.json");
 
+function fillToSpacing(string, spacing) {
+  let additional = "";
+  let i = 0;
+  for (i = 0; string.length + additional.length < spacing; i++) {
+    additional += " ";
+  }
+  return string + additional;
+}
+
 module.exports = {
   name: "help",
   description: "List all of my commands or info about a specific command.",
@@ -10,9 +19,22 @@ module.exports = {
     const data = [];
     const { commands } = message.client;
 
+    for (const command of message.client.music.bot.commands) {
+      message.client.commands.set(command[0], command[1]);
+    }
+
     if (!args.length) {
       data.push("Here's a list of all my commands:");
-      data.push(commands.map(command => command.name).join(", "));
+
+      const commandStrings = commands.map(
+        command =>
+          `**${fillToSpacing(`${command.name}:`, 20)}** ${command.description ||
+            command.help}`
+      );
+      commandStrings.sort(function(a, b) {
+        return a.localeCompare(b);
+      });
+      data.push(commandStrings.join("\n"));
       data.push(
         `\nYou can send \`${prefix}help [command name]\` to get info on a specific command!`
       );

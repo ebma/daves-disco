@@ -32,10 +32,6 @@ function onClientReady() {
     console.log(error);
   }
 
-  for (const command of client.music.bot.commands) {
-    client.commands.set(command[0], command[1]);
-  }
-
   console.log("I'm ready!");
 }
 
