@@ -1,10 +1,10 @@
 {
-  "name": "interactive-bobbybot",
-  "description": "InteractiveBobbyBot",
+  "name": "discord-music-bot",
+  "description": "Discord Bot with focus on music streaming",
   "version": "0.0.1",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Marcel-Ebert/InteractiveDiscordBot"
+    "url": "https://github.com/Marcel-Ebert/discord-music-bot"
   },
   "keywords": [
     "discord",
@@ -15,9 +15,9 @@
   "author": "Marcel Ebert",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Marcel-Ebert/InteractiveDiscordBot/issues"
+    "url": "https://github.com/Marcel-Ebert/discord-music-bot/issues"
   },
-  "homepage": "https://github.com/Marcel-Ebert/InteractiveDiscordBot#readme",
+  "homepage": "https://github.com/Marcel-Ebert/discord-music-bot#readme",
   "main": "src/index.js",
   "scripts": {
     "start": "node .",
