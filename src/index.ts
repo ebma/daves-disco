@@ -1,5 +1,7 @@
+import { config } from "dotenv";
+
 if (process.env.NODE_ENV !== "production") {
-  require("dotenv").config();
+  config()
 }
 
 // eslint-disable-next-line no-unused-vars
