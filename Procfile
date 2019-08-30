@@ -1,2 +1,1 @@
-worker: node src/index.js
-default: npm start
+worker: npm run build-and-run
