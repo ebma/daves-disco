@@ -20,7 +20,7 @@
   "homepage": "https://github.com/Marcel-Ebert/discord-music-bot#readme",
   "main": "src/index.js",
   "scripts": {
-    "start": "npm run serve",
+    "start": "npm run build-and-run",
     "build-and-run": "npm run build && npm run serve",
     "serve": "node dist/index.js",
     "build": "npm run build-ts && npm run lint",
@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "async": "^3.1.0",
+    "discord-akairo": "^7.5.6",
     "discord.js": "^11.5.1",
     "discord.js-musicbot-addon": "^13.7.0",
     "dotenv": "^8.1.0",

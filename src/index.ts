@@ -1,8 +1,22 @@
-import { config } from "dotenv";
+import { config } from "dotenv"
+import { AkairoClient } from "discord-akairo"
 
 if (process.env.NODE_ENV !== "production") {
   config()
 }
 
-// eslint-disable-next-line no-unused-vars
-const client = require("./bot/bot").init();
+const client = new AkairoClient(
+  {
+    ownerID: process.env.OWNER_ID,
+    prefix: "!",
+    defaultCooldown: 4000,
+    commandDirectory: __dirname + "/commands/",
+    inhibitorDirectory: __dirname + "/inhibitors/",
+    listenerDirectory: __dirname + "/listeners/"
+  },
+  {
+    disableEveryone: true
+  }
+)
+
+client.login(process.env.BOT_TOKEN)
