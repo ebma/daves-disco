@@ -20,9 +20,9 @@
   "homepage": "https://github.com/Marcel-Ebert/discord-music-bot#readme",
   "main": "src/index.js",
   "scripts": {
-    "start": "npm run build-and-run",
-    "build-and-run": "npm run build && npm run serve",
+    "start": "npm run serve",
     "serve": "node dist/index.js",
+    "build-and-run": "npm run build && npm run serve",
     "build": "npm run build-ts && npm run lint",
     "build-ts": "tsc",
     "watch": "concurrently -k -p \"[{name}]\" -n \"Sass,TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run watch-node\"",
@@ -45,7 +45,6 @@
     "opusscript": "0.0.7",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
-    "typescript": "^3.6.2",
     "winston": "^3.2.1"
   },
   "devDependencies": {
@@ -62,7 +61,8 @@
     "ts-jest": "^24.0.2",
     "ts-node": "^8.3.0",
     "tslint": "^5.19.0",
-    "tslint-config-prettier": "^1.13.0"
+    "tslint-config-prettier": "^1.13.0",
+    "typescript": "^3.6.2"
   },
   "husky": {
     "hooks": {
