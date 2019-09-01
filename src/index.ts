@@ -9,6 +9,7 @@ const client = new AkairoClient(
   {
     ownerID: process.env.OWNER_ID,
     prefix: "!",
+    allowMention: true,
     defaultCooldown: 4000,
     commandDirectory: __dirname + "/commands/",
     inhibitorDirectory: __dirname + "/inhibitors/",

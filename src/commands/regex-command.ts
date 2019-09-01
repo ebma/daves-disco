@@ -1,10 +1,20 @@
 import { Message } from "discord.js"
 import { Command } from "discord-akairo"
 
+import moment from "moment"
+moment.locale()
+
+const getTimeFromAMinuteAgo = () => {
+  const oneMinuteAgo =  moment.now() - 60 * 1000
+  return moment(oneMinuteAgo)
+}
+
+// the '#' will be replaced by the expression string
 const expressions: { [type: string]: string } = {
   ["digga"]: "# was?",
-  ["wann"]: "um 15 Uhr :clock3:",
-  ["warum"]: "darum! :smirk:"
+  ["wann"]: `um ${getTimeFromAMinuteAgo().format("HH:mm")} Uhr :spy:`,
+  ["warum"]: "darum! :smirk:",
+  ["wer"]: "na ich! :100:"
 }
 class RegexCommand extends Command {
   constructor() {
@@ -16,7 +26,6 @@ class RegexCommand extends Command {
   trigger(message: Message) {
     const regex = new RegExp(Object.keys(expressions).join("|"), "i")
     return regex
-    // return /digga$/i
   }
 
   exec(message: Message, match: any) {
