@@ -12,7 +12,7 @@ const getTimeFromAMinuteAgo = () => {
 // the '#' will be replaced by the expression string
 const expressions: { [type: string]: string } = {
   ["digga"]: "# was?",
-  ["wann"]: `um ${getTimeFromAMinuteAgo().format("HH:mm")} Uhr :spy:`,
+  ["wann"]: `am ${getTimeFromAMinuteAgo().format("DD. MMMM YYYY")} um ${getTimeFromAMinuteAgo().format("HH:mm")} Uhr :spy:`,
   ["warum"]: "darum! :smirk:",
   ["wer"]: "na ich! :100:"
 }

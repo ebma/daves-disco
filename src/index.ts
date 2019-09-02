@@ -11,6 +11,13 @@ const client = new AkairoClient(
     prefix: "!",
     allowMention: true,
     defaultCooldown: 4000,
+    defaultPrompt: {
+      timeout: "Time ran out, command has been cancelled.",
+      ended: "Too many retries, command has been cancelled.",
+      cancel: "Command has been cancelled.",
+      retries: 4,
+      time: 30000
+    },
     commandDirectory: __dirname + "/commands/",
     inhibitorDirectory: __dirname + "/inhibitors/",
     listenerDirectory: __dirname + "/listeners/"
