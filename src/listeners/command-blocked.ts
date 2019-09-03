@@ -11,6 +11,7 @@ class CommandBlockedListener extends Listener {
 
   exec(message: Message, command: Command, reason: string) {
     console.log(`${message.author.username} was blocked from using ${command.id} because of ${reason}!`)
+    message.reply(`You were blocked from using ${command.id} because of ${reason}!`)
   }
 }
 

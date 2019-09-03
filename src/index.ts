@@ -10,7 +10,7 @@ const client = new AkairoClient(
     ownerID: process.env.OWNER_ID,
     prefix: "!",
     allowMention: true,
-    defaultCooldown: 4000,
+    defaultCooldown: 2000,
     defaultPrompt: {
       timeout: "Time ran out, command has been cancelled.",
       ended: "Too many retries, command has been cancelled.",
