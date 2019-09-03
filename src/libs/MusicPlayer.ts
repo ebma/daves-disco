@@ -8,8 +8,8 @@ import { createTrackStream } from "./streams"
 
 export class MusicPlayer {
   cachedMessage: Message
-  private queue: Queue<Track>
-  private currentTrack: Track
+  private queue: Queue<YoutubeTrack>
+  private currentTrack: YoutubeTrack
   private voiceConnection: VoiceConnection
   private volume: number = 0.2
 
@@ -43,7 +43,7 @@ export class MusicPlayer {
     return _.isNil(this.cachedMessage) ? null : (this.cachedMessage.channel as TextChannel)
   }
 
-  async enqueue(item: Track) {
+  async enqueue(item: YoutubeTrack) {
       this.queue.enqueue(item)
   }
 
