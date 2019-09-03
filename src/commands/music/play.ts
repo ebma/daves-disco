@@ -1,10 +1,10 @@
-import { MusicPlayer } from "./../../libs/MusicPlayer"
 import { Message } from "discord.js"
 import { Command } from "discord-akairo"
+import MusicPlayerManager from "../../libs/MusicPlayerManager"
+import { createTrackFromSearchTerm } from "../../libs/youtube"
+import { createEmbedForTrack } from "../../libs/embeds"
 
 class PlayCommand extends Command {
-  private musicPlayer: MusicPlayer
-
   constructor() {
     super("play", {
       aliases: ["play"],
@@ -21,21 +21,25 @@ class PlayCommand extends Command {
       ],
       channelRestriction: "guild"
     })
-    this.musicPlayer = new MusicPlayer()
   }
 
   async exec(message: Message, args: any) {
+    const musicPlayer = MusicPlayerManager.getPlayerFor(message.guild.id)
+
     if (message.member.voiceChannel) {
       try {
-        await this.musicPlayer.join(message.member.voiceChannel)
-      } catch (error){
+        await musicPlayer.join(message.member.voiceChannel)
+      } catch (error) {
         console.error(error)
       }
-      await this.musicPlayer.enqueue({ title: args.trackInfo })
-      await this.musicPlayer.play(message)
-      return message.reply("I successfully added your song")
-    }
-    else {
+
+      const track = await createTrackFromSearchTerm(args.trackInfo)
+      await musicPlayer.enqueue(track)
+      await musicPlayer.play(message)
+
+      const trackEmbed = createEmbedForTrack(track, message.member)
+      return message.channel.send(trackEmbed)
+    } else {
       return message.reply("You have to be connected to a voice channel...")
     }
   }
