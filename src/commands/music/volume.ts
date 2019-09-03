@@ -29,22 +29,22 @@ class VolumeCommand extends Command {
   async exec(message: Message, args: any) {
     const musicPlayer = MusicPlayerManager.getPlayerFor(message.guild.id)
 
-    if (message.member.voiceChannel) {
-      const oldVolume = musicPlayer.getVolume()
-      const newVolume = args.newVolume
-      if (oldVolume === newVolume) {
-        return message.reply(`Volume level is already at ${newVolume}...`)
-      }
-
-      musicPlayer.setVolume(newVolume)
-      const reply =
-        oldVolume > musicPlayer.getVolume()
-          ? `I reduced the volume from ${oldVolume} to ${newVolume}! :sound:`
-          : `I increased the volume from ${oldVolume} to ${newVolume}! :loud_sound:`
-      return message.reply(reply)
-    } else {
+    if (!message.member.voiceChannel) {
       return message.reply("You can't change the volume if you are not even listening...")
     }
+    
+    const oldVolume = musicPlayer.getVolume()
+    const newVolume = args.newVolume
+    if (oldVolume === newVolume) {
+      return message.reply(`Volume level is already at ${newVolume}...`)
+    }
+
+    musicPlayer.setVolume(newVolume)
+    const reply =
+      oldVolume > musicPlayer.getVolume()
+        ? `I reduced the volume from ${oldVolume} to ${newVolume}! :sound:`
+        : `I increased the volume from ${oldVolume} to ${newVolume}! :loud_sound:`
+    return message.reply(reply)
   }
 }
 

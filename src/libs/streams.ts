@@ -1,6 +1,5 @@
 import { Readable } from "stream"
 import * as ytdl from "ytdl-core"
-import search, { YouTubeSearchResults } from "youtube-search"
 
 export async function createTrackStream(track: YoutubeTrack, callback: (stream: Readable) => void) {
   try {

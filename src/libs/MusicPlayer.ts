@@ -8,9 +8,9 @@ import { createTrackStream } from "./streams"
 
 export class MusicPlayer {
   cachedMessage: Message
+  voiceConnection: VoiceConnection
   private queue: Queue<YoutubeTrack>
   private currentTrack: YoutubeTrack
-  private voiceConnection: VoiceConnection
   private volume: number = 0.2
 
   constructor() {
@@ -44,7 +44,7 @@ export class MusicPlayer {
   }
 
   async enqueue(item: YoutubeTrack) {
-      this.queue.enqueue(item)
+    this.queue.enqueue(item)
   }
 
   async clear() {
@@ -52,10 +52,8 @@ export class MusicPlayer {
   }
 
   async join(voiceChannel: VoiceChannel) {
-    if (this.isInVoiceChannel() && this.voiceConnection.channel.id === voiceChannel.id) {
-      throw new Error("I am already there!")
-    } else if (voiceChannel.full) {
-      throw new Error("That voice channel is full!")
+    if (voiceChannel.full) {
+      throw new Error("Voice channel is full!")
     }
     this.voiceConnection = await voiceChannel.join()
   }
@@ -83,9 +81,9 @@ export class MusicPlayer {
 
   async skipSong() {
     if (!this.isStreaming()) {
-      if (!this.queue.size()) return "There is nothing to skip!"
+      if (!this.queue.size()) return false
       this.queue.dequeue()
-      return "I have skipped the next song!"
+      return true
     }
     this.voiceConnection.dispatcher.end("skipped")
   }
@@ -114,7 +112,9 @@ export class MusicPlayer {
     this.currentTrack = this.queue.dequeue()
     createTrackStream(this.currentTrack, stream => {
       this.voiceConnection.playStream(stream, { seek: 0, volume: this.volume, passes: 1 })
-      this.voiceConnection.dispatcher.once("start", () => this.cachedMessage.channel.send(`I'm now playing: ${this.currentTrack.title}`))
+      this.voiceConnection.dispatcher.once("start", () =>
+        this.cachedMessage.channel.send(`I'm now playing: ${this.currentTrack.title}`)
+      )
       this.voiceConnection.dispatcher.once("end", reason => {
         stream.destroy()
         this.cachedMessage.channel.send(`Played: *${this.currentTrack.title}*`)
