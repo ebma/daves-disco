@@ -48,11 +48,12 @@ class PlayCommand extends Command {
     let reply: RichEmbed | string = ""
 
     if (isYoutubePlaylist(userInput)) {
-      // const tracks = await createTracksFromPlayList(userInput)
-      // _.forEach(tracks, track => {
-      //   musicPlayer.enqueue(track)
-      // })
-      // reply = createEmbedForTracks(tracks)
+      const playlistID = new URL(userInput).searchParams.get("list")
+      const tracks = await createTracksFromPlayList(playlistID)
+      _.forEach(tracks, track => {
+        musicPlayer.enqueue(track)
+      })
+      reply = createEmbedForTracks(tracks, message.member)
     } else if (isYoutubeVideo(userInput)) {
     } else {
       const tracks = await createTracksFromSearchTerm(args.trackInfo, 1)
