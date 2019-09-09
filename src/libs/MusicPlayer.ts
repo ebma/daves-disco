@@ -79,13 +79,18 @@ export class MusicPlayer {
     this.voiceConnection.dispatcher.resume()
   }
 
-  async skipSong() {
+  skipCurrentSong() {
+    if (this.isStreaming()) {
+      this.voiceConnection.dispatcher.end("skipped")
+    }
+  }
+
+  async skipNextSongInQueue(){
     if (!this.isStreaming()) {
       if (!this.queue.size()) return false
       this.queue.dequeue()
       return true
     }
-    this.voiceConnection.dispatcher.end("skipped")
   }
 
   stopStream() {

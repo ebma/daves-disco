@@ -20,6 +20,7 @@
   "homepage": "https://github.com/Marcel-Ebert/discord-music-bot#readme",
   "main": "src/index.js",
   "scripts": {
+    "precommit": "lint-staged",
     "start": "npm run serve",
     "serve": "node dist/index.js",
     "build-and-run": "npm run build && npm run serve",

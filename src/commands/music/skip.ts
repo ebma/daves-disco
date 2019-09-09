@@ -38,13 +38,18 @@ class SkipCommand extends Command {
     const suppliedAmount = args.amount
     const queueSize = musicPlayer.queuedTracks
 
-    const skippingSongsCount = suppliedAmount > queueSize ? queueSize : suppliedAmount
+    if (args.amount === 1) {
+      musicPlayer.skipCurrentSong()
+      return message.reply(`Skipped the current song!`)
+    } else {
+      const skippingSongsCount = suppliedAmount > queueSize ? queueSize : suppliedAmount
 
-    _.times(skippingSongsCount, () => {
-      musicPlayer.skipSong()
-    })
-
-    return message.reply(`Successfully skipped ${skippingSongsCount} song(s)!`)
+      _.times(skippingSongsCount - 1, () => {
+        musicPlayer.skipNextSongInQueue()
+      })
+      musicPlayer.skipCurrentSong()
+      return message.reply(`Skipped the current song + ${skippingSongsCount - 1} more!`)
+    }
   }
 }
 
