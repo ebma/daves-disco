@@ -1,5 +1,7 @@
 import { Message } from "discord.js"
 import { Command } from "discord-akairo"
+import _ from "lodash"
+import { RichEmbed } from "discord.js"
 import MusicPlayerManager from "../../libs/MusicPlayerManager"
 import {
   createTracksFromPlayList,
@@ -7,10 +9,9 @@ import {
   isYoutubeVideo,
   createTracksFromSearchTerm,
   createTrackFromURL
-} from "../../libs/youtube"
-import { createEmbedForTrack, createEmbedForTracks } from "../../libs/embeds"
-import _ from "lodash"
-import { RichEmbed } from "discord.js"
+} from "../../libs/util/youtube"
+import { createEmbedForTrack, createEmbedForTracks, createEmbedsForSpotifyPlaylist } from "../../libs/util/embeds"
+import { isSpotifyPlaylistURI, getSpotifyPlaylist } from "../../libs/util/spotify"
 
 class PlayCommand extends Command {
   constructor() {
@@ -59,6 +60,26 @@ class PlayCommand extends Command {
       const track = await createTrackFromURL(userInput)
       await musicPlayer.enqueue(track)
       reply = createEmbedForTrack(track, message.member)
+    } else if (isSpotifyPlaylistURI(userInput)) {
+      const playlistID = userInput.split(":")[userInput.split(":").length - 1]
+      const playlist = await getSpotifyPlaylist(playlistID)
+      if (playlist === null) {
+        reply = "I was not able to get the spotify playlist..."
+      } else {
+        await Promise.all(
+          playlist.tracks.map(async spotifyTrack => {
+            try {
+              const ytTracks = await createTracksFromSearchTerm(`${spotifyTrack.title} - ${spotifyTrack.artists}`, 1)
+              const track = ytTracks[0]
+              await musicPlayer.enqueue(track)
+            } catch (error){
+              console.error(error)
+            }
+          })
+        )
+
+        reply = createEmbedsForSpotifyPlaylist(playlist, message.member)
+      }
     } else {
       const tracks = await createTracksFromSearchTerm(args.trackInfo, 1)
       const track = tracks[0]

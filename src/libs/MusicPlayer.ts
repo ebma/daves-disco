@@ -4,14 +4,14 @@ import { VoiceChannel } from "discord.js"
 import _ from "lodash"
 import { Message } from "discord.js"
 import { TextChannel } from "discord.js"
-import { createTrackStream } from "./streams"
+import { createTrackStream } from "./util/streams"
 
 export class MusicPlayer {
   cachedMessage: Message
   voiceConnection: VoiceConnection
   private queue: Queue<YoutubeTrack>
   private currentTrack: YoutubeTrack
-  private volume: number = 0.2
+  private volume: number = 0.1
 
   constructor() {
     this.queue = new Queue()
