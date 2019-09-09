@@ -85,7 +85,7 @@ export class MusicPlayer {
     }
   }
 
-  async skipNextSongInQueue(){
+  async skipNextSongInQueue() {
     if (!this.isStreaming()) {
       if (!this.queue.size()) return false
       this.queue.dequeue()
@@ -118,7 +118,7 @@ export class MusicPlayer {
     createTrackStream(this.currentTrack, stream => {
       this.voiceConnection.playStream(stream, { seek: 0, volume: this.volume, passes: 1 })
       this.voiceConnection.dispatcher.once("start", () =>
-        this.cachedMessage.channel.send(`I'm now playing: ${this.currentTrack.title}`)
+        this.cachedMessage.channel.send(`:raised_hands: Lemme see your hands when I play my next song: *${this.currentTrack.title}* :raised_hands: `)
       )
       this.voiceConnection.dispatcher.once("end", reason => {
         stream.destroy()
@@ -128,16 +128,16 @@ export class MusicPlayer {
             this.cachedMessage.channel.send("Stopping stream since no one is listening")
             this.voiceConnection.disconnect()
           } else if (this.queue.size() > 0) {
-            console.log("Creating next stream")
             return setTimeout(() => this.createStream(), 50)
+          } else if (this.queue.size() === 0) {
+            this.cachedMessage.channel.send("That's it for now... Later bitches! :metal:")
+            this.voiceConnection.disconnect()
+            this.voiceConnection = null
           }
         }
-        this.cachedMessage.reply("Music stream ended")
-        this.cachedMessage = null
-        console.log("Ended music stream")
       })
       this.voiceConnection.dispatcher.on("error", e => {
-        console.log(`encountered error`, e)
+        this.cachedMessage.channel.send(`I don't feel so good... (${e})`)
       })
     })
     return "Music stream started"

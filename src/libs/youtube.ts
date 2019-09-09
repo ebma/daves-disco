@@ -1,9 +1,20 @@
 import search, { YouTubeSearchResults } from "youtube-search"
 import _ from "lodash"
 import request from "request"
+import ytdl from "ytdl-core"
 
 const key = process.env.YOUTUBE_API_KEY
 const youtubeBaseURL = "https://www.googleapis.com/youtube/v3"
+
+export function isYoutubeVideo(term: string) {
+  const regex = /(^|\s)(https?:\/\/)?(www\.)?youtube\.com\/(watch)\?(v)=([^\s&]+)[^\s]*($|\s)/g
+  return term.match(regex)
+}
+
+export function isYoutubePlaylist(term: string) {
+  const regex = /(^|\s)(https?:\/\/)?(www\.)?youtube\.com\/(playlist)\?(list)=([^\s&]+)[^\s]*($|\s)/g
+  return term.match(regex)
+}
 
 export function createTracksFromSearchTerm(term: string, maxResults: number) {
   return new Promise<YoutubeTrack[]>((resolve, reject) => {
@@ -40,14 +51,15 @@ export function createTracksFromSearchTerm(term: string, maxResults: number) {
   })
 }
 
-export function isYoutubeVideo(term: string) {
-  const regex = /(^|\s)(https?:\/\/)?(www\.)?youtube\.com\/(watch)\?(v)=([^\s&]+)[^\s]*($|\s)/g
-  return term.match(regex)
-}
-
-export function isYoutubePlaylist(term: string) {
-  const regex = /(^|\s)(https?:\/\/)?(www\.)?youtube\.com\/(playlist)\?(list)=([^\s&]+)[^\s]*($|\s)/g
-  return term.match(regex)
+export async function createTrackFromURL(url: string):Promise<YoutubeTrack> {
+  const info = await ytdl.getInfo(url)
+  
+  return {
+    title: info.title,
+    url: info.video_url,
+    description: info.description,
+    thumbnail: info.thumbnail_url
+  }
 }
 
 export async function createTracksFromPlayList(playlistID: string) {

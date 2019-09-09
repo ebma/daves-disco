@@ -5,7 +5,8 @@ import {
   createTracksFromPlayList,
   isYoutubePlaylist,
   isYoutubeVideo,
-  createTracksFromSearchTerm
+  createTracksFromSearchTerm,
+  createTrackFromURL
 } from "../../libs/youtube"
 import { createEmbedForTrack, createEmbedForTracks } from "../../libs/embeds"
 import _ from "lodash"
@@ -55,6 +56,9 @@ class PlayCommand extends Command {
       })
       reply = createEmbedForTracks(tracks, message.member)
     } else if (isYoutubeVideo(userInput)) {
+      const track = await createTrackFromURL(userInput)
+      await musicPlayer.enqueue(track)
+      reply = createEmbedForTrack(track, message.member)
     } else {
       const tracks = await createTracksFromSearchTerm(args.trackInfo, 1)
       const track = tracks[0]

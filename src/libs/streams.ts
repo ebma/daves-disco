@@ -13,4 +13,3 @@ export async function createTrackStream(track: YoutubeTrack, callback: (stream: 
     console.error(error)
   }
 }
-

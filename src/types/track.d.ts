@@ -3,5 +3,5 @@ interface YoutubeTrack {
   url: string
   thumbnail: string
   description?: string
-  publishedAt: string
+  publishedAt?: string
 }
