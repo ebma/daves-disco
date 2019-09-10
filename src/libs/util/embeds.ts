@@ -2,7 +2,7 @@ import { RichEmbed } from "discord.js"
 import { GuildMember } from "discord.js"
 import _ from "lodash"
 
-export function createEmbedForTrack(track: YoutubeTrack, requester?: GuildMember) {
+export function createEmbedForTrack(track: Track, requester?: GuildMember) {
   const embed = new RichEmbed()
     .setColor("#0099ff")
     .setTitle(track.title)
@@ -14,7 +14,7 @@ export function createEmbedForTrack(track: YoutubeTrack, requester?: GuildMember
   return embed
 }
 
-export function createEmbedForTracks(tracks: YoutubeTrack[], requester?: GuildMember) {
+export function createEmbedForTracks(tracks: Track[], requester?: GuildMember) {
   const embed = new RichEmbed()
     .setColor("#0099ff")
     .setTitle("Playlist")
@@ -41,7 +41,7 @@ export function createEmbedForTracks(tracks: YoutubeTrack[], requester?: GuildMe
   return embed
 }
 
-export function createEmbedsForSpotifyPlaylist(playlist: SpotifyPlaylist, requester?: GuildMember) {
+export function createEmbedsForSpotifyPlaylist(playlist: Playlist, requester?: GuildMember) {
   const playlistEmbed = new RichEmbed()
     .setColor("#0099ff")
     .setTitle(playlist.name)
@@ -54,7 +54,8 @@ export function createEmbedsForSpotifyPlaylist(playlist: SpotifyPlaylist, reques
 
   let tracklistDescription = ""
   _.forEach(playlist.tracks, (track, index) => {
-    tracklistDescription += `${index + 1}: ${track.title} - ${track.artists}\n`
+    const spotifyTrack = track as SpotifyTrack
+    tracklistDescription += `${index + 1}: ${spotifyTrack.title} - ${spotifyTrack.artists}\n`
   })
 
   const descriptions = splitIntoValidStrings(tracklistDescription)
@@ -85,6 +86,8 @@ function splitIntoValidStrings(splitme: string): string[] {
 
     appendable += `${line}\n`
   })
+
+  validSubStrings.push(appendable)
 
   return validSubStrings
 }

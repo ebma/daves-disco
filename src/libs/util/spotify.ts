@@ -3,7 +3,7 @@ import SpotifyWebAPI from "spotify-web-api-node"
 const clientId = process.env.SPOTIFY_CLIENT_ID
 const clientSecret = process.env.SPOTIFY_CLIENT_SECRET
 
-if (!clientId || !clientSecret){
+if (!clientId || !clientSecret) {
   throw new Error("ClientId or clientSecret are undefined... You can't use the spotify web api without them!")
 }
 
@@ -14,11 +14,11 @@ const spotifyWebAPI = new SpotifyWebAPI({
 })
 
 export function isSpotifyPlaylistURI(term: string) {
-  const regex = /(spotify:)?(playlist:)?[\d\w]+/g
+  const regex = /spotify:playlist:[\d\w]+/g
   return term.match(regex)
 }
 
-export async function getSpotifyPlaylist(playlistID: string): Promise<SpotifyPlaylist | null> {
+export async function getSpotifyPlaylist(playlistID: string): Promise<Playlist | null> {
   try {
     await checkAccessToken()
     const playlistData = await spotifyWebAPI.getPlaylist(playlistID)
@@ -39,11 +39,13 @@ export async function getSpotifyPlaylist(playlistID: string): Promise<SpotifyPla
       name,
       owner: playlistData.body.owner.display_name,
       tracks: items.map(item => ({
-        title: item.track.name,
-        url: "",
         artists: item.track.artists.map(x => x.name).join(", "),
+        initialized: false,
+        source: "spotify",
+        title: item.track.name,
         thumbnail: item.track.album.images.length ? item.track.album.images[0].url : defaultArt,
-        trackID: item.track.uri
+        trackID: item.track.uri,
+        url: ""
       }))
     }
   } catch (error) {

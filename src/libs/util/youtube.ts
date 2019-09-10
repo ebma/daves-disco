@@ -17,7 +17,7 @@ export function isYoutubePlaylist(term: string) {
 }
 
 export function createTracksFromSearchTerm(term: string, maxResults: number) {
-  return new Promise<YoutubeTrack[]>((resolve, reject) => {
+  return new Promise<Track[]>((resolve, reject) => {
     if (maxResults <= 0 || maxResults > 50) {
       reject("Size of maxResults must be between 1 and 50")
     }
@@ -26,18 +26,18 @@ export function createTracksFromSearchTerm(term: string, maxResults: number) {
       value => {
         const results = value.results
         if (results.length > 0) {
-          const ytTracks: YoutubeTrack[] = []
+          const ytTracks: Track[] = []
           _.forEach(results, searchResult => {
             const thumbnail =
               searchResult.thumbnails.default || searchResult.thumbnails.standard || searchResult.thumbnails.high
-            const ytTrack = {
-              title: searchResult.title,
-              url: searchResult.link,
-              thumbnail: thumbnail.url,
+            ytTracks.push({
               description: searchResult.description,
-              publishedAt: searchResult.publishedAt
-            }
-            ytTracks.push(ytTrack)
+              publishedAt: searchResult.publishedAt,
+              source: "youtube",
+              title: searchResult.title,
+              thumbnail: thumbnail.url,
+              url: searchResult.link
+            })
           })
           resolve(ytTracks)
         } else {
@@ -51,20 +51,21 @@ export function createTracksFromSearchTerm(term: string, maxResults: number) {
   })
 }
 
-export async function createTrackFromURL(url: string):Promise<YoutubeTrack> {
+export async function createTrackFromURL(url: string): Promise<Track> {
   const info = await ytdl.getInfo(url)
-  
+
   return {
-    title: info.title,
-    url: info.video_url,
     description: info.description,
+    url: info.video_url,
+    source: "youtube",
+    title: info.title,
     thumbnail: info.thumbnail_url
   }
 }
 
-export async function createTracksFromPlayList(playlistID: string) {
+export async function createTracksFromPlayList(playlistID: string): Promise<Playlist> {
   let requestURL = `${youtubeBaseURL}/playlistItems?part=snippet&playlistId=${playlistID}&maxResults=50&key=${key}`
-  const collected: YoutubeTrack[] = []
+  const collected: Track[] = []
   while (requestURL) {
     const resp = await new Promise<request.Response>((resolve, reject) => {
       request(requestURL, null, (error: any, response: request.RequestResponse, body: any) => {
@@ -81,12 +82,16 @@ export async function createTracksFromPlayList(playlistID: string) {
         : song.snippet.thumbnails.high.url
       const id = song.snippet.resourceId.videoId
       collected.push({
+        publishedAt: song.snippet.publishedAt,
+        source: "youtube",
         title: song.snippet.title,
-        url: `https://www.youtube.com/watch?v=${id}`,
         thumbnail: artwork,
-        publishedAt: song.snippet.publishedAt
+        url: `https://www.youtube.com/watch?v=${id}`
       })
     })
   }
-  return collected
+  return {
+    name: "Youtube Playlist",
+    tracks: collected
+  }
 }

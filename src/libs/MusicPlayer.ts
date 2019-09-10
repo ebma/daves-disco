@@ -10,8 +10,8 @@ import { shuffle } from "./util/shuffle"
 export class MusicPlayer {
   cachedMessage: Message
   voiceConnection: VoiceConnection
-  private queue: Queue<YoutubeTrack>
-  private currentTrack: YoutubeTrack
+  private queue: Queue<Track>
+  private currentTrack: Track
   private volume: number = 0.1
 
   constructor() {
@@ -44,7 +44,7 @@ export class MusicPlayer {
     return _.isNil(this.cachedMessage) ? null : (this.cachedMessage.channel as TextChannel)
   }
 
-  async enqueue(item: YoutubeTrack) {
+  async enqueue(item: Track) {
     this.queue.enqueue(item)
   }
 
@@ -81,7 +81,7 @@ export class MusicPlayer {
   }
 
   shuffle() {
-    const queuedTracksArray: YoutubeTrack[] = []
+    const queuedTracksArray: Track[] = []
     this.queuedTracks.forEach(track => {
       queuedTracksArray.push(track)
     })
@@ -134,7 +134,7 @@ export class MusicPlayer {
       this.voiceConnection.playStream(stream, { seek: 0, volume: this.volume, passes: 1 })
       this.voiceConnection.dispatcher.once("start", () =>
         this.cachedMessage.channel.send(
-          `:raised_hands: Lemme see your hands when I play my next song: *${this.currentTrack.title}* :raised_hands: `
+          `:raised_hands: Let me see your hands while I play *${this.currentTrack.title}* :raised_hands: `
         )
       )
       this.voiceConnection.dispatcher.once("end", reason => {
