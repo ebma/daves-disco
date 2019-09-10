@@ -5,6 +5,7 @@ import _ from "lodash"
 import { Message } from "discord.js"
 import { TextChannel } from "discord.js"
 import { createTrackStream } from "./util/streams"
+import { shuffle } from "./util/shuffle"
 
 export class MusicPlayer {
   cachedMessage: Message
@@ -36,7 +37,7 @@ export class MusicPlayer {
   }
 
   get queuedTracks() {
-    return this.queue.size()
+    return this.queue
   }
 
   get channel() {
@@ -79,6 +80,20 @@ export class MusicPlayer {
     this.voiceConnection.dispatcher.resume()
   }
 
+  shuffle() {
+    const queuedTracksArray: YoutubeTrack[] = []
+    this.queuedTracks.forEach(track => {
+      queuedTracksArray.push(track)
+    })
+
+    shuffle(queuedTracksArray)
+
+    this.queuedTracks.clear()
+    _.forEach(queuedTracksArray, track => {
+      this.queuedTracks.enqueue(track)
+    })
+  }
+
   skipCurrentSong() {
     if (this.isStreaming()) {
       this.voiceConnection.dispatcher.end("skipped")
@@ -118,7 +133,9 @@ export class MusicPlayer {
     createTrackStream(this.currentTrack, stream => {
       this.voiceConnection.playStream(stream, { seek: 0, volume: this.volume, passes: 1 })
       this.voiceConnection.dispatcher.once("start", () =>
-        this.cachedMessage.channel.send(`:raised_hands: Lemme see your hands when I play my next song: *${this.currentTrack.title}* :raised_hands: `)
+        this.cachedMessage.channel.send(
+          `:raised_hands: Lemme see your hands when I play my next song: *${this.currentTrack.title}* :raised_hands: `
+        )
       )
       this.voiceConnection.dispatcher.once("end", reason => {
         stream.destroy()
