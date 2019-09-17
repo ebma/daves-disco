@@ -29,8 +29,10 @@ export function createEmbedForTracks(tracks: Track[], requester?: GuildMember) {
   _.forEach(validStrings, (description, index) => {
     if (index === 0) {
       embed.addField("Tracks", description)
-    } else {
+    } else if (index <= 2) {
       embed.addField("More...", description)
+    } else {
+      embed.addField("And even more", "...")
     }
   })
 
@@ -63,8 +65,10 @@ export function createEmbedsForSpotifyPlaylist(playlist: Playlist, requester?: G
   _.forEach(descriptions, (description, index) => {
     if (index === 0) {
       playlistEmbed.addField("Tracks", description)
-    } else {
+    } else if (index <= 2) {
       playlistEmbed.addField("More...", description)
+    } else {
+      playlistEmbed.addField("And even more", "...")
     }
   })
 
