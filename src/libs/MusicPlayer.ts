@@ -102,7 +102,7 @@ export class MusicPlayer {
 
   async skipNextSongInQueue() {
     if (!this.isStreaming()) {
-      if (!this.queue.size()) return false
+      if (this.queue.size() === 0) return false
       this.queue.dequeue()
       return true
     }
