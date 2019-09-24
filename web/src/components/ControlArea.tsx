@@ -31,7 +31,7 @@ const ControlArea = (props: ControlAreaProps) => {
 
   const SkipNextButton = () => {
     const onButtonClick = async () => {
-      const response = await socketContext.sendMessage("skip")
+      const response = await socketContext.sendCommand("skip")
       console.log("response", response)
     }
     return <StyledButton icon={<SkipNextIcon />} text="Skip next" onClick={onButtonClick} />

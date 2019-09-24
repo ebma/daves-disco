@@ -1,17 +1,23 @@
 import React from "react"
 import { makeStyles } from "@material-ui/core/styles"
-import TextField from "@material-ui/core/TextField"
-import { Typography, Box } from "@material-ui/core"
+import { Typography, Box, MenuItem, FormControl, InputLabel, Select } from "@material-ui/core"
 import { SocketContext } from "../context/socket"
 
 const useStyles = makeStyles(theme => ({
   container: {
     padding: 16,
-    boxShadow: "4px 4px 2px 4px #888888"
+    boxShadow: "0 10px 20px #ccc; 2px 4px #888888"
+  },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120
   },
   textField: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1)
+  },
+  selectEmpty: {
+    marginTop: theme.spacing(2)
   }
 }))
 
@@ -20,48 +26,73 @@ interface State {
   guildID: string
 }
 
+type Guilds = Array<{ id: string; name: string }>
+type Members = Array<{ id: string; name: string }>
+
 function UserIdentifierForm(props: {}) {
   const classes = useStyles()
   const socketContext = React.useContext(SocketContext)
+  const [guilds, setGuilds] = React.useState<Guilds | null>(null)
+  const [members, setMembers] = React.useState<Members | null>(null)
+
   const [values, setValues] = React.useState<State>({
-    userID: "240157227657330688",
-    guildID: "401718954608951318"
+    userID: "",
+    guildID: ""
   })
-  
+
   React.useEffect(() => {
-    socketContext.setGuildID(values.guildID)
-    socketContext.setUserID(values.userID)
-  }, [socketContext, values]) // The 'values' somehow break stuff
-  
-  const handleChange = (name: keyof State) => (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValues({ ...values, [name]: event.target.value })
+    socketContext.sendControlMessage("getGuilds").then(setGuilds)
+  }, [socketContext])
+
+  React.useEffect(() => {
+    if (values.guildID !== "") {
+      socketContext.sendControlMessage("getUsers", { guildID: values.guildID }).then(setMembers)
+    }
+  }, [socketContext, values.guildID])
+
+  // FIXME set user and guild id in socketcontext
+
+  const handleChange = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
+    setValues(oldValues => ({
+      ...oldValues,
+      [event.target.name as string]: event.target.value
+    }))
   }
-  
+
   return (
     <form className={classes.container} noValidate autoComplete="off">
       <Typography variant="h6" color="textPrimary">
-        Enter the IDs of Guild and User that should be used.
+        Choose the guild and member that fit.
       </Typography>
 
       <Box display="flex">
-        <TextField
-          fullWidth
-          className={classes.textField}
-          id="guildid"
-          label="Guild ID"
-          placeholder="401718954608951318"
-          value={values.guildID}
-          onChange={handleChange("guildID")}
-        />
-        <TextField
-          fullWidth
-          className={classes.textField}
-          id="userid"
-          label="User ID"
-          placeholder="240157227657330688"
-          value={values.userID}
-          onChange={handleChange("userID")}
-        />
+        <FormControl className={classes.formControl} fullWidth>
+          <InputLabel htmlFor="guildID">Guild</InputLabel>
+          <Select
+            value={values.guildID}
+            onChange={handleChange}
+            inputProps={{
+              name: "guildID",
+              id: "guildID"
+            }}
+          >
+            {guilds ? guilds.map(guild => <MenuItem value={guild.id}>{guild.name}</MenuItem>) : undefined}
+          </Select>
+        </FormControl>
+
+        <FormControl className={classes.formControl} fullWidth>
+          <InputLabel htmlFor="userID">Member</InputLabel>
+          <Select
+            value={values.userID}
+            onChange={handleChange}
+            inputProps={{
+              name: "userID",
+              id: "userID"
+            }}
+          >
+            {members ? members.map(member => <MenuItem value={member.id}>{member.name}</MenuItem>) : undefined}
+          </Select>
+        </FormControl>
       </Box>
     </form>
   )

@@ -3,7 +3,7 @@ import io from "socket.io-client"
 
 const path = "http://localhost:1234"
 
-let messageID = 0
+let messageID = 1
 
 function getNextMessageID() {
   return messageID++
@@ -11,14 +11,16 @@ function getNextMessageID() {
 
 export interface SocketContextType {
   socket: SocketIOClient.Socket | null
-  sendMessage: (command: string, data?: any) => Promise<any>
+  sendCommand: (command: string, data?: any) => Promise<any>
+  sendControlMessage: (messageType: string, data?: any) => Promise<any>
   setGuildID: (guildID: string) => void
   setUserID: (userID: string) => void
 }
 
 const SocketContext = React.createContext<SocketContextType>({
   socket: null,
-  sendMessage: () => Promise.reject("SocketProvider not ready."),
+  sendCommand: () => Promise.reject("SocketProvider not ready."),
+  sendControlMessage: () => Promise.reject("SocketProvider not ready."),
   setGuildID: () => undefined,
   setUserID: () => undefined
 })
@@ -56,17 +58,17 @@ function SocketProvider(props: Props) {
     })
   }, [])
 
-  const createDataPackage = (command: string, data?: any) => {
+  const createCommandDataPackage = (command: string, data?: any) => {
     return { command, messageID: getNextMessageID(), guildID: currentGuildID, userID: currentUserID, ...data }
   }
 
-  const sendMessage = (command: string, data?: any) => {
+  const sendCommand = (command: string, data?: any) => {
     return new Promise<any>((resolve, reject) => {
       if (currentSocket) {
-        const dataPackage = createDataPackage(command, data)
-        currentSocket.send(dataPackage)
+        const dataPackage = createCommandDataPackage(command, data)
+        currentSocket.emit("command", dataPackage)
 
-        currentSocket.on(command, (response: any) => {
+        currentSocket.on("event", (response: any) => {
           if (response && response.messageID && response.messageID === dataPackage.messageID) {
             if (response.error) {
               reject(response.error)
@@ -81,9 +83,36 @@ function SocketProvider(props: Props) {
     })
   }
 
+  const createControlMessageDataPackage = (type: string, data?: any) => {
+    return { type, messageID: getNextMessageID(), guildID: currentGuildID, userID: currentUserID, ...data }
+  }
+  const sendControlMessage = (type: string, data?: any) => {
+    return new Promise<any>((resolve, reject) => {
+      if (currentSocket) {
+        const dataPackage = createControlMessageDataPackage(type, data)
+        currentSocket.emit("control", dataPackage)
+
+        currentSocket.on("event", (response: any) => {
+          if (response && response.messageID && response.messageID === dataPackage.messageID) {
+            if (response.error) {
+              console.log("rejecting message", response)
+              reject(response.error)
+            } else {
+              console.log("resolving message", response.result)
+              resolve(response.result)
+            }
+          }
+        })
+      } else {
+        reject("No socket available")
+      }
+    })
+  }
+
   const contextValue: SocketContextType = {
     socket: currentSocket,
-    sendMessage,
+    sendCommand,
+    sendControlMessage,
     setGuildID: setCurrentGuildID,
     setUserID: setCurrentUserID
   }
