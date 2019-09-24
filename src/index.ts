@@ -1,18 +1,10 @@
 import { config } from "dotenv"
 import { AkairoClient } from "discord-akairo"
-import express from "express"
-import { Server } from "http"
-import socketio, { Socket } from "socket.io"
-import SkipCommand from "./commands/music/skip"
+import { startSocketConnection } from "./socket/socket"
 
 if (process.env.NODE_ENV !== "production") {
   config()
 }
-
-const app = express()
-const http = new Server(app)
-const io = socketio(http, {})
-const port = process.env.PORT || 1234
 
 const client = new AkairoClient(
   {
@@ -36,39 +28,6 @@ const client = new AkairoClient(
   }
 )
 
-io.on("connection", socket => {
-  console.log("new connection")
-  initializeSocket(socket)
-})
-
-interface Data {
-  command: string
-  messageID: number
-  userID: string
-  guildID: string
-  payload: string
-}
-
-function initializeSocket(socket: Socket) {
-  socket.on("message", async (data: Data) => {
-    console.log("data received", data)
-
-    const command = client.commandHandler.findCommand(data.command)
-    try {
-      const result = await command.exec(null, data, false)
-      socket.send({ command: data.command, messageID: data.messageID, result })
-    } catch (error) {
-      socket.send({ command: data.command, messageID: data.messageID, error })
-    }
-  })
-
-  socket.on("disconnect", () => {
-    console.log("connection closed by user")
-  })
-}
-
-http.listen(port, () => {
-  console.log(`listening on port ${port}`)
-})
+startSocketConnection(client)
 
 client.login(process.env.BOT_TOKEN)
