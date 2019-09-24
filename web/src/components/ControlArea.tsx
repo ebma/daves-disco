@@ -10,6 +10,7 @@ import StyledButton from "./StyledButton"
 import { SocketContext } from "../context/socket"
 import VolumeSlider from "./VolumeSlider"
 import UserIdentifierForm from "../forms/UserIdentifierForm"
+import ConnectionStateIndicator from "./ConnectionStateIndicator"
 
 interface ControlAreaProps {}
 
@@ -37,17 +38,18 @@ const ControlArea = (props: ControlAreaProps) => {
     return <StyledButton icon={<SkipNextIcon />} text="Skip next" onClick={onButtonClick} />
   }
 
-  const GuildBox = () => {
+  const GuildSelectionBox = () => {
     return (
-      <Box marginX="16px" marginY="8px">
-        <UserIdentifierForm />
+      <Box>
+        {socketContext.connectionState === "connected" ? <UserIdentifierForm /> : undefined}
       </Box>
     )
   }
 
   return (
     <Container>
-      <GuildBox />
+      <ConnectionStateIndicator />
+      <GuildSelectionBox />
       <Grid container direction="row" alignItems="center" spacing={5} style={{ margin: "auto" }}>
         <Grid item>
           <CurrentSongCard style={{ alignSelf: "flex-start" }} />

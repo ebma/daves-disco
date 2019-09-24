@@ -5,8 +5,9 @@ import { SocketContext } from "../context/socket"
 
 const useStyles = makeStyles(theme => ({
   container: {
+    boxShadow: "0 10px 20px #ccc; 2px 4px #888888",
     padding: 16,
-    boxShadow: "0 10px 20px #ccc; 2px 4px #888888"
+    margin: theme.spacing(1)
   },
   formControl: {
     margin: theme.spacing(1),

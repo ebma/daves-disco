@@ -2,15 +2,17 @@ import React from "react"
 import io from "socket.io-client"
 
 const path = "http://localhost:1234"
+const MAX_RECONNECTION_ATTEMPTS = 10
 
 let messageID = 1
+
 
 function getNextMessageID() {
   return messageID++
 }
 
 export interface SocketContextType {
-  socket: SocketIOClient.Socket | null
+  connectionState: ConnectionState
   sendCommand: (command: string, data?: any) => Promise<any>
   sendControlMessage: (messageType: string, data?: any) => Promise<any>
   setGuildID: (guildID: string) => void
@@ -18,7 +20,7 @@ export interface SocketContextType {
 }
 
 const SocketContext = React.createContext<SocketContextType>({
-  socket: null,
+  connectionState: "disconnected",
   sendCommand: () => Promise.reject("SocketProvider not ready."),
   sendControlMessage: () => Promise.reject("SocketProvider not ready."),
   setGuildID: () => undefined,
@@ -29,7 +31,10 @@ interface Props {
   children: React.ReactNode
 }
 
+export type ConnectionState = "disconnected" | "reconnecting" | "connected"
+
 function SocketProvider(props: Props) {
+  const [connectionState, setConnectionState] = React.useState<ConnectionState>("disconnected")
   const [currentSocket, setCurrentSocket] = React.useState<SocketIOClient.Socket | null>(null)
   const [currentGuildID, setCurrentGuildID] = React.useState<string>("")
   const [currentUserID, setCurrentUserID] = React.useState<string>("")
@@ -37,21 +42,21 @@ function SocketProvider(props: Props) {
   React.useEffect(() => {
     const socket = io(path, {
       forceNew: true,
-      reconnectionAttempts: Infinity,
-      timeout: 10000
+      reconnectionAttempts: MAX_RECONNECTION_ATTEMPTS,
+      timeout: 10000,
     })
 
     setCurrentSocket(socket)
 
-    socket.on("reconnecting", () => {
-      console.log("trying to reconnect")
-    })
+    socket.on("reconnecting", () => setConnectionState("reconnecting"))
 
-    socket.on("reconnect", () => {
-      console.log("successfully reconnected")
-    })
+    socket.on("reconnect_failed", () => setConnectionState("disconnected"))
 
-    socket.on("connect", () => console.log("connected from react"))
+    socket.on("reconnect", () => setConnectionState("connected"))
+
+    socket.on("connect", () => setConnectionState("connected"))
+
+    socket.on("disconnect", () => setConnectionState("disconnected"))
 
     socket.on("error", (error: string) => {
       console.error(error)
@@ -110,7 +115,7 @@ function SocketProvider(props: Props) {
   }
 
   const contextValue: SocketContextType = {
-    socket: currentSocket,
+    connectionState,
     sendCommand,
     sendControlMessage,
     setGuildID: setCurrentGuildID,
