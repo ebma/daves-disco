@@ -29,6 +29,10 @@ class SkipCommand extends Command {
   }
 
   async exec(message: Message, args: any) {
+    if (message === null) {
+      return this.executeSilent(args)
+    }
+
     const musicPlayer = MusicPlayerManager.getPlayerFor(message.guild.id)
 
     if (!message.member.voiceChannel || message.member.voiceChannel.id !== musicPlayer.voiceConnection.channel.id) {
@@ -50,6 +54,20 @@ class SkipCommand extends Command {
       musicPlayer.skipCurrentSong()
       return message.reply(`Skipped the current song + ${skippingSongsCount - 1} more!`)
     }
+  }
+
+  executeSilent(args: any) {
+    return new Promise<void>((resolve, reject) => {
+      const { guildID } = args
+      const musicPlayer = MusicPlayerManager.getPlayerFor(guildID)
+
+      try {
+        musicPlayer.skipCurrentSong()
+        resolve()
+      } catch (error) {
+        reject(error)
+      }
+    })
   }
 }
 

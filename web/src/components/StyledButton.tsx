@@ -27,6 +27,7 @@ function StyledButton(props: Props) {
       color="secondary"
       className={classes.button}
       style={props.style}
+      onClick={props.onClick}
     >
       {props.alignIconBefore ? props.icon : undefined}
       {props.text}
