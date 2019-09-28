@@ -61,7 +61,7 @@ function ControlPage() {
   return (
     <Container component="main" maxWidth="md">
       <CssBaseline />
-      <Paper className={classes.paper} >
+      <Paper className={classes.paper}>
         <Header />
         <ControlArea />
         <QueueArea />

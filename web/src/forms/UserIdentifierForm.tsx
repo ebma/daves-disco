@@ -5,7 +5,6 @@ import { SocketContext } from "../context/socket"
 
 const useStyles = makeStyles(theme => ({
   container: {
-    boxShadow: "0 10px 20px #ccc; 2px 4px #888888",
     padding: 16,
     margin: theme.spacing(1)
   },
@@ -32,7 +31,8 @@ type Members = Array<{ id: string; name: string }>
 
 function UserIdentifierForm(props: {}) {
   const classes = useStyles()
-  const socketContext = React.useContext(SocketContext)
+
+  const { sendControlMessage, setUserID, setGuildID } = React.useContext(SocketContext)
   const [guilds, setGuilds] = React.useState<Guilds | null>(null)
   const [members, setMembers] = React.useState<Members | null>(null)
 
@@ -41,17 +41,24 @@ function UserIdentifierForm(props: {}) {
     guildID: ""
   })
 
+  console.log("rerender")
+
   React.useEffect(() => {
-    socketContext.sendControlMessage("getGuilds").then(setGuilds)
-  }, [socketContext])
+    sendControlMessage("getGuilds").then(setGuilds)
+    console.log("socketcontext changed?")
+  }, [])
 
   React.useEffect(() => {
     if (values.guildID !== "") {
-      socketContext.sendControlMessage("getUsers", { guildID: values.guildID }).then(setMembers)
+      sendControlMessage("getUsers", { guildID: values.guildID }).then(setMembers)
     }
-  }, [socketContext, values.guildID])
+  }, [values.guildID])
 
-  // FIXME set user and guild id in socketcontext
+  React.useEffect(() => {
+    setUserID(values.userID) // this breaks the code
+    setGuildID(values.guildID)
+
+  }, [values.userID, values.guildID])
 
   const handleChange = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
     setValues(oldValues => ({
@@ -66,7 +73,7 @@ function UserIdentifierForm(props: {}) {
         Choose the guild and member that fit.
       </Typography>
 
-      <Box display="flex">
+      <Box display="flex" >
         <FormControl className={classes.formControl} fullWidth>
           <InputLabel htmlFor="guildID">Guild</InputLabel>
           <Select
@@ -77,7 +84,13 @@ function UserIdentifierForm(props: {}) {
               id: "guildID"
             }}
           >
-            {guilds ? guilds.map(guild => <MenuItem value={guild.id}>{guild.name}</MenuItem>) : undefined}
+            {guilds
+              ? guilds.map(guild => (
+                  <MenuItem key={guild.id} value={guild.id}>
+                    {guild.name}
+                  </MenuItem>
+                ))
+              : undefined}
           </Select>
         </FormControl>
 
@@ -91,7 +104,13 @@ function UserIdentifierForm(props: {}) {
               id: "userID"
             }}
           >
-            {members ? members.map(member => <MenuItem value={member.id}>{member.name}</MenuItem>) : undefined}
+            {members
+              ? members.map(member => (
+                  <MenuItem key={member.id} value={member.id}>
+                    {member.name}
+                  </MenuItem>
+                ))
+              : undefined}
           </Select>
         </FormControl>
       </Box>

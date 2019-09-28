@@ -1,5 +1,5 @@
 import React from "react"
-import { Container, Box } from "@material-ui/core"
+import { Container, Box, Card } from "@material-ui/core"
 import Grid from "@material-ui/core/Grid"
 import PlayIcon from "@material-ui/icons/PlayArrow"
 import SkipPreviousIcon from "@material-ui/icons/SkipPrevious"
@@ -39,11 +39,14 @@ const ControlArea = (props: ControlAreaProps) => {
   }
 
   const GuildSelectionBox = () => {
-    return (
-      <Box>
-        {socketContext.connectionState === "connected" ? <UserIdentifierForm /> : undefined}
+    const StyledForm = (
+      <Box style={{ marginTop: 8, marginBottom: 8 }}>
+        <Card>
+          <UserIdentifierForm />
+        </Card>
       </Box>
     )
+    return socketContext.connectionState === "connected" ? StyledForm : <></>
   }
 
   return (

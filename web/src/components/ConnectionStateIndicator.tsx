@@ -1,14 +1,14 @@
 import React from "react"
 import { makeStyles } from "@material-ui/core/styles"
-import { Typography, Box } from "@material-ui/core"
+import { Typography, Box, Card } from "@material-ui/core"
 import { SocketContext } from "../context/socket"
 
 const useStyles = makeStyles(theme => ({
-  container: {
-    boxShadow: "0 10px 20px #ccc; 2px 4px #888888",
-    padding: 16,
-    margin: theme.spacing(1),
-    marginBottom: theme.spacing(3)
+  cardStyle: {
+    paddingTop: 16,
+    paddingBottom: 16,
+    marginTop: 8,
+    marginBottom: 8
   },
   stateBox: {
     textAlign: "center"
@@ -62,11 +62,7 @@ function ConnectionStateIndicator(props: {}) {
     }
   }, [connectionState, ReconnectingStateBox, DisconnectedStateBox, ConnectedStateBox])
 
-  return (
-    <Box className={classes.container}>
-      {displayComponent}
-    </Box>
-  )
+  return <Card className={classes.cardStyle}>{displayComponent}</Card>
 }
 
 export default ConnectionStateIndicator
