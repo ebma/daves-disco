@@ -32,7 +32,7 @@ type Members = Array<{ id: string; name: string }>
 function UserIdentifierForm(props: {}) {
   const classes = useStyles()
 
-  const { sendControlMessage, setUserID, setGuildID } = React.useContext(SocketContext)
+  const { connectionState, sendControlMessage, setUserID, setGuildID } = React.useContext(SocketContext)
   const [guilds, setGuilds] = React.useState<Guilds | null>(null)
   const [members, setMembers] = React.useState<Members | null>(null)
 
@@ -41,12 +41,11 @@ function UserIdentifierForm(props: {}) {
     guildID: ""
   })
 
-  console.log("rerender")
-
   React.useEffect(() => {
-    sendControlMessage("getGuilds").then(setGuilds)
-    console.log("socketcontext changed?")
-  }, [])
+    if (connectionState === "connected") {
+      sendControlMessage("getGuilds").then(setGuilds)
+    }
+  }, [connectionState])
 
   React.useEffect(() => {
     if (values.guildID !== "") {
@@ -55,9 +54,8 @@ function UserIdentifierForm(props: {}) {
   }, [values.guildID])
 
   React.useEffect(() => {
-    setUserID(values.userID) // this breaks the code
+    setUserID(values.userID)
     setGuildID(values.guildID)
-
   }, [values.userID, values.guildID])
 
   const handleChange = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
@@ -73,7 +71,7 @@ function UserIdentifierForm(props: {}) {
         Choose the guild and member that fit.
       </Typography>
 
-      <Box display="flex" >
+      <Box display="flex">
         <FormControl className={classes.formControl} fullWidth>
           <InputLabel htmlFor="guildID">Guild</InputLabel>
           <Select

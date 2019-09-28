@@ -15,7 +15,7 @@ import ConnectionStateIndicator from "./ConnectionStateIndicator"
 interface ControlAreaProps {}
 
 const ControlArea = (props: ControlAreaProps) => {
-  const socketContext = React.useContext(SocketContext)
+  const { connectionState, sendCommand } = React.useContext(SocketContext)
   const [isPlaying, setPlaying] = React.useState(false)
 
   const PlayButton = () => {
@@ -32,13 +32,13 @@ const ControlArea = (props: ControlAreaProps) => {
 
   const SkipNextButton = () => {
     const onButtonClick = async () => {
-      const response = await socketContext.sendCommand("skip")
+      const response = await sendCommand("skip")
       console.log("response", response)
     }
     return <StyledButton icon={<SkipNextIcon />} text="Skip next" onClick={onButtonClick} />
   }
 
-  const GuildSelectionBox = () => {
+  const GuildSelectionBox = React.useMemo(() => {
     const StyledForm = (
       <Box style={{ marginTop: 8, marginBottom: 8 }}>
         <Card>
@@ -46,13 +46,13 @@ const ControlArea = (props: ControlAreaProps) => {
         </Card>
       </Box>
     )
-    return socketContext.connectionState === "connected" ? StyledForm : <></>
-  }
+    return connectionState ? StyledForm : <></>
+  }, [connectionState])
 
   return (
     <Container>
       <ConnectionStateIndicator />
-      <GuildSelectionBox />
+      {GuildSelectionBox}
       <Grid container direction="row" alignItems="center" spacing={5} style={{ margin: "auto" }}>
         <Grid item>
           <CurrentSongCard style={{ alignSelf: "flex-start" }} />
