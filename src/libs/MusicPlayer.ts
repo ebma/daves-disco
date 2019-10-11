@@ -4,6 +4,7 @@ import { VoiceChannel } from "discord.js"
 import _ from "lodash"
 import { Message } from "discord.js"
 import { TextChannel } from "discord.js"
+import { setTimeout } from "timers"
 import { createTrackStream } from "./util/streams"
 import { shuffle } from "./util/shuffle"
 
@@ -120,6 +121,14 @@ export class MusicPlayer {
     this.stopStream()
   }
 
+  disconnectIfReasonable() {
+    if (this.queue.size() === 0) {
+      this.cachedMessage.channel.send("That's it for now... Later bitches! :metal:")
+      this.voiceConnection.disconnect()
+      this.voiceConnection = null
+    }
+  }
+
   private isInVoiceChannel() {
     return !_.isNil(this.voiceConnection)
   }
@@ -147,9 +156,7 @@ export class MusicPlayer {
           } else if (this.queue.size() > 0) {
             return setTimeout(() => this.createStream(), 50)
           } else if (this.queue.size() === 0) {
-            this.cachedMessage.channel.send("That's it for now... Later bitches! :metal:")
-            this.voiceConnection.disconnect()
-            this.voiceConnection = null
+            setTimeout(this.disconnectIfReasonable, 1000 * 60 * 15)
           }
         }
       })
