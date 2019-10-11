@@ -13,6 +13,10 @@ class MusicPlayerManager {
       return savedMusicPlayer
     }
   }
+
+  removePlayerFor(guildID: string) {
+    this.musicPlayerMap[guildID] = null
+  }
 }
 
 export default new MusicPlayerManager()
