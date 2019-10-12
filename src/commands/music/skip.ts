@@ -1,4 +1,5 @@
-import { Message } from "discord.js"
+import { CommandMessage } from "./../../socket/commandMessages"
+import { Message, TextChannel } from "discord.js"
 import { Command } from "discord-akairo"
 import MusicPlayerManager from "../../libs/MusicPlayerManager"
 import _ from "lodash"
@@ -56,9 +57,16 @@ class SkipCommand extends Command {
     }
   }
 
-  executeSilent(args: any) {
+  executeSilent(args: CommandMessage) {
     return new Promise<void>((resolve, reject) => {
-      const { guildID } = args
+      const { guildID, userID } = args
+      const guild = this.client.guilds.find(g => g.id === guildID)
+      const member = guild.members.find(m => m.id === userID)
+      const textChannel = guild.channels.find(
+        channel => channel.name === "general" && channel.type === "text"
+      ) as TextChannel
+
+      textChannel.sendMessage("Test")
       const musicPlayer = MusicPlayerManager.getPlayerFor(guildID)
 
       try {

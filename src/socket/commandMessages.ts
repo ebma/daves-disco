@@ -1,7 +1,7 @@
 import { AkairoClient } from "discord-akairo"
 import { Socket } from "socket.io"
 
-interface CommandMessage {
+export interface CommandMessage {
   command: string
   messageID: number
   userID: string
