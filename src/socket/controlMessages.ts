@@ -35,7 +35,10 @@ const handleControlMessages = (socket: Socket, client: AkairoClient) => (data: C
         if (guild) {
           const members = guild.members
           const reducedMembers = members
-            .filter(member => !member.user.bot)
+            .filter(
+              member =>
+                !member.user.bot && (member.user.presence.status === "online" || member.user.presence.status === "idle")
+            )
             .map(member => {
               return { id: member.id, name: member.displayName }
             })
