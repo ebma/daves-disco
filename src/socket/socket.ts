@@ -4,15 +4,16 @@ import { Server } from "http"
 import socketio, { Socket } from "socket.io"
 import { handleControlMessages } from "./controlMessages"
 import { handleCommandMessages } from "./commandMessages"
+import { setupMessageSender } from "./messageSender"
 
 function initializeSocket(socket: Socket, client: AkairoClient) {
+  setupMessageSender(socket)
+
   socket.on("command", handleCommandMessages(socket, client))
 
   socket.on("control", handleControlMessages(socket, client))
 
-  socket.on("disconnect", () => {
-    console.log("connection closed by user")
-  })
+  socket.on("disconnect", () => undefined)
 }
 
 export function startSocketConnection(client: AkairoClient) {
@@ -23,10 +24,10 @@ export function startSocketConnection(client: AkairoClient) {
 
   io.on("connection", socket => {
     initializeSocket(socket, client)
-    console.log("new connection")
   })
 
   http.listen(port, () => {
+    // tslint:disable-next-line: no-console
     console.log(`listening on port ${port}`)
   })
 }

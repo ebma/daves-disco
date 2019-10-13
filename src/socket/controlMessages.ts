@@ -1,20 +1,11 @@
 import { AkairoClient } from "discord-akairo"
 import { Socket } from "socket.io"
-import { ControlMessage, ControlMessageResponse } from "../types/exported-types"
+import { ControlMessage } from "../types/exported-types"
 import MusicPlayerManager from "../libs/MusicPlayerManager"
+import { sendResultResponse, sendErrorResponse } from "./messageSender"
 
-const handleControlMessages = (socket: Socket, client: AkairoClient) => (data: ControlMessage) => {
-  const sendControlResult = (result: any) => {
-    const response: ControlMessageResponse = { type: data.type, messageID: data.messageID, result }
-    socket.emit("event", response)
-  }
-
-  const sendControlError = (error: any) => {
-    const response: ControlMessageResponse = { type: data.type, messageID: data.messageID, error }
-    socket.emit("event", response)
-  }
-
-  switch (data.type) {
+const handleControlMessages = (socket: Socket, client: AkairoClient) => (message: ControlMessage) => {
+  switch (message.type) {
     case "getGuilds":
       const guilds = client.guilds
       const reducedGuilds = guilds
@@ -23,13 +14,13 @@ const handleControlMessages = (socket: Socket, client: AkairoClient) => (data: C
         })
         .sort((a, b) => a.name.localeCompare(b.name))
 
-      sendControlResult(reducedGuilds)
+      sendResultResponse(message, reducedGuilds)
       break
     case "getUsers":
-      if (!data.guildID) {
-        sendControlError("No guildID provided!")
+      if (!message.guildID) {
+        sendErrorResponse(message, "No guildID provided!")
       } else {
-        const guild = client.guilds.find(g => g.id === data.guildID)
+        const guild = client.guilds.find(g => g.id === message.guildID)
         if (guild) {
           const members = guild.members
           const reducedMembers = members
@@ -41,27 +32,26 @@ const handleControlMessages = (socket: Socket, client: AkairoClient) => (data: C
               return { id: member.id, name: member.displayName }
             })
             .sort((a, b) => a.name.localeCompare(b.name))
-          sendControlResult(reducedMembers)
+          sendResultResponse(message, reducedMembers)
         } else {
-          sendControlError(`Could not find guild with ID ${data.guildID}`)
+          sendErrorResponse(message, `Could not find guild with ID ${message.guildID}`)
         }
       }
       break
     case "getCurrentSong":
-      if (!data.guildID) {
-        sendControlError("No guildID provided!")
+      if (!message.guildID) {
+        sendErrorResponse(message, "No guildID provided!")
       } else {
-        const player = MusicPlayerManager.getPlayerFor(data.guildID)
-        console.log("sending current song", player.currentTrack)
-        sendControlResult(player.currentTrack)
+        const player = MusicPlayerManager.getPlayerFor(message.guildID)
+        sendResultResponse(message, player.currentTrack)
       }
       break
     case "getCurrentQueue":
-      if (!data.guildID) {
-        sendControlError("No guildID provided!")
+      if (!message.guildID) {
+        sendErrorResponse(message, "No guildID provided!")
       } else {
-        const player = MusicPlayerManager.getPlayerFor(data.guildID)
-        sendControlResult(player.queuedTracks)
+        const player = MusicPlayerManager.getPlayerFor(message.guildID)
+        sendResultResponse(message, player.queuedTracks)
       }
       break
   }

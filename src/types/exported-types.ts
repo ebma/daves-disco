@@ -33,3 +33,10 @@ export interface CommandMessage {
   guildID: string
   payload: string
 }
+
+export interface InfoMessage {
+  type: InfoMessageType
+  data: any
+}
+
+export type InfoMessageType = "currentSong" | "currentQueue"
