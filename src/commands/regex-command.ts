@@ -5,14 +5,16 @@ import moment from "moment"
 moment.locale()
 
 const getTimeFromAMinuteAgo = () => {
-  const oneMinuteAgo =  moment.now() - 60 * 1000
+  const oneMinuteAgo = moment.now() - 60 * 1000
   return moment(oneMinuteAgo)
 }
 
 // the '#' will be replaced by the expression string
 const expressions: { [type: string]: string } = {
   ["digga"]: "# was?",
-  ["wann"]: `am ${getTimeFromAMinuteAgo().format("DD. MMMM YYYY")} um ${getTimeFromAMinuteAgo().format("HH:mm")} Uhr :spy:`,
+  ["wann"]: `am ${getTimeFromAMinuteAgo().format("DD. MMMM YYYY")} um ${getTimeFromAMinuteAgo().format(
+    "HH:mm"
+  )} Uhr :spy:`,
   ["warum"]: "darum! :smirk:",
   ["wer"]: "na ich! :100:"
 }

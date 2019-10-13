@@ -5,14 +5,15 @@ import _ from "lodash"
 import { Message } from "discord.js"
 import { TextChannel } from "discord.js"
 import { setTimeout } from "timers"
+import { Track } from "./../types/exported-types"
 import { createTrackStream } from "./util/streams"
 import { shuffle } from "./util/shuffle"
 
 export class MusicPlayer {
   cachedMessage: Message
+  currentTrack: Track
   voiceConnection: VoiceConnection
   private queue: Queue<Track>
-  private currentTrack: Track
   private volume: number = 0.1
 
   constructor() {
@@ -156,11 +157,13 @@ export class MusicPlayer {
           } else if (this.queue.size() > 0) {
             return setTimeout(() => this.createStream(), 50)
           } else if (this.queue.size() === 0) {
+            this.currentTrack = undefined
             setTimeout(this.disconnectIfReasonable, 1000 * 60 * 15)
           }
         }
       })
       this.voiceConnection.dispatcher.on("error", e => {
+        console.error(e)
         this.cachedMessage.channel.send(`I don't feel so good... (${e})`)
       })
     })

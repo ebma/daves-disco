@@ -101,6 +101,7 @@ class PlayCommand extends Command {
       await this.musicPlayer.play(message)
       return message.channel.send(reply)
     } catch (error) {
+      console.error(error)
       return message.channel.send(`Something went wrong... ${error}`)
     }
   }

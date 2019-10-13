@@ -1,9 +1,9 @@
-import search, { YouTubeSearchResults } from "youtube-search"
+import search from "youtube-search"
 import _ from "lodash"
 import request from "request"
 import ytdl from "ytdl-core"
+import { Track } from "../../types/exported-types"
 
-const key = process.env.YOUTUBE_API_KEY
 const youtubeBaseURL = "https://www.googleapis.com/youtube/v3"
 
 export function isYoutubeVideo(term: string) {
@@ -17,6 +17,8 @@ export function isYoutubePlaylist(term: string) {
 }
 
 export function createTracksFromSearchTerm(term: string, maxResults: number) {
+  const key = process.env.YOUTUBE_API_KEY
+
   return new Promise<Track[]>((resolve, reject) => {
     if (maxResults <= 0 || maxResults > 50) {
       reject("Size of maxResults must be between 1 and 50")
@@ -64,6 +66,8 @@ export async function createTrackFromURL(url: string): Promise<Track> {
 }
 
 export async function createTracksFromPlayList(playlistID: string): Promise<Playlist> {
+  const key = process.env.YOUTUBE_API_KEY
+
   let requestURL = `${youtubeBaseURL}/playlistItems?part=snippet&playlistId=${playlistID}&maxResults=50&key=${key}`
   const collected: Track[] = []
   while (requestURL) {

@@ -1,5 +1,6 @@
 import React from "react"
 import io from "socket.io-client"
+import { ControlMessage, ControlMessageResponse } from "../../../src/types/exported-types"
 
 const path = process.env.REACT_APP_BOT_SERVER_PATH ? process.env.REACT_APP_BOT_SERVER_PATH : "http://localhost:1234"
 const MAX_RECONNECTION_ATTEMPTS = 10
@@ -10,16 +11,24 @@ function getNextMessageID() {
   return messageID++
 }
 
+export type MessageListener = (message: any) => void
+
 export interface SocketContextType {
   connectionState: ConnectionState
+  guildID: string
+  userID: string
+  addListener: (type: ControlMessage["type"], listener: MessageListener) => () => void // returns unsubscribe method
   sendCommand: (command: string, data?: any) => Promise<any>
-  sendControlMessage: (messageType: string, data?: any) => Promise<any>
+  sendControlMessage: (type: ControlMessage["type"], data?: any) => Promise<any>
   setGuildID: (guildID: string) => void
   setUserID: (userID: string) => void
 }
 
 const SocketContext = React.createContext<SocketContextType>({
   connectionState: "disconnected",
+  guildID: "",
+  userID: "",
+  addListener: () => () => undefined,
   sendCommand: () => Promise.reject("SocketProvider not ready."),
   sendControlMessage: () => Promise.reject("SocketProvider not ready."),
   setGuildID: () => undefined,
@@ -59,6 +68,26 @@ function SocketProvider(props: Props) {
 
     socket.on("error", console.error)
   }, [])
+
+  const addListener = (type: ControlMessage["type"], listener: MessageListener) => {
+    if (currentSocket) {
+      currentSocket.on("event", (response: ControlMessageResponse) => {
+        if (response.type !== type) return
+
+        if (response.error) {
+          listener(response.error)
+        } else {
+          listener(response.result)
+        }
+      })
+    }
+
+    return () => {
+      if (currentSocket) {
+        currentSocket.removeListener("event", listener)
+      }
+    }
+  }
 
   const createCommandDataPackage = React.useCallback(
     (command: string, data?: any) => {
@@ -125,7 +154,10 @@ function SocketProvider(props: Props) {
   )
 
   const contextValue: SocketContextType = {
+    addListener,
     connectionState,
+    userID,
+    guildID,
     sendCommand,
     sendControlMessage,
     setGuildID,

@@ -1,19 +1,17 @@
 import { AkairoClient } from "discord-akairo"
 import { Socket } from "socket.io"
-
-interface ControlMessage {
-  guildID?: string
-  messageID: number
-  type: "getGuilds" | "getUsers"
-}
+import { ControlMessage, ControlMessageResponse } from "../types/exported-types"
+import MusicPlayerManager from "../libs/MusicPlayerManager"
 
 const handleControlMessages = (socket: Socket, client: AkairoClient) => (data: ControlMessage) => {
   const sendControlResult = (result: any) => {
-    socket.emit("event", { type: data.type, messageID: data.messageID, result })
+    const response: ControlMessageResponse = { type: data.type, messageID: data.messageID, result }
+    socket.emit("event", response)
   }
 
   const sendControlError = (error: any) => {
-    socket.emit("event", { type: data.type, messageID: data.messageID, error })
+    const response: ControlMessageResponse = { type: data.type, messageID: data.messageID, error }
+    socket.emit("event", response)
   }
 
   switch (data.type) {
@@ -47,6 +45,23 @@ const handleControlMessages = (socket: Socket, client: AkairoClient) => (data: C
         } else {
           sendControlError(`Could not find guild with ID ${data.guildID}`)
         }
+      }
+      break
+    case "getCurrentSong":
+      if (!data.guildID) {
+        sendControlError("No guildID provided!")
+      } else {
+        const player = MusicPlayerManager.getPlayerFor(data.guildID)
+        console.log("sending current song", player.currentTrack)
+        sendControlResult(player.currentTrack)
+      }
+      break
+    case "getCurrentQueue":
+      if (!data.guildID) {
+        sendControlError("No guildID provided!")
+      } else {
+        const player = MusicPlayerManager.getPlayerFor(data.guildID)
+        sendControlResult(player.queuedTracks)
       }
       break
   }

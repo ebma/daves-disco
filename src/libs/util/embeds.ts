@@ -1,13 +1,14 @@
 import { RichEmbed } from "discord.js"
 import { GuildMember } from "discord.js"
 import _ from "lodash"
+import { SpotifyTrack, Track } from '../../types/exported-types';
 
 export function createEmbedForTrack(track: Track, requester?: GuildMember) {
   const embed = new RichEmbed()
     .setColor("#0099ff")
     .setTitle(track.title)
     .setURL(track.url)
-    .setDescription(track.description)
+    .setDescription(track.description.substring(0, 97).concat("..."))
     .setThumbnail(track.thumbnail)
     .setTimestamp()
 
