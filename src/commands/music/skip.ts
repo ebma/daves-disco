@@ -66,11 +66,11 @@ class SkipCommand extends Command {
         channel => channel.name === "general" && channel.type === "text"
       ) as TextChannel
 
-      textChannel.sendMessage("Test")
       const musicPlayer = MusicPlayerManager.getPlayerFor(guildID)
 
       try {
         musicPlayer.skipCurrentSong()
+        textChannel.send(`@${member.displayName} wanted me to skip the current song.`)
         resolve()
       } catch (error) {
         reject(error)
