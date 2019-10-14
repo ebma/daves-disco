@@ -24,7 +24,7 @@ export function createTracksFromSearchTerm(term: string, maxResults: number) {
       reject("Size of maxResults must be between 1 and 50")
     }
 
-    search(term, { maxResults, key }).then(
+    search(term, { maxResults, key, type: "video" }).then(
       value => {
         const results = value.results
         if (results.length > 0) {
