@@ -1,8 +1,8 @@
 import { Socket } from "socket.io"
-import { ControlMessageResponse, ControlMessage, InfoMessageType } from "./../types/exported-types"
+import { ControlMessageResponse, ControlMessage, InfoMessageType, InfoMessage } from "./../types/exported-types"
 
 // tslint:disable: no-console
-let sendMessage = (type: string, data?: any) => console.error("SendEvent not ready yet")
+let sendMessage = (type: InfoMessageType, data?: any) => console.error("SendEvent not ready yet")
 let sendResultResponse = (originalMessage: ControlMessage, result: any) =>
   console.error("sendSuccessResponse not ready yet")
 let sendErrorResponse = (originalMessage: ControlMessage, error: string) =>
@@ -24,7 +24,8 @@ function setupMessageSender(socket: Socket) {
   }
 
   sendMessage = (type: InfoMessageType, data: any) => {
-    socket.emit("event", { type, data })
+    const message: InfoMessage = { type, data }
+    socket.emit("event", message)
   }
 }
 

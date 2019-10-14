@@ -8,6 +8,7 @@ import { setTimeout } from "timers"
 import { Track } from "./../types/exported-types"
 import { createTrackStream } from "./util/streams"
 import { shuffle } from "./util/shuffle"
+import { sendMessage } from "../socket/messageSender"
 
 export class MusicPlayer {
   cachedMessage: Message
@@ -48,6 +49,7 @@ export class MusicPlayer {
 
   async enqueue(item: Track) {
     this.queue.enqueue(item)
+    this.sendCurrentQueue()
   }
 
   async clear() {
@@ -94,12 +96,15 @@ export class MusicPlayer {
     _.forEach(queuedTracksArray, track => {
       this.queuedTracks.enqueue(track)
     })
+
+    this.sendCurrentQueue()
   }
 
   skipCurrentSong() {
     if (this.isStreaming()) {
       this.voiceConnection.dispatcher.end("skipped")
     }
+    this.sendCurrentQueue()
   }
 
   async skipNextSongInQueue() {
@@ -108,6 +113,7 @@ export class MusicPlayer {
       this.queue.dequeue()
       return true
     }
+    this.sendCurrentQueue()
   }
 
   stopStream() {
@@ -142,11 +148,12 @@ export class MusicPlayer {
     this.currentTrack = this.queue.dequeue()
     createTrackStream(this.currentTrack, stream => {
       this.voiceConnection.playStream(stream, { seek: 0, volume: this.volume, passes: 1 })
-      this.voiceConnection.dispatcher.once("start", () =>
+      this.voiceConnection.dispatcher.once("start", () => {
         this.cachedMessage.channel.send(
           `:raised_hands: Let me see your hands while I play *${this.currentTrack.title}* :raised_hands: `
         )
-      )
+        this.sendCurrentSong()
+      })
       this.voiceConnection.dispatcher.once("end", reason => {
         stream.destroy()
         this.cachedMessage.channel.send(`Played: *${this.currentTrack.title}*`)
@@ -160,6 +167,8 @@ export class MusicPlayer {
             this.currentTrack = undefined
             setTimeout(this.disconnectIfReasonable, 1000 * 60 * 15)
           }
+          this.sendCurrentQueue()
+          this.sendCurrentSong()
         }
       })
       this.voiceConnection.dispatcher.on("error", e => {
@@ -168,5 +177,13 @@ export class MusicPlayer {
       })
     })
     return "Music stream started"
+  }
+
+  private sendCurrentSong() {
+    sendMessage("currentSong", this.currentTrack)
+  }
+
+  private sendCurrentQueue() {
+    sendMessage("currentQueue", this.queue)
   }
 }
