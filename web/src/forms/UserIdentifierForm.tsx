@@ -45,18 +45,18 @@ function UserIdentifierForm(props: {}) {
     if (connectionState === "connected") {
       sendControlMessage("getGuilds").then(setGuilds)
     }
-  }, [connectionState])
+  }, [connectionState, sendControlMessage])
 
   React.useEffect(() => {
     if (values.guildID !== "") {
       sendControlMessage("getUsers", { guildID: values.guildID }).then(setMembers)
     }
-  }, [values.guildID])
+  }, [values.guildID, sendControlMessage])
 
   React.useEffect(() => {
     setUserID(values.userID)
     setGuildID(values.guildID)
-  }, [values.userID, values.guildID])
+  }, [values.userID, values.guildID, setUserID, setGuildID])
 
   const handleChange = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
     setValues(oldValues => ({

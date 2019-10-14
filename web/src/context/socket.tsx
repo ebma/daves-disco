@@ -1,6 +1,6 @@
 import React from "react"
 import io from "socket.io-client"
-import { ControlMessage, ControlMessageResponse } from "../../../src/types/exported-types"
+import { ControlMessage, ControlMessageResponse, InfoMessage, InfoMessageType } from "../../../src/types/exported-types"
 
 const path = process.env.REACT_APP_BOT_SERVER_PATH ? process.env.REACT_APP_BOT_SERVER_PATH : "http://localhost:1234"
 const MAX_RECONNECTION_ATTEMPTS = 10
@@ -17,7 +17,7 @@ export interface SocketContextType {
   connectionState: ConnectionState
   guildID: string
   userID: string
-  addListener: (type: ControlMessage["type"], listener: MessageListener) => () => void // returns unsubscribe method
+  addListener: (type: InfoMessageType, listener: MessageListener) => () => void // returns unsubscribe method
   sendCommand: (command: string, data?: any) => Promise<any>
   sendControlMessage: (type: ControlMessage["type"], data?: any) => Promise<any>
   setGuildID: (guildID: string) => void
@@ -69,16 +69,13 @@ function SocketProvider(props: Props) {
     socket.on("error", console.error)
   }, [])
 
-  const addListener = (type: ControlMessage["type"], listener: MessageListener) => {
+  const addListener = (type: InfoMessageType, listener: MessageListener) => {
     if (currentSocket) {
-      currentSocket.on("event", (response: ControlMessageResponse) => {
+      currentSocket.on("event", (response: InfoMessage) => {
+        console.log("incoming event in listener", response)
         if (response.type !== type) return
 
-        if (response.error) {
-          listener(response.error)
-        } else {
-          listener(response.result)
-        }
+        listener(response.data)
       })
     }
 
@@ -140,7 +137,7 @@ function SocketProvider(props: Props) {
                 console.log("rejecting message", response)
                 reject(response.error)
               } else {
-                console.log("resolving message", response.result)
+                console.log("resolving message", response)
                 resolve(response.result)
               }
             }
