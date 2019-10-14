@@ -1,9 +1,18 @@
 import { config } from "dotenv"
 import { AkairoClient } from "discord-akairo"
 import { startSocketConnection } from "./socket/socket"
+import https from "https"
 
 if (process.env.NODE_ENV !== "production") {
   config()
+}
+
+function preventSleeping() {
+  if (process.env.DEPLOYED_URL) {
+    setInterval(() => {
+      https.get(process.env.DEPLOYED_URL)
+    }, 1000 * 60 * 5)
+  }
 }
 
 const client = new AkairoClient(
@@ -31,3 +40,5 @@ const client = new AkairoClient(
 startSocketConnection(client)
 
 client.login(process.env.BOT_TOKEN)
+
+preventSleeping()
