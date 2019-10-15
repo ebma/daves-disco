@@ -1,5 +1,5 @@
 import { Socket } from "socket.io"
-import { ControlMessageResponse, ControlMessage, InfoMessageType, InfoMessage } from "./../types/exported-types"
+import { ControlMessageResponse, ControlMessage, InfoMessageType, InfoMessage } from "../typings/exported-types"
 
 // tslint:disable: no-console
 let sendMessage = (type: InfoMessageType, data?: any) => console.error("SendEvent not ready yet")

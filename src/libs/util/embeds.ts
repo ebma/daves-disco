@@ -1,7 +1,7 @@
 import { RichEmbed } from "discord.js"
 import { GuildMember } from "discord.js"
 import _ from "lodash"
-import { SpotifyTrack, Track } from '../../types/exported-types';
+import { SpotifyTrack, Track } from "../../typings/exported-types"
 
 export function createEmbedForTrack(track: Track, requester?: GuildMember) {
   const embed = new RichEmbed()

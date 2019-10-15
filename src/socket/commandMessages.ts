@@ -1,6 +1,6 @@
 import { AkairoClient } from "discord-akairo"
 import { Socket } from "socket.io"
-import { CommandMessage } from "../types/exported-types"
+import { CommandMessage } from "../typings/exported-types"
 
 const handleCommandMessages = (socket: Socket, client: AkairoClient) => async (data: CommandMessage) => {
   const sendCommandResult = (result: any) => {

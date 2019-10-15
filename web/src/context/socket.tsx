@@ -1,6 +1,6 @@
 import React from "react"
 import io from "socket.io-client"
-import { ControlMessage, ControlMessageResponse, InfoMessage, InfoMessageType } from "../../../src/types/exported-types"
+import { ControlMessage, ControlMessageResponse, InfoMessage, InfoMessageType } from "../../../src/typings/exported-types"
 
 const path = process.env.REACT_APP_BOT_SERVER_PATH ? process.env.REACT_APP_BOT_SERVER_PATH : "http://localhost:1234"
 const MAX_RECONNECTION_ATTEMPTS = 10

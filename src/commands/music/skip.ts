@@ -2,7 +2,7 @@ import { Message, TextChannel } from "discord.js"
 import { Command } from "discord-akairo"
 import _ from "lodash"
 import MusicPlayerManager from "../../libs/MusicPlayerManager"
-import { CommandMessage } from "../../types/exported-types"
+import { CommandMessage } from "../../typings/exported-types"
 
 class SkipCommand extends Command {
   constructor() {

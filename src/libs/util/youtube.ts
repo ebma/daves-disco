@@ -2,7 +2,7 @@ import search from "youtube-search"
 import _ from "lodash"
 import request from "request"
 import ytdl from "ytdl-core"
-import { Track } from "../../types/exported-types"
+import { Track } from "../../typings/exported-types"
 
 const youtubeBaseURL = "https://www.googleapis.com/youtube/v3"
 

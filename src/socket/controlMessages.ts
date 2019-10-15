@@ -1,6 +1,6 @@
 import { AkairoClient } from "discord-akairo"
 import { Socket } from "socket.io"
-import { ControlMessage } from "../types/exported-types"
+import { ControlMessage } from "../typings/exported-types"
 import MusicPlayerManager from "../libs/MusicPlayerManager"
 import { sendResultResponse, sendErrorResponse } from "./messageSender"
 

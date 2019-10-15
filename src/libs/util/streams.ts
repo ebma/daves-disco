@@ -2,7 +2,7 @@ import { Readable } from "stream"
 import * as ytdl from "ytdl-core"
 import { createTracksFromSearchTerm } from "./youtube"
 import _ from "lodash"
-import { Track, SpotifyTrack } from "../../types/exported-types"
+import { Track, SpotifyTrack } from "../../typings/exported-types"
 
 export async function createTrackStream(track: Track, callback: (stream: Readable) => void) {
   try {
