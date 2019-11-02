@@ -2,7 +2,7 @@ import React from "react"
 import io from "socket.io-client"
 import { ControlMessage, ControlMessageResponse, InfoMessage, InfoMessageType } from "../../../src/typings/exported-types"
 
-const path = process.env.REACT_APP_BOT_SERVER_PATH ? process.env.REACT_APP_BOT_SERVER_PATH : "http://localhost:1234"
+const path = process.env.NODE_ENV === "production" && process.env.REACT_APP_BOT_SERVER_PATH ? process.env.REACT_APP_BOT_SERVER_PATH : "http://localhost:1234"
 const MAX_RECONNECTION_ATTEMPTS = 10
 
 let messageID = 1
@@ -72,9 +72,7 @@ function SocketProvider(props: Props) {
   const addListener = (type: InfoMessageType, listener: MessageListener) => {
     if (currentSocket) {
       currentSocket.on("event", (response: InfoMessage) => {
-        console.log("incoming event in listener", response)
         if (response.type !== type) return
-
         listener(response.data)
       })
     }
