@@ -39,4 +39,4 @@ export interface InfoMessage {
   data: any
 }
 
-export type InfoMessageType = "currentSong" | "currentQueue"
+export type InfoMessageType = "currentSong" | "currentQueue" | "paused" | "resumed"

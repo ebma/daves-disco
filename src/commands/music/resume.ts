@@ -13,6 +13,10 @@ class ResumeCommand extends Command {
   }
 
   async exec(message: Message, args: any) {
+    if (message === null) {
+      return this.executeSilent(args)
+    }
+
     const musicPlayer = MusicPlayerManager.getPlayerFor(message.guild.id)
 
     const error = await musicPlayer.resumeStream()
@@ -20,7 +24,7 @@ class ResumeCommand extends Command {
   }
 
   executeSilent(args: CommandMessage) {
-    return new Promise<void>((resolve, reject) => {
+    return new Promise<void>(async (resolve, reject) => {
       const { guildID, userID } = args
       const guild = this.client.guilds.find(g => g.id === guildID)
       const member = guild.members.find(m => m.id === userID)
@@ -31,11 +35,13 @@ class ResumeCommand extends Command {
       const musicPlayer = MusicPlayerManager.getPlayerFor(guildID)
 
       try {
-        const error = musicPlayer.resumeStream()
+        const error = await musicPlayer.resumeStream()
         if (!error) {
           textChannel.send(`${member} wants to keep going.`)
+          resolve()
+        } else {
+          reject(error)
         }
-        resolve()
       } catch (error) {
         reject(error)
       }

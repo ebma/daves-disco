@@ -16,6 +16,7 @@ export class MusicPlayer {
   voiceConnection: VoiceConnection
   private queue: Queue<Track>
   private volume: number = 0.1
+  private currentDisconnectionTimeout: NodeJS.Timeout
 
   constructor() {
     this.queue = new Queue()
@@ -76,12 +77,14 @@ export class MusicPlayer {
     if (!this.isStreaming()) return "I am not playing anything!"
     else if (this.isPaused()) return "I am already paused!"
     this.voiceConnection.dispatcher.pause()
+    sendMessage("paused")
   }
 
   async resumeStream() {
     if (!this.isStreaming()) return "There is nothing to resume!"
     else if (!this.isPaused()) return "I have already started playing!"
     this.voiceConnection.dispatcher.resume()
+    sendMessage("resumed")
   }
 
   shuffle() {
@@ -103,8 +106,11 @@ export class MusicPlayer {
   skipCurrentSong() {
     if (this.isStreaming()) {
       this.voiceConnection.dispatcher.end("skipped")
+      this.sendCurrentQueue()
+      return true
+    } else {
+      return false
     }
-    this.sendCurrentQueue()
   }
 
   async skipNextSongInQueue() {
@@ -129,7 +135,7 @@ export class MusicPlayer {
   }
 
   disconnectIfReasonable() {
-    if (this.queue.size() === 0) {
+    if (this.queue && this.queue.size() === 0) {
       this.cachedMessage.channel.send("That's it for now... Later bitches! :metal:")
       this.voiceConnection.disconnect()
       this.voiceConnection = null
@@ -165,7 +171,10 @@ export class MusicPlayer {
             return setTimeout(() => this.createStream(), 50)
           } else if (this.queue.size() === 0) {
             this.currentTrack = undefined
-            setTimeout(this.disconnectIfReasonable, 1000 * 60 * 15)
+            if (!this.currentDisconnectionTimeout) {
+              this.currentDisconnectionTimeout = setTimeout(this.disconnectIfReasonable, 1000 * 60 * 15)
+            }
+            this.currentDisconnectionTimeout.refresh()
           }
           this.sendCurrentQueue()
           this.sendCurrentSong()

@@ -11,19 +11,40 @@ import { SocketContext } from "../context/socket"
 import VolumeSlider from "./VolumeSlider"
 import UserIdentifierForm from "../forms/UserIdentifierForm"
 import ConnectionStateIndicator from "./ConnectionStateIndicator"
+import { trackError } from "../lib/trackError"
 
 interface ControlAreaProps {}
 
 const ControlArea = (props: ControlAreaProps) => {
-  const { connectionState, sendCommand } = React.useContext(SocketContext)
-  const [isPlaying, setPlaying] = React.useState(false)
+  const { connectionState, sendCommand, addListener } = React.useContext(SocketContext)
+  const [isPlaying, setPlaying] = React.useState(true)
+
+  React.useEffect(() => {
+    const unsubcribePause = addListener("paused", () => setPlaying(false))
+    const unsubscribeResume = addListener("resumed", () => setPlaying(true))
+
+    return () => {
+      unsubcribePause()
+      unsubscribeResume()
+    }
+  }, [addListener])
 
   const PlayButton = () => {
-    return <StyledButton icon={<PlayIcon />} text="Play" onClick={() => undefined} />
+    const onButtonClick = async () => {
+      sendCommand("resume")
+        .then(() => setPlaying(true))
+        .catch(trackError)
+    }
+    return <StyledButton icon={<PlayIcon />} text="Play" onClick={onButtonClick} />
   }
 
   const PauseButton = () => {
-    return <StyledButton icon={<PauseIcon />} text="Pause" onClick={() => undefined} />
+    const onButtonClick = async () => {
+      sendCommand("pause")
+        .then(() => setPlaying(false))
+        .catch(trackError)
+    }
+    return <StyledButton icon={<PauseIcon />} text="Pause" onClick={onButtonClick} />
   }
 
   const SkipPreviousButton = () => {
@@ -32,8 +53,9 @@ const ControlArea = (props: ControlAreaProps) => {
 
   const SkipNextButton = () => {
     const onButtonClick = async () => {
-      const response = await sendCommand("skip")
-      console.log("response", response)
+      sendCommand("skip")
+        .then(() => console.log("skip successful"))
+        .catch(trackError)
     }
     return <StyledButton icon={<SkipNextIcon />} text="Skip next" onClick={onButtonClick} />
   }
