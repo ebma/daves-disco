@@ -1,4 +1,5 @@
 import SpotifyWebAPI from "spotify-web-api-node"
+import { trackError } from "./trackError"
 
 const clientId = process.env.SPOTIFY_CLIENT_ID
 const clientSecret = process.env.SPOTIFY_CLIENT_SECRET
@@ -49,7 +50,7 @@ export async function getSpotifyPlaylist(playlistID: string): Promise<Playlist |
       }))
     }
   } catch (error) {
-    console.error(error)
+    trackError(error)
     return null
   }
 }

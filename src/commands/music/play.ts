@@ -13,6 +13,7 @@ import {
 } from "../../libs/util/youtube"
 import { createEmbedForTrack, createEmbedForTracks, createEmbedsForSpotifyPlaylist } from "../../libs/util/embeds"
 import { isSpotifyPlaylistURI, getSpotifyPlaylist } from "../../libs/util/spotify"
+import { trackError } from "../../libs/util/trackError"
 
 class PlayCommand extends Command {
   private musicPlayer: MusicPlayer
@@ -101,7 +102,7 @@ class PlayCommand extends Command {
       await this.musicPlayer.play(message)
       return message.channel.send(reply)
     } catch (error) {
-      console.error(error)
+      trackError(error)
       return message.channel.send(`Something went wrong... ${error}`)
     }
   }

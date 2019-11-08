@@ -3,6 +3,7 @@ import * as ytdl from "ytdl-core"
 import { createTracksFromSearchTerm } from "./youtube"
 import _ from "lodash"
 import { Track, SpotifyTrack } from "../../typings/exported-types"
+import { trackError } from "./trackError"
 
 export async function createTrackStream(track: Track, callback: (stream: Readable) => void) {
   try {
@@ -14,10 +15,10 @@ export async function createTrackStream(track: Track, callback: (stream: Readabl
     callback(
       ytdl
         .downloadFromInfo(trackInfo, { quality: "highestaudio", filter: "audioonly" })
-        .on("error", err => console.error(err))
+        .on("error", err => trackError(err))
     )
   } catch (error) {
-    console.error(error)
+    trackError(error)
   }
 }
 

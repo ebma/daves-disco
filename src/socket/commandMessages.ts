@@ -1,6 +1,7 @@
 import { AkairoClient } from "discord-akairo"
 import { Socket } from "socket.io"
 import { CommandMessage } from "../typings/exported-types"
+import { trackError } from "../libs/util/trackError"
 
 const handleCommandMessages = (socket: Socket, client: AkairoClient) => async (data: CommandMessage) => {
   const sendCommandResult = (result: any) => {
@@ -19,7 +20,7 @@ const handleCommandMessages = (socket: Socket, client: AkairoClient) => async (d
       const result = await command.exec(null, data, false)
       sendCommandResult(result)
     } catch (error) {
-      console.error(error)
+      trackError(error)
       sendCommandError(error.message ? error.message : error)
     }
   }

@@ -9,6 +9,7 @@ import { Track } from "../typings/exported-types"
 import { createTrackStream } from "./util/streams"
 import { sendMessage } from "../socket/messageSender"
 import ObservableQueue from "./ObservableQueue"
+import { trackError } from "./util/trackError"
 
 export class MusicPlayer {
   cachedMessage: Message
@@ -176,7 +177,7 @@ export class MusicPlayer {
         }
       })
       this.voiceConnection.dispatcher.on("error", e => {
-        console.error(e)
+        trackError(e)
         this.cachedMessage.channel.send(`I don't feel so good... (${e})`)
       })
     })

@@ -9,6 +9,7 @@ import {
   CommandMessage,
   ControlMessageType
 } from "../../../src/typings/exported-types"
+import { trackError } from "../lib/trackError"
 
 const path =
   process.env.NODE_ENV === "production" && process.env.REACT_APP_BOT_SERVER_PATH
@@ -77,7 +78,7 @@ function SocketProvider(props: Props) {
 
     socket.on("disconnect", () => setConnectionState("disconnected"))
 
-    socket.on("error", console.error)
+    socket.on("error", trackError)
   }, [])
 
   const addListener = (type: InfoMessageType, listener: MessageListener) => {

@@ -1,12 +1,13 @@
 import { Socket } from "socket.io"
 import { ControlMessageResponse, ControlMessage, InfoMessageType, InfoMessage } from "../typings/exported-types"
+import { trackError } from "../libs/util/trackError"
 
 // tslint:disable: no-console
-let sendMessage = (type: InfoMessageType, data?: any) => console.error("SendEvent not ready yet")
+let sendMessage = (type: InfoMessageType, data?: any) => trackError("SendEvent not ready yet")
 let sendResultResponse = (originalMessage: ControlMessage, result: any) =>
-  console.error("sendSuccessResponse not ready yet")
+  trackError("sendSuccessResponse not ready yet")
 let sendErrorResponse = (originalMessage: ControlMessage, error: string) =>
-  console.error("sendErrorResponse not ready yet")
+  trackError("sendErrorResponse not ready yet")
 
 function setupMessageSender(socket: Socket) {
   sendResultResponse = (originalMessage: ControlMessage, result: any) => {
