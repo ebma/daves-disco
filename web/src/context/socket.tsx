@@ -81,20 +81,23 @@ function SocketProvider(props: Props) {
     socket.on("error", trackError)
   }, [])
 
-  const addListener = (type: InfoMessageType, listener: MessageListener) => {
-    if (currentSocket) {
-      currentSocket.on("event", (response: InfoMessage) => {
-        if (response.type !== type) return
-        listener(response.data)
-      })
-    }
-
-    return () => {
+  const addListener = React.useCallback(
+    (type: InfoMessageType, listener: MessageListener) => {
       if (currentSocket) {
-        currentSocket.removeListener("event", listener)
+        currentSocket.on("event", (response: InfoMessage) => {
+          if (response.type !== type) return
+          listener(response.data)
+        })
       }
-    }
-  }
+
+      return () => {
+        if (currentSocket) {
+          currentSocket.removeListener("event", listener)
+        }
+      }
+    },
+    [currentSocket]
+  )
 
   const createCommandDataPackage = React.useCallback(
     (command: CommandMessageType, data?: any): CommandMessage => {
