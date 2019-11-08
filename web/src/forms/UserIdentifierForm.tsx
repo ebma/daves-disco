@@ -1,7 +1,7 @@
 import React from "react"
 import { makeStyles } from "@material-ui/core/styles"
 import { Typography, Box, MenuItem, FormControl, InputLabel, Select } from "@material-ui/core"
-import { Guilds, Members } from "../components/ControlArea"
+import { Guilds, Members } from "../components/ControlsContainer"
 
 const useStyles = makeStyles(theme => ({
   container: {

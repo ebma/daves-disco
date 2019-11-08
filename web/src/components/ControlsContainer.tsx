@@ -13,17 +13,19 @@ import UserIdentifierForm from "../forms/UserIdentifierForm"
 import ConnectionStateIndicator from "./ConnectionStateIndicator"
 import { trackError } from "../lib/trackError"
 import { Track } from "../../../src/typings/exported-types"
+import QueueArea from "./QueueArea"
 
 interface ControlAreaProps {}
 
 export type Guilds = Array<{ id: string; name: string }>
 export type Members = Array<{ id: string; name: string }>
 
-const ControlArea = (props: ControlAreaProps) => {
+function ControlsContainer(props: ControlAreaProps) {
   const {
     addListener,
     connectionState,
     guildID,
+    userID,
     sendCommand,
     sendControlMessage,
     setUserID,
@@ -31,7 +33,10 @@ const ControlArea = (props: ControlAreaProps) => {
   } = React.useContext(SocketContext)
   const [isPlaying, setPlaying] = React.useState(true)
   const [volume, setVolume] = React.useState(50)
+
   const [currentSong, setCurrentSong] = React.useState<Track | undefined>(undefined)
+  const [currentQueue, setCurrentQueue] = React.useState<Track[]>([])
+
   const [guilds, setGuilds] = React.useState<Guilds | undefined>(undefined)
   const [members, setMembers] = React.useState<Members | undefined>(undefined)
 
@@ -40,6 +45,7 @@ const ControlArea = (props: ControlAreaProps) => {
     const unsubscribeResume = addListener("resumed", () => setPlaying(true))
     const unsubscribeVolume = addListener("volume", setVolume)
     const unsubscribeCurrentSong = addListener("currentSong", setCurrentSong)
+    const unsubscribeCurrentQueue = addListener("currentQueue", setCurrentQueue)
 
     if (connectionState === "connected") {
       sendControlMessage("getGuilds").then(setGuilds)
@@ -47,6 +53,7 @@ const ControlArea = (props: ControlAreaProps) => {
         sendControlMessage("getUsers", { guildID }).then(setMembers)
         sendControlMessage("getCurrentSong").then(setCurrentSong)
         sendControlMessage("getVolume").then(setVolume)
+        sendControlMessage("getCurrentQueue").then(setCurrentQueue)
       }
     }
 
@@ -55,6 +62,7 @@ const ControlArea = (props: ControlAreaProps) => {
       unsubscribeResume()
       unsubscribeVolume()
       unsubscribeCurrentSong()
+      unsubscribeCurrentQueue()
     }
   }, [addListener, connectionState, sendControlMessage])
 
@@ -99,25 +107,27 @@ const ControlArea = (props: ControlAreaProps) => {
   }
 
   const GuildSelectionBox = React.useMemo(() => {
-    return (
-      <Box style={{ marginTop: 8, marginBottom: 8 }}>
-        <Card>
-          {connectionState && guilds ? (
-            <UserIdentifierForm guilds={guilds} members={members} setUserID={setUserID} setGuildID={setGuildID} />
-          ) : (
-            <Typography variant="h6" color="textPrimary" align="center" style={{ padding: 8 }}>
-              No guilds online...
-            </Typography>
-          )}
-        </Card>
-      </Box>
-    )
+    if (connectionState === "connected") {
+      return (
+        <Box style={{ marginTop: 8, marginBottom: 8 }}>
+          <Card>
+            {guilds ? (
+              <UserIdentifierForm guilds={guilds} members={members} setUserID={setUserID} setGuildID={setGuildID} />
+            ) : (
+              <Typography variant="h6" color="textPrimary" align="center" style={{ padding: 8 }}>
+                No guilds online...
+              </Typography>
+            )}
+          </Card>
+        </Box>
+      )
+    } else {
+      return undefined
+    }
   }, [connectionState, guilds, members, setUserID, setGuildID])
 
-  return (
-    <Container>
-      <ConnectionStateIndicator />
-      {GuildSelectionBox}
+  const ControlArea = React.useMemo(
+    () => (
       <Grid container direction="row" alignItems="center" spacing={5} style={{ margin: "auto" }}>
         <Grid item>
           <CurrentSongCard currentSong={currentSong} style={{ alignSelf: "flex-start" }} />
@@ -135,8 +145,24 @@ const ControlArea = (props: ControlAreaProps) => {
           <VolumeSliderContainer />
         </Grid>
       </Grid>
+    ),
+    [currentSong, isPlaying]
+  )
+
+  return (
+    <Container>
+      <ConnectionStateIndicator />
+      {GuildSelectionBox}
+      {connectionState === "connected" && userID ? (
+        <>
+          {ControlArea}
+          <QueueArea currentQueue={currentQueue} />
+        </>
+      ) : (
+        undefined
+      )}
     </Container>
   )
 }
 
-export default ControlArea
+export default ControlsContainer

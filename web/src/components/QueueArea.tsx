@@ -7,33 +7,21 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore"
 import Typography from "@material-ui/core/Typography"
 import Container from "@material-ui/core/Container"
 import Grid from "@material-ui/core/Grid"
-import { SocketContext } from "../context/socket"
 import { Track } from "../../../src/typings/exported-types"
 import { Link } from "@material-ui/core"
 
 interface Props {
-  tracks?: any[]
+  currentQueue: Track[]
 }
 
 function QueueArea(props: Props) {
   const [show, setShow] = React.useState(true)
-  const { addListener, guildID, sendControlMessage } = React.useContext(SocketContext)
-  const [currentQueue, setCurrentQueue] = React.useState<Track[]>([])
+
+  const { currentQueue } = props
 
   const toggleShow = React.useCallback(() => {
     setShow(!show)
   }, [show, setShow])
-
-  React.useEffect(() => {
-    const unsubscribe = addListener("currentQueue", queue => {
-      setCurrentQueue(queue)
-    })
-
-    if (guildID !== "") {
-      sendControlMessage("getCurrentQueue").then(setCurrentQueue)
-    }
-    return unsubscribe
-  }, [addListener, sendControlMessage, guildID, setCurrentQueue])
 
   return (
     <Container style={{ marginTop: 16, marginBottom: 16 }}>

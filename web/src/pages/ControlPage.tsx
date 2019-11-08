@@ -6,9 +6,8 @@ import Headset from "@material-ui/icons/Headset"
 import Typography from "@material-ui/core/Typography"
 import { makeStyles } from "@material-ui/core/styles"
 import Container from "@material-ui/core/Container"
-import ControlArea from "../components/ControlArea"
+import ControlsContainer from "../components/ControlsContainer"
 import Paper from "@material-ui/core/Paper"
-import QueueArea from "../components/QueueArea"
 
 const useStyles = makeStyles(theme => ({
   "@global": {
@@ -63,8 +62,7 @@ function ControlPage() {
       <CssBaseline />
       <Paper className={classes.paper}>
         <Header />
-        <ControlArea />
-        <QueueArea />
+        <ControlsContainer />
       </Paper>
     </Container>
   )
