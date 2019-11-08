@@ -1,7 +1,7 @@
 import React from "react"
 import { makeStyles } from "@material-ui/core/styles"
 import { Typography, Box, MenuItem, FormControl, InputLabel, Select } from "@material-ui/core"
-import { SocketContext } from "../context/socket"
+import { Guilds, Members } from "../components/ControlArea"
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -26,32 +26,22 @@ interface State {
   guildID: string
 }
 
-type Guilds = Array<{ id: string; name: string }>
-type Members = Array<{ id: string; name: string }>
+interface Props {
+  guilds: Guilds
+  members?: Members
+  setUserID: (userID: string) => void
+  setGuildID: (guildID: string) => void
+}
 
-function UserIdentifierForm(props: {}) {
+function UserIdentifierForm(props: Props) {
   const classes = useStyles()
 
-  const { connectionState, sendControlMessage, setUserID, setGuildID } = React.useContext(SocketContext)
-  const [guilds, setGuilds] = React.useState<Guilds | null>(null)
-  const [members, setMembers] = React.useState<Members | null>(null)
+  const { guilds, members, setUserID, setGuildID } = props
 
   const [values, setValues] = React.useState<State>({
     userID: "",
     guildID: ""
   })
-
-  React.useEffect(() => {
-    if (connectionState === "connected") {
-      sendControlMessage("getGuilds").then(setGuilds)
-    }
-  }, [connectionState, sendControlMessage])
-
-  React.useEffect(() => {
-    if (values.guildID !== "") {
-      sendControlMessage("getUsers", { guildID: values.guildID }).then(setMembers)
-    }
-  }, [values.guildID, sendControlMessage])
 
   React.useEffect(() => {
     setUserID(values.userID)

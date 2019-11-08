@@ -1,5 +1,5 @@
 import React from "react"
-import { Container, Box, Card } from "@material-ui/core"
+import { Container, Box, Card, Typography } from "@material-ui/core"
 import Grid from "@material-ui/core/Grid"
 import PlayIcon from "@material-ui/icons/PlayArrow"
 import SkipPreviousIcon from "@material-ui/icons/SkipPrevious"
@@ -16,11 +16,24 @@ import { Track } from "../../../src/typings/exported-types"
 
 interface ControlAreaProps {}
 
+export type Guilds = Array<{ id: string; name: string }>
+export type Members = Array<{ id: string; name: string }>
+
 const ControlArea = (props: ControlAreaProps) => {
-  const { addListener, connectionState, guildID, sendCommand, sendControlMessage } = React.useContext(SocketContext)
+  const {
+    addListener,
+    connectionState,
+    guildID,
+    sendCommand,
+    sendControlMessage,
+    setUserID,
+    setGuildID
+  } = React.useContext(SocketContext)
   const [isPlaying, setPlaying] = React.useState(true)
   const [volume, setVolume] = React.useState(50)
   const [currentSong, setCurrentSong] = React.useState<Track | undefined>(undefined)
+  const [guilds, setGuilds] = React.useState<Guilds | undefined>(undefined)
+  const [members, setMembers] = React.useState<Members | undefined>(undefined)
 
   React.useEffect(() => {
     const unsubcribePause = addListener("paused", () => setPlaying(false))
@@ -28,9 +41,13 @@ const ControlArea = (props: ControlAreaProps) => {
     const unsubscribeVolume = addListener("volume", setVolume)
     const unsubscribeCurrentSong = addListener("currentSong", setCurrentSong)
 
-    if (connectionState === "connected" && guildID !== "") {
-      sendControlMessage("getCurrentSong").then(setCurrentSong)
-      sendControlMessage("getVolume").then(setVolume)
+    if (connectionState === "connected") {
+      sendControlMessage("getGuilds").then(setGuilds)
+      if (guildID !== "") {
+        sendControlMessage("getUsers", { guildID }).then(setMembers)
+        sendControlMessage("getCurrentSong").then(setCurrentSong)
+        sendControlMessage("getVolume").then(setVolume)
+      }
     }
 
     return () => {
@@ -82,15 +99,20 @@ const ControlArea = (props: ControlAreaProps) => {
   }
 
   const GuildSelectionBox = React.useMemo(() => {
-    const StyledForm = (
+    return (
       <Box style={{ marginTop: 8, marginBottom: 8 }}>
         <Card>
-          <UserIdentifierForm />
+          {connectionState && guilds ? (
+            <UserIdentifierForm guilds={guilds} members={members} setUserID={setUserID} setGuildID={setGuildID} />
+          ) : (
+            <Typography variant="h6" color="textPrimary" align="center" style={{ padding: 8 }}>
+              No guilds online...
+            </Typography>
+          )}
         </Card>
       </Box>
     )
-    return connectionState ? StyledForm : <></>
-  }, [connectionState])
+  }, [connectionState, guilds, members, setUserID, setGuildID])
 
   return (
     <Container>
