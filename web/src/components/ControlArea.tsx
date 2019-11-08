@@ -16,18 +16,25 @@ import { trackError } from "../lib/trackError"
 interface ControlAreaProps {}
 
 const ControlArea = (props: ControlAreaProps) => {
-  const { connectionState, sendCommand, addListener } = React.useContext(SocketContext)
+  const { connectionState, sendCommand, sendControlMessage, addListener } = React.useContext(SocketContext)
   const [isPlaying, setPlaying] = React.useState(true)
+  const [volume, setVolume] = React.useState(50)
 
   React.useEffect(() => {
     const unsubcribePause = addListener("paused", () => setPlaying(false))
     const unsubscribeResume = addListener("resumed", () => setPlaying(true))
+    const unsubscribeVolume = addListener("volume", setVolume)
+
+    if (connectionState === "connected") {
+      sendControlMessage("getVolume").then(setVolume)
+    }
 
     return () => {
       unsubcribePause()
       unsubscribeResume()
+      unsubscribeVolume()
     }
-  }, [addListener])
+  }, [addListener, connectionState, sendControlMessage])
 
   const PlayButton = () => {
     const onButtonClick = async () => {
@@ -61,6 +68,15 @@ const ControlArea = (props: ControlAreaProps) => {
     return <StyledButton icon={<SkipNextIcon />} text="Skip next" onClick={onButtonClick} />
   }
 
+  const VolumeSliderContainer = () => {
+    const onChange = (newVolume: number) => {
+      console.log("sending command for volume", newVolume)
+      sendCommand("volume", newVolume)
+    }
+
+    return <VolumeSlider volume={volume} onChange={onChange} />
+  }
+
   const GuildSelectionBox = React.useMemo(() => {
     const StyledForm = (
       <Box style={{ marginTop: 8, marginBottom: 8 }}>
@@ -90,7 +106,7 @@ const ControlArea = (props: ControlAreaProps) => {
               <SkipNextButton />
             </Grid>
           </Grid>
-          <VolumeSlider />
+          <VolumeSliderContainer />
         </Grid>
       </Grid>
     </Container>

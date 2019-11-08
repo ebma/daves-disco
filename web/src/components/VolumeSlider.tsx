@@ -5,12 +5,23 @@ import VolumeDown from "@material-ui/icons/VolumeDown"
 import VolumeUp from "@material-ui/icons/VolumeUp"
 import Grid from "@material-ui/core/Grid"
 
-function VolumeSlider() {
-  const [value, setValue] = React.useState<number>(50)
+interface Props {
+  volume: number
+  onChange: (newVolume: number) => void
+}
+
+function VolumeSlider(props: Props) {
+  const [privateValue, setValue] = React.useState<number>(50)
 
   const handleChange = (event: any, newValue: number | number[]) => {
     setValue(newValue as number)
   }
+
+  React.useEffect(() => {
+    setValue(props.volume)
+  }, [props.volume])
+
+  const handleChangeCommitted = (event: any, value: number | number[]) => props.onChange(value as number)
 
   return (
     <div style={{ marginTop: 32, flexGrow: 1 }}>
@@ -22,7 +33,13 @@ function VolumeSlider() {
           <VolumeDown />
         </Grid>
         <Grid item xs>
-          <Slider value={value} onChange={handleChange} valueLabelDisplay="auto" aria-labelledby="continuous-slider" />
+          <Slider
+            value={privateValue}
+            onChange={handleChange}
+            onChangeCommitted={handleChangeCommitted}
+            valueLabelDisplay="auto"
+            aria-labelledby="continuous-slider"
+          />
         </Grid>
         <Grid item>
           <VolumeUp />

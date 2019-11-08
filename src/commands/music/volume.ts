@@ -1,7 +1,9 @@
 import { Message } from "discord.js"
 import { Command } from "discord-akairo"
-import MusicPlayerManager from "../../libs/MusicPlayerManager"
 import _ from "lodash"
+import MusicPlayerManager from "../../libs/MusicPlayerManager"
+import { CommandMessage } from "../../typings/exported-types"
+import { TextChannel } from "discord.js"
 
 class VolumeCommand extends Command {
   constructor() {
@@ -27,12 +29,15 @@ class VolumeCommand extends Command {
   }
 
   async exec(message: Message, args: any) {
+    if (message === null) {
+      return this.executeSilent(args)
+    }
     const musicPlayer = MusicPlayerManager.getPlayerFor(message.guild.id)
 
     if (!message.member.voiceChannel) {
       return message.reply("You can't change the volume if you are not even listening...")
     }
-    
+
     const oldVolume = musicPlayer.getVolume()
     const newVolume = args.newVolume
     if (oldVolume === newVolume) {
@@ -45,6 +50,32 @@ class VolumeCommand extends Command {
         ? `I reduced the volume from ${oldVolume} to ${newVolume}! :sound:`
         : `I increased the volume from ${oldVolume} to ${newVolume}! :loud_sound:`
     return message.reply(reply)
+  }
+
+  executeSilent(args: CommandMessage) {
+    return new Promise<void>(async (resolve, reject) => {
+      const { guildID, userID } = args
+      const guild = this.client.guilds.find(g => g.id === guildID)
+      const member = guild.members.find(m => m.id === userID)
+      const textChannel = guild.channels.find(
+        channel => channel.name === "general" && channel.type === "text"
+      ) as TextChannel
+
+      const musicPlayer = MusicPlayerManager.getPlayerFor(guildID)
+
+      console.log("received args", args)
+
+      try {
+        const newVolume = args.data
+
+        musicPlayer.setVolume(newVolume)
+        textChannel.send(`${member} changed to volume to ${newVolume}`)
+
+        resolve()
+      } catch (error) {
+        reject(error)
+      }
+    })
   }
 }
 

@@ -16,7 +16,8 @@ export interface SpotifyTrack extends Track {
 export interface ControlMessage {
   guildID?: string
   messageID: number
-  type: "getGuilds" | "getUsers" | "getCurrentSong" | "getCurrentQueue"
+  type: ControlMessageType
+  data: any
 }
 
 export interface ControlMessageResponse {
@@ -31,7 +32,7 @@ export interface CommandMessage {
   messageID: number
   userID: string
   guildID: string
-  payload: string
+  data: any
 }
 
 export interface InfoMessage {
@@ -39,6 +40,10 @@ export interface InfoMessage {
   data: any
 }
 
-export type InfoMessageType = "currentSong" | "currentQueue" | "paused" | "resumed"
+export type InfoMessageType = "currentSong" | "currentQueue" | "paused" | "resumed" | "volume"
 
-export type CommandMessageType = "pause" | "resume" | "skip" | "skip-previous"
+export type ControlMessageType = "getGuilds" | "getUsers" | "getCurrentSong" | "getCurrentQueue" | "getVolume"
+
+// these have to equal the aliases of the actual commands as this is the criteria for
+// finding the corresponding command
+export type CommandMessageType = "pause" | "resume" | "skip" | "skip-previous" | "volume"

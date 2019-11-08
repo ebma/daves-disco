@@ -44,6 +44,7 @@ export class MusicPlayer {
     if (this.isStreaming()) {
       this.voiceConnection.dispatcher.setVolume(this.volume)
     }
+    sendMessage("volume", newVol)
   }
 
   get queuedTracks() {

@@ -54,6 +54,14 @@ const handleControlMessages = (socket: Socket, client: AkairoClient) => (message
         sendResultResponse(message, player.queuedTracks)
       }
       break
+    case "getVolume":
+      if (!message.guildID) {
+        sendErrorResponse(message, "No guildID provided!")
+      } else {
+        const player = MusicPlayerManager.getPlayerFor(message.guildID)
+        sendResultResponse(message, player.getVolume())
+      }
+      break
   }
 }
 

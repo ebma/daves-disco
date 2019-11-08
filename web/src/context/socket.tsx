@@ -1,8 +1,19 @@
 import React from "react"
 import io from "socket.io-client"
-import { ControlMessage, ControlMessageResponse, InfoMessage, InfoMessageType, CommandMessageType } from "../../../src/typings/exported-types"
+import {
+  ControlMessage,
+  ControlMessageResponse,
+  InfoMessage,
+  InfoMessageType,
+  CommandMessageType,
+  CommandMessage,
+  ControlMessageType
+} from "../../../src/typings/exported-types"
 
-const path = process.env.NODE_ENV === "production" && process.env.REACT_APP_BOT_SERVER_PATH ? process.env.REACT_APP_BOT_SERVER_PATH : "http://localhost:1234"
+const path =
+  process.env.NODE_ENV === "production" && process.env.REACT_APP_BOT_SERVER_PATH
+    ? process.env.REACT_APP_BOT_SERVER_PATH
+    : "http://localhost:1234"
 const MAX_RECONNECTION_ATTEMPTS = 10
 
 let messageID = 1
@@ -85,14 +96,14 @@ function SocketProvider(props: Props) {
   }
 
   const createCommandDataPackage = React.useCallback(
-    (command: string, data?: any) => {
-      return { command, messageID: getNextMessageID(), guildID, userID, ...data }
+    (command: CommandMessageType, data?: any): CommandMessage => {
+      return { command, messageID: getNextMessageID(), guildID, userID, data }
     },
     [guildID, userID]
   )
 
   const sendCommand = React.useCallback(
-    (command: string, data?: any) => {
+    (command: CommandMessageType, data?: any) => {
       return new Promise<any>((resolve, reject) => {
         if (currentSocket) {
           const dataPackage = createCommandDataPackage(command, data)
@@ -116,14 +127,14 @@ function SocketProvider(props: Props) {
   )
 
   const createControlMessageDataPackage = React.useCallback(
-    (type: string, data?: any) => {
-      return { type, messageID: getNextMessageID(), guildID, userID, ...data }
+    (type: ControlMessageType, data?: any): ControlMessage => {
+      return { type, messageID: getNextMessageID(), guildID, data }
     },
-    [guildID, userID]
+    [guildID]
   )
 
   const sendControlMessage = React.useCallback(
-    (type: string, data?: any) => {
+    (type: ControlMessageType, data?: any) => {
       return new Promise<any>((resolve, reject) => {
         if (currentSocket) {
           const dataPackage = createControlMessageDataPackage(type, data)
