@@ -18,7 +18,7 @@ export async function createTrackStream(track: Track, callback: (stream: Readabl
         .on("error", err => trackError(err))
     )
   } catch (error) {
-    trackError(error)
+    trackError(error, this)
   }
 }
 

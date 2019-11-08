@@ -50,7 +50,7 @@ export async function getSpotifyPlaylist(playlistID: string): Promise<Playlist |
       }))
     }
   } catch (error) {
-    trackError(error)
+    trackError(error, this)
     return null
   }
 }

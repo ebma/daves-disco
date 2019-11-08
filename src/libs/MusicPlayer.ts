@@ -151,6 +151,7 @@ export class MusicPlayer {
   }
 
   private createStream() {
+    if (!this.currentTrack) return
     createTrackStream(this.currentTrack, stream => {
       this.voiceConnection.playStream(stream, { seek: 0, volume: this.volume, passes: 1 })
       this.voiceConnection.dispatcher.once("start", () => {
@@ -177,7 +178,7 @@ export class MusicPlayer {
         }
       })
       this.voiceConnection.dispatcher.on("error", e => {
-        trackError(e)
+        trackError(e, this)
         this.cachedMessage.channel.send(`I don't feel so good... (${e})`)
       })
     })
