@@ -12,7 +12,7 @@ import VolumeSlider from "./VolumeSlider"
 import UserIdentifierForm from "../forms/UserIdentifierForm"
 import ConnectionStateIndicator from "./ConnectionStateIndicator"
 import { trackError } from "../lib/trackError"
-import { Track } from "../../../src/typings/exported-types"
+import { Track } from "../shared/exported-types"
 import QueueArea from "./QueueArea"
 
 interface ControlAreaProps {}

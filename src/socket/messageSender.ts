@@ -1,6 +1,6 @@
 import { Socket } from "socket.io"
-import { ControlMessageResponse, ControlMessage, InfoMessageType, InfoMessage } from "../typings/exported-types"
-import { trackError } from "../libs/util/trackError"
+import { ControlMessageResponse, ControlMessage, InfoMessageType, InfoMessage } from "../shared/exported-types"
+import { trackError } from "../shared/trackError"
 
 // tslint:disable: no-console
 let sendMessage = (type: InfoMessageType, data?: any) => trackError("SendEvent not ready yet")

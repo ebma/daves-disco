@@ -8,7 +8,7 @@ import {
   CommandMessageType,
   CommandMessage,
   ControlMessageType
-} from "../../../src/typings/exported-types"
+} from "../shared/exported-types"
 import { trackError } from "../lib/trackError"
 
 const path =

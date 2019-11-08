@@ -1,5 +1,5 @@
 import SpotifyWebAPI from "spotify-web-api-node"
-import { trackError } from "./trackError"
+import { trackError } from "../../shared/trackError"
 
 const clientId = process.env.SPOTIFY_CLIENT_ID
 const clientSecret = process.env.SPOTIFY_CLIENT_SECRET

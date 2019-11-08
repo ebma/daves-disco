@@ -13,7 +13,7 @@ import {
 } from "../../libs/util/youtube"
 import { createEmbedForTrack, createEmbedForTracks, createEmbedsForSpotifyPlaylist } from "../../libs/util/embeds"
 import { isSpotifyPlaylistURI, getSpotifyPlaylist } from "../../libs/util/spotify"
-import { trackError } from "../../libs/util/trackError"
+import { trackError } from "../../shared/trackError"
 
 class PlayCommand extends Command {
   private musicPlayer: MusicPlayer

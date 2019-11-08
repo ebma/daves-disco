@@ -6,8 +6,7 @@ import CardMedia from "@material-ui/core/CardMedia"
 import { makeStyles } from "@material-ui/core/styles"
 import Typography from "@material-ui/core/Typography"
 import Button from "@material-ui/core/Button"
-import { SocketContext } from "../context/socket"
-import { Track } from "../../../src/typings/exported-types"
+import { Track } from "../shared/exported-types"
 
 const useSongCardStyles = makeStyles({
   card: {

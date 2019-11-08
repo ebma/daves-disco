@@ -7,7 +7,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore"
 import Typography from "@material-ui/core/Typography"
 import Container from "@material-ui/core/Container"
 import Grid from "@material-ui/core/Grid"
-import { Track } from "../../../src/typings/exported-types"
+import { Track } from "../shared/exported-types"
 import { Link } from "@material-ui/core"
 
 interface Props {

@@ -3,7 +3,7 @@ import { Command } from "discord-akairo"
 import MusicPlayerManager from "../../libs/MusicPlayerManager"
 import _ from "lodash"
 import { createEmbedForTracks } from "../../libs/util/embeds"
-import { Track } from "../../typings/exported-types"
+import { Track } from "../../shared/exported-types"
 
 class QueueCommand extends Command {
   constructor() {

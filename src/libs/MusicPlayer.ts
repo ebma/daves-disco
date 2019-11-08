@@ -5,11 +5,11 @@ import _ from "lodash"
 import { Message } from "discord.js"
 import { TextChannel } from "discord.js"
 import { setTimeout } from "timers"
-import { Track } from "../typings/exported-types"
-import { createTrackStream } from "./util/streams"
+import { Track } from "../shared/exported-types"
+import { trackError } from "../shared/trackError"
 import { sendMessage } from "../socket/messageSender"
+import { createTrackStream } from "./util/streams"
 import ObservableQueue from "./ObservableQueue"
-import { trackError } from "./util/trackError"
 
 export class MusicPlayer {
   cachedMessage: Message
