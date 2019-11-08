@@ -12,20 +12,24 @@ import VolumeSlider from "./VolumeSlider"
 import UserIdentifierForm from "../forms/UserIdentifierForm"
 import ConnectionStateIndicator from "./ConnectionStateIndicator"
 import { trackError } from "../lib/trackError"
+import { Track } from "../../../src/typings/exported-types"
 
 interface ControlAreaProps {}
 
 const ControlArea = (props: ControlAreaProps) => {
-  const { connectionState, sendCommand, sendControlMessage, addListener } = React.useContext(SocketContext)
+  const { addListener, connectionState, guildID, sendCommand, sendControlMessage } = React.useContext(SocketContext)
   const [isPlaying, setPlaying] = React.useState(true)
   const [volume, setVolume] = React.useState(50)
+  const [currentSong, setCurrentSong] = React.useState<Track | undefined>(undefined)
 
   React.useEffect(() => {
     const unsubcribePause = addListener("paused", () => setPlaying(false))
     const unsubscribeResume = addListener("resumed", () => setPlaying(true))
     const unsubscribeVolume = addListener("volume", setVolume)
+    const unsubscribeCurrentSong = addListener("currentSong", setCurrentSong)
 
-    if (connectionState === "connected") {
+    if (connectionState === "connected" && guildID !== "") {
+      sendControlMessage("getCurrentSong").then(setCurrentSong)
       sendControlMessage("getVolume").then(setVolume)
     }
 
@@ -33,6 +37,7 @@ const ControlArea = (props: ControlAreaProps) => {
       unsubcribePause()
       unsubscribeResume()
       unsubscribeVolume()
+      unsubscribeCurrentSong()
     }
   }, [addListener, connectionState, sendControlMessage])
 
@@ -70,7 +75,6 @@ const ControlArea = (props: ControlAreaProps) => {
 
   const VolumeSliderContainer = () => {
     const onChange = (newVolume: number) => {
-      console.log("sending command for volume", newVolume)
       sendCommand("volume", newVolume)
     }
 
@@ -94,7 +98,7 @@ const ControlArea = (props: ControlAreaProps) => {
       {GuildSelectionBox}
       <Grid container direction="row" alignItems="center" spacing={5} style={{ margin: "auto" }}>
         <Grid item>
-          <CurrentSongCard style={{ alignSelf: "flex-start" }} />
+          <CurrentSongCard currentSong={currentSong} style={{ alignSelf: "flex-start" }} />
         </Grid>
         <Grid item>
           <Grid container direction="row">

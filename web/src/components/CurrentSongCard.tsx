@@ -18,18 +18,14 @@ const useSongCardStyles = makeStyles({
   }
 })
 
-const CurrentSongCard = (props: { style?: React.CSSProperties }) => {
-  const classes = useSongCardStyles()
-  const { addListener, guildID, sendControlMessage } = React.useContext(SocketContext)
-  const [currentSong, setCurrentSong] = React.useState<Track | undefined>(undefined)
+interface Props {
+  currentSong?: Track
+  style?: React.CSSProperties
+}
 
-  React.useEffect(() => {
-    const unsubscribe = addListener("currentSong", setCurrentSong)
-    if (guildID !== "") {
-      sendControlMessage("getCurrentSong").then(setCurrentSong)
-    }
-    return unsubscribe
-  }, [addListener, sendControlMessage, guildID])
+const CurrentSongCard = (props: Props) => {
+  const classes = useSongCardStyles()
+  const { currentSong } = props
 
   const cardActionArea = React.useMemo(() => {
     return currentSong ? (
