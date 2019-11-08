@@ -15,12 +15,12 @@ class ShuffleCommand extends Command {
   async exec(message: Message, args: any) {
     const musicPlayer = MusicPlayerManager.getPlayerFor(message.guild.id)
 
-    if (musicPlayer.queuedTracks.size() === 0){
-        return message.reply("There's nothing to shuffle as the queue is empty... :shrug:")
+    if (musicPlayer.queue.size() === 0) {
+      return message.reply("There's nothing to shuffle as the queue is empty... :shrug:")
     }
 
     musicPlayer.shuffle()
-    
+
     return message.reply("I spiced it up a bit! :fire:")
   }
 }

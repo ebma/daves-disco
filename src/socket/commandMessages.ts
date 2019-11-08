@@ -12,12 +12,16 @@ const handleCommandMessages = (socket: Socket, client: AkairoClient) => async (d
   }
 
   const command = client.commandHandler.findCommand(data.command)
-  try {
-    const result = await command.exec(null, data, false)
-    sendCommandResult(result)
-  } catch (error) {
-    console.error(error)
-    sendCommandError(error.message ? error.message : error)
+  if (!data.guildID) {
+    sendCommandError("You must specify a guildID!")
+  } else {
+    try {
+      const result = await command.exec(null, data, false)
+      sendCommandResult(result)
+    } catch (error) {
+      console.error(error)
+      sendCommandError(error.message ? error.message : error)
+    }
   }
 }
 

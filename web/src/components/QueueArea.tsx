@@ -7,17 +7,34 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore"
 import Typography from "@material-ui/core/Typography"
 import Container from "@material-ui/core/Container"
 import Grid from "@material-ui/core/Grid"
+import { SocketContext } from "../context/socket"
+import { Queue } from "typescript-collections"
+import { Track } from "../../../src/typings/exported-types"
+import { ListItemIcon, Link } from "@material-ui/core"
 
 interface Props {
   tracks?: any[]
 }
 
 function QueueArea(props: Props) {
-  const [show, setShow] = React.useState(false)
+  const [show, setShow] = React.useState(true)
+  const { addListener, guildID, sendControlMessage } = React.useContext(SocketContext)
+  const [currentQueue, setCurrentQueue] = React.useState<Track[]>([])
 
   const toggleShow = React.useCallback(() => {
     setShow(!show)
   }, [show, setShow])
+
+  React.useEffect(() => {
+    const unsubscribe = addListener("currentQueue", queue => {
+      setCurrentQueue(queue)
+    })
+
+    if (guildID !== "") {
+      sendControlMessage("getCurrentQueue").then(setCurrentQueue)
+    }
+    return unsubscribe
+  }, [addListener, sendControlMessage, guildID, setCurrentQueue])
 
   return (
     <Container style={{ marginTop: 16, marginBottom: 16 }}>
@@ -34,9 +51,18 @@ function QueueArea(props: Props) {
 
       {show ? (
         <List style={{ flexGrow: 1 }}>
-          <ListItem onClick={() => undefined}>
-            <ListItemText primary={"Primary"} secondary={"Secondary"} />
-          </ListItem>
+          {currentQueue.map((track, index) => (
+            <ListItem onClick={() => undefined} key={index}>
+              <ListItemText
+                primary={track.title}
+                secondary={
+                  <Link href={track.url} color="inherit">
+                    {track.url}
+                  </Link>
+                }
+              />
+            </ListItem>
+          ))}
         </List>
       ) : (
         undefined

@@ -7,19 +7,25 @@ import { TextChannel } from "discord.js"
 import { setTimeout } from "timers"
 import { Track } from "../typings/exported-types"
 import { createTrackStream } from "./util/streams"
-import { shuffle } from "./util/shuffle"
 import { sendMessage } from "../socket/messageSender"
+import ObservableQueue from "./ObservableQueue"
 
 export class MusicPlayer {
   cachedMessage: Message
   currentTrack: Track
   voiceConnection: VoiceConnection
-  private queue: Queue<Track>
+  queue: ObservableQueue<Track>
   private volume: number = 0.1
   private currentDisconnectionTimeout: NodeJS.Timeout
 
   constructor() {
-    this.queue = new Queue()
+    this.queue = new ObservableQueue<Track>()
+
+    this.queue.subscribe((currentTrack, remainingTracks) => {
+      this.currentTrack = currentTrack
+      sendMessage("currentSong", currentTrack)
+      sendMessage("currentQueue", remainingTracks)
+    })
   }
 
   isStreaming() {
@@ -41,7 +47,7 @@ export class MusicPlayer {
   }
 
   get queuedTracks() {
-    return this.queue
+    return this.queue.getRemaining()
   }
 
   get channel() {
@@ -49,8 +55,7 @@ export class MusicPlayer {
   }
 
   async enqueue(item: Track) {
-    this.queue.enqueue(item)
-    this.sendCurrentQueue()
+    this.queue.addElement(item)
   }
 
   async clear() {
@@ -88,25 +93,12 @@ export class MusicPlayer {
   }
 
   shuffle() {
-    const queuedTracksArray: Track[] = []
-    this.queuedTracks.forEach(track => {
-      queuedTracksArray.push(track)
-    })
-
-    shuffle(queuedTracksArray)
-
-    this.queuedTracks.clear()
-    _.forEach(queuedTracksArray, track => {
-      this.queuedTracks.enqueue(track)
-    })
-
-    this.sendCurrentQueue()
+    this.queue.shuffle()
   }
 
   skipCurrentSong() {
     if (this.isStreaming()) {
       this.voiceConnection.dispatcher.end("skipped")
-      this.sendCurrentQueue()
       return true
     } else {
       return false
@@ -115,11 +107,8 @@ export class MusicPlayer {
 
   async skipNextSongInQueue() {
     if (!this.isStreaming()) {
-      if (this.queue.size() === 0) return false
-      this.queue.dequeue()
-      return true
+      return this.queue.moveForward()
     }
-    this.sendCurrentQueue()
   }
 
   stopStream() {
@@ -151,14 +140,13 @@ export class MusicPlayer {
   }
 
   private createStream() {
-    this.currentTrack = this.queue.dequeue()
+    this.currentTrack = this.queue.consumeCurrent()
     createTrackStream(this.currentTrack, stream => {
       this.voiceConnection.playStream(stream, { seek: 0, volume: this.volume, passes: 1 })
       this.voiceConnection.dispatcher.once("start", () => {
         this.cachedMessage.channel.send(
           `:raised_hands: Let me see your hands while I play *${this.currentTrack.title}* :raised_hands: `
         )
-        this.sendCurrentSong()
       })
       this.voiceConnection.dispatcher.once("end", reason => {
         stream.destroy()
@@ -176,8 +164,6 @@ export class MusicPlayer {
             }
             this.currentDisconnectionTimeout.refresh()
           }
-          this.sendCurrentQueue()
-          this.sendCurrentSong()
         }
       })
       this.voiceConnection.dispatcher.on("error", e => {
@@ -186,13 +172,5 @@ export class MusicPlayer {
       })
     })
     return "Music stream started"
-  }
-
-  private sendCurrentSong() {
-    sendMessage("currentSong", this.currentTrack)
-  }
-
-  private sendCurrentQueue() {
-    sendMessage("currentQueue", this.queue)
   }
 }

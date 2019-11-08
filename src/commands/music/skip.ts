@@ -41,7 +41,7 @@ class SkipCommand extends Command {
     }
 
     const suppliedAmount = args.amount
-    const queueSize = musicPlayer.queuedTracks.size()
+    const queueSize = musicPlayer.queue.size()
 
     if (args.amount === 1) {
       musicPlayer.skipCurrentSong()

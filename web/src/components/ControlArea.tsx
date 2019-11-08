@@ -54,7 +54,6 @@ const ControlArea = (props: ControlAreaProps) => {
   const SkipNextButton = () => {
     const onButtonClick = async () => {
       sendCommand("skip")
-        .then(() => console.log("skip successful"))
         .catch(trackError)
     }
     return <StyledButton icon={<SkipNextIcon />} text="Skip next" onClick={onButtonClick} />
