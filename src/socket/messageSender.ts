@@ -1,5 +1,4 @@
 import { Socket } from "socket.io"
-import { ControlMessageResponse, ControlMessage, InfoMessageType, InfoMessage } from "../shared/exported-types"
 import { trackError } from "../shared/util/trackError"
 
 // tslint:disable: no-console

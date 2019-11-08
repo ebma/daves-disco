@@ -1,14 +1,5 @@
 import React from "react"
 import io from "socket.io-client"
-import {
-  ControlMessage,
-  ControlMessageResponse,
-  InfoMessage,
-  InfoMessageType,
-  CommandMessageType,
-  CommandMessage,
-  ControlMessageType
-} from "../shared/exported-types"
 import { trackError } from "../lib/trackError"
 
 const path =

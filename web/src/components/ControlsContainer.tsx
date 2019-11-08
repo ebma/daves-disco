@@ -12,7 +12,6 @@ import VolumeSlider from "./VolumeSlider"
 import UserIdentifierForm from "../forms/UserIdentifierForm"
 import ConnectionStateIndicator from "./ConnectionStateIndicator"
 import { trackError } from "../lib/trackError"
-import { Track } from "../shared/exported-types"
 import QueueArea from "./QueueArea"
 
 interface ControlAreaProps {}
@@ -64,7 +63,7 @@ function ControlsContainer(props: ControlAreaProps) {
       unsubscribeCurrentSong()
       unsubscribeCurrentQueue()
     }
-  }, [addListener, connectionState, sendControlMessage])
+  }, [addListener, connectionState, guildID, sendControlMessage])
 
   const PlayButton = () => {
     const onButtonClick = async () => {

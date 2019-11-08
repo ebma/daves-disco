@@ -2,7 +2,6 @@ import search from "youtube-search"
 import _ from "lodash"
 import request from "request"
 import ytdl from "ytdl-core"
-import { Track } from "../exported-types"
 
 const youtubeBaseURL = "https://www.googleapis.com/youtube/v3"
 
@@ -37,7 +36,7 @@ export function createTracksFromSearchTerm(term: string, maxResults: number) {
               publishedAt: searchResult.publishedAt,
               source: "youtube",
               title: searchResult.title,
-              thumbnail: thumbnail.url,
+              thumbnail: thumbnail ? thumbnail.url : undefined,
               url: searchResult.link
             })
           })
@@ -68,18 +67,21 @@ export async function createTrackFromURL(url: string): Promise<Track> {
 export async function createTracksFromPlayList(playlistID: string): Promise<Playlist> {
   const key = process.env.YOUTUBE_API_KEY
 
-  let requestURL = `${youtubeBaseURL}/playlistItems?part=snippet&playlistId=${playlistID}&maxResults=50&key=${key}`
+  let requestURL:
+    | string
+    | undefined = `${youtubeBaseURL}/playlistItems?part=snippet&playlistId=${playlistID}&maxResults=50&key=${key}`
   const collected: Track[] = []
   while (requestURL) {
     const resp = await new Promise<request.Response>((resolve, reject) => {
-      request(requestURL, null, (error: any, response: request.RequestResponse, body: any) => {
+      if (!requestURL) return
+      request(requestURL, undefined, (error: any, response: request.RequestResponse, body: any) => {
         if (error) return reject(error)
         return resolve(response)
       })
     })
     if (resp.statusCode !== 200) throw new Error(`Code: ${resp.statusCode}`)
     const data = JSON.parse(resp.body)
-    requestURL = !_.isNil(data.nextPageToken) ? `${youtubeBaseURL}&pageToken=${data.nextPageToken}` : null
+    requestURL = !_.isNil(data.nextPageToken) ? `${youtubeBaseURL}&pageToken=${data.nextPageToken}` : undefined
     _.forEach(data.items, (song: any) => {
       const artwork = _.isNil(song.snippet.thumbnails)
         ? "http://beatmakerleague.com/images/No_Album_Art.png"

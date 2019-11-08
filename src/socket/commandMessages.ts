@@ -1,6 +1,5 @@
 import { AkairoClient } from "discord-akairo"
 import { Socket } from "socket.io"
-import { CommandMessage } from "../shared/exported-types"
 import { trackError } from "../shared/util/trackError"
 
 const handleCommandMessages = (socket: Socket, client: AkairoClient) => async (data: CommandMessage) => {

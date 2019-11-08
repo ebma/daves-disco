@@ -2,7 +2,6 @@ import { Message, TextChannel } from "discord.js"
 import { Command } from "discord-akairo"
 import _ from "lodash"
 import MusicPlayerManager from "../../libs/MusicPlayerManager"
-import { CommandMessage } from "../../shared/exported-types"
 
 class PauseCommand extends Command {
   constructor() {
