@@ -55,7 +55,7 @@ function QueueArea(props: Props) {
               <ListItemText
                 primary={track.title}
                 secondary={
-                  <Link href={track.url} color="inherit">
+                  <Link href={track.url} color="inherit" target="_blank" rel="noreferrer">
                     {track.url}
                   </Link>
                 }
