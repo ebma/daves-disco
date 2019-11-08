@@ -20,6 +20,7 @@
   "homepage": "https://github.com/Marcel-Ebert/discord-music-bot#readme",
   "main": "src/index.js",
   "scripts": {
+    "clear-cache": "rm -rf ./dist",
     "precommit": "lint-staged",
     "start": "npm run serve",
     "serve": "node dist/index.js",
@@ -32,7 +33,7 @@
     "watch-ts": "tsc -w",
     "test": "jest --forceExit --coverage --verbose",
     "lint": "tsc --noEmit && tslint \"**/*.{ts}\" --quiet --fix",
-    "debug": "npm run build && npm run watch-debug",
+    "debug": "npm run clear-cache && npm run build && npm run watch-debug",
     "serve-debug": "nodemon --inspect dist/index.js",
     "watch-debug": "concurrently -k -p \"[{name}]\" -n \"Sass,TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run serve-debug\""
   },
