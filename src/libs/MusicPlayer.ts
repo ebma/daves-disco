@@ -98,6 +98,17 @@ export class MusicPlayer {
 
   skipCurrentSong() {
     if (this.isStreaming()) {
+      this.queue.moveForward()
+      this.voiceConnection.dispatcher.end("skipped")
+      return true
+    } else {
+      return false
+    }
+  }
+
+  skipPrevious() {
+    if (this.isStreaming()) {
+      this.queue.moveBack()
       this.voiceConnection.dispatcher.end("skipped")
       return true
     } else {
@@ -106,9 +117,7 @@ export class MusicPlayer {
   }
 
   async skipNextSongInQueue() {
-    if (!this.isStreaming()) {
-      return this.queue.moveForward()
-    }
+    return this.queue.moveForward()
   }
 
   stopStream() {
@@ -140,7 +149,6 @@ export class MusicPlayer {
   }
 
   private createStream() {
-    this.currentTrack = this.queue.consumeCurrent()
     createTrackStream(this.currentTrack, stream => {
       this.voiceConnection.playStream(stream, { seek: 0, volume: this.volume, passes: 1 })
       this.voiceConnection.dispatcher.once("start", () => {

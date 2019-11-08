@@ -8,9 +8,8 @@ import Typography from "@material-ui/core/Typography"
 import Container from "@material-ui/core/Container"
 import Grid from "@material-ui/core/Grid"
 import { SocketContext } from "../context/socket"
-import { Queue } from "typescript-collections"
 import { Track } from "../../../src/typings/exported-types"
-import { ListItemIcon, Link } from "@material-ui/core"
+import { Link } from "@material-ui/core"
 
 interface Props {
   tracks?: any[]

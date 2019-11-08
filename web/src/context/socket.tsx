@@ -1,6 +1,6 @@
 import React from "react"
 import io from "socket.io-client"
-import { ControlMessage, ControlMessageResponse, InfoMessage, InfoMessageType } from "../../../src/typings/exported-types"
+import { ControlMessage, ControlMessageResponse, InfoMessage, InfoMessageType, CommandMessageType } from "../../../src/typings/exported-types"
 
 const path = process.env.NODE_ENV === "production" && process.env.REACT_APP_BOT_SERVER_PATH ? process.env.REACT_APP_BOT_SERVER_PATH : "http://localhost:1234"
 const MAX_RECONNECTION_ATTEMPTS = 10
@@ -18,7 +18,7 @@ export interface SocketContextType {
   guildID: string
   userID: string
   addListener: (type: InfoMessageType, listener: MessageListener) => () => void // returns unsubscribe method
-  sendCommand: (command: string, data?: any) => Promise<any>
+  sendCommand: (command: CommandMessageType, data?: any) => Promise<any>
   sendControlMessage: (type: ControlMessage["type"], data?: any) => Promise<any>
   setGuildID: (guildID: string) => void
   setUserID: (userID: string) => void

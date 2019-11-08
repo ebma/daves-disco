@@ -48,13 +48,15 @@ const ControlArea = (props: ControlAreaProps) => {
   }
 
   const SkipPreviousButton = () => {
-    return <StyledButton alignIconBefore icon={<SkipPreviousIcon />} text="Skip previous" onClick={() => undefined} />
+    const onButtonClick = async () => {
+      sendCommand("skip-previous").catch(trackError)
+    }
+    return <StyledButton alignIconBefore icon={<SkipPreviousIcon />} text="Skip previous" onClick={onButtonClick} />
   }
 
   const SkipNextButton = () => {
     const onButtonClick = async () => {
-      sendCommand("skip")
-        .catch(trackError)
+      sendCommand("skip").catch(trackError)
     }
     return <StyledButton icon={<SkipNextIcon />} text="Skip next" onClick={onButtonClick} />
   }

@@ -27,7 +27,7 @@ export interface ControlMessageResponse {
 }
 
 export interface CommandMessage {
-  command: string
+  command: CommandMessageType
   messageID: number
   userID: string
   guildID: string
@@ -40,3 +40,5 @@ export interface InfoMessage {
 }
 
 export type InfoMessageType = "currentSong" | "currentQueue" | "paused" | "resumed"
+
+export type CommandMessageType = "pause" | "resume" | "skip" | "skip-previous"
