@@ -10,10 +10,10 @@ import {
   isYoutubeVideo,
   createTracksFromSearchTerm,
   createTrackFromURL
-} from "../../libs/util/youtube"
+} from "../../shared/util/youtube"
 import { createEmbedForTrack, createEmbedForTracks, createEmbedsForSpotifyPlaylist } from "../../libs/util/embeds"
 import { isSpotifyPlaylistURI, getSpotifyPlaylist } from "../../libs/util/spotify"
-import { trackError } from "../../shared/trackError"
+import { trackError } from "../../shared/util/trackError"
 
 class PlayCommand extends Command {
   private musicPlayer: MusicPlayer

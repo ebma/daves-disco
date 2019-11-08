@@ -1,9 +1,8 @@
-import { Message } from "discord.js"
+import { Message, TextChannel } from "discord.js"
 import { Command } from "discord-akairo"
 import _ from "lodash"
 import MusicPlayerManager from "../../libs/MusicPlayerManager"
 import { CommandMessage } from "../../shared/exported-types"
-import { TextChannel } from "discord.js"
 
 class VolumeCommand extends Command {
   constructor() {

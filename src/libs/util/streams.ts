@@ -1,9 +1,9 @@
 import { Readable } from "stream"
 import * as ytdl from "ytdl-core"
-import { createTracksFromSearchTerm } from "./youtube"
+import { createTracksFromSearchTerm } from "../../shared/util/youtube"
 import _ from "lodash"
 import { Track, SpotifyTrack } from "../../shared/exported-types"
-import { trackError } from "../../shared/trackError"
+import { trackError } from "../../shared/util/trackError"
 
 export async function createTrackStream(track: Track, callback: (stream: Readable) => void) {
   try {
