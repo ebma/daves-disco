@@ -1,5 +1,5 @@
 import { MusicPlayer } from "./../../libs/MusicPlayer"
-import { Message } from "discord.js"
+import { Message, TextChannel } from "discord.js"
 import { Command } from "discord-akairo"
 import _ from "lodash"
 import { RichEmbed } from "discord.js"
@@ -71,6 +71,9 @@ class PlayCommand extends Command {
   }
 
   async exec(message: Message, args: any) {
+    if (!message) {
+      return this.executeSilent(args)
+    }
     this.musicPlayer = MusicPlayerManager.getPlayerFor(message.guild.id)
 
     if (!message.member.voiceChannel) {
@@ -105,6 +108,50 @@ class PlayCommand extends Command {
       trackError(error, this)
       return message.channel.send(`Something went wrong... ${error}`)
     }
+  }
+
+  executeSilent(args: CommandMessage) {
+    return new Promise<void>(async (resolve, reject) => {
+      const { guildID, userID } = args
+      const guild = this.client.guilds.find(g => g.id === guildID)
+      const member = guild.members.find(m => m.id === userID)
+      const fallbackChannel = guild.channels.find(
+        channel => channel.name === "general" && channel.type === "text"
+      ) as TextChannel
+
+      this.musicPlayer = MusicPlayerManager.getPlayerFor(guildID)
+
+      try {
+        await this.musicPlayer.join(member.voiceChannel)
+      } catch (error) {
+        reject(error)
+      }
+
+      const userInput: string = args.data
+
+      let reply: RichEmbed | string = ""
+
+      try {
+        if (isYoutubePlaylist(userInput)) {
+          const playlistID = new URL(userInput).searchParams.get("list")
+          reply = await this.handleYoutubePlaylist(playlistID)
+        } else if (isYoutubeVideo(userInput)) {
+          reply = await this.handleYoutubeVideo(userInput)
+        } else if (isSpotifyPlaylistURI(userInput)) {
+          const playlistID = userInput.split(":")[userInput.split(":").length - 1]
+          reply = await this.handleSpotifyPlaylist(playlistID)
+        } else {
+          reply = await this.handleSearch(userInput)
+        }
+        await this.musicPlayer.play()
+        this.musicPlayer.trySendMessageToChannel(reply, fallbackChannel)
+        resolve()
+      } catch (error) {
+        trackError(error, this)
+        this.musicPlayer.trySendMessageToChannel(`Something went wrong... ${error}`, fallbackChannel)
+        reject()
+      }
+    })
   }
 }
 

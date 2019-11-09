@@ -9,9 +9,10 @@ import { trackError } from "../shared/util/trackError"
 import { sendMessage } from "../socket/messageSender"
 import { createTrackStream } from "./util/streams"
 import ObservableQueue from "./ObservableQueue"
+import { RichEmbed } from "discord.js"
 
 export class MusicPlayer {
-  cachedMessage: Message
+  cachedMessage?: Message
   currentTrack: Track
   voiceConnection: VoiceConnection
   queue: ObservableQueue<Track>
@@ -70,12 +71,14 @@ export class MusicPlayer {
     this.voiceConnection = await voiceChannel.join()
   }
 
-  async play(message: Message) {
+  async play(message?: Message) {
     if (this.queue.size() === 0) return "There is nothing in the queue!"
     else if (this.isStreaming()) return "I am already streaming!"
     else if (!this.isInVoiceChannel()) return
-    this.cachedMessage = message
-    await this.cachedMessage.react("🤘")
+    if (message) {
+      this.cachedMessage = message
+      await this.cachedMessage.react("🤘")
+    }
     return this.createStream()
   }
 
@@ -129,13 +132,13 @@ export class MusicPlayer {
   }
 
   async close(reason: string) {
-    await this.cachedMessage.channel.send(reason ? reason : "**Closing music session due to inactivity**")
+    this.trySendMessageToChannel(reason ? reason : "**Closing music session due to inactivity**")
     this.stopStream()
   }
 
   disconnectIfReasonable() {
     if (this.queue && this.queue.size() === 0) {
-      this.cachedMessage.channel.send("That's it for now... Later bitches! :metal:")
+      this.trySendMessageToChannel("That's it for now... Later bitches! :metal:")
       this.voiceConnection.disconnect()
       this.voiceConnection = null
     }
@@ -154,16 +157,16 @@ export class MusicPlayer {
     createTrackStream(this.currentTrack, stream => {
       this.voiceConnection.playStream(stream, { seek: 0, volume: this.volume, passes: 1 })
       this.voiceConnection.dispatcher.once("start", () => {
-        this.cachedMessage.channel.send(
+        this.trySendMessageToChannel(
           `:raised_hands: Let me see your hands while I play *${this.currentTrack.title}* :raised_hands: `
         )
       })
       this.voiceConnection.dispatcher.once("end", reason => {
         stream.destroy()
-        this.cachedMessage.channel.send(`Played: *${this.currentTrack.title}*`)
+        this.trySendMessageToChannel(`Played: *${this.currentTrack.title}*`)
         if (reason !== "forceStop") {
           if (this.voiceConnection.channel.members.every(member => member.deaf || member.user.bot)) {
-            this.cachedMessage.channel.send("Stopping stream since no one is listening")
+            this.trySendMessageToChannel("Stopping stream since no one is listening")
             this.voiceConnection.disconnect()
           } else if (this.queue.size() > 0) {
             return setTimeout(() => this.createStream(), 50)
@@ -178,9 +181,17 @@ export class MusicPlayer {
       })
       this.voiceConnection.dispatcher.on("error", e => {
         trackError(e, this)
-        this.cachedMessage.channel.send(`I don't feel so good... (${e})`)
+        this.trySendMessageToChannel(`I don't feel so good... (${e})`)
       })
     })
     return "Music stream started"
+  }
+
+  public trySendMessageToChannel(message: string | RichEmbed, fallbackChannel?: TextChannel) {
+    if (this.cachedMessage) {
+      this.cachedMessage.channel.send(message)
+    } else if (fallbackChannel) {
+      fallbackChannel.send(message)
+    }
   }
 }

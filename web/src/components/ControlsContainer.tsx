@@ -5,14 +5,15 @@ import PlayIcon from "@material-ui/icons/PlayArrow"
 import SkipPreviousIcon from "@material-ui/icons/SkipPrevious"
 import SkipNextIcon from "@material-ui/icons/SkipNext"
 import PauseIcon from "@material-ui/icons/Pause"
-import CurrentSongCard from "./CurrentSongCard"
-import StyledButton from "./StyledButton"
 import { SocketContext } from "../context/socket"
-import VolumeSlider from "./VolumeSlider"
 import UserIdentifierForm from "../forms/UserIdentifierForm"
 import ConnectionStateIndicator from "./ConnectionStateIndicator"
-import { trackError } from "../lib/trackError"
+import { trackError } from "../shared/util/trackError"
+import AddSongArea from "./AddSongArea"
+import CurrentSongCard from "./CurrentSongCard"
 import QueueArea from "./QueueArea"
+import VolumeSlider from "./VolumeSlider"
+import StyledButton from "./StyledButton"
 
 interface ControlAreaProps {}
 
@@ -155,6 +156,7 @@ function ControlsContainer(props: ControlAreaProps) {
       {connectionState === "connected" && userID ? (
         <>
           {ControlArea}
+          <AddSongArea onSearchDone={searchTerm => sendCommand("play", searchTerm)} />
           <QueueArea currentQueue={currentQueue} />
         </>
       ) : (
