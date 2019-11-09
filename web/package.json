@@ -5,25 +5,34 @@
   "dependencies": {
     "@material-ui/core": "^4.4.2",
     "@material-ui/icons": "^4.4.1",
+    "@material-ui/lab": "^4.0.0-alpha.31",
+    "lodash": "^4.17.15",
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0",
+    "react-scripts": "^3.1.2",
+    "request": "^2.88.0",
+    "socket.io": "^2.3.0",
+    "socket.io-client": "^2.3.0",
+    "surge": "^0.21.3",
+    "youtube-search": "^1.1.4",
+    "ytdl-core": "^1.0.0"
+  },
+  "devDependencies": {
     "@types/jest": "24.0.18",
+    "@types/lodash": "^4.14.138",
     "@types/node": "12.7.5",
     "@types/react": "16.9.2",
     "@types/react-dom": "16.9.0",
     "@types/socket.io-client": "^1.4.32",
-    "react": "^16.9.0",
-    "react-dom": "^16.9.0",
-    "react-scripts": "3.1.2",
-    "surge": "^0.21.3",
-    "socket.io": "^2.3.0",
-    "socket.io-client": "^2.3.0",
+    "dotenv-webpack": "^1.7.0",
+    "react-app-rewired": "^2.1.5",
     "typescript": "3.6.3"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
     "deploy": "npm run build && surge ./build --domain discord-bot.marcel-ebert.de",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "test": "react-app-rewired test"
   },
   "eslintConfig": {
     "extends": "react-app"

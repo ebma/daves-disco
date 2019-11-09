@@ -3,8 +3,8 @@ import io from "socket.io-client"
 import { trackError } from "../shared/util/trackError"
 
 const path =
-  process.env.NODE_ENV === "production" && process.env.REACT_APP_BOT_SERVER_PATH
-    ? process.env.REACT_APP_BOT_SERVER_PATH
+  process.env.NODE_ENV === "production" && process.env.BOT_SERVER_PATH
+    ? process.env.BOT_SERVER_PATH
     : "http://localhost:1234"
 const MAX_RECONNECTION_ATTEMPTS = 10
 
