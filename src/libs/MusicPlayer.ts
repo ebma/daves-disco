@@ -13,7 +13,7 @@ import { RichEmbed } from "discord.js"
 
 export class MusicPlayer {
   cachedMessage?: Message
-  currentTrack: Track
+  currentTrack?: Track
   voiceConnection: VoiceConnection
   queue: ObservableQueue<Track>
   private volume: number = 0.1
@@ -155,15 +155,16 @@ export class MusicPlayer {
   private createStream() {
     if (!this.currentTrack) return
     createTrackStream(this.currentTrack, stream => {
+      const playingTrack = this.currentTrack
       this.voiceConnection.playStream(stream, { seek: 0, volume: this.volume, passes: 1 })
       this.voiceConnection.dispatcher.once("start", () => {
         this.trySendMessageToChannel(
-          `:raised_hands: Let me see your hands while I play *${this.currentTrack.title}* :raised_hands: `
+          `:raised_hands: Let me see your hands while I play *${playingTrack.title}* :raised_hands: `
         )
       })
       this.voiceConnection.dispatcher.once("end", reason => {
         stream.destroy()
-        this.trySendMessageToChannel(`Played: *${this.currentTrack.title}*`)
+        this.trySendMessageToChannel(`Played: *${playingTrack.title}*`)
         if (reason !== "forceStop") {
           if (this.voiceConnection.channel.members.every(member => member.deaf || member.user.bot)) {
             this.trySendMessageToChannel("Stopping stream since no one is listening")

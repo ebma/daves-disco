@@ -20,7 +20,7 @@ export class ObservableQueue<T extends object> {
   }
 
   public moveForward() {
-    if (this.currentIndex + 1 < this.itemList.length) {
+    if (this.currentIndex + 1 <= this.itemList.length) {
       this.currentIndex++
       this.notifyObservers()
       return true
@@ -49,12 +49,8 @@ export class ObservableQueue<T extends object> {
   }
 
   public getCurrent() {
-    try {
-      const current = this.itemList[this.currentIndex]
-      return current
-    } catch (error) {
-      return null
-    }
+    const current = this.itemList[this.currentIndex]
+    return current
   }
 
   public consumeCurrent() {
@@ -68,21 +64,13 @@ export class ObservableQueue<T extends object> {
   }
 
   public getNext() {
-    try {
-      const next = this.itemList[this.currentIndex + 1]
-      return next
-    } catch (error) {
-      return null
-    }
+    const next = this.itemList[this.currentIndex + 1]
+    return next
   }
 
   public getPrevious() {
-    try {
-      const previous = this.itemList[this.currentIndex - 1]
-      return previous
-    } catch (error) {
-      return null
-    }
+    const previous = this.itemList[this.currentIndex - 1]
+    return previous
   }
 
   public clear() {

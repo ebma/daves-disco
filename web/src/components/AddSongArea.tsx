@@ -57,7 +57,7 @@ function AddSongArea(props: Props) {
     } catch (error) {
       trackError(error)
     }
-  }, [inputValue])
+  }, [inputValue, fetch])
 
   return (
     <Card className={classes.cardStyle}>
