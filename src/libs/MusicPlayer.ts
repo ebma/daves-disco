@@ -169,7 +169,7 @@ export class MusicPlayer {
           if (this.voiceConnection.channel.members.every(member => member.deaf || member.user.bot)) {
             this.trySendMessageToChannel("Stopping stream since no one is listening")
             this.voiceConnection.disconnect()
-          } else if (this.queue.size() > 0) {
+          } else if (this.queue.getRemaining().length > 0) {
             return setTimeout(() => this.createStream(), 50)
           } else if (this.queue.size() === 0) {
             this.currentTrack = undefined
