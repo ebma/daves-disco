@@ -1,7 +1,7 @@
 import { AkairoClient } from "discord-akairo"
 import { Socket } from "socket.io"
 import MusicPlayerManager from "../libs/MusicPlayerManager"
-import { sendResultResponse, sendErrorResponse } from "./messageSender"
+import MessageSender from "./MessageSender"
 
 const handleControlMessages = (socket: Socket, client: AkairoClient) => (message: ControlMessage) => {
   switch (message.type) {
@@ -13,11 +13,11 @@ const handleControlMessages = (socket: Socket, client: AkairoClient) => (message
         })
         .sort((a, b) => a.name.localeCompare(b.name))
 
-      sendResultResponse(message, reducedGuilds)
+      MessageSender.sendResultResponse(message, reducedGuilds)
       break
     case "getUsers":
       if (!message.guildID) {
-        sendErrorResponse(message, "No guildID provided!")
+        MessageSender.sendErrorResponse(message, "No guildID provided!")
       } else {
         const guild = client.guilds.find(g => g.id === message.guildID)
         if (guild) {
@@ -31,34 +31,34 @@ const handleControlMessages = (socket: Socket, client: AkairoClient) => (message
               return { id: member.id, name: member.displayName }
             })
             .sort((a, b) => a.name.localeCompare(b.name))
-          sendResultResponse(message, reducedMembers)
+          MessageSender.sendResultResponse(message, reducedMembers)
         } else {
-          sendErrorResponse(message, `Could not find guild with ID ${message.guildID}`)
+          MessageSender.sendErrorResponse(message, `Could not find guild with ID ${message.guildID}`)
         }
       }
       break
     case "getCurrentSong":
       if (!message.guildID) {
-        sendErrorResponse(message, "No guildID provided!")
+        MessageSender.sendErrorResponse(message, "No guildID provided!")
       } else {
         const player = MusicPlayerManager.getPlayerFor(message.guildID)
-        sendResultResponse(message, player.currentTrack)
+        MessageSender.sendResultResponse(message, player.currentTrack)
       }
       break
     case "getCurrentQueue":
       if (!message.guildID) {
-        sendErrorResponse(message, "No guildID provided!")
+        MessageSender.sendErrorResponse(message, "No guildID provided!")
       } else {
         const player = MusicPlayerManager.getPlayerFor(message.guildID)
-        sendResultResponse(message, player.queuedTracks)
+        MessageSender.sendResultResponse(message, player.queuedTracks)
       }
       break
     case "getVolume":
       if (!message.guildID) {
-        sendErrorResponse(message, "No guildID provided!")
+        MessageSender.sendErrorResponse(message, "No guildID provided!")
       } else {
         const player = MusicPlayerManager.getPlayerFor(message.guildID)
-        sendResultResponse(message, player.getVolume())
+        MessageSender.sendResultResponse(message, player.getVolume())
       }
       break
   }

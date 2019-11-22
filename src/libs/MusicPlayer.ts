@@ -6,7 +6,7 @@ import { Message } from "discord.js"
 import { TextChannel } from "discord.js"
 import { setTimeout } from "timers"
 import { trackError } from "../shared/util/trackError"
-import { sendMessage } from "../socket/messageSender"
+import MessageSender from "../socket/MessageSender"
 import { createTrackStream } from "./util/streams"
 import ObservableQueue from "./ObservableQueue"
 import { RichEmbed } from "discord.js"
@@ -24,8 +24,8 @@ export class MusicPlayer {
 
     this.queue.subscribe((currentTrack, remainingTracks) => {
       this.currentTrack = currentTrack
-      sendMessage("currentSong", currentTrack)
-      sendMessage("currentQueue", remainingTracks)
+      MessageSender.sendMessage("currentSong", currentTrack)
+      MessageSender.sendMessage("currentQueue", remainingTracks)
     })
   }
 
@@ -45,7 +45,7 @@ export class MusicPlayer {
     if (this.isStreaming()) {
       this.voiceConnection.dispatcher.setVolume(this.volume)
     }
-    sendMessage("volume", newVol)
+    MessageSender.sendMessage("volume", newVol)
   }
 
   get queuedTracks() {
@@ -86,14 +86,14 @@ export class MusicPlayer {
     if (!this.isStreaming()) return "I am not playing anything!"
     else if (this.isPaused()) return "I am already paused!"
     this.voiceConnection.dispatcher.pause()
-    sendMessage("paused")
+    MessageSender.sendMessage("paused")
   }
 
   async resumeStream() {
     if (!this.isStreaming()) return "There is nothing to resume!"
     else if (!this.isPaused()) return "I have already started playing!"
     this.voiceConnection.dispatcher.resume()
-    sendMessage("resumed")
+    MessageSender.sendMessage("resumed")
   }
 
   shuffle() {

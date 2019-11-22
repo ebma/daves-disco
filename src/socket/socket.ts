@@ -4,10 +4,10 @@ import { Server } from "http"
 import socketio, { Socket } from "socket.io"
 import { handleControlMessages } from "./controlMessages"
 import { handleCommandMessages } from "./commandMessages"
-import { setupMessageSender } from "./messageSender"
+import MessageSender from "./MessageSender"
 
 function initializeSocket(socket: Socket, client: AkairoClient) {
-  setupMessageSender(socket)
+  MessageSender.setSocket(socket)
 
   socket.on("command", handleCommandMessages(socket, client))
 
