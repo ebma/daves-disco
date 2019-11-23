@@ -112,7 +112,14 @@ function ControlsContainer(props: ControlAreaProps) {
         <Box style={{ marginTop: 8, marginBottom: 8 }}>
           <Card>
             {guilds ? (
-              <UserIdentifierForm guilds={guilds} members={members} setUserID={setUserID} setGuildID={setGuildID} />
+              <UserIdentifierForm
+                currentGuild={guildID}
+                currentUser={userID}
+                guilds={guilds}
+                members={members}
+                setUserID={setUserID}
+                setGuildID={setGuildID}
+              />
             ) : (
               <Typography variant="h6" color="textPrimary" align="center" style={{ padding: 8 }}>
                 No guilds online...
@@ -124,7 +131,7 @@ function ControlsContainer(props: ControlAreaProps) {
     } else {
       return undefined
     }
-  }, [connectionState, guilds, members, setUserID, setGuildID])
+  }, [connectionState, guildID, userID, guilds, members, setUserID, setGuildID])
 
   const ControlArea = React.useMemo(
     () => (

@@ -44,11 +44,21 @@ interface Props {
 
 export type ConnectionState = "disconnected" | "reconnecting" | "connected"
 
+function getGuildIDFromLocalStorage(){
+  const storedGuildID = localStorage.getItem("guildID")
+  return storedGuildID ? storedGuildID : ""
+}
+
+function getUserIDFromLocalStorage(){
+  const storedUserID = localStorage.getItem("userID")
+  return storedUserID ? storedUserID : ""
+}
+
 function SocketProvider(props: Props) {
   const [connectionState, setConnectionState] = React.useState<ConnectionState>("disconnected")
   const [currentSocket, setCurrentSocket] = React.useState<SocketIOClient.Socket | null>(null)
-  const [guildID, setGuildID] = React.useState<string>("")
-  const [userID, setUserID] = React.useState<string>("")
+  const [guildID, setGuildID] = React.useState<string>(getGuildIDFromLocalStorage)
+  const [userID, setUserID] = React.useState<string>(getUserIDFromLocalStorage)
 
   React.useEffect(() => {
     const socket = io(path, {
@@ -161,8 +171,14 @@ function SocketProvider(props: Props) {
     guildID,
     sendCommand,
     sendControlMessage,
-    setGuildID,
-    setUserID
+    setGuildID: (guildID: string) => {
+      localStorage.setItem("guildID", guildID)
+      setGuildID(guildID)
+    },
+    setUserID: (userID: string) => {
+      localStorage.setItem("userID", userID)
+      setUserID(userID)
+    }
   }
 
   return <SocketContext.Provider value={contextValue}>{props.children}</SocketContext.Provider>

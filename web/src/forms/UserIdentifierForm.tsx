@@ -27,6 +27,8 @@ interface State {
 }
 
 interface Props {
+  currentGuild?: string
+  currentUser?: string
   guilds: Guilds
   members?: Members
   setUserID: (userID: string) => void
@@ -36,24 +38,7 @@ interface Props {
 function UserIdentifierForm(props: Props) {
   const classes = useStyles()
 
-  const { guilds, members, setUserID, setGuildID } = props
-
-  const [values, setValues] = React.useState<State>({
-    userID: "",
-    guildID: ""
-  })
-
-  React.useEffect(() => {
-    setUserID(values.userID)
-    setGuildID(values.guildID)
-  }, [values.userID, values.guildID, setUserID, setGuildID])
-
-  const handleChange = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
-    setValues(oldValues => ({
-      ...oldValues,
-      [event.target.name as string]: event.target.value
-    }))
-  }
+  const { currentGuild, currentUser, guilds, members, setUserID, setGuildID } = props
 
   return (
     <form className={classes.container} noValidate autoComplete="off">
@@ -65,8 +50,10 @@ function UserIdentifierForm(props: Props) {
         <FormControl className={classes.formControl} fullWidth>
           <InputLabel htmlFor="guildID">Guild</InputLabel>
           <Select
-            value={values.guildID}
-            onChange={handleChange}
+            value={currentGuild}
+            onChange={(event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
+              setGuildID(event.target.value as string)
+            }}
             inputProps={{
               name: "guildID",
               id: "guildID"
@@ -85,8 +72,10 @@ function UserIdentifierForm(props: Props) {
         <FormControl className={classes.formControl} fullWidth>
           <InputLabel htmlFor="userID">Member</InputLabel>
           <Select
-            value={values.userID}
-            onChange={handleChange}
+            value={currentUser}
+            onChange={(event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
+              setUserID(event.target.value as string)
+            }}
             inputProps={{
               name: "userID",
               id: "userID"
