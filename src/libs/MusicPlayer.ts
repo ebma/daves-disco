@@ -24,6 +24,9 @@ export class MusicPlayer {
 
     this.queue.subscribe((currentTrack, remainingTracks) => {
       this.currentTrack = currentTrack
+      if (this.isStreaming() === false && !this.isPaused()) {
+        this.createStream()
+      }
       MessageSender.sendMessage("currentSong", currentTrack)
       MessageSender.sendMessage("currentQueue", remainingTracks)
     })
@@ -71,15 +74,9 @@ export class MusicPlayer {
     this.voiceConnection = await voiceChannel.join()
   }
 
-  async play(message?: Message) {
-    if (this.queue.size() === 0) return "There is nothing in the queue!"
-    else if (this.isStreaming()) return "I am already streaming!"
-    else if (!this.isInVoiceChannel()) return
-    if (message) {
-      this.cachedMessage = message
-      await this.cachedMessage.react("🤘")
-    }
-    return this.createStream()
+  async setMessage(message: Message) {
+    this.cachedMessage = message
+    this.cachedMessage.react("🤘")
   }
 
   async pauseStream() {
@@ -101,8 +98,8 @@ export class MusicPlayer {
   }
 
   skipCurrentSong() {
+    this.queue.moveForward()
     if (this.isStreaming()) {
-      this.queue.moveForward()
       this.voiceConnection.dispatcher.end("skipped")
       return true
     } else {
@@ -111,8 +108,8 @@ export class MusicPlayer {
   }
 
   skipPrevious() {
+    this.queue.moveBack()
     if (this.isStreaming()) {
-      this.queue.moveBack()
       this.voiceConnection.dispatcher.end("skipped")
       return true
     } else {

@@ -35,6 +35,7 @@ export class ObservableQueue<T extends object> {
       this.notifyObservers()
       return true
     } else {
+      this.notifyObservers() // notify anyways
       return false
     }
   }

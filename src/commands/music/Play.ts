@@ -92,7 +92,6 @@ class PlayCommand extends MusicCommand {
       } else {
         reply = await this.handleSearch(userInput)
       }
-      await this.musicPlayer.play(this.message)
       return this.sendMessageToChannel(reply)
     } catch (error) {
       trackError(error, this)

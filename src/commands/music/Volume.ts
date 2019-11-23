@@ -29,8 +29,6 @@ class VolumeCommand extends MusicCommand {
       return this.sendMessageToChannel("You can't change the volume if you are not even listening...")
     }
 
-    console.log("args in volume command", args)
-
     const oldVolume = this.musicPlayer.getVolume()
     const newVolume = args.data
     if (oldVolume === newVolume) {

@@ -16,13 +16,13 @@ export abstract class MusicCommand extends Command {
       return this.executeSilent(args)
     } else {
       this.message = message
+      this.musicPlayer = MusicPlayerManager.getPlayerFor(message.guild.id)
+      this.musicPlayer.setMessage(message)
+      this.guild = message.guild
+      this.member = message.member
+
+      this.execute(args)
     }
-
-    this.musicPlayer = MusicPlayerManager.getPlayerFor(message.guild.id)
-    this.guild = message.guild
-    this.member = message.member
-
-    this.execute(args)
   }
 
   executeSilent(args: CommandMessage) {
