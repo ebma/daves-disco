@@ -18,7 +18,7 @@ class PlayCommand extends MusicCommand {
       aliases: ["play"],
       args: [
         {
-          id: "trackInfo",
+          id: "data",
           type: "string",
           match: "content",
           prompt: {
@@ -65,7 +65,7 @@ class PlayCommand extends MusicCommand {
     return createEmbedForTrack(track)
   }
 
-  async execute(args: any) {
+  async execute(args: { data: any }) {
     if (!this.member.voiceChannel) {
       return this.sendMessageToChannel("You have to be connected to a voice channel...")
     }
@@ -76,7 +76,7 @@ class PlayCommand extends MusicCommand {
       return this.sendMessageToChannel(`Couldn't join voice channel, because: ${error} :unamused: `)
     }
 
-    const userInput: string = args.trackInfo
+    const userInput: string = args.data
 
     let reply: RichEmbed | string = ""
 

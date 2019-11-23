@@ -7,7 +7,7 @@ class BanCommand extends Command {
       aliases: ["ban"],
       args: [
         {
-          id: "member",
+          id: "data",
           type: "member"
         }
       ],

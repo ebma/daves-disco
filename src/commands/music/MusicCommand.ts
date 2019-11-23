@@ -9,9 +9,9 @@ export abstract class MusicCommand extends Command {
   protected member: GuildMember
   protected message?: Message
 
-  abstract execute(data: any): void | Promise<void>
+  abstract execute(args: { data: any }): void | Promise<void>
 
-  async exec(message: Message, args: any) {
+  async exec(message: Message, args: CommandMessage | any) {
     if (!message) {
       return this.executeSilent(args)
     } else {
@@ -34,7 +34,7 @@ export abstract class MusicCommand extends Command {
     this.guild = guild
     this.member = member
 
-    this.execute(data)
+    this.execute({ data })
   }
 
   sendMessageToChannel(message: string | RichEmbed) {
