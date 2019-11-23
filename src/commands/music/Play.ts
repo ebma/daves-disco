@@ -1,9 +1,5 @@
-import { MusicPlayer } from "./../../libs/MusicPlayer"
-import { Message, TextChannel } from "discord.js"
-import { Command } from "discord-akairo"
 import _ from "lodash"
 import { RichEmbed } from "discord.js"
-import MusicPlayerManager from "../../libs/MusicPlayerManager"
 import {
   createTracksFromPlayList,
   isYoutubePlaylist,
@@ -14,10 +10,9 @@ import {
 import { createEmbedForTrack, createEmbedForTracks, createEmbedsForSpotifyPlaylist } from "../../libs/util/embeds"
 import { isSpotifyPlaylistURI, getSpotifyPlaylist } from "../../libs/util/spotify"
 import { trackError } from "../../shared/util/trackError"
+import { MusicCommand } from "./MusicCommand"
 
-class PlayCommand extends Command {
-  private musicPlayer: MusicPlayer
-
+class PlayCommand extends MusicCommand {
   constructor() {
     super("play", {
       aliases: ["play"],
@@ -70,20 +65,15 @@ class PlayCommand extends Command {
     return createEmbedForTrack(track)
   }
 
-  async exec(message: Message, args: any) {
-    if (!message) {
-      return this.executeSilent(args)
-    }
-    this.musicPlayer = MusicPlayerManager.getPlayerFor(message.guild.id)
-
-    if (!message.member.voiceChannel) {
-      return message.reply("You have to be connected to a voice channel...")
+  async execute(args: any) {
+    if (!this.member.voiceChannel) {
+      return this.sendMessageToChannel("You have to be connected to a voice channel...")
     }
 
     try {
-      await this.musicPlayer.join(message.member.voiceChannel)
+      await this.musicPlayer.join(this.member.voiceChannel)
     } catch (error) {
-      return message.reply(`Couldn't join voice channel, because: ${error} :unamused: `)
+      return this.sendMessageToChannel(`Couldn't join voice channel, because: ${error} :unamused: `)
     }
 
     const userInput: string = args.trackInfo
@@ -102,56 +92,12 @@ class PlayCommand extends Command {
       } else {
         reply = await this.handleSearch(userInput)
       }
-      await this.musicPlayer.play(message)
-      return message.channel.send(reply)
+      await this.musicPlayer.play(this.message)
+      return this.sendMessageToChannel(reply)
     } catch (error) {
       trackError(error, this)
-      return message.channel.send(`Something went wrong... ${error}`)
+      return this.sendMessageToChannel(`Something went wrong... ${error}`)
     }
-  }
-
-  executeSilent(args: CommandMessage) {
-    return new Promise<void>(async (resolve, reject) => {
-      const { guildID, userID } = args
-      const guild = this.client.guilds.find(g => g.id === guildID)
-      const member = guild.members.find(m => m.id === userID)
-      const fallbackChannel = guild.channels.find(
-        channel => channel.name === "general" && channel.type === "text"
-      ) as TextChannel
-
-      this.musicPlayer = MusicPlayerManager.getPlayerFor(guildID)
-
-      try {
-        await this.musicPlayer.join(member.voiceChannel)
-      } catch (error) {
-        reject(error)
-      }
-
-      const userInput: string = args.data
-
-      let reply: RichEmbed | string = ""
-
-      try {
-        if (isYoutubePlaylist(userInput)) {
-          const playlistID = new URL(userInput).searchParams.get("list")
-          reply = await this.handleYoutubePlaylist(playlistID)
-        } else if (isYoutubeVideo(userInput)) {
-          reply = await this.handleYoutubeVideo(userInput)
-        } else if (isSpotifyPlaylistURI(userInput)) {
-          const playlistID = userInput.split(":")[userInput.split(":").length - 1]
-          reply = await this.handleSpotifyPlaylist(playlistID)
-        } else {
-          reply = await this.handleSearch(userInput)
-        }
-        await this.musicPlayer.play()
-        this.musicPlayer.trySendMessageToChannel(reply, fallbackChannel)
-        resolve()
-      } catch (error) {
-        trackError(error, this)
-        this.musicPlayer.trySendMessageToChannel(`Something went wrong... ${error}`, fallbackChannel)
-        reject()
-      }
-    })
   }
 }
 
