@@ -31,7 +31,7 @@ class SkipCommand extends Command {
       const { guildID, userID } = args
       const guild = this.client.guilds.find(g => g.id === guildID)
       const member = guild.members.find(m => m.id === userID)
-      const textChannel = guild.channels.find(
+      const fallbackChannel = guild.channels.find(
         channel => channel.name === "general" && channel.type === "text"
       ) as TextChannel
 
@@ -39,7 +39,7 @@ class SkipCommand extends Command {
 
       try {
         if (musicPlayer.skipPrevious()) {
-          textChannel.send(`${member} wanted me to skip to the previous song.`)
+          musicPlayer.trySendMessageToChannel(`${member} wanted me to skip to the previous song.`, fallbackChannel)
         }
         resolve()
       } catch (error) {

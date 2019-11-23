@@ -27,7 +27,7 @@ class ResumeCommand extends Command {
       const { guildID, userID } = args
       const guild = this.client.guilds.find(g => g.id === guildID)
       const member = guild.members.find(m => m.id === userID)
-      const textChannel = guild.channels.find(
+      const fallbackChannel = guild.channels.find(
         channel => channel.name === "general" && channel.type === "text"
       ) as TextChannel
 
@@ -36,7 +36,7 @@ class ResumeCommand extends Command {
       try {
         const error = await musicPlayer.resumeStream()
         if (!error) {
-          textChannel.send(`${member} wants to keep going.`)
+          musicPlayer.trySendMessageToChannel(`${member} wants to keep going.`, fallbackChannel)
           resolve()
         } else {
           reject(error)
