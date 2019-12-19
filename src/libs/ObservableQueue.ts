@@ -1,8 +1,8 @@
 import _ from "lodash"
 
-export type SubscriptionCallback<T> = (currentElement: T, allElements: T[]) => void
+export type SubscriptionCallback<T> = (currentElement: T, remainingElements: T[]) => void
 
-export class ObservableQueue<T extends object> {
+class ObservableQueue<T extends object> {
   private itemList: T[] = []
   private observers: SubscriptionCallback<T>[] = []
   private currentIndex = 0
@@ -29,6 +29,8 @@ export class ObservableQueue<T extends object> {
     }
   }
 
+  // will only move back to the first element in the list
+  // so moving back to the max will result in the first entry being the current
   public moveBack() {
     if (this.currentIndex > 0) {
       this.currentIndex--
@@ -55,13 +57,9 @@ export class ObservableQueue<T extends object> {
   }
 
   public consumeCurrent() {
-    try {
-      const current = this.itemList[this.currentIndex]
-      this.moveForward()
-      return current
-    } catch (error) {
-      return null
-    }
+    const current = this.getCurrent()
+    this.moveForward()
+    return current
   }
 
   public getNext() {
