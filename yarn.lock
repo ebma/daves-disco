@@ -1528,15 +1528,6 @@ discord-akairo@^7.5.6:
   resolved "https://registry.yarnpkg.com/discord-akairo/-/discord-akairo-7.5.6.tgz#3508262106c91be135a3cbcece17f09727fa3934"
   integrity sha512-u/hmpCs6IN2XJAm1Y5DUEawJc+ybWCzf4QPsOKsbbwWx2pHBCSGABazsstSEdVAhE3ZdwP/GAbgyKDR0ceQqsw==
 
-discord.js-musicbot-addon@^13.7.0:
-  version "13.8.1"
-  resolved "https://registry.yarnpkg.com/discord.js-musicbot-addon/-/discord.js-musicbot-addon-13.8.1.tgz#33707080bbb5d30494ab93e8934582d9abfbfb28"
-  integrity sha512-Pd4+BV3E/3thNmBfFEhd0iF73ys88POMiGtlxDTCmf1qKggkGPpt5f/rAHM7cLJy+F0wVZCoX0UELukx+QAjyQ==
-  dependencies:
-    ytdl-core "^0.29.7"
-    ytpl "^0.1.16"
-    ytsearcher "^1.2.2"
-
 discord.js@^11.5.1:
   version "11.5.1"
   resolved "https://registry.yarnpkg.com/discord.js/-/discord.js-11.5.1.tgz#910fb9f6410328581093e044cafb661783a4d9e8"
@@ -3464,12 +3455,12 @@ lru-cache@^4.0.1:
     pseudomap "^1.0.2"
     yallist "^2.1.2"
 
-m3u8stream@^0.6.2:
-  version "0.6.2"
-  resolved "https://registry.yarnpkg.com/m3u8stream/-/m3u8stream-0.6.2.tgz#c2c62ddce88156d80378dd59be010c8b8e9d120b"
-  integrity sha512-WsuM2bd5pPN80xvfrB+1DZqr4M7+kJl8byi6+ZCy6cmVjEiHhmr/desN53Ngsa6Hs13kYumeVgT4wL0oIJ+v6g==
+m3u8stream@^0.6.3:
+  version "0.6.3"
+  resolved "https://registry.yarnpkg.com/m3u8stream/-/m3u8stream-0.6.3.tgz#f3dc8c25a96a68640903cab47450b6a5ac36e585"
+  integrity sha512-HNUco8ef9kOvMRH7tYxJqbk9IuRA+AuZG8a/dQwqI+jfuEs1/DUaPbfTIlUDB4JmTZNkTOZHvZI5TvnQGR8nKA==
   dependencies:
-    miniget "^1.4.0"
+    miniget "^1.6.1"
     sax "^1.2.4"
 
 make-dir@^1.0.0:
@@ -3600,10 +3591,10 @@ mimic-fn@^2.0.0:
   resolved "https://registry.yarnpkg.com/mimic-fn/-/mimic-fn-2.1.0.tgz#7ed2c2ccccaf84d3ffcb7a69b57711fc2083401b"
   integrity sha512-OqbOk5oEQeAZ8WXWydlu9HJjz9WVdEIvamMCcXmuqUYjTknH/sqsWvhQ3vgwKFRR1HpjvNBKQ37nbJgYzGqGcg==
 
-miniget@^1.4.0, miniget@^1.5.3:
-  version "1.5.3"
-  resolved "https://registry.yarnpkg.com/miniget/-/miniget-1.5.3.tgz#d796c7291970d1dfa28b646d9aba3fa6b377c5e8"
-  integrity sha512-6xiJs3ZGBdrNMlPNlEWirHhY53hSW33nG1Ytub9Cg5+jLhFPn9PGe4FmPZK9WlmDE1N7/8DEL7PGr7r9kbxwgw==
+miniget@^1.6.0, miniget@^1.6.1:
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/miniget/-/miniget-1.6.1.tgz#f1ae08a34e06a2b1c3ace568384ea0def2fe5813"
+  integrity sha512-I5oBwZmcaOuJrjQn7lpS29HM+aAZDbzKbX5ouxVyhFYdg6fA6YKOTwOCgzZQwlHuMek3FlCxz6eNrd4pOXbwOA==
 
 minimatch@^3.0.4:
   version "3.0.4"
@@ -5387,11 +5378,6 @@ type-is@~1.6.17, type-is@~1.6.18:
     media-typer "0.3.0"
     mime-types "~2.1.24"
 
-typescript-collections@^1.3.2:
-  version "1.3.2"
-  resolved "https://registry.yarnpkg.com/typescript-collections/-/typescript-collections-1.3.2.tgz#b2476373d2976eb3dc8be931292a20a30d23677d"
-  integrity sha512-Frfvtwym0VebbueXWEJlVkGiWjKEFStsRwusuzjh8lX8OEJ9ZbFqpYLNfPvZcxw/+nqW0cRNBeBq6SVoTjymcQ==
-
 typescript@^3.6.2:
   version "3.6.3"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.6.3.tgz#fea942fabb20f7e1ca7164ff626f1a9f3f70b4da"
@@ -5833,27 +5819,22 @@ youtube-search@^1.1.4:
     axios "^0.18.0"
     xml2js "~0.2.8"
 
-ytdl-core@^0.29.5, ytdl-core@^0.29.7:
-  version "0.29.7"
-  resolved "https://registry.yarnpkg.com/ytdl-core/-/ytdl-core-0.29.7.tgz#e63ce0b086a4543d827499bed22f53fdf4d16af2"
-  integrity sha512-mqPuZ1UyspT84lyV1FSU1UAoiQ4H5j52ba3sC1LC43OmL8qNaDIRCGffGlpiakQrc69qsplNWsWEZUF+J5bhJA==
+ytdl-core@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/ytdl-core/-/ytdl-core-1.0.3.tgz#8135565462c61204a596cfb4785f909b16783e8a"
+  integrity sha512-sBOVokjrAigKTEn248MJ+JpS5ifay/vBzYGMDeZhG61xmgthev6yHXBgEgm+M8ySDQXXVjOTmUtY3GHbX988KA==
   dependencies:
     html-entities "^1.1.3"
-    m3u8stream "^0.6.2"
-    miniget "^1.5.3"
+    m3u8stream "^0.6.3"
+    miniget "^1.6.0"
     sax "^1.1.3"
 
-ytpl@^0.1.16:
-  version "0.1.16"
-  resolved "https://registry.yarnpkg.com/ytpl/-/ytpl-0.1.16.tgz#4673de8360f5f7d7520b364059fa3743d7445d19"
-  integrity sha512-QAYTnfSafLJCzFqGUL9QNK+pD/0w0N086e50xhdaBadM+HILg9PijgHheqzJaLy3jskATizSQ1XeQ6ypL/LLtQ==
+ytpl@^0.1.19:
+  version "0.1.19"
+  resolved "https://registry.yarnpkg.com/ytpl/-/ytpl-0.1.19.tgz#b90ecb659268b906c5492ab9ddd8a63cf153f9d0"
+  integrity sha512-Sy0ePxvMXBfp/9PJfJg0FQ7+Cdop65M8i6x9kX4pA80AT6huaIGnMVneUfI+NhDwwfm7tdxdke1JPRD7I5tH0w==
   dependencies:
     html-entities "^1.1.3"
-
-ytsearcher@^1.2.2:
-  version "1.2.2"
-  resolved "https://registry.yarnpkg.com/ytsearcher/-/ytsearcher-1.2.2.tgz#93c14c1df6a3cdb580067eaab3bc6a1b97f4cad1"
-  integrity sha512-nQ38akKe3O2OGfQba0aTetMx25U/V+jD+MN1v26/lR497KyzpPIolQuNEf5x4O0ANvLLIS9iPSc91Zle1OP+ww==
 
 yup@^0.27.0:
   version "0.27.0"
