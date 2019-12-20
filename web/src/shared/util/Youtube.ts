@@ -4,16 +4,18 @@ import ytdl from "ytdl-core"
 import ytpl from "ytpl"
 import { trackError } from "./trackError"
 import { Readable } from "stream"
+import { config } from "dotenv"
 
-class Youtube {
+export class Youtube {
   private key: string
 
   constructor(apiKey: string) {
+    if (!apiKey) throw new Error("YouTube API key cannot be undefined!")
     this.key = apiKey
   }
 
-  isYoutubeVideo(term: string): boolean {
-    return ytdl.validateURL(term)
+  isYoutubeVideo(url: string): boolean {
+    return ytdl.validateURL(url)
   }
 
   isYoutubePlaylist(term: string): boolean {
@@ -71,6 +73,8 @@ class Youtube {
             thumbnail: info.thumbnail_url
           }
           resolve(track)
+        } else {
+          reject(`Could not get info for url ${url}`)
         }
       } catch (error) {
         reject(error)
@@ -101,6 +105,8 @@ class Youtube {
     return new Promise<Readable>(async (resolve, reject) => {
       if (!track.url) {
         reject(`Track ${track.title} doesn't have an url`)
+      } else if (!this.isYoutubeVideo(track.url)) {
+        reject(`Track has an invalid url '${track.url}'`)
       } else {
         const stream = ytdl(track.url, { quality: "highestaudio", filter: "audioonly" }).on("error", reject)
         resolve(stream)
@@ -114,7 +120,7 @@ class Youtube {
         const info = await ytdl.getInfo(trackURL)
         resolve(info)
       } catch (error) {
-        trackError(`Error occured while fetching trackInfo for '${trackURL}': ${error}`)
+        trackError(`Error occured while fetching trackInfo for '${trackURL}': ${error}`, "Youtube.getTrackInfo()")
       }
 
       try {
@@ -127,4 +133,6 @@ class Youtube {
   }
 }
 
-export default Youtube
+config()
+
+export default new Youtube(process.env.YOUTUBE_API_KEY)

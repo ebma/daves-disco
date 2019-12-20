@@ -1,4 +1,4 @@
-import Youtube from "./Youtube"
+import { Youtube } from "./Youtube"
 import { config } from "dotenv"
 
 config()
@@ -25,6 +25,7 @@ const testTrack: Track = {
 }
 
 it("can search for tracks", async () => {
+  expect.assertions(2)
   const results = await youtube.createTracksFromSearchTerm("something", 5)
 
   expect(results).toBeDefined()
@@ -32,15 +33,17 @@ it("can search for tracks", async () => {
 })
 
 it("can create track from url", async () => {
+  expect.assertions(3)
   const result = await youtube.createTrackFromURL(testVideoURL)
 
   expect(result).toBeDefined()
   expect(result).toEqual(expect.objectContaining(testVideoInfo))
 
-  expect(youtube.createTrackFromURL("test")).rejects.toBeDefined()
+  return expect(youtube.createTrackFromURL("test")).rejects.toBeDefined()
 })
 
 it("can create playlist from playlistURL", async () => {
+  expect.assertions(4)
   const result = await youtube.createPlaylistFrom(testPlaylistURL)
 
   expect(result).toBeDefined()
@@ -50,18 +53,22 @@ it("can create playlist from playlistURL", async () => {
 })
 
 it("can validate youtube video URLs", () => {
-  expect(youtube.isYoutubeVideo(testVideoURL)).toBeTruthy()
+  expect.assertions(2)
 
+  expect(youtube.isYoutubeVideo(testVideoURL)).toBeTruthy()
   expect(youtube.isYoutubeVideo("test")).toBeFalsy()
 })
 
 it("can validate youtube playlists URLs", () => {
-  expect(youtube.isYoutubePlaylist(testPlaylistURL)).toBeTruthy()
+  expect.assertions(2)
 
+  expect(youtube.isYoutubePlaylist(testPlaylistURL)).toBeTruthy()
   expect(youtube.isYoutubePlaylist("test")).toBeFalsy()
 })
 
 it("can create stream from track", async () => {
+  expect.assertions(1)
+
   const stream = await youtube.createReadableStreamFor(testTrack)
-  expect(stream).toBeDefined()
+  return expect(stream).toBeDefined()
 })
