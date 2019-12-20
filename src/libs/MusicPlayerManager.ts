@@ -7,6 +7,7 @@ class MusicPlayerManager {
     const savedMusicPlayer = this.musicPlayerMap[guildID]
     if (!savedMusicPlayer) {
       const newMusicPlayer = new MusicPlayer()
+
       this.musicPlayerMap[guildID] = newMusicPlayer
       return newMusicPlayer
     } else {

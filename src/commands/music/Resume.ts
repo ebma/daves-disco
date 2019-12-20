@@ -10,12 +10,11 @@ class ResumeCommand extends MusicCommand {
   }
 
   async execute() {
-    const error = await this.musicPlayer.resumeStream()
-    if (error) {
+    try {
+      this.musicPlayer.resumeStream()
+    } catch (error) {
       trackError(error)
       this.sendMessageToChannel(`Something went wrong... ${error}`)
-    } else {
-      return this.sendMessageToChannel("Resuming...")
     }
   }
 }

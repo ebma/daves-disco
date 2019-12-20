@@ -1,15 +1,9 @@
 import _ from "lodash"
 import { RichEmbed } from "discord.js"
-import {
-  createTracksFromPlayList,
-  isYoutubePlaylist,
-  isYoutubeVideo,
-  createTracksFromSearchTerm,
-  createTrackFromURL
-} from "../../shared/util/youtube"
 import { createEmbedForTrack, createEmbedForTracks, createEmbedsForSpotifyPlaylist } from "../../libs/util/embeds"
 import { isSpotifyPlaylistURI, getSpotifyPlaylist } from "../../libs/util/spotify"
 import { trackError } from "../../shared/util/trackError"
+import Youtube from "../../shared/util/Youtube"
 import { MusicCommand } from "./MusicCommand"
 
 class PlayCommand extends MusicCommand {
@@ -32,13 +26,13 @@ class PlayCommand extends MusicCommand {
   }
 
   handleYoutubeVideo = async (videoURL: string) => {
-    const track = await createTrackFromURL(videoURL)
+    const track = await Youtube.createTrackFromURL(videoURL)
     await this.musicPlayer.enqueue(track)
     return createEmbedForTrack(track)
   }
 
   handleYoutubePlaylist = async (playlistID: string) => {
-    const playlist = await createTracksFromPlayList(playlistID)
+    const playlist = await Youtube.createPlaylistFrom(playlistID)
     _.forEach(playlist.tracks, track => {
       this.musicPlayer.enqueue(track)
     })
@@ -59,7 +53,7 @@ class PlayCommand extends MusicCommand {
   }
 
   handleSearch = async (searchTerm: string) => {
-    const tracks = await createTracksFromSearchTerm(searchTerm, 1)
+    const tracks = await Youtube.createTracksFromSearchTerm(searchTerm, 1)
     const track = tracks[0]
     await this.musicPlayer.enqueue(track)
     return createEmbedForTrack(track)
@@ -81,10 +75,10 @@ class PlayCommand extends MusicCommand {
     let reply: RichEmbed | string = ""
 
     try {
-      if (isYoutubePlaylist(userInput)) {
+      if (Youtube.isYoutubePlaylist(userInput)) {
         const playlistID = new URL(userInput).searchParams.get("list")
         reply = await this.handleYoutubePlaylist(playlistID)
-      } else if (isYoutubeVideo(userInput)) {
+      } else if (Youtube.isYoutubeVideo(userInput)) {
         reply = await this.handleYoutubeVideo(userInput)
       } else if (isSpotifyPlaylistURI(userInput)) {
         const playlistID = userInput.split(":")[userInput.split(":").length - 1]

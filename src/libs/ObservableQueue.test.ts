@@ -97,9 +97,47 @@ it("can move back and forth", () => {
 
 it("cannot move too far back", () => {
   queue.addElement(testData1)
-  queue.moveBack()
-  queue.moveBack()
-  queue.moveBack()
+  queue.moveBack(10)
+
+  expect(queue.getCurrent()).toBe(testData1)
+})
+
+it("cannot move too far ahead", () => {
+  queue.addElement(testData1)
+  queue.addElement(testData2)
+
+  expect(queue.getCurrent()).toBe(testData1)
+
+  queue.moveForward(10)
+
+  expect(queue.getCurrent()).toBeUndefined()
+  expect(queue.getPrevious()).toBe(testData2)
+})
+
+it("can move forward more than once at a time", () => {
+  queue.addElement(testData1)
+  queue.addElement(testData2)
+  queue.addElement(testData3)
+
+  expect(queue.getCurrent()).toBe(testData1)
+
+  queue.moveForward(2)
+
+  expect(queue.getCurrent()).toBe(testData3)
+})
+
+it("can move back more than once at a time", () => {
+  queue.addElement(testData1)
+  queue.addElement(testData2)
+  queue.addElement(testData3)
+
+  expect(queue.getCurrent()).toBe(testData1)
+
+  queue.moveForward(2)
+
+  expect(queue.getCurrent()).toBe(testData3)
+
+  queue.moveBack(2)
 
   expect(queue.getCurrent()).toBe(testData1)
 })

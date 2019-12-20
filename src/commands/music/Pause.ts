@@ -11,12 +11,11 @@ class PauseCommand extends MusicCommand {
   }
 
   async execute() {
-    const error = await this.musicPlayer.pauseStream()
-    if (error) {
+    try {
+      this.musicPlayer.pauseStream()
+    } catch (error) {
       trackError(error)
       return this.sendMessageToChannel(`Could not pause: ${error}`)
-    } else {
-      return this.sendMessageToChannel("Pausing...")
     }
   }
 }

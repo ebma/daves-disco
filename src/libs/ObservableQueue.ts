@@ -19,27 +19,30 @@ class ObservableQueue<T extends object> {
     this.notifyObservers()
   }
 
-  public moveForward() {
-    if (this.currentIndex + 1 <= this.itemList.length) {
-      this.currentIndex++
+  public moveForward(amount: number = 1) {
+    const previousIndex = this.currentIndex
+    _.times(amount, () => {
+      if (this.currentIndex + 1 <= this.itemList.length) {
+        this.currentIndex++
+      }
+    })
+
+    // if changed notify observers
+    if (this.currentIndex !== previousIndex) {
       this.notifyObservers()
-      return true
-    } else {
-      return false
     }
   }
 
   // will only move back to the first element in the list
   // so moving back to the max will result in the first entry being the current
-  public moveBack() {
-    if (this.currentIndex > 0) {
-      this.currentIndex--
-      this.notifyObservers()
-      return true
-    } else {
-      this.notifyObservers() // notify anyways
-      return false
-    }
+  public moveBack(amount: number = 1) {
+    _.times(amount, () => {
+      if (this.currentIndex > 0) {
+        this.currentIndex--
+      }
+    })
+
+    this.notifyObservers()
   }
 
   public getAll() {

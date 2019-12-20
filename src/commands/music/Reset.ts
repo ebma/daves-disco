@@ -12,7 +12,7 @@ class ResetCommand extends MusicCommand {
   async execute() {
     try {
       this.musicPlayer.clear()
-      this.musicPlayer.close("Reset")
+      this.musicPlayer.close("Resetting the music player...")
       MusicPlayerManager.removePlayerFor(this.guild.id)
       return this.sendMessageToChannel("Successfully resetted the music player.")
     } catch (error) {

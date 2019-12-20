@@ -31,15 +31,12 @@ class SkipCommand extends MusicCommand {
     const queueSize = this.musicPlayer.queue.size()
 
     if (suppliedAmount === 1) {
-      this.musicPlayer.skipCurrentSong()
+      this.musicPlayer.skipForward()
       return this.sendMessageToChannel(`Skipped the current song!`)
     } else {
       const skippingSongsCount = suppliedAmount > queueSize ? queueSize : suppliedAmount
 
-      _.times(skippingSongsCount - 1, () => {
-        this.musicPlayer.skipNextSongInQueue()
-      })
-      this.musicPlayer.skipCurrentSong()
+      this.musicPlayer.skipForward(skippingSongsCount)
       return this.sendMessageToChannel(`Skipped the current song + ${skippingSongsCount - 1} more!`)
     }
   }

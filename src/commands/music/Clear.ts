@@ -4,7 +4,7 @@ import { MusicCommand } from "./MusicCommand"
 class ClearCommand extends MusicCommand {
   constructor() {
     super("clear", {
-      aliases: ["clear", "shut up", "stop"],
+      aliases: ["clear", "shut up"],
       channelRestriction: "guild"
     })
   }
