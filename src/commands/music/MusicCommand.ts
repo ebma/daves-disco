@@ -21,6 +21,13 @@ export abstract class MusicCommand extends Command {
         throw new Error(`Could not join voice channel of ${member.displayName}`)
       } else {
         this.musicPlayer = await MusicPlayerManager.createPlayerFor(member.guild.id, member.voiceChannel)
+        this.musicPlayer.subscribe({
+          next: message => {
+            if (message.messageType === "info" || message.messageType === "error") {
+              this.sendMessageToChannel(message.message)
+            }
+          }
+        })
       }
     }
   }
@@ -38,7 +45,11 @@ export abstract class MusicCommand extends Command {
         this.execute(args)
       } catch (error) {
         trackError(error, "MusicCommand.exec")
-        this.sendMessageToChannel(error)
+        if (error instanceof Error) {
+          this.sendMessageToChannel(error.message)
+        } else {
+          this.sendMessageToChannel(error)
+        }
       }
     }
   }
@@ -61,7 +72,7 @@ export abstract class MusicCommand extends Command {
       channel => channel.name === "general" && channel.type === "text"
     ) as TextChannel
 
-    if (defaultChannel) {
+    if (defaultChannel && message) {
       defaultChannel.send(message)
     }
   }
