@@ -54,8 +54,12 @@ class MusicPlayer {
     }
   }
 
-  enqueue(item: Track) {
-    this.queue.addElement(item)
+  enqueue(track: Track) {
+    this.queue.addElement(track)
+  }
+
+  enqueueAll(tracks: Track[]) {
+    this.queue.addAll(tracks)
   }
 
   clear() {

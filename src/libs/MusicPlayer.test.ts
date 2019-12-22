@@ -40,13 +40,29 @@ it("can get volume", () => {
   expect(musicPlayer.volume).toBe(currentVolume)
 })
 
-it("can enqueue tracks", () => {
+it("can enqueue 1 track", () => {
   musicPlayer.enqueue(testTrack1)
   // should be empty because the song automatically becomes the current
   expect(musicPlayer.queuedTracks).toEqual([])
 
   musicPlayer.enqueue(testTrack2)
   expect(musicPlayer.queuedTracks).toEqual([testTrack2])
+})
+
+it("can enqueue multiple tracks", () => {
+  const subscriberFunction = jest.fn()
+  musicPlayer.subscribe({
+    next: subscriberFunction
+  })
+
+  const tracks = [testTrack1, testTrack2]
+  musicPlayer.enqueueAll(tracks)
+
+  expect(musicPlayer.queuedTracks).toEqual([testTrack2])
+
+  setTimeout(() => {
+    expect(subscriberFunction).toBeCalledTimes(1)
+  }, 500)
 })
 
 it("can't be paused when not playing", () => {

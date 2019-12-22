@@ -24,6 +24,16 @@ it("adds 1 element", () => {
   expect(queue.getAll()).toEqual([testData1])
 })
 
+it("adds multiple elements", () => {
+  const elements = [testData1, testData2, testData3]
+  queue.addAll(elements)
+
+  expect(queue.size()).toBe(3)
+  expect(queue.getCurrent()).toBe(testData1)
+  expect(queue.getRemaining()).toEqual([testData2, testData3])
+  expect(queue.getAll()).toEqual(elements)
+})
+
 it("removes 1 element", () => {
   queue.addElement(testData1)
   queue.removeElement(testData1)

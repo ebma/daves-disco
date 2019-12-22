@@ -14,6 +14,13 @@ class ObservableQueue<T extends object> {
     this.notifyObservers()
   }
 
+  public addAll(elements: T[]) {
+    _.forEach(elements, element => {
+      this.itemList.push(element)
+    })
+    this.notifyObservers()
+  }
+
   public removeElement(element: T) {
     _.remove(this.itemList, value => value === element)
     this.notifyObservers()
