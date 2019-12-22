@@ -19,7 +19,7 @@ const handleCommandMessages = (socket: Socket, client: AkairoClient) => async (d
       const result = await command.exec(null, data, false)
       sendCommandResult(result)
     } catch (error) {
-      trackError(error, this)
+      trackError(error, "handleCommandMessages")
       sendCommandError(error.message ? error.message : error)
     }
   }

@@ -36,7 +36,7 @@ class MessageSender {
     if (this.socket) {
       this.socket.emit("event", message)
     } else {
-      trackError(`Can't emit message ${message.type}. No socket available`)
+      trackError(`Can't emit message ${message.type}. No socket available`, "MessageSender.emitMessage")
     }
   }
 }

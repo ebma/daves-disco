@@ -88,7 +88,7 @@ class PlayCommand extends MusicCommand {
       }
       return this.sendMessageToChannel(reply)
     } catch (error) {
-      trackError(error, this)
+      trackError(error, "PlayCommand.execute")
       return this.sendMessageToChannel(`Something went wrong... ${error}`)
     }
   }

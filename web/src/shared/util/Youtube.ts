@@ -86,7 +86,7 @@ export class Youtube {
     return new Promise<Playlist>((resolve, reject) => {
       ytpl(urlOrPlaylistID, (error, result) => {
         if (error) {
-          trackError(error)
+          trackError(error, "Youtube.createPlaylistFrom")
           reject(error)
         } else {
           let tracks: Track[] = []

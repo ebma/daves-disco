@@ -14,7 +14,7 @@ class PauseCommand extends MusicCommand {
     try {
       this.musicPlayer.pauseStream()
     } catch (error) {
-      trackError(error)
+      trackError(error, "PauseCommand.execute")
       return this.sendMessageToChannel(`Could not pause: ${error}`)
     }
   }

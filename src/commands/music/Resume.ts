@@ -13,7 +13,7 @@ class ResumeCommand extends MusicCommand {
     try {
       this.musicPlayer.resumeStream()
     } catch (error) {
-      trackError(error)
+      trackError(error, "ResumeCommand.execute")
       this.sendMessageToChannel(`Something went wrong... ${error}`)
     }
   }
