@@ -10,26 +10,20 @@ class MusicPlayer {
   private currentDisconnectionTimeout: NodeJS.Timeout
   private streamManager: StreamManager
   private subject: Subject<MusicPlayerSubjectMessage>
+  private startPending = false
 
-  constructor(channel: Channel) {
+  constructor(streamManager: StreamManager) {
+    this.streamManager = streamManager
     this.queue = new ObservableQueue<Track>()
     this.subject = new Subject<MusicPlayerSubjectMessage>()
 
-    channel
-      .join()
-      .then(voiceConnection => {
-        this.streamManager = new StreamManager(voiceConnection)
-      })
-      .then(() => {
-        this.queue.subscribe((currentTrack, remainingTracks) => {
-          if (currentTrack && this.streamManager.playing === false && !this.paused) {
-            this.startStreaming(currentTrack)
-          }
-          this.subject.next({ messageType: "status", message: "currentSong", data: currentTrack })
-          this.subject.next({ messageType: "status", message: "currentQueue", data: remainingTracks })
-        })
-      })
-      .catch(error => this.subject.next({ messageType: "error", message: error }))
+    this.queue.subscribe((currentTrack, remainingTracks) => {
+      if (currentTrack && !this.startPending && !this.streamManager.playing && !this.paused) {
+        this.startStreaming(currentTrack)
+      }
+      this.subject.next({ messageType: "status", message: "currentSong", data: currentTrack })
+      this.subject.next({ messageType: "status", message: "currentQueue", data: remainingTracks })
+    })
   }
 
   get paused() {
@@ -115,9 +109,11 @@ class MusicPlayer {
 
   private async startStreaming(track: Track) {
     try {
+      this.startPending = true
       const dispatcher = await this.streamManager.playTrack(track)
       dispatcher
         .once("start", () => {
+          this.startPending = false
           this.subject.next({ messageType: "status", message: "playing" })
           this.subject.next({
             messageType: "info",
@@ -145,6 +141,7 @@ class MusicPlayer {
           this.subject.next({ messageType: "error", message: e.message })
         })
     } catch (error) {
+      this.startPending = false
       const errorMessage = `Could not start stream for track '${track.title}': ${error}`
       trackError(errorMessage, "MusicPlayer.startStreaming try-catch-error")
       this.subject.next({ messageType: "error", message: errorMessage })

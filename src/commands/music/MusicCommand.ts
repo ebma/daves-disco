@@ -1,7 +1,8 @@
 import { Command } from "discord-akairo"
 import { Guild, GuildMember, Message, TextChannel, RichEmbed } from "discord.js"
-import { MusicPlayer } from "../../libs/MusicPlayer"
+import MusicPlayer from "../../libs/MusicPlayer"
 import MusicPlayerManager from "../../libs/MusicPlayerManager"
+import { trackError } from "../../shared/util/trackError"
 
 export abstract class MusicCommand extends Command {
   protected musicPlayer: MusicPlayer
@@ -11,37 +12,57 @@ export abstract class MusicCommand extends Command {
 
   abstract execute(args: { data: any }): void | Promise<void>
 
+  private async initPlayer(member: GuildMember) {
+    this.musicPlayer = MusicPlayerManager.getPlayerFor(member.guild.id)
+    if (!this.musicPlayer) {
+      if (!member.voiceChannel) {
+        throw new Error("You have to be connected to a voice channel...")
+      } else if (!member.voiceChannel.joinable) {
+        throw new Error(`Could not join voice channel of ${member.displayName}`)
+      } else {
+        this.musicPlayer = await MusicPlayerManager.createPlayerFor(member.guild.id, member.voiceChannel)
+      }
+    }
+  }
+
   async exec(message: Message, args: CommandMessage | any) {
     if (!message) {
       return this.executeSilent(args)
     } else {
       this.message = message
-      this.musicPlayer = MusicPlayerManager.getPlayerFor(message.guild.id)
-      this.musicPlayer.setMessage(message)
       this.guild = message.guild
       this.member = message.member
 
-      this.execute(args)
+      try {
+        await this.initPlayer(this.member)
+        this.execute(args)
+      } catch (error) {
+        trackError(error, "MusicCommand.exec")
+        this.sendMessageToChannel(error)
+      }
     }
   }
 
-  executeSilent(args: CommandMessage) {
+  async executeSilent(args: CommandMessage) {
     const { guildID, userID, data } = args
     const guild = this.client.guilds.find(g => g.id === guildID)
     const member = guild.members.find(m => m.id === userID)
 
-    this.musicPlayer = MusicPlayerManager.getPlayerFor(guildID)
     this.guild = guild
     this.member = member
+
+    await this.initPlayer(this.member)
 
     this.execute({ data })
   }
 
   sendMessageToChannel(message: string | RichEmbed) {
-    const fallbackChannel = this.guild.channels.find(
+    const defaultChannel = this.guild.channels.find(
       channel => channel.name === "general" && channel.type === "text"
     ) as TextChannel
 
-    this.musicPlayer.trySendMessageToChannel(message, fallbackChannel)
+    if (defaultChannel) {
+      defaultChannel.send(message)
+    }
   }
 }

@@ -1,14 +1,16 @@
 import MusicPlayer from "./MusicPlayer"
+import StreamManager from "./StreamManager"
 
 class MusicPlayerManager {
   private musicPlayerMap: { [key: string]: MusicPlayer } = {}
 
-  createPlayerFor(guildID: string, channel: Channel) {
+  async createPlayerFor(guildID: string, channel: Channel) {
     if (this.musicPlayerMap[guildID] !== undefined) {
       throw new Error(`Player already exists for guild ${guildID}`)
     }
 
-    const musicPlayer = new MusicPlayer(channel)
+    const connection = await channel.join()
+    const musicPlayer = new MusicPlayer(new StreamManager(connection))
     this.musicPlayerMap[guildID] = musicPlayer
     return musicPlayer
   }
@@ -19,7 +21,7 @@ class MusicPlayerManager {
   }
 
   removePlayerFor(guildID: string) {
-    this.musicPlayerMap[guildID] = null
+    this.musicPlayerMap[guildID] = undefined
   }
 }
 

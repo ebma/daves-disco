@@ -15,20 +15,9 @@ const testTrack2: Track = {
 let channelMock: ChannelMock
 let musicPlayer: MusicPlayer
 
-beforeEach(() => {
+beforeEach(async () => {
   channelMock = new ChannelMock()
-  musicPlayer = new MusicPlayer(channelMock)
-})
-
-it("should be constructable", () => {
-  const mp = new MusicPlayer(channelMock)
-  expect(mp).toBeDefined()
-  expect(mp.queue).toBeDefined()
-  expect(mp.queuedTracks).toEqual([])
-})
-
-it("should fail construction when channel full", () => {
-  expect(() => new MusicPlayer({ full: true, join: () => undefined, leave: () => undefined })).toThrow()
+  musicPlayer = new MusicPlayer((await channelMock.join()) as any)
 })
 
 it("can get volume", () => {

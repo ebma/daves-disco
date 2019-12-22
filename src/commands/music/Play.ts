@@ -60,16 +60,6 @@ class PlayCommand extends MusicCommand {
   }
 
   async execute(args: { data: any }) {
-    if (!this.member.voiceChannel) {
-      return this.sendMessageToChannel("You have to be connected to a voice channel...")
-    }
-
-    try {
-      await this.musicPlayer.join(this.member.voiceChannel)
-    } catch (error) {
-      return this.sendMessageToChannel(`Couldn't join voice channel, because: ${error} :unamused: `)
-    }
-
     const userInput: string = args.data
 
     let reply: RichEmbed | string = ""

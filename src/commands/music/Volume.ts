@@ -29,7 +29,7 @@ class VolumeCommand extends MusicCommand {
       return this.sendMessageToChannel("You can't change the volume if you are not even listening...")
     }
 
-    const oldVolume = this.musicPlayer.getVolume()
+    const oldVolume = this.musicPlayer.volume
     const newVolume = args.data
     if (oldVolume === newVolume) {
       return this.sendMessageToChannel(`Volume level is already at ${newVolume}...`)
@@ -37,7 +37,7 @@ class VolumeCommand extends MusicCommand {
 
     this.musicPlayer.setVolume(newVolume)
     const reply =
-      oldVolume > this.musicPlayer.getVolume()
+      oldVolume > this.musicPlayer.volume
         ? `I reduced the volume from ${oldVolume} to ${newVolume}! :sound:`
         : `I increased the volume from ${oldVolume} to ${newVolume}! :loud_sound:`
     return this.sendMessageToChannel(reply)

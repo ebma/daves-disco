@@ -1,6 +1,7 @@
+import { trackError } from "../../shared/util/trackError"
 import { MusicCommand } from "./MusicCommand"
 
-class ResetCommand extends MusicCommand {
+class StopCommand extends MusicCommand {
   constructor() {
     super("stop", {
       aliases: ["stop"],
@@ -10,11 +11,12 @@ class ResetCommand extends MusicCommand {
 
   async execute() {
     try {
-      this.musicPlayer.close("Stopping for now...")
+      this.musicPlayer.stopStream()
     } catch (error) {
+      trackError(error, "StopCommand.execute")
       return this.sendMessageToChannel(`Something went wrong... ${error}`)
     }
   }
 }
 
-export default ResetCommand
+export default StopCommand
