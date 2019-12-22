@@ -1,35 +1,10 @@
-import StreamManager, { Dispatcher } from "./StreamManager"
+import DispatcherMock from "../test/mocks/Dispatcher"
+import StreamManager from "./StreamManager"
 
 const testTrack: Track = {
   title: "Something - Beatles",
   source: "youtube",
   url: "https://www.youtube.com/watch?v=UelDrZ1aFeY"
-}
-
-class DispatcherMock implements Dispatcher {
-  destroyed: boolean = false
-  passes: number = 3
-  paused: boolean = false
-  volume: number = 0.1
-
-  end = jest.fn()
-
-  pause = jest.fn(() => {
-    this.paused = true
-  })
-  resume = jest.fn(() => {
-    this.paused = false
-  })
-  setVolume = jest.fn((volume: number) => {
-    this.volume = volume
-  })
-
-  on(event: any, listener: any) {
-    return this
-  }
-  once(event: any, listener: any) {
-    return this
-  }
 }
 
 let streamManager: StreamManager
@@ -103,9 +78,9 @@ it("can disconnect", async () => {
 })
 
 it("catches an error when playing invalid track", () => {
+  expect.assertions(1)
   const invalidTrack: Track = { url: "test", title: "test", source: "youtube" }
-
-  expect(streamManager.playTrack(invalidTrack)).rejects.toThrow()
+  return expect(streamManager.playTrack(invalidTrack)).rejects.toBeDefined()
 })
 
 it("returns correct playing state", async () => {

@@ -28,7 +28,7 @@ export interface Dispatcher {
   once(event: string, listener: Function): this
 }
 
-interface Options {
+export interface Options {
   seek?: number
   volume?: number
   passes?: number
@@ -106,6 +106,12 @@ class StreamManager {
         reject(errorMessage)
       }
     })
+  }
+
+  endCurrentSong() {
+    if (this.dispatcher) {
+      this.dispatcher.end()
+    }
   }
 
   stopPlaying() {
