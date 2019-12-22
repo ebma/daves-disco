@@ -1,3 +1,4 @@
+import { trackError } from "../../shared/util/trackError"
 import { MusicCommand } from "./MusicCommand"
 
 class SkipPrevious extends MusicCommand {
@@ -9,8 +10,12 @@ class SkipPrevious extends MusicCommand {
   }
 
   async execute() {
-    this.musicPlayer.skipPrevious()
-    return this.sendMessageToChannel(`Skipped to the previous song!`)
+    try {
+      this.musicPlayer.skipPrevious()
+    } catch (error) {
+      trackError(error, "SkipPrevious.execute")
+      return this.sendMessageToChannel(`Could not skip to previous song: ${error}`)
+    }
   }
 }
 
