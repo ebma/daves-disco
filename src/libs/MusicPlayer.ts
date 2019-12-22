@@ -82,7 +82,7 @@ class MusicPlayer {
 
   stopStream() {
     this.subject.next({ messageType: "info", message: `Stopping stream.` })
-    this.streamManager.stopPlaying()
+    this.streamManager.stop()
     this.streamManager.disconnect()
   }
 
@@ -91,12 +91,12 @@ class MusicPlayer {
   }
 
   skipForward(amount: number = 1) {
-    this.streamManager.endCurrentSong()
+    this.streamManager.skip()
     this.queue.moveForward(amount)
   }
 
   skipPrevious(amount: number = 1) {
-    this.streamManager.endCurrentSong()
+    this.streamManager.skip()
     this.queue.moveBack(amount)
   }
 
@@ -130,7 +130,7 @@ class MusicPlayer {
             this.currentDisconnectionTimeout.refresh()
           }
 
-          if (reason !== "forceStop") {
+          if (reason !== "forceStop" && reason !== "skip") {
             if (this.queue.size() > 0) {
               this.queue.moveForward()
             }

@@ -2,7 +2,7 @@ import StreamHolderMock from "./StreamHolder"
 
 class ChannelMock implements Channel {
   leave(): void {
-    throw new Error("Method not implemented.")
+    // do nothing
   }
   full: boolean = false
   join = jest.fn(async () => {

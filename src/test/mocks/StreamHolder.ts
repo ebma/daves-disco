@@ -1,19 +1,22 @@
+import DispatcherMock from "./Dispatcher"
+
 class StreamHolderMock implements StreamHolder {
   dispatcher: Dispatcher
   connect(): void {
-    throw new Error("Method not implemented.")
+    // do nothing
   }
   disconnect(): void {
-    throw new Error("Method not implemented.")
+    this.dispatcher = null
   }
   playStream(stream: any, options?: StreamOptions): Dispatcher {
-    throw new Error("Method not implemented.")
+    this.dispatcher = new DispatcherMock()
+    return this.dispatcher
   }
   on(event: string, listener: Function): this {
-    throw new Error("Method not implemented.")
+    return this
   }
   once(event: string, listener: Function): this {
-    throw new Error("Method not implemented.")
+    return this
   }
 }
 

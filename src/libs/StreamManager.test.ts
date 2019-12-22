@@ -10,12 +10,10 @@ const testTrack: Track = {
 
 let streamManager: StreamManager
 let streamHolderMock: StreamHolderMock
-let dispatcherMock: DispatcherMock
 
 beforeEach(() => {
   streamHolderMock = new StreamHolderMock()
   streamManager = new StreamManager(streamHolderMock)
-  dispatcherMock = streamHolderMock.dispatcher as any
 })
 
 it("can change volume", async () => {
@@ -31,7 +29,7 @@ it("can change volume", async () => {
   // test volume change when playing
   await streamManager.playTrack(testTrack)
   streamManager.setVolume(20)
-  expect(dispatcherMock.setVolume).toBeCalledWith(0.2)
+  expect(streamHolderMock.dispatcher.setVolume).toBeCalledWith(0.2)
 })
 
 it("can be paused", async () => {
@@ -41,7 +39,7 @@ it("can be paused", async () => {
   await streamManager.playTrack(testTrack)
   expect(() => streamManager.pause()).not.toThrow()
   expect(streamManager.paused).toBeTruthy()
-  expect(dispatcherMock.pause).toBeCalled()
+  expect(streamHolderMock.dispatcher.pause).toBeCalled()
 
   // will throw because already paused
   expect(() => streamManager.pause()).toThrow()
@@ -56,20 +54,26 @@ it("can be resumed", async () => {
   streamManager.pause()
   expect(() => streamManager.resume()).not.toThrow()
   expect(streamManager.paused).toBeFalsy()
-  expect(dispatcherMock.resume).toBeCalled()
+  expect(streamHolderMock.dispatcher.resume).toBeCalled()
 
   // will throw because already resumed
   expect(() => streamManager.resume()).toThrow()
 })
 
-it("can stop playing", async () => {
-  streamManager.stopPlaying()
-  // expect end was not called because nothing was playing
-  expect(dispatcherMock.end).not.toBeCalledWith()
+it("can skip", async () => {
+  expect(() => streamManager.skip()).toThrow()
 
   await streamManager.playTrack(testTrack)
-  streamManager.stopPlaying()
-  expect(dispatcherMock.end).toBeCalledWith("forceStop")
+  streamManager.skip()
+  expect(streamHolderMock.dispatcher.end).toBeCalledWith("skip")
+})
+
+it("can stop playing", async () => {
+  expect(() => streamManager.stop()).toThrow()
+
+  await streamManager.playTrack(testTrack)
+  streamManager.stop()
+  expect(streamHolderMock.dispatcher.end).toBeCalledWith("forceStop")
 })
 
 it("can disconnect", async () => {

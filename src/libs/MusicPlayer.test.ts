@@ -1,5 +1,6 @@
 import ChannelMock from "../test/mocks/Channel"
 import MusicPlayer from "./MusicPlayer"
+import StreamManager from "./StreamManager"
 
 const testTrack1: Track = {
   title: "Something - Beatles",
@@ -17,7 +18,9 @@ let musicPlayer: MusicPlayer
 
 beforeEach(async () => {
   channelMock = new ChannelMock()
-  musicPlayer = new MusicPlayer((await channelMock.join()) as any)
+  const connection = await channelMock.join()
+  const streamManager = new StreamManager(connection)
+  musicPlayer = new MusicPlayer(streamManager)
 })
 
 it("can get volume", () => {
@@ -123,7 +126,7 @@ it("can be cleared", () => {
 })
 
 it("can skip forward", done => {
-  expect(() => musicPlayer.skipForward()).not.toThrow()
+  expect(() => musicPlayer.skipForward()).toThrow()
   expect(musicPlayer.playing).toBeFalsy()
 
   musicPlayer.enqueue(testTrack1)
@@ -142,7 +145,7 @@ it("can skip forward", done => {
 })
 
 it("can skip backwards", done => {
-  expect(() => musicPlayer.skipPrevious()).not.toThrow()
+  expect(() => musicPlayer.skipPrevious()).toThrow()
   expect(musicPlayer.playing).toBeFalsy()
 
   musicPlayer.enqueue(testTrack1)

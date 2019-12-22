@@ -74,14 +74,18 @@ class StreamManager {
     })
   }
 
-  endCurrentSong() {
-    if (this.dispatcher) {
-      this.dispatcher.end()
+  skip() {
+    if (!this.dispatcher) {
+      throw new Error("Can't skip because nothing playing.")
+    } else {
+      this.dispatcher.end("skip")
     }
   }
 
-  stopPlaying() {
-    if (this.dispatcher) {
+  stop() {
+    if (!this.dispatcher) {
+      throw new Error("Can't stop playing before starting to play something.")
+    } else {
       this.dispatcher.end("forceStop")
     }
   }
