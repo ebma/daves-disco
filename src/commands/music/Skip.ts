@@ -1,4 +1,5 @@
 import _ from "lodash"
+import { trackError } from "../../shared/util/trackError"
 import { MusicCommand } from "./MusicCommand"
 
 class SkipCommand extends MusicCommand {
@@ -28,16 +29,13 @@ class SkipCommand extends MusicCommand {
 
   async execute(args: { data: any }) {
     const suppliedAmount = (args && args.data) || 1
-    const queueSize = this.musicPlayer.queue.size()
 
-    if (suppliedAmount === 1) {
-      this.musicPlayer.skipForward()
-      return this.sendMessageToChannel(`Skipped the current song!`)
-    } else {
-      const skippingSongsCount = suppliedAmount > queueSize ? queueSize : suppliedAmount
-
-      this.musicPlayer.skipForward(skippingSongsCount)
-      return this.sendMessageToChannel(`Skipped the current song + ${skippingSongsCount - 1} more!`)
+    try {
+      this.musicPlayer.skipForward(suppliedAmount)
+      return this.sendMessageToChannel(`Skipped ${suppliedAmount} songs!`)
+    } catch (error) {
+      trackError(error, "SkipCommand.execute")
+      this.sendMessageToChannel(`Could not skip songs: ${error}`)
     }
   }
 }
