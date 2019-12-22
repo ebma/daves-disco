@@ -76,11 +76,15 @@ class MusicPlayer {
   }
 
   resumeStream() {
-    try {
-      this.streamManager.resume()
-      this.subject.next({ messageType: "status", message: "resumed" })
-    } catch (error) {
-      this.subject.next({ messageType: "error", message: error })
+    if (this.streamManager.paused) {
+      try {
+        this.streamManager.resume()
+        this.subject.next({ messageType: "status", message: "resumed" })
+      } catch (error) {
+        this.subject.next({ messageType: "error", message: error })
+      }
+    } else if (this.queuedTracks.length > 0) {
+      this.startStreaming(this.currentTrack)
     }
   }
 
