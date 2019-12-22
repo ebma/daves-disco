@@ -3,34 +3,22 @@ import { setTimeout } from "timers"
 import { Subject, PartialObserver, Subscription } from "rxjs"
 import { trackError } from "../shared/util/trackError"
 import ObservableQueue from "./ObservableQueue"
-import StreamManager, { Options, Dispatcher } from "./StreamManager"
-import { Readable } from "stream"
-
-export interface SubjectMessage {
-  messageType: "status" | "info" | "error" | "debug"
-  message: string
-  data?: any
-}
-
-export interface Channel {
-  full: boolean
-  join(): Promise<{ playStream: (stream: Readable, options?: Options) => Dispatcher }>
-}
+import StreamManager from "./StreamManager"
 
 class MusicPlayer {
   queue: ObservableQueue<Track>
   private currentDisconnectionTimeout: NodeJS.Timeout
   private streamManager: StreamManager
-  private subject: Subject<SubjectMessage>
+  private subject: Subject<MusicPlayerSubjectMessage>
 
   constructor(channel: Channel) {
     this.queue = new ObservableQueue<Track>()
-    this.subject = new Subject<SubjectMessage>()
+    this.subject = new Subject<MusicPlayerSubjectMessage>()
 
     channel
       .join()
       .then(voiceConnection => {
-        this.streamManager = new StreamManager(voiceConnection.playStream)
+        this.streamManager = new StreamManager(voiceConnection)
       })
       .then(() => {
         this.queue.subscribe((currentTrack, remainingTracks) => {
@@ -157,13 +145,13 @@ class MusicPlayer {
           this.subject.next({ messageType: "error", message: e.message })
         })
     } catch (error) {
-      const errorMessage = `Could not start stream for track '${track.title}: ${error}`
+      const errorMessage = `Could not start stream for track '${track.title}': ${error}`
       trackError(errorMessage, "MusicPlayer.startStreaming try-catch-error")
       this.subject.next({ messageType: "error", message: errorMessage })
     }
   }
 
-  subscribe(observer: PartialObserver<SubjectMessage>): Subscription {
+  subscribe(observer: PartialObserver<MusicPlayerSubjectMessage>): Subscription {
     return this.subject.subscribe(observer)
   }
 }

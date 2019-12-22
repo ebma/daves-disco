@@ -1,5 +1,3 @@
-import { Dispatcher } from "../../libs/StreamManager"
-
 class DispatcherMock implements Dispatcher {
   destroyed: boolean = false
   passes: number = 3

@@ -1,45 +1,12 @@
-import { Readable } from "stream"
 import Youtube from "../shared/util/Youtube"
 
-export interface Dispatcher {
-  destroyed: boolean
-  passes: number
-  paused: boolean
-  volume: number
-  end(reason?: string): void
-  pause(): void
-  resume(): void
-  setVolume(volume: number): void
-
-  on(event: "debug", listener: (information: string) => void): this
-  on(event: "end", listener: (reason: string) => void): this
-  on(event: "error", listener: (err: Error) => void): this
-  on(event: "speaking", listener: (value: boolean) => void): this
-  on(event: "start", listener: () => void): this
-  on(event: "volumeChange", listener: (oldVolume: number, newVolume: number) => void): this
-  on(event: string, listener: Function): this
-
-  once(event: "debug", listener: (information: string) => void): this
-  once(event: "end", listener: (reason: string) => void): this
-  once(event: "error", listener: (err: Error) => void): this
-  once(event: "speaking", listener: (value: boolean) => void): this
-  once(event: "start", listener: () => void): this
-  once(event: "volumeChange", listener: (oldVolume: number, newVolume: number) => void): this
-  once(event: string, listener: Function): this
-}
-
-export interface Options {
-  seek?: number
-  volume?: number
-  passes?: number
-}
 class StreamManager {
-  private createStream: (stream: Readable, options?: Options) => Dispatcher
+  private streamHolder: StreamHolder
   private dispatcher?: Dispatcher
   private volume: number = 0.1
 
-  constructor(createStream: (stream: Readable, options?: Options) => Dispatcher) {
-    this.createStream = createStream
+  constructor(streamHolder: StreamHolder) {
+    this.streamHolder = streamHolder
   }
 
   setVolume(volume: number) {
@@ -88,7 +55,7 @@ class StreamManager {
     return new Promise<Dispatcher>(async (resolve, reject) => {
       try {
         const stream = await Youtube.createReadableStreamFor(track)
-        const dispatcher = this.createStream(stream, { seek: 0, volume: this.volume, passes: 3 })
+        const dispatcher = this.streamHolder.playStream(stream, { seek: 0, volume: this.volume, passes: 3 })
         dispatcher
           .once("end", () => {
             stream.destroy()
@@ -102,8 +69,7 @@ class StreamManager {
         this.dispatcher = dispatcher
         resolve(dispatcher)
       } catch (error) {
-        const errorMessage = `Could not start stream for track '${track.title}: ${error}`
-        reject(errorMessage)
+        reject(error)
       }
     })
   }

@@ -28,7 +28,7 @@ it("should be constructable", () => {
 })
 
 it("should fail construction when channel full", () => {
-  expect(() => new MusicPlayer({ full: true, join: () => undefined })).toThrow()
+  expect(() => new MusicPlayer({ full: true, join: () => undefined, leave: () => undefined })).toThrow()
 })
 
 it("can get volume", () => {

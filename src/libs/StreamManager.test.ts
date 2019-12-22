@@ -1,4 +1,5 @@
 import DispatcherMock from "../test/mocks/Dispatcher"
+import StreamHolderMock from "../test/mocks/StreamHolder"
 import StreamManager from "./StreamManager"
 
 const testTrack: Track = {
@@ -8,12 +9,13 @@ const testTrack: Track = {
 }
 
 let streamManager: StreamManager
+let streamHolderMock: StreamHolderMock
 let dispatcherMock: DispatcherMock
 
 beforeEach(() => {
-  dispatcherMock = new DispatcherMock()
-  const createStream = jest.fn(() => dispatcherMock)
-  streamManager = new StreamManager(createStream)
+  streamHolderMock = new StreamHolderMock()
+  streamManager = new StreamManager(streamHolderMock)
+  dispatcherMock = streamHolderMock.dispatcher as any
 })
 
 it("can change volume", async () => {
