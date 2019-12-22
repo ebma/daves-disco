@@ -2,10 +2,13 @@ import { config } from "dotenv"
 import { AkairoClient } from "discord-akairo"
 import { startSocketConnection } from "./socket/socket"
 import https from "https"
+import { trackError } from "./shared/util/trackError"
 
 if (process.env.NODE_ENV !== "production") {
   config()
 }
+
+process.on("unhandledRejection", (error: any) => trackError(error, "Unhandled Promise Rejection"))
 
 function preventSleeping() {
   if (process.env.DEPLOYED_URL) {
