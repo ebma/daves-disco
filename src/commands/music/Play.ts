@@ -33,9 +33,7 @@ class PlayCommand extends MusicCommand {
 
   handleYoutubePlaylist = async (playlistID: string) => {
     const playlist = await Youtube.createPlaylistFrom(playlistID)
-    _.forEach(playlist.tracks, track => {
-      this.musicPlayer.enqueue(track)
-    })
+    this.musicPlayer.enqueueAll(playlist.tracks)
     return createEmbedForTracks(playlist.tracks)
   }
 
@@ -44,10 +42,7 @@ class PlayCommand extends MusicCommand {
     if (playlist === null) {
       return "I was not able to get the spotify playlist..."
     } else {
-      _.forEach(playlist.tracks, track => {
-        this.musicPlayer.enqueue(track)
-      })
-
+      this.musicPlayer.enqueueAll(playlist.tracks)
       return createEmbedsForSpotifyPlaylist(playlist)
     }
   }
