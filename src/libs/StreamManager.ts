@@ -95,6 +95,7 @@ class StreamManager {
       this.dispatcher.end()
       this.dispatcher = null
     }
+    this.streamHolder.disconnect()
   }
 }
 

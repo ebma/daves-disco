@@ -70,6 +70,7 @@ class MusicPlayer {
     try {
       this.streamManager.pause()
       this.subject.next({ messageType: "status", message: "paused" })
+      this.setupDisconnectTimeout()
     } catch (error) {
       this.subject.next({ messageType: "error", message: error })
     }
@@ -80,6 +81,7 @@ class MusicPlayer {
       try {
         this.streamManager.resume()
         this.subject.next({ messageType: "status", message: "resumed" })
+        this.clearDisconnectTimeout()
       } catch (error) {
         this.subject.next({ messageType: "error", message: error })
       }
@@ -108,8 +110,19 @@ class MusicPlayer {
     this.queue.moveBack(amount)
   }
 
+  private setupDisconnectTimeout() {
+    if (!this.currentDisconnectionTimeout) {
+      this.currentDisconnectionTimeout = setTimeout(this.disconnectIfReasonable, 1000 * 60 * 15)
+    }
+    this.currentDisconnectionTimeout.refresh()
+  }
+
+  private clearDisconnectTimeout() {
+    clearTimeout(this.currentDisconnectionTimeout)
+  }
+
   private disconnectIfReasonable() {
-    if (this.queue && this.queue.size() === 0) {
+    if (this.queue.size() === 0 || this.paused) {
       this.subject.next({ messageType: "info", message: `That's it for now... Later bitches! :metal:` })
       this.streamManager.disconnect()
     }
@@ -125,17 +138,14 @@ class MusicPlayer {
           this.subject.next({ messageType: "status", message: "playing" })
           this.subject.next({
             messageType: "info",
-            message: `:raised_hands: Let me see your hands while I play *${track.title}* :raised_hands:`
+            message: `Let me see your hands while I play *${track.title}* :raised_hands:`
           })
         })
         .once("end", reason => {
           this.subject.next({ messageType: "info", message: `Played: *${track.title}*` })
 
           if (this.queue.size() === 0) {
-            if (!this.currentDisconnectionTimeout) {
-              this.currentDisconnectionTimeout = setTimeout(this.disconnectIfReasonable, 1000 * 60 * 15)
-            }
-            this.currentDisconnectionTimeout.refresh()
+            this.setupDisconnectTimeout()
           }
 
           if (reason !== "forceStop" && reason !== "skip") {
