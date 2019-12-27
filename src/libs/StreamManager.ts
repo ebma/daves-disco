@@ -75,17 +75,13 @@ class StreamManager {
   }
 
   skip() {
-    if (!this.dispatcher) {
-      throw new Error("Can't skip because nothing playing.")
-    } else {
+    if (this.dispatcher) {
       this.dispatcher.end("skip")
     }
   }
 
   stop() {
-    if (!this.dispatcher) {
-      throw new Error("Can't stop playing before starting to play something.")
-    } else {
+    if (this.dispatcher) {
       this.dispatcher.end("forceStop")
     }
   }
