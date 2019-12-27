@@ -11,7 +11,7 @@ class StopCommand extends MusicCommand {
 
   async execute() {
     try {
-      this.musicPlayer.stopStream()
+      this.musicPlayer.destroy()
     } catch (error) {
       trackError(error, "StopCommand.execute")
       return this.sendMessageToChannel(`Something went wrong... ${error}`)

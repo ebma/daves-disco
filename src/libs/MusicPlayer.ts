@@ -6,6 +6,7 @@ import ObservableQueue from "./ObservableQueue"
 import StreamManager from "./StreamManager"
 
 class MusicPlayer {
+  destroyed = false
   queue: ObservableQueue<Track>
   private currentDisconnectionTimeout: NodeJS.Timeout
   private streamManager: StreamManager
@@ -70,7 +71,6 @@ class MusicPlayer {
     try {
       this.streamManager.pause()
       this.subject.next({ messageType: "status", message: "paused" })
-      this.setupDisconnectTimeout()
     } catch (error) {
       this.subject.next({ messageType: "error", message: error })
     }
@@ -81,7 +81,6 @@ class MusicPlayer {
       try {
         this.streamManager.resume()
         this.subject.next({ messageType: "status", message: "resumed" })
-        this.clearDisconnectTimeout()
       } catch (error) {
         this.subject.next({ messageType: "error", message: error })
       }
@@ -90,10 +89,11 @@ class MusicPlayer {
     }
   }
 
-  stopStream() {
+  destroy() {
     this.subject.next({ messageType: "info", message: `Stopping stream.` })
     this.streamManager.stop()
     this.streamManager.disconnect()
+    this.destroyed = true
   }
 
   shuffle() {
@@ -101,31 +101,13 @@ class MusicPlayer {
   }
 
   skipForward(amount: number = 1) {
-    this.streamManager.skip()
     this.queue.moveForward(amount)
+    this.streamManager.skip()
   }
 
   skipPrevious(amount: number = 1) {
-    this.streamManager.skip()
     this.queue.moveBack(amount)
-  }
-
-  private setupDisconnectTimeout() {
-    if (!this.currentDisconnectionTimeout) {
-      this.currentDisconnectionTimeout = setTimeout(this.disconnectIfReasonable, 1000 * 60 * 15)
-    }
-    this.currentDisconnectionTimeout.refresh()
-  }
-
-  private clearDisconnectTimeout() {
-    clearTimeout(this.currentDisconnectionTimeout)
-  }
-
-  private disconnectIfReasonable() {
-    if (this.queue.size() === 0 || this.paused) {
-      this.subject.next({ messageType: "info", message: `That's it for now... Later bitches! :metal:` })
-      this.streamManager.disconnect()
-    }
+    this.streamManager.skip()
   }
 
   private async startStreaming(track: Track) {
@@ -144,12 +126,12 @@ class MusicPlayer {
         .once("end", reason => {
           this.subject.next({ messageType: "info", message: `Played: *${track.title}*` })
 
-          if (this.queue.size() === 0) {
-            this.setupDisconnectTimeout()
+          if (this.queue.getRemaining().length === 0) {
+            this.subject.next({ messageType: "status", message: "idle" })
           }
 
           if (reason !== "forceStop" && reason !== "skip") {
-            if (this.queue.size() > 0) {
+            if (this.queue.getRemaining().length > 0) {
               this.queue.moveForward()
             }
           }
