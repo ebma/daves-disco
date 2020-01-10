@@ -1,5 +1,4 @@
 import _ from "lodash"
-import { setTimeout } from "timers"
 import { Subject, PartialObserver, Subscription } from "rxjs"
 import { trackError } from "../shared/util/trackError"
 import ObservableQueue from "./ObservableQueue"
@@ -8,7 +7,6 @@ import StreamManager from "./StreamManager"
 class MusicPlayer {
   destroyed = false
   queue: ObservableQueue<Track>
-  private currentDisconnectionTimeout: NodeJS.Timeout
   private streamManager: StreamManager
   private subject: Subject<MusicPlayerSubjectMessage>
   private startPending = false
@@ -101,13 +99,13 @@ class MusicPlayer {
   }
 
   skipForward(amount: number = 1) {
-    this.queue.moveForward(amount)
     this.streamManager.skip()
+    this.queue.moveForward(amount)
   }
 
   skipPrevious(amount: number = 1) {
-    this.queue.moveBack(amount)
     this.streamManager.skip()
+    this.queue.moveBack(amount)
   }
 
   private async startStreaming(track: Track) {
@@ -127,7 +125,9 @@ class MusicPlayer {
           this.subject.next({ messageType: "info", message: `Played: *${track.title}*` })
 
           if (reason !== "forceStop") {
-            this.queue.moveForward()
+            if (reason !== "skip") {
+              this.queue.moveForward()
+            }
           }
 
           if (_.isNil(this.queue.getCurrent())) {
