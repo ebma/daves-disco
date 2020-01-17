@@ -9,8 +9,8 @@ interface Track {
 
 interface SpotifyTrack extends Track {
   artists: string
-  initialized: boolean
   trackID: string
+  source: "spotify"
 }
 
 interface Playlist {

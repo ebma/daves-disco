@@ -1,6 +1,6 @@
-import { RichEmbed } from "discord.js"
-import { GuildMember } from "discord.js"
+import { GuildMember, RichEmbed } from "discord.js"
 import _ from "lodash"
+import Spotify from "../../shared/util/Spotify"
 
 export function createEmbedForTrack(track: Track, requester?: GuildMember) {
   const embed = new RichEmbed()
@@ -22,7 +22,11 @@ export function createEmbedForTracks(tracks: Track[], requester?: GuildMember) {
 
   let trackDescription = ""
   _.forEach(tracks, (track, index) => {
-    trackDescription += `${index + 1}: ${track.title} \n`
+    if (Spotify.isSpotifyTrack(track)) {
+      trackDescription += `${index + 1}: ${track.title} - ${track.artists} \n`
+    } else {
+      trackDescription += `${index + 1}: ${track.title}\n`
+    }
   })
 
   const validStrings = splitIntoValidStrings(trackDescription)

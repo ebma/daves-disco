@@ -1,9 +1,9 @@
 import _ from "lodash"
 import { RichEmbed } from "discord.js"
 import { createEmbedForTrack, createEmbedForTracks, createEmbedsForSpotifyPlaylist } from "../../libs/util/embeds"
-import { isSpotifyPlaylistURI, getSpotifyPlaylist } from "../../libs/util/spotify"
 import { trackError } from "../../shared/util/trackError"
 import Youtube from "../../shared/util/Youtube"
+import Spotify from "../../shared/util/Spotify"
 import { MusicCommand } from "./MusicCommand"
 
 class PlayCommand extends MusicCommand {
@@ -38,7 +38,7 @@ class PlayCommand extends MusicCommand {
   }
 
   handleSpotifyPlaylist = async (playlistID: string) => {
-    const playlist = await getSpotifyPlaylist(playlistID)
+    const playlist = await Spotify.getSpotifyPlaylist(playlistID)
     if (playlist === null) {
       return "I was not able to get the spotify playlist..."
     } else {
@@ -50,7 +50,7 @@ class PlayCommand extends MusicCommand {
   handleSearch = async (searchTerm: string) => {
     const tracks = await Youtube.createTracksFromSearchTerm(searchTerm, 1)
     const track = tracks[0]
-    await this.musicPlayer.enqueue(track)
+    this.musicPlayer.enqueue(track)
     return createEmbedForTrack(track)
   }
 
@@ -65,7 +65,7 @@ class PlayCommand extends MusicCommand {
         reply = await this.handleYoutubePlaylist(playlistID)
       } else if (Youtube.isYoutubeVideo(userInput)) {
         reply = await this.handleYoutubeVideo(userInput)
-      } else if (isSpotifyPlaylistURI(userInput)) {
+      } else if (Spotify.isSpotifyPlaylistURI(userInput)) {
         const playlistID = userInput.split(":")[userInput.split(":").length - 1]
         reply = await this.handleSpotifyPlaylist(playlistID)
       } else {

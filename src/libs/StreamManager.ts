@@ -54,6 +54,13 @@ class StreamManager {
   playTrack(track: Track): Promise<Dispatcher> {
     return new Promise<Dispatcher>(async (resolve, reject) => {
       try {
+        if (!track.url) {
+          const success = await Youtube.completePartialTrack(track)
+          if (!success) {
+            throw new Error(`Could not get complete information about track ${track.title}!`)
+          }
+        }
+
         const stream = await Youtube.createReadableStreamFor(track)
         const dispatcher = this.streamHolder.playStream(stream, { seek: 0, volume: this.volume, passes: 3 })
         dispatcher

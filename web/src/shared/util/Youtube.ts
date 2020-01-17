@@ -1,10 +1,11 @@
 import _ from "lodash"
+import { config } from "dotenv"
+import { Readable } from "stream"
 import search from "youtube-search"
 import ytdl from "ytdl-core"
 import ytpl from "ytpl"
 import { trackError } from "./trackError"
-import { Readable } from "stream"
-import { config } from "dotenv"
+import Spotify from "./Spotify"
 
 export class Youtube {
   private key: string
@@ -112,6 +113,25 @@ export class Youtube {
         resolve(stream)
       }
     })
+  }
+
+  async completePartialTrack(track: Track): Promise<boolean> {
+    let searchTerm = track.title
+    if (Spotify.isSpotifyTrack(track)) {
+      searchTerm = `${track.title} - ${track.artists}`
+    }
+
+    const results = await this.createTracksFromSearchTerm(searchTerm, 1)
+    const equivYoutubeTrack = results.length > 0 ? results[0] : null
+    if (equivYoutubeTrack) {
+      track.url = equivYoutubeTrack.url
+      track.thumbnail = equivYoutubeTrack.thumbnail
+      track.publishedAt = equivYoutubeTrack.publishedAt
+      track.description = equivYoutubeTrack.description
+      return true
+    } else {
+      return false
+    }
   }
 
   private async getTrackInfo(trackURL: string): Promise<ytdl.videoInfo> {
