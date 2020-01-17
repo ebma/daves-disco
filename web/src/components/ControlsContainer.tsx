@@ -129,6 +129,11 @@ function ControlsContainer(props: ControlAreaProps) {
                 members={members}
                 setUserID={setUserID}
                 setGuildID={setGuildID}
+                onClick={() =>
+                  sendControlMessage("getGuilds")
+                    .then(setGuilds)
+                    .catch(trackError)
+                }
               />
             ) : (
               <Typography variant="h6" color="textPrimary" align="center" style={{ padding: 8 }}>
@@ -141,7 +146,7 @@ function ControlsContainer(props: ControlAreaProps) {
     } else {
       return undefined
     }
-  }, [connectionState, guildID, userID, guilds, members, setUserID, setGuildID])
+  }, [connectionState, guildID, userID, guilds, members, setUserID, setGuildID, sendControlMessage])
 
   const ControlArea = React.useMemo(
     () => (
@@ -149,18 +154,22 @@ function ControlsContainer(props: ControlAreaProps) {
         <Grid item>
           <CurrentSongCard currentSong={currentSong} style={{ alignSelf: "flex-start" }} />
         </Grid>
-        <Grid item>
-          <Grid container direction="row">
-            <Grid item>
-              <SkipPreviousButton />
+        {currentSong ? (
+          <Grid item>
+            <Grid container direction="row">
+              <Grid item>
+                <SkipPreviousButton />
+              </Grid>
+              <Grid item>{isPlaying ? <PauseButton /> : <PlayButton />}</Grid>
+              <Grid item>
+                <SkipNextButton />
+              </Grid>
             </Grid>
-            <Grid item>{isPlaying ? <PauseButton /> : <PlayButton />}</Grid>
-            <Grid item>
-              <SkipNextButton />
-            </Grid>
+            <VolumeSliderContainer volume={volume} />
           </Grid>
-          <VolumeSliderContainer volume={volume} />
-        </Grid>
+        ) : (
+          undefined
+        )}
       </Grid>
     ),
     [currentSong, isPlaying, volume]

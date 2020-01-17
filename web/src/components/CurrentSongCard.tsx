@@ -6,6 +6,7 @@ import CardMedia from "@material-ui/core/CardMedia"
 import { makeStyles } from "@material-ui/core/styles"
 import Typography from "@material-ui/core/Typography"
 import Button from "@material-ui/core/Button"
+import CardActions from "@material-ui/core/CardActions"
 
 const useSongCardStyles = makeStyles({
   card: {
@@ -54,20 +55,25 @@ const CurrentSongCard = (props: Props) => {
     )
   }, [currentSong, classes.media])
 
-  const cardActions = React.useMemo(() => {
-    return currentSong ? (
-      <Button size="small" color="primary" onClick={() => window.open(currentSong.url, "_blank")}>
-        Watch on Youtube
-      </Button>
-    ) : (
-      <></>
-    )
-  }, [currentSong])
+  const cardActions = React.useMemo(
+    () => (
+      <CardActions>
+        {currentSong ? (
+          <Button size="small" color="primary" onClick={() => window.open(currentSong.url, "_blank")}>
+            Watch on Youtube
+          </Button>
+        ) : (
+          <></>
+        )}
+      </CardActions>
+    ),
+    [currentSong]
+  )
 
   return (
     <Card className={classes.card} style={props.style}>
       {cardActionArea}
-      {/* <CardActions>{cardActions}</CardActions> */}
+      {cardActions}
     </Card>
   )
 }

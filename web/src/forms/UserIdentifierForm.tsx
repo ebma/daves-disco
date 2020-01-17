@@ -33,6 +33,7 @@ interface Props {
   members?: Members
   setUserID: (userID: string) => void
   setGuildID: (guildID: string) => void
+  onClick: () => void
 }
 
 function UserIdentifierForm(props: Props) {
@@ -54,6 +55,7 @@ function UserIdentifierForm(props: Props) {
             onChange={(event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
               setGuildID(event.target.value as string)
             }}
+            onClick={props.onClick}
             inputProps={{
               name: "guildID",
               id: "guildID"
