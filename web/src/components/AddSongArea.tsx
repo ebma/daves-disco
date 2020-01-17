@@ -1,31 +1,26 @@
 import React from "react"
 import _ from "lodash"
-import Card from "@material-ui/core/Card"
+import Autocomplete from "@material-ui/lab/Autocomplete"
+import Box from "@material-ui/core/Box"
 import Grid from "@material-ui/core/Grid"
+import Paper from "@material-ui/core/Paper"
 import PlayIcon from "@material-ui/icons/PlayArrow"
+import Tab from "@material-ui/core/Tab"
+import Tabs from "@material-ui/core/Tabs"
 import TextField from "@material-ui/core/TextField"
 import Typography from "@material-ui/core/Typography"
-import Autocomplete from "@material-ui/lab/Autocomplete"
 import makeStyles from "@material-ui/styles/makeStyles"
 import Youtube from "../shared/util/Youtube"
-import StyledButton from "./StyledButton"
 import { trackError } from "../shared/util/trackError"
+import StyledButton from "./StyledButton"
 
 const useStyles = makeStyles(theme => ({
-  cardStyle: {
-    display: "flex",
-    paddingTop: 16,
-    paddingBottom: 16,
-    marginTop: 8,
-    marginBottom: 8
+  root: {
+    flexGrow: 1
   }
 }))
 
-interface Props {
-  onSearchDone: (searchTerm: string) => void
-}
-
-function AddSongArea(props: Props) {
+function SearchYoutubeTab(props: Props) {
   const classes = useStyles()
 
   const [inputValue, setInputValue] = React.useState("")
@@ -60,7 +55,7 @@ function AddSongArea(props: Props) {
   }, [inputValue, fetch])
 
   return (
-    <Card className={classes.cardStyle}>
+    <div style={{ display: "flex" }}>
       <Autocomplete
         style={{ flexGrow: 5, padding: 8 }}
         getOptionLabel={option => option.title}
@@ -71,7 +66,14 @@ function AddSongArea(props: Props) {
         freeSolo
         disableOpenOnFocus
         renderInput={params => (
-          <TextField {...params} label="Search song" variant="outlined" fullWidth onChange={handleChange} />
+          <TextField
+            fullWidth
+            label="Search song"
+            placeholder="bitch lasagna"
+            variant="outlined"
+            onChange={handleChange}
+            {...params}
+          />
         )}
         renderOption={(option: Track) => {
           return (
@@ -92,7 +94,113 @@ function AddSongArea(props: Props) {
         onClick={() => props.onSearchDone(inputValue)}
         style={{ flexGrow: 1 }}
       />
-    </Card>
+    </div>
+  )
+}
+
+function PlayYoutubeTab(props: Props) {
+  const [value, setValue] = React.useState("")
+
+  return (
+    <div style={{ display: "flex" }}>
+      <TextField
+        label="Enter video or playlist URL"
+        placeholder="https://www.youtube.com/watch?v=..."
+        style={{ flexGrow: 5 }}
+        value={value}
+        variant="outlined"
+        onChange={event => setValue(event.target.value)}
+      />
+      <StyledButton
+        icon={<PlayIcon />}
+        text="Enqueue"
+        onClick={() => props.onSearchDone(value)}
+        style={{ flexGrow: 1 }}
+      />
+    </div>
+  )
+}
+
+function PlaySpotifyTab(props: Props) {
+  const [value, setValue] = React.useState("")
+
+  return (
+    <>
+      <div style={{ display: "flex" }}>
+        <TextField
+          label="Enter spotify playlist URI"
+          placeholder="spotify:playlist:asdfghjkl..."
+          style={{ flexGrow: 5 }}
+          value={value}
+          variant="outlined"
+          onChange={event => setValue(event.target.value)}
+        />
+        <StyledButton
+          icon={<PlayIcon />}
+          text="Enqueue"
+          onClick={() => props.onSearchDone(value)}
+          style={{ flexGrow: 1 }}
+        />
+      </div>
+      <Typography component="div" color="textSecondary" variant="caption" style={{ paddingTop: 8 }}>
+        <b>Hint:</b> You can find the URI of your playlist by right-clicking it in the overview and selecting "Share" >
+        "Copy Spotify URI".
+      </Typography>
+    </>
+  )
+}
+
+interface TabPanelProps {
+  children?: React.ReactNode
+  index: any
+  value: any
+}
+
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props
+
+  return (
+    <Typography
+      component="div"
+      role="tabpanel"
+      hidden={value !== index}
+      id={`scrollable-auto-tabpanel-${index}`}
+      {...other}
+    >
+      {value === index && <Box p={3}>{children}</Box>}
+    </Typography>
+  )
+}
+
+interface Props {
+  onSearchDone: (searchTerm: string) => void
+}
+
+function AddSongArea(props: Props) {
+  const classes = useStyles()
+  const [value, setValue] = React.useState(0)
+
+  const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
+    setValue(newValue)
+  }
+
+  return (
+    <Paper className={classes.root}>
+      <Tabs value={value} onChange={handleChange} indicatorColor="primary" textColor="primary" centered>
+        <Tab label="Search Youtube Song" />
+        <Tab label="Play Youtube Video/Playlist" />
+        <Tab label="Play Spotify Playlist" />
+      </Tabs>
+      <TabPanel value={value} index={0}>
+        <SearchYoutubeTab onSearchDone={props.onSearchDone} />
+      </TabPanel>
+      <TabPanel value={value} index={1}>
+        <PlayYoutubeTab onSearchDone={props.onSearchDone} />
+      </TabPanel>
+      <TabPanel value={value} index={2}>
+        <PlaySpotifyTab onSearchDone={props.onSearchDone} />
+      </TabPanel>
+    </Paper>
   )
 }
 
