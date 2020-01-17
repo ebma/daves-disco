@@ -1,67 +1,94 @@
 import { AkairoClient } from "discord-akairo"
 import { Socket } from "socket.io"
+import { trackError } from "../shared/util/trackError"
 import MusicPlayerManager from "../libs/MusicPlayerManager"
 import MessageSender from "./MessageSender"
 
-const handleControlMessages = (socket: Socket, client: AkairoClient) => (message: ControlMessage) => {
-  switch (message.type) {
-    case "getGuilds":
-      const guilds = client.guilds
-      const reducedGuilds = guilds
-        .map(g => {
-          return { id: g.id, name: g.name }
+type ControlMessageHandler = (message: ControlMessage, socket: Socket, client: AkairoClient) => void
+type ControlMessageHandlers = {
+  [messageType in ControlMessageType]?: ControlMessageHandler
+}
+
+let messageHandlers: ControlMessageHandlers = {}
+
+function handleGetGuildRequest(message: ControlMessage, socket: Socket, client: AkairoClient) {
+  const guilds = client.guilds
+  const reducedGuilds = guilds
+    .map(g => {
+      return { id: g.id, name: g.name }
+    })
+    .sort((a, b) => a.name.localeCompare(b.name))
+
+  MessageSender.sendResultResponse(message, reducedGuilds)
+}
+
+function handleGetUsersRequest(message: ControlMessage, socket: Socket, client: AkairoClient) {
+  if (!message.guildID) {
+    MessageSender.sendErrorResponse(message, "No guildID provided!")
+  } else {
+    const guild = client.guilds.find(g => g.id === message.guildID)
+    if (guild) {
+      const members = guild.members
+      const reducedMembers = members
+        .filter(
+          member =>
+            !member.user.bot && (member.user.presence.status === "online" || member.user.presence.status === "idle")
+        )
+        .map(member => {
+          return { id: member.id, name: member.displayName }
         })
         .sort((a, b) => a.name.localeCompare(b.name))
-
-      MessageSender.sendResultResponse(message, reducedGuilds)
-      break
-    case "getUsers":
-      if (!message.guildID) {
-        MessageSender.sendErrorResponse(message, "No guildID provided!")
-      } else {
-        const guild = client.guilds.find(g => g.id === message.guildID)
-        if (guild) {
-          const members = guild.members
-          const reducedMembers = members
-            .filter(
-              member =>
-                !member.user.bot && (member.user.presence.status === "online" || member.user.presence.status === "idle")
-            )
-            .map(member => {
-              return { id: member.id, name: member.displayName }
-            })
-            .sort((a, b) => a.name.localeCompare(b.name))
-          MessageSender.sendResultResponse(message, reducedMembers)
-        } else {
-          MessageSender.sendErrorResponse(message, `Could not find guild with ID ${message.guildID}`)
-        }
-      }
-      break
-    case "getCurrentSong":
-      if (!message.guildID) {
-        MessageSender.sendErrorResponse(message, "No guildID provided!")
-      } else {
-        const player = MusicPlayerManager.getPlayerFor(message.guildID)
-        MessageSender.sendResultResponse(message, player.currentTrack)
-      }
-      break
-    case "getCurrentQueue":
-      if (!message.guildID) {
-        MessageSender.sendErrorResponse(message, "No guildID provided!")
-      } else {
-        const player = MusicPlayerManager.getPlayerFor(message.guildID)
-        MessageSender.sendResultResponse(message, player.queuedTracks)
-      }
-      break
-    case "getVolume":
-      if (!message.guildID) {
-        MessageSender.sendErrorResponse(message, "No guildID provided!")
-      } else {
-        const player = MusicPlayerManager.getPlayerFor(message.guildID)
-        MessageSender.sendResultResponse(message, player.volume)
-      }
-      break
+      MessageSender.sendResultResponse(message, reducedMembers)
+    } else {
+      MessageSender.sendErrorResponse(message, `Could not find guild with ID ${message.guildID}`)
+    }
   }
 }
 
-export { handleControlMessages }
+function handleGetCurrentSongRequest(message: ControlMessage, socket: Socket, client: AkairoClient) {
+  if (!message.guildID) {
+    MessageSender.sendErrorResponse(message, "No guildID provided!")
+  } else {
+    const player = MusicPlayerManager.getPlayerFor(message.guildID)
+    MessageSender.sendResultResponse(message, player.currentTrack)
+  }
+}
+
+function handleGetCurrentQueueRequest(message: ControlMessage, socket: Socket, client: AkairoClient) {
+  if (!message.guildID) {
+    MessageSender.sendErrorResponse(message, "No guildID provided!")
+  } else {
+    const player = MusicPlayerManager.getPlayerFor(message.guildID)
+    MessageSender.sendResultResponse(message, player.queuedTracks)
+  }
+}
+
+function handleGetVolumeRequest(message: ControlMessage, socket: Socket, client: AkairoClient) {
+  if (!message.guildID) {
+    MessageSender.sendErrorResponse(message, "No guildID provided!")
+  } else {
+    const player = MusicPlayerManager.getPlayerFor(message.guildID)
+    MessageSender.sendResultResponse(message, player.volume)
+  }
+}
+
+function createControlMessageListener(socket: Socket, client: AkairoClient): (message: ControlMessage) => void {
+  const listener = (message: ControlMessage) => {
+    const handler = messageHandlers[message.type]
+    if (handler) {
+      handler(message, socket, client)
+    } else {
+      trackError(`No message handler defined for ${message.type}`)
+    }
+  }
+
+  messageHandlers["getGuilds"] = handleGetGuildRequest
+  messageHandlers["getUsers"] = handleGetUsersRequest
+  messageHandlers["getCurrentSong"] = handleGetCurrentSongRequest
+  messageHandlers["getCurrentQueue"] = handleGetCurrentQueueRequest
+  messageHandlers["getVolume"] = handleGetVolumeRequest
+
+  return listener
+}
+
+export { createControlMessageListener }
