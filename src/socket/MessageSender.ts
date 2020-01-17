@@ -27,6 +27,7 @@ class MessageSender {
     this.emitMessage(response)
   }
 
+  // maybe add guildID?:string as third argument?
   sendMessage = (type: InfoMessageType, data?: any) => {
     const message: InfoMessage = { type, data }
     this.emitMessage(message)

@@ -46,7 +46,7 @@ interface InfoMessage {
   data: any
 }
 
-type InfoMessageType = "currentSong" | "currentQueue" | "paused" | "resumed" | "volume"
+type InfoMessageType = "currentSong" | "currentQueue" | "error" | "paused" | "resumed" | "volume"
 
 type ControlMessageType = "getGuilds" | "getUsers" | "getCurrentSong" | "getCurrentQueue" | "getVolume"
 
@@ -98,6 +98,9 @@ interface Dispatcher {
 
   once(event: string, listener: Function): this
 }
+
+type GuildID = string
+type UserID = string
 
 interface MusicPlayerSubjectMessage {
   messageType: "status" | "info" | "error" | "debug"

@@ -4,14 +4,14 @@ import { trackError } from "../shared/util/trackError"
 import MusicPlayerManager from "../libs/MusicPlayerManager"
 import MessageSender from "./MessageSender"
 
-type ControlMessageHandler = (message: ControlMessage, socket: Socket, client: AkairoClient) => void
+type ControlMessageHandler = (message: ControlMessage, client: AkairoClient) => void
 type ControlMessageHandlers = {
   [messageType in ControlMessageType]?: ControlMessageHandler
 }
 
 let messageHandlers: ControlMessageHandlers = {}
 
-function handleGetGuildRequest(message: ControlMessage, socket: Socket, client: AkairoClient) {
+function handleGetGuildRequest(message: ControlMessage, client: AkairoClient) {
   const guilds = client.guilds
   const reducedGuilds = guilds
     .map(g => {
@@ -22,7 +22,7 @@ function handleGetGuildRequest(message: ControlMessage, socket: Socket, client: 
   MessageSender.sendResultResponse(message, reducedGuilds)
 }
 
-function handleGetUsersRequest(message: ControlMessage, socket: Socket, client: AkairoClient) {
+function handleGetUsersRequest(message: ControlMessage, client: AkairoClient) {
   if (!message.guildID) {
     MessageSender.sendErrorResponse(message, "No guildID provided!")
   } else {
@@ -45,30 +45,45 @@ function handleGetUsersRequest(message: ControlMessage, socket: Socket, client: 
   }
 }
 
-function handleGetCurrentSongRequest(message: ControlMessage, socket: Socket, client: AkairoClient) {
+function handleGetCurrentSongRequest(message: ControlMessage, client: AkairoClient) {
   if (!message.guildID) {
     MessageSender.sendErrorResponse(message, "No guildID provided!")
-  } else {
-    const player = MusicPlayerManager.getPlayerFor(message.guildID)
+    return
+  }
+
+  const player = MusicPlayerManager.getPlayerFor(message.guildID)
+  if (player) {
     MessageSender.sendResultResponse(message, player.currentTrack)
+  } else {
+    MessageSender.sendErrorResponse(message, "No player available")
   }
 }
 
-function handleGetCurrentQueueRequest(message: ControlMessage, socket: Socket, client: AkairoClient) {
+function handleGetCurrentQueueRequest(message: ControlMessage, client: AkairoClient) {
   if (!message.guildID) {
     MessageSender.sendErrorResponse(message, "No guildID provided!")
-  } else {
-    const player = MusicPlayerManager.getPlayerFor(message.guildID)
+    return
+  }
+
+  const player = MusicPlayerManager.getPlayerFor(message.guildID)
+  if (player) {
     MessageSender.sendResultResponse(message, player.queuedTracks)
+  } else {
+    MessageSender.sendErrorResponse(message, "No player available")
   }
 }
 
-function handleGetVolumeRequest(message: ControlMessage, socket: Socket, client: AkairoClient) {
+function handleGetVolumeRequest(message: ControlMessage, client: AkairoClient) {
   if (!message.guildID) {
     MessageSender.sendErrorResponse(message, "No guildID provided!")
-  } else {
-    const player = MusicPlayerManager.getPlayerFor(message.guildID)
+    return
+  }
+
+  const player = MusicPlayerManager.getPlayerFor(message.guildID)
+  if (player) {
     MessageSender.sendResultResponse(message, player.volume)
+  } else {
+    MessageSender.sendErrorResponse(message, "No player available")
   }
 }
 
@@ -76,7 +91,7 @@ function createControlMessageListener(socket: Socket, client: AkairoClient): (me
   const listener = (message: ControlMessage) => {
     const handler = messageHandlers[message.type]
     if (handler) {
-      handler(message, socket, client)
+      handler(message, client)
     } else {
       trackError(`No message handler defined for ${message.type}`)
     }

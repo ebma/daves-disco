@@ -1,43 +1,25 @@
+import { trackError } from "../shared/util/trackError"
 import MusicPlayer from "./MusicPlayer"
 import StreamManager from "./StreamManager"
-
-const DEFAULT_TIMEOUT_TIME = 1000 * 60 * 30 // 30 minutes
+import MusicPlayerObserver from "./MusicPlayerObserver"
 
 class MusicPlayerManager {
-  private musicPlayerMap: { [key: string]: MusicPlayer } = {}
-  private musicPlayerTimeoutMap: { [key: string]: NodeJS.Timeout } = {}
+  private musicPlayerMap: { [key in GuildID]: MusicPlayer } = {}
+  private musicPlayerObserverMap: { [key in GuildID]: MusicPlayerObserver } = {}
 
-  private handleStatusMessages(message: MusicPlayerSubjectMessage, guildID: string) {
-    if (message.messageType === "status" && message.message === "idle") {
-      let currentTimeout = this.musicPlayerTimeoutMap[guildID]
-      if (!currentTimeout) {
-        currentTimeout = setTimeout(() => {
-          const musicPlayer = this.musicPlayerMap[guildID]
-          if (musicPlayer && !musicPlayer.destroyed) {
-            musicPlayer.destroy()
-          }
-        }, DEFAULT_TIMEOUT_TIME)
-        this.musicPlayerTimeoutMap[guildID] = currentTimeout
-      }
-
-      currentTimeout.refresh()
-    } else if (message.messageType === "status" && message.message === "playing") {
-      const currentTimeout = this.musicPlayerTimeoutMap[guildID]
-      if (currentTimeout) {
-        clearTimeout(currentTimeout)
-      }
-    }
-  }
-
-  async createPlayerFor(guildID: string, channel: Channel): Promise<MusicPlayer> {
+  async createPlayerFor(guildID: GuildID, channel: Channel): Promise<MusicPlayer> {
     if (this.musicPlayerMap[guildID] !== undefined && !this.musicPlayerMap[guildID].destroyed) {
       throw new Error(`Player already exists for guild ${guildID}`)
     }
 
     const connection = await channel.join()
     const musicPlayer = new MusicPlayer(new StreamManager(connection))
-    musicPlayer.subscribe({ next: message => this.handleStatusMessages(message, guildID) })
     this.musicPlayerMap[guildID] = musicPlayer
+
+    const musicPlayerObserver = new MusicPlayerObserver(musicPlayer, guildID)
+    musicPlayerObserver.startObserving()
+    this.musicPlayerObserverMap[guildID] = musicPlayerObserver
+
     return musicPlayer
   }
 
@@ -51,7 +33,14 @@ class MusicPlayerManager {
   }
 
   removePlayerFor(guildID: string) {
-    this.musicPlayerMap[guildID] = undefined
+    try {
+      this.musicPlayerObserverMap[guildID].destroy()
+      this.musicPlayerObserverMap[guildID] = undefined
+      this.musicPlayerMap[guildID].destroy()
+      this.musicPlayerMap[guildID] = undefined
+    } catch (error) {
+      trackError(`Encountered error ${error} while removing player`, "MusicPlayerManager.removePlayerFor")
+    }
   }
 }
 

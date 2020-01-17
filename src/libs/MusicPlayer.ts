@@ -48,6 +48,7 @@ class MusicPlayer {
   setVolume(newVol: number) {
     try {
       this.streamManager.setVolume(newVol)
+      this.subject.next({ messageType: "status", message: "volume", data: newVol })
     } catch (error) {
       this.subject.next({ messageType: "error", message: error })
     }
@@ -116,6 +117,7 @@ class MusicPlayer {
         .once("start", () => {
           this.startPending = false
           this.subject.next({ messageType: "status", message: "playing" })
+          this.subject.next({ messageType: "status", message: "volume", data: this.volume })
           this.subject.next({
             messageType: "info",
             message: `Let me see your hands while I play *${track.title}* :raised_hands:`

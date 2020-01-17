@@ -48,12 +48,22 @@ function ControlsContainer(props: ControlAreaProps) {
     const unsubscribeCurrentQueue = addListener("currentQueue", setCurrentQueue)
 
     if (connectionState === "connected") {
-      sendControlMessage("getGuilds").then(setGuilds)
+      sendControlMessage("getGuilds")
+        .then(setGuilds)
+        .catch(trackError)
       if (guildID !== "") {
-        sendControlMessage("getUsers", { guildID }).then(setMembers)
-        sendControlMessage("getCurrentSong").then(setCurrentSong)
-        sendControlMessage("getVolume").then(setVolume)
-        sendControlMessage("getCurrentQueue").then(setCurrentQueue)
+        sendControlMessage("getUsers", { guildID })
+          .then(setMembers)
+          .catch(trackError)
+        sendControlMessage("getCurrentSong")
+          .then(setCurrentSong)
+          .catch(trackError)
+        sendControlMessage("getVolume")
+          .then(setVolume)
+          .catch(trackError)
+        sendControlMessage("getCurrentQueue")
+          .then(setCurrentQueue)
+          .catch(trackError)
       }
     }
 
@@ -98,12 +108,12 @@ function ControlsContainer(props: ControlAreaProps) {
     return <StyledButton icon={<SkipNextIcon />} text="Skip next" onClick={onButtonClick} />
   }
 
-  const VolumeSliderContainer = () => {
+  const VolumeSliderContainer = (props: { volume: number }) => {
     const onChange = (newVolume: number) => {
       sendCommand("volume", newVolume)
     }
 
-    return <VolumeSlider volume={volume} onChange={onChange} />
+    return <VolumeSlider volume={props.volume} onChange={onChange} />
   }
 
   const GuildSelectionBox = React.useMemo(() => {
@@ -149,11 +159,11 @@ function ControlsContainer(props: ControlAreaProps) {
               <SkipNextButton />
             </Grid>
           </Grid>
-          <VolumeSliderContainer />
+          <VolumeSliderContainer volume={volume} />
         </Grid>
       </Grid>
     ),
-    [currentSong, isPlaying]
+    [currentSong, isPlaying, volume]
   )
 
   return (
