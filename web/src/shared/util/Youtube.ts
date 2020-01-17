@@ -155,4 +155,4 @@ export class Youtube {
 
 config()
 
-export default new Youtube(process.env.YOUTUBE_API_KEY)
+export default new Youtube(process.env.YOUTUBE_API_KEY!)

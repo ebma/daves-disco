@@ -7,7 +7,7 @@ import TextField from "@material-ui/core/TextField"
 import Typography from "@material-ui/core/Typography"
 import Autocomplete from "@material-ui/lab/Autocomplete"
 import makeStyles from "@material-ui/styles/makeStyles"
-import { createTracksFromSearchTerm } from "../shared/util/youtube"
+import Youtube from "../shared/util/Youtube"
 import StyledButton from "./StyledButton"
 import { trackError } from "../shared/util/trackError"
 
@@ -38,7 +38,7 @@ function AddSongArea(props: Props) {
   const fetch = React.useMemo(
     () =>
       _.throttle(async (input: string, callback: (results: Track[]) => void) => {
-        const results = await createTracksFromSearchTerm(input, 5)
+        const results = await Youtube.createTracksFromSearchTerm(input, 5)
         callback(results)
       }, 1000),
     []
