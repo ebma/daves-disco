@@ -1,4 +1,5 @@
 import React from "react"
+import _ from "lodash"
 import { Container, Box, Card, Typography } from "@material-ui/core"
 import Grid from "@material-ui/core/Grid"
 import PlayIcon from "@material-ui/icons/PlayArrow"
@@ -76,37 +77,55 @@ function ControlsContainer(props: ControlAreaProps) {
     }
   }, [addListener, connectionState, guildID, sendControlMessage])
 
-  const PlayButton = () => {
-    const onButtonClick = async () => {
-      sendCommand("resume")
-        .then(() => setPlaying(true))
-        .catch(trackError)
-    }
+  const PlayButton = React.useMemo(() => {
+    const onButtonClick = _.debounce(
+      async () => {
+        sendCommand("resume")
+          .then(() => setPlaying(true))
+          .catch(trackError)
+      },
+      1000,
+      { leading: true, trailing: false }
+    )
+
     return <StyledButton icon={<PlayIcon />} text="Play" onClick={onButtonClick} />
-  }
+  }, [sendCommand])
 
-  const PauseButton = () => {
-    const onButtonClick = async () => {
-      sendCommand("pause")
-        .then(() => setPlaying(false))
-        .catch(trackError)
-    }
+  const PauseButton = React.useMemo(() => {
+    const onButtonClick = _.debounce(
+      async () => {
+        sendCommand("pause")
+          .then(() => setPlaying(false))
+          .catch(trackError)
+      },
+      1000,
+      { leading: true, trailing: false }
+    )
     return <StyledButton icon={<PauseIcon />} text="Pause" onClick={onButtonClick} />
-  }
+  }, [sendCommand])
 
-  const SkipPreviousButton = () => {
-    const onButtonClick = async () => {
-      sendCommand("skip-previous").catch(trackError)
-    }
+  const SkipPreviousButton = React.useMemo(() => {
+    const onButtonClick = _.debounce(
+      async () => {
+        sendCommand("skip-previous").catch(trackError)
+      },
+      300,
+      { leading: true, trailing: false }
+    )
+
     return <StyledButton alignIconBefore icon={<SkipPreviousIcon />} text="Skip previous" onClick={onButtonClick} />
-  }
+  }, [sendCommand])
 
-  const SkipNextButton = () => {
-    const onButtonClick = async () => {
-      sendCommand("skip").catch(trackError)
-    }
+  const SkipNextButton = React.useMemo(() => {
+    const onButtonClick = _.debounce(
+      async () => {
+        sendCommand("skip").catch(trackError)
+      },
+      300,
+      { leading: true, trailing: false }
+    )
     return <StyledButton icon={<SkipNextIcon />} text="Skip next" onClick={onButtonClick} />
-  }
+  }, [sendCommand])
 
   const VolumeSliderContainer = (props: { volume: number }) => {
     const onChange = (newVolume: number) => {
@@ -157,13 +176,9 @@ function ControlsContainer(props: ControlAreaProps) {
         {currentSong ? (
           <Grid item>
             <Grid container direction="row">
-              <Grid item>
-                <SkipPreviousButton />
-              </Grid>
-              <Grid item>{isPlaying ? <PauseButton /> : <PlayButton />}</Grid>
-              <Grid item>
-                <SkipNextButton />
-              </Grid>
+              <Grid item>{SkipPreviousButton}</Grid>
+              <Grid item>{isPlaying ? PauseButton : PlayButton}</Grid>
+              <Grid item>{SkipNextButton}</Grid>
             </Grid>
             <VolumeSliderContainer volume={volume} />
           </Grid>
