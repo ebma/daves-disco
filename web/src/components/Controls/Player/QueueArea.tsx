@@ -10,7 +10,6 @@ import Typography from "@material-ui/core/Typography"
 import Grid from "@material-ui/core/Grid"
 import ClearIcon from "@material-ui/icons/Clear"
 import { Avatar, Link, ListItemAvatar, makeStyles, Paper, IconButton, Tooltip, ListItemIcon } from "@material-ui/core"
-import { trackError } from "../../../shared/util/trackError"
 import { SocketContext } from "../../../context/socket"
 
 const useStyles = makeStyles(theme => ({
@@ -69,35 +68,18 @@ function QueueItem(props: QueueItemProps) {
   )
 }
 
-interface Props {}
+interface Props {
+  currentTrack?: Track
+  currentQueue: Track[]
+}
 
 function QueueArea(props: Props) {
   const classes = useStyles()
 
-  const { addListener, connectionState, guildID, sendCommand, sendControlMessage } = React.useContext(SocketContext)
+  const { currentTrack, currentQueue } = props
 
-  const [currentTrack, setCurrentTrack] = React.useState<Track | undefined>(undefined)
-  const [currentQueue, setCurrentQueue] = React.useState<Track[]>([])
+  const { sendCommand } = React.useContext(SocketContext)
   const [show, setShow] = React.useState(true)
-
-  React.useEffect(() => {
-    const unsubscribeCurrentTrack = addListener("currentTrack", setCurrentTrack)
-    const unsubscribeCurrentQueue = addListener("currentQueue", setCurrentQueue)
-
-    if (connectionState === "connected" && guildID !== "") {
-      sendControlMessage("getCurrentTrack")
-        .then(setCurrentTrack)
-        .catch(trackError)
-      sendControlMessage("getCurrentQueue")
-        .then(setCurrentQueue)
-        .catch(trackError)
-    }
-
-    return () => {
-      unsubscribeCurrentTrack()
-      unsubscribeCurrentQueue()
-    }
-  }, [addListener, connectionState, guildID, sendControlMessage])
 
   const toggleShow = React.useCallback(() => {
     setShow(!show)

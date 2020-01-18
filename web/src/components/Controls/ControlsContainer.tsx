@@ -6,11 +6,34 @@ import EnqueueArea from "./Player/EnqueueArea"
 import QueueArea from "./Player/QueueArea"
 import GuildSelectionCard from "./GuildSelection"
 import ControlsArea from "./Player/ControlsArea"
+import { trackError } from "../../shared/util/trackError"
 
 interface ControlAreaProps {}
 
 function ControlsContainer(props: ControlAreaProps) {
-  const { connectionState, userID } = React.useContext(SocketContext)
+  const { addListener, connectionState, guildID, userID, sendControlMessage } = React.useContext(SocketContext)
+
+  const [currentTrack, setCurrentTrack] = React.useState<Track | undefined>(undefined)
+  const [currentQueue, setCurrentQueue] = React.useState<Track[]>([])
+
+  React.useEffect(() => {
+    const unsubscribeCurrentTrack = addListener("currentTrack", setCurrentTrack)
+    const unsubscribeCurrentQueue = addListener("currentQueue", setCurrentQueue)
+
+    if (connectionState === "connected" && guildID !== "") {
+      sendControlMessage("getCurrentTrack")
+        .then(setCurrentTrack)
+        .catch(trackError)
+      sendControlMessage("getCurrentQueue")
+        .then(setCurrentQueue)
+        .catch(trackError)
+    }
+
+    return () => {
+      unsubscribeCurrentTrack()
+      unsubscribeCurrentQueue()
+    }
+  }, [addListener, connectionState, guildID, sendControlMessage])
 
   return (
     <Container>
@@ -20,9 +43,9 @@ function ControlsContainer(props: ControlAreaProps) {
       </Box>
       {connectionState === "connected" && userID ? (
         <>
-          <ControlsArea />
+          <ControlsArea currentQueue={currentQueue} currentTrack={currentTrack} />
           <EnqueueArea />
-          <QueueArea />
+          <QueueArea currentQueue={currentQueue} currentTrack={currentTrack} />
         </>
       ) : (
         undefined

@@ -44,30 +44,24 @@ function SkipNextButton(props: ControlItemProps) {
   return <DebouncedButton icon={<SkipNextIcon />} text="Skip next" onClick={props.onClick} />
 }
 
-interface Props {}
+interface Props {
+  currentTrack?: Track
+  currentQueue: Track[]
+}
 
 function ControlsArea(props: Props) {
+  const { currentTrack, currentQueue } = props
+  
   const { addListener, connectionState, guildID, sendCommand, sendControlMessage } = React.useContext(SocketContext)
-
-  const [currentTrack, setCurrentSong] = React.useState<Track | undefined>(undefined)
-  const [currentQueue, setCurrentQueue] = React.useState<Track[]>([])
   const [isPaused, setPaused] = React.useState(false)
   const [volume, setVolume] = React.useState(50)
 
   React.useEffect(() => {
-    const unsubscribeCurrentSong = addListener("currentTrack", setCurrentSong)
-    const unsubscribeCurrentQueue = addListener("currentQueue", setCurrentQueue)
     const unsubcribePause = addListener("paused", () => setPaused(true))
     const unsubscribeResume = addListener("resumed", () => setPaused(false))
     const unsubscribeVolume = addListener("volume", setVolume)
 
     if (connectionState === "connected" && guildID !== "") {
-      sendControlMessage("getCurrentTrack")
-        .then(setCurrentSong)
-        .catch(trackError)
-      sendControlMessage("getCurrentQueue")
-        .then(setCurrentQueue)
-        .catch(trackError)
       sendControlMessage("getVolume")
         .then(setVolume)
         .catch(trackError)
@@ -77,8 +71,6 @@ function ControlsArea(props: Props) {
     }
 
     return () => {
-      unsubscribeCurrentSong()
-      unsubscribeCurrentQueue()
       unsubcribePause()
       unsubscribeResume()
       unsubscribeVolume()
