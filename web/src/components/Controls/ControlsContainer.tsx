@@ -43,8 +43,8 @@ function ControlsContainer(props: ControlAreaProps) {
       </Box>
       {connectionState === "connected" && userID ? (
         <>
-          <ControlsArea currentQueue={currentQueue} currentTrack={currentTrack} disabled={currentQueue.length === 0} />
           <EnqueueArea />
+          <ControlsArea currentQueue={currentQueue} currentTrack={currentTrack} disabled={currentQueue.length === 0} />
           <QueueArea currentQueue={currentQueue} currentTrack={currentTrack} />
         </>
       ) : (

@@ -43,7 +43,7 @@ const CurrentSongCard = (props: Props) => {
           </CardContent>
         </CardActionArea>
       ) : (
-        <CardActionArea onClick={() => window.open("https://http.cat/", "_blank")}>
+        <CardActionArea>
           <CardMedia
             className={classes.media}
             component="img"
