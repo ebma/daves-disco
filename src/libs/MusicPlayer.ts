@@ -92,7 +92,9 @@ class MusicPlayer {
   }
 
   destroy() {
-    this.subject.next({ messageType: "info", message: `Stopping stream.` })
+    this.subject.next({ messageType: "info", message: "Stopping stream." })
+    this.subject.next({ messageType: "status", message: "currentTrack", data: undefined })
+    this.subject.next({ messageType: "status", message: "currentQueue", data: [] })
     this.streamManager.stop()
     this.streamManager.disconnect()
     this.destroyed = true
