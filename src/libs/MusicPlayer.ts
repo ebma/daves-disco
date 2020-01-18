@@ -64,6 +64,9 @@ class MusicPlayer {
 
   clear() {
     this.queue.clear()
+    if (_.isNil(this.queue.getCurrent())) {
+      this.subject.next({ messageType: "status", message: "idle" })
+    }
   }
 
   pauseStream() {

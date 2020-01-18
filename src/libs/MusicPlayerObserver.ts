@@ -1,6 +1,7 @@
 import { Subscription } from "rxjs"
 import MusicPlayer from "./MusicPlayer"
 import MessageSender from "../socket/MessageSender"
+
 const DEFAULT_TIMEOUT_TIME = 1000 * 60 * 30 // 30 minutes
 
 class MusicPlayerObserver {
@@ -62,9 +63,11 @@ class MusicPlayerObserver {
           break
         case "paused":
           MessageSender.sendMessage("paused")
+          this.setupDestructionTimeout()
           break
         case "resumed":
           MessageSender.sendMessage("resumed")
+          this.clearDestructionTimeout()
           break
         case "volume":
           const newVolume = message.data

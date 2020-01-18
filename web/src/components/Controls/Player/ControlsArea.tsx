@@ -50,13 +50,13 @@ function ControlsArea(props: Props) {
   const { addListener, connectionState, guildID, sendCommand, sendControlMessage } = React.useContext(SocketContext)
 
   const [currentSong, setCurrentSong] = React.useState<Track | undefined>(undefined)
-  const [isPlaying, setPlaying] = React.useState(true)
+  const [isPaused, setPaused] = React.useState(false)
   const [volume, setVolume] = React.useState(50)
 
   React.useEffect(() => {
     const unsubscribeCurrentSong = addListener("currentSong", setCurrentSong)
-    const unsubcribePause = addListener("paused", () => setPlaying(false))
-    const unsubscribeResume = addListener("resumed", () => setPlaying(true))
+    const unsubcribePause = addListener("paused", () => setPaused(true))
+    const unsubscribeResume = addListener("resumed", () => setPaused(false))
     const unsubscribeVolume = addListener("volume", setVolume)
 
     if (connectionState === "connected" && guildID !== "") {
@@ -65,6 +65,9 @@ function ControlsArea(props: Props) {
         .catch(trackError)
       sendControlMessage("getVolume")
         .then(setVolume)
+        .catch(trackError)
+      sendControlMessage("isPaused")
+        .then(setPaused)
         .catch(trackError)
     }
 
@@ -88,10 +91,10 @@ function ControlsArea(props: Props) {
               <SkipPreviousButton onClick={() => sendCommand("skip-previous").catch(trackError)} />
             </Grid>
             <Grid item>
-              {isPlaying ? (
-                <PauseButton onClick={() => sendCommand("pause").catch(trackError)} />
-              ) : (
+              {isPaused ? (
                 <PlayButton onClick={() => sendCommand("resume").catch(trackError)} />
+              ) : (
+                <PauseButton onClick={() => sendCommand("pause").catch(trackError)} />
               )}
             </Grid>
             <Grid item>{<SkipNextButton onClick={() => sendCommand("skip").catch(trackError)} />}</Grid>

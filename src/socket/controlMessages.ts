@@ -87,6 +87,20 @@ function handleGetVolumeRequest(message: ControlMessage, client: AkairoClient) {
   }
 }
 
+function handleIsPlayerPausedRequest(message: ControlMessage, client: AkairoClient) {
+  if (!message.guildID) {
+    MessageSender.sendErrorResponse(message, "No guildID provided!")
+    return
+  }
+
+  const player = MusicPlayerManager.getPlayerFor(message.guildID)
+  if (player) {
+    MessageSender.sendResultResponse(message, player.paused)
+  } else {
+    MessageSender.sendErrorResponse(message, "No player available")
+  }
+}
+
 function createControlMessageListener(socket: Socket, client: AkairoClient): (message: ControlMessage) => void {
   const listener = (message: ControlMessage) => {
     const handler = messageHandlers[message.type]
@@ -102,6 +116,7 @@ function createControlMessageListener(socket: Socket, client: AkairoClient): (me
   messageHandlers["getCurrentSong"] = handleGetCurrentSongRequest
   messageHandlers["getCurrentQueue"] = handleGetCurrentQueueRequest
   messageHandlers["getVolume"] = handleGetVolumeRequest
+  messageHandlers["isPaused"] = handleIsPlayerPausedRequest
 
   return listener
 }
