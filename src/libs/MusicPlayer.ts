@@ -74,7 +74,7 @@ class MusicPlayer {
       this.streamManager.pause()
       this.subject.next({ messageType: "status", message: "paused" })
     } catch (error) {
-      this.subject.next({ messageType: "error", message: error })
+      this.subject.next({ messageType: "error", message: error.message })
     }
   }
 
@@ -84,7 +84,7 @@ class MusicPlayer {
         this.streamManager.resume()
         this.subject.next({ messageType: "status", message: "resumed" })
       } catch (error) {
-        this.subject.next({ messageType: "error", message: error })
+        this.subject.next({ messageType: "error", message: error.message })
       }
     } else if (this.remainingTracks.length > 0) {
       this.startStreaming(this.currentTrack)
