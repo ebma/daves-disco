@@ -21,11 +21,13 @@ interface Props {
 function StyledButton(props: Props) {
   const classes = useStyles()
 
+  const {alignIconBefore, ...reducedProps} = props
+
   return (
-    <Button {...props} color="secondary" className={classes.button} variant="contained">
-      {props.alignIconBefore ? props.icon : undefined}
+    <Button {...reducedProps} color="secondary" className={classes.button} variant="contained">
+      {alignIconBefore ? props.icon : undefined}
       {props.text}
-      {props.alignIconBefore ? undefined : props.icon}
+      {alignIconBefore ? undefined : props.icon}
     </Button>
   )
 }
