@@ -72,9 +72,14 @@ function SearchYoutubeTab(props: TabProps) {
           <TextField
             fullWidth
             label="Search song"
-            placeholder="bitch lasagna"
+            placeholder="bitch lasagna... ¯\_(ツ)_/¯"
             variant="outlined"
             onChange={handleChange}
+            onKeyDown={event => {
+              if (event.key === "Enter") {
+                props.onSearchDone(inputValue)
+              }
+            }}
             {...params}
           />
         )}
@@ -113,6 +118,11 @@ function PlayYoutubeTab(props: TabProps) {
         value={value}
         variant="outlined"
         onChange={event => setValue(event.target.value)}
+        onKeyDown={event => {
+          if (event.key === "Enter") {
+            props.onSearchDone(value)
+          }
+        }}
       />
       <StyledButton
         icon={<PlayIcon />}
@@ -137,6 +147,11 @@ function PlaySpotifyTab(props: TabProps) {
           value={value}
           variant="outlined"
           onChange={event => setValue(event.target.value)}
+          onKeyDown={event => {
+            if (event.key === "Enter") {
+              props.onSearchDone(value)
+            }
+          }}
         />
         <StyledButton
           icon={<PlayIcon />}
