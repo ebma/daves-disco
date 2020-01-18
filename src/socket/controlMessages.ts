@@ -67,7 +67,7 @@ function handleGetCurrentQueueRequest(message: ControlMessage, client: AkairoCli
 
   const player = MusicPlayerManager.getPlayerFor(message.guildID)
   if (player) {
-    MessageSender.sendResultResponse(message, player.queuedTracks)
+    MessageSender.sendResultResponse(message, player.queue.getAll())
   } else {
     MessageSender.sendErrorResponse(message, "No player available")
   }
@@ -113,7 +113,7 @@ function createControlMessageListener(socket: Socket, client: AkairoClient): (me
 
   messageHandlers["getGuilds"] = handleGetGuildRequest
   messageHandlers["getUsers"] = handleGetUsersRequest
-  messageHandlers["getCurrentSong"] = handleGetCurrentSongRequest
+  messageHandlers["getCurrentTrack"] = handleGetCurrentSongRequest
   messageHandlers["getCurrentQueue"] = handleGetCurrentQueueRequest
   messageHandlers["getVolume"] = handleGetVolumeRequest
   messageHandlers["isPaused"] = handleIsPlayerPausedRequest

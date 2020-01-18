@@ -10,7 +10,7 @@ class QueueCommand extends MusicCommand {
   }
 
   async execute() {
-    const tracks = this.musicPlayer.queuedTracks
+    const tracks = this.musicPlayer.remainingTracks
 
     if (tracks.length === 0) {
       return this.sendMessageToChannel("I've nothing to play... :flushed:")

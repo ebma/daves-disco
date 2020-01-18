@@ -49,19 +49,24 @@ interface Props {}
 function ControlsArea(props: Props) {
   const { addListener, connectionState, guildID, sendCommand, sendControlMessage } = React.useContext(SocketContext)
 
-  const [currentSong, setCurrentSong] = React.useState<Track | undefined>(undefined)
+  const [currentTrack, setCurrentSong] = React.useState<Track | undefined>(undefined)
+  const [currentQueue, setCurrentQueue] = React.useState<Track[]>([])
   const [isPaused, setPaused] = React.useState(false)
   const [volume, setVolume] = React.useState(50)
 
   React.useEffect(() => {
-    const unsubscribeCurrentSong = addListener("currentSong", setCurrentSong)
+    const unsubscribeCurrentSong = addListener("currentTrack", setCurrentSong)
+    const unsubscribeCurrentQueue = addListener("currentQueue", setCurrentQueue)
     const unsubcribePause = addListener("paused", () => setPaused(true))
     const unsubscribeResume = addListener("resumed", () => setPaused(false))
     const unsubscribeVolume = addListener("volume", setVolume)
 
     if (connectionState === "connected" && guildID !== "") {
-      sendControlMessage("getCurrentSong")
+      sendControlMessage("getCurrentTrack")
         .then(setCurrentSong)
+        .catch(trackError)
+      sendControlMessage("getCurrentQueue")
+        .then(setCurrentQueue)
         .catch(trackError)
       sendControlMessage("getVolume")
         .then(setVolume)
@@ -73,6 +78,7 @@ function ControlsArea(props: Props) {
 
     return () => {
       unsubscribeCurrentSong()
+      unsubscribeCurrentQueue()
       unsubcribePause()
       unsubscribeResume()
       unsubscribeVolume()
@@ -82,9 +88,9 @@ function ControlsArea(props: Props) {
   return (
     <Grid container direction="row" alignItems="center" spacing={5} style={{ margin: "auto" }}>
       <Grid item>
-        <CurrentSongCard currentSong={currentSong} style={{ alignSelf: "flex-start" }} />
+        <CurrentSongCard currentTrack={currentTrack} style={{ alignSelf: "flex-start" }} />
       </Grid>
-      {currentSong ? (
+      {currentQueue.length > 0 ? (
         <Grid item>
           <Grid container direction="row">
             <Grid item>

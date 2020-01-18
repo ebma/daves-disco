@@ -7,6 +7,8 @@ import ytpl from "ytpl"
 import { trackError } from "./trackError"
 import Spotify from "./Spotify"
 
+let trackID = 0
+
 export class Youtube {
   private key: string
 
@@ -45,6 +47,7 @@ export class Youtube {
                 source: "youtube",
                 title: searchResult.title,
                 thumbnail: thumbnail ? thumbnail.url : undefined,
+                trackID: this.getNewTrackID(),
                 url: searchResult.link
               })
             })
@@ -71,7 +74,8 @@ export class Youtube {
             url: info.video_url,
             source: "youtube",
             title: info.title,
-            thumbnail: info.thumbnail_url
+            thumbnail: info.thumbnail_url,
+            trackID: this.getNewTrackID()
           }
           resolve(track)
         } else {
@@ -92,7 +96,13 @@ export class Youtube {
         } else {
           let tracks: Track[] = []
           _.forEach(result.items, item => {
-            const newTrack: Track = { thumbnail: item.thumbnail, source: "youtube", title: item.title, url: item.url }
+            const newTrack: Track = {
+              thumbnail: item.thumbnail,
+              source: "youtube",
+              title: item.title,
+              trackID: this.getNewTrackID(),
+              url: item.url
+            }
             tracks.push(newTrack)
           })
 
@@ -150,6 +160,10 @@ export class Youtube {
         reject(`Couldn't get info for track '${trackURL}' because: ${error}`)
       }
     })
+  }
+
+  private getNewTrackID() {
+    return String(trackID++)
   }
 }
 

@@ -1,6 +1,6 @@
 import _ from "lodash"
 
-export type SubscriptionCallback<T> = (currentElement: T, remainingElements: T[]) => void
+export type SubscriptionCallback<T> = (currentElement: T, currentQueue: T[]) => void
 
 class ObservableQueue<T extends object> {
   private itemList: T[] = []
@@ -102,7 +102,7 @@ class ObservableQueue<T extends object> {
 
   notifyObservers() {
     this.observers.forEach(callback => {
-      callback(this.getCurrent(), this.getRemaining())
+      callback(this.getCurrent(), this.getAll())
     })
   }
 }

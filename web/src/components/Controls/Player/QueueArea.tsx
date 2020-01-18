@@ -1,13 +1,15 @@
 import React from "react"
+import _ from "lodash"
 import List from "@material-ui/core/List"
 import ListItem from "@material-ui/core/ListItem"
 import ListItemText from "@material-ui/core/ListItemText"
+import ArrowForwardIcon from "@material-ui/icons/ArrowForwardIos"
 import ExpandLessIcon from "@material-ui/icons/ExpandLess"
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore"
 import Typography from "@material-ui/core/Typography"
 import Grid from "@material-ui/core/Grid"
 import ClearIcon from "@material-ui/icons/Clear"
-import { Avatar, Link, ListItemAvatar, makeStyles, Paper, IconButton, Tooltip } from "@material-ui/core"
+import { Avatar, Link, ListItemAvatar, makeStyles, Paper, IconButton, Tooltip, ListItemIcon } from "@material-ui/core"
 import { trackError } from "../../../shared/util/trackError"
 import { SocketContext } from "../../../context/socket"
 
@@ -25,6 +27,8 @@ const useStyles = makeStyles(theme => ({
 }))
 
 interface QueueItemProps {
+  old?: boolean
+  current?: boolean
   track: Track
 }
 
@@ -32,8 +36,24 @@ function QueueItem(props: QueueItemProps) {
   const classes = useStyles()
   const { track } = props
 
+  const listItemStyle: React.CSSProperties = props.old ? { opacity: 0.5 } : {}
+
   return (
-    <ListItem button className={classes.queueItem} onClick={() => window.open(track.url, "_blank")}>
+    <ListItem
+      button
+      className={classes.queueItem}
+      onClick={() => window.open(track.url, "_blank")}
+      style={listItemStyle}
+    >
+      {props.current ? (
+        <ListItemIcon>
+          <Tooltip placement="left" title="Current">
+            <ArrowForwardIcon />
+          </Tooltip>
+        </ListItemIcon>
+      ) : (
+        undefined
+      )}
       <ListItemAvatar>
         <Avatar alt="thumbnail" src={track.thumbnail} />
       </ListItemAvatar>
@@ -56,19 +76,25 @@ function QueueArea(props: Props) {
 
   const { addListener, connectionState, guildID, sendCommand, sendControlMessage } = React.useContext(SocketContext)
 
+  const [currentTrack, setCurrentTrack] = React.useState<Track | undefined>(undefined)
   const [currentQueue, setCurrentQueue] = React.useState<Track[]>([])
   const [show, setShow] = React.useState(true)
 
   React.useEffect(() => {
+    const unsubscribeCurrentTrack = addListener("currentTrack", setCurrentTrack)
     const unsubscribeCurrentQueue = addListener("currentQueue", setCurrentQueue)
 
     if (connectionState === "connected" && guildID !== "") {
+      sendControlMessage("getCurrentTrack")
+        .then(setCurrentTrack)
+        .catch(trackError)
       sendControlMessage("getCurrentQueue")
         .then(setCurrentQueue)
         .catch(trackError)
     }
 
     return () => {
+      unsubscribeCurrentTrack()
       unsubscribeCurrentQueue()
     }
   }, [addListener, connectionState, guildID, sendControlMessage])
@@ -78,14 +104,25 @@ function QueueArea(props: Props) {
   }, [show, setShow])
 
   const listContent = React.useMemo(() => {
+    const indexOfCurrentSong = currentTrack
+      ? currentQueue.findIndex(track => _.isEqual(track, currentTrack))
+      : currentQueue.length
+
     return currentQueue.length > 0 ? (
-      currentQueue.map((track, index) => <QueueItem track={track} key={index}></QueueItem>)
+      currentQueue.map((track, index) => (
+        <QueueItem
+          current={index === indexOfCurrentSong}
+          old={index < indexOfCurrentSong}
+          track={track}
+          key={index}
+        ></QueueItem>
+      ))
     ) : (
       <ListItem onClick={() => undefined} key={0}>
         <ListItemText primary="No songs in queue..." />
       </ListItem>
     )
-  }, [currentQueue])
+  }, [currentQueue, currentTrack])
 
   const itemRow = React.useMemo(() => {
     const expandLessIcon = (
@@ -118,7 +155,7 @@ function QueueArea(props: Props) {
         {show ? expandLessIcon : expandMoreIcon}
       </>
     )
-  }, [show])
+  }, [sendCommand, show])
 
   return (
     <Paper className={classes.paper}>

@@ -5,11 +5,11 @@ interface Track {
   description?: string
   publishedAt?: string
   source: "spotify" | "youtube"
+  trackID: string
 }
 
 interface SpotifyTrack extends Track {
   artists: string
-  trackID: string
   source: "spotify"
 }
 
@@ -46,9 +46,9 @@ interface InfoMessage {
   data: any
 }
 
-type InfoMessageType = "currentSong" | "currentQueue" | "error" | "paused" | "resumed" | "volume"
+type InfoMessageType = "currentTrack" | "currentQueue" | "error" | "paused" | "resumed" | "volume"
 
-type ControlMessageType = "getGuilds" | "getUsers" | "getCurrentSong" | "getCurrentQueue" | "getVolume" | "isPaused"
+type ControlMessageType = "getGuilds" | "getUsers" | "getCurrentTrack" | "getCurrentQueue" | "getVolume" | "isPaused"
 
 // these have to equal the aliases of the actual commands as this is the criteria for
 // finding the corresponding command

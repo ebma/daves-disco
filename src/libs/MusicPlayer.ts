@@ -16,12 +16,12 @@ class MusicPlayer {
     this.queue = new ObservableQueue<Track>()
     this.subject = new Subject<MusicPlayerSubjectMessage>()
 
-    this.queue.subscribe((currentTrack, remainingTracks) => {
+    this.queue.subscribe((currentTrack, currentQueue) => {
       if (currentTrack && !this.startPending && !this.streamManager.playing && !this.paused) {
         this.startStreaming(currentTrack)
       }
-      this.subject.next({ messageType: "status", message: "currentSong", data: currentTrack })
-      this.subject.next({ messageType: "status", message: "currentQueue", data: remainingTracks })
+      this.subject.next({ messageType: "status", message: "currentTrack", data: currentTrack })
+      this.subject.next({ messageType: "status", message: "currentQueue", data: currentQueue })
     })
   }
 
@@ -33,7 +33,7 @@ class MusicPlayer {
     return this.streamManager.playing
   }
 
-  get queuedTracks() {
+  get remainingTracks() {
     return this.queue.getRemaining()
   }
 
@@ -86,7 +86,7 @@ class MusicPlayer {
       } catch (error) {
         this.subject.next({ messageType: "error", message: error })
       }
-    } else if (this.queuedTracks.length > 0) {
+    } else if (this.remainingTracks.length > 0) {
       this.startStreaming(this.currentTrack)
     }
   }

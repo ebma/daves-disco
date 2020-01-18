@@ -19,26 +19,26 @@ const useSongCardStyles = makeStyles({
 })
 
 interface Props {
-  currentSong?: Track
+  currentTrack?: Track
   style?: React.CSSProperties
 }
 
 const CurrentSongCard = (props: Props) => {
   const classes = useSongCardStyles()
-  const { currentSong } = props
+  const { currentTrack } = props
 
   return (
     <Card className={classes.card} style={props.style}>
-      {currentSong ? (
-        <CardActionArea onClick={() => window.open(currentSong.url, "_blank")}>
+      {currentTrack ? (
+        <CardActionArea onClick={() => window.open(currentTrack.url, "_blank")}>
           <CardMedia
             className={classes.media}
-            image={currentSong.thumbnail}
-            title={`Thumbnail of ${currentSong.title}`}
+            image={currentTrack.thumbnail}
+            title={`Thumbnail of ${currentTrack.title}`}
           />
           <CardContent>
             <Typography gutterBottom variant="h5" component="h2">
-              {currentSong.title}
+              {currentTrack.title}
             </Typography>
           </CardContent>
         </CardActionArea>
@@ -56,8 +56,8 @@ const CurrentSongCard = (props: Props) => {
         </CardActionArea>
       )}
       <CardActions>
-        {currentSong ? (
-          <Button size="small" color="primary" onClick={() => window.open(currentSong.url, "_blank")}>
+        {currentTrack ? (
+          <Button size="small" color="primary" onClick={() => window.open(currentTrack.url, "_blank")}>
             Watch on Youtube
           </Button>
         ) : (

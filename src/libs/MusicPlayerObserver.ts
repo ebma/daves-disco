@@ -53,9 +53,9 @@ class MusicPlayerObserver {
         case "playing":
           this.clearDestructionTimeout()
           break
-        case "currentSong":
+        case "currentTrack":
           const currentTrack = message.data
-          MessageSender.sendMessage("currentSong", currentTrack)
+          MessageSender.sendMessage("currentTrack", currentTrack)
           break
         case "currentQueue":
           const remainingTracks = message.data
