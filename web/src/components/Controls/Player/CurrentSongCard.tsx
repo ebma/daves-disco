@@ -13,8 +13,7 @@ const useSongCardStyles = makeStyles({
     maxWidth: 345
   },
   media: {
-    height: 200,
-    width: 400
+    minWidth: 300
   }
 })
 
@@ -33,6 +32,7 @@ const CurrentSongCard = (props: Props) => {
         <CardActionArea onClick={() => window.open(currentTrack.url, "_blank")}>
           <CardMedia
             className={classes.media}
+            component="img"
             image={currentTrack.thumbnail}
             title={`Thumbnail of ${currentTrack.title}`}
           />
@@ -44,7 +44,12 @@ const CurrentSongCard = (props: Props) => {
         </CardActionArea>
       ) : (
         <CardActionArea onClick={() => window.open("https://http.cat/", "_blank")}>
-          <CardMedia className={classes.media} image="https://http.cat/404.jpg" />
+          <CardMedia
+            className={classes.media}
+            component="img"
+            image="https://http.cat/404.jpg"
+            title="No song playing"
+          />
           <CardContent>
             <Typography gutterBottom variant="h5" component="h2">
               No song playing right now...
