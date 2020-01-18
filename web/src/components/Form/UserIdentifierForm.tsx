@@ -1,7 +1,7 @@
 import React from "react"
 import { makeStyles } from "@material-ui/core/styles"
 import { Typography, Box, MenuItem, FormControl, InputLabel, Select } from "@material-ui/core"
-import { Guilds, Members } from "../components/ControlsContainer"
+import { Guilds, Members } from "../Controls/GuildSelection"
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -21,11 +21,6 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-interface State {
-  userID: string
-  guildID: string
-}
-
 interface Props {
   currentGuild?: string
   currentUser?: string
@@ -33,7 +28,7 @@ interface Props {
   members?: Members
   setUserID: (userID: string) => void
   setGuildID: (guildID: string) => void
-  onClick: () => void
+  onClick?: () => void
 }
 
 function UserIdentifierForm(props: Props) {
@@ -97,4 +92,4 @@ function UserIdentifierForm(props: Props) {
   )
 }
 
-export default UserIdentifierForm
+export default React.memo(UserIdentifierForm)

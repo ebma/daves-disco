@@ -10,9 +10,10 @@ import Tabs from "@material-ui/core/Tabs"
 import TextField from "@material-ui/core/TextField"
 import Typography from "@material-ui/core/Typography"
 import makeStyles from "@material-ui/styles/makeStyles"
-import Youtube from "../shared/util/Youtube"
-import { trackError } from "../shared/util/trackError"
-import StyledButton from "./StyledButton"
+import Youtube from "../../../shared/util/Youtube"
+import { trackError } from "../../../shared/util/trackError"
+import StyledButton from "../../StyledButton"
+import { SocketContext } from "../../../context/socket"
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -20,9 +21,11 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-function SearchYoutubeTab(props: Props) {
-  const classes = useStyles()
+interface TabProps {
+  onSearchDone: (searchTerm: string) => void
+}
 
+function SearchYoutubeTab(props: TabProps) {
   const [inputValue, setInputValue] = React.useState("")
   const [options, setOptions] = React.useState<Track[]>([])
 
@@ -98,7 +101,7 @@ function SearchYoutubeTab(props: Props) {
   )
 }
 
-function PlayYoutubeTab(props: Props) {
+function PlayYoutubeTab(props: TabProps) {
   const [value, setValue] = React.useState("")
 
   return (
@@ -121,7 +124,7 @@ function PlayYoutubeTab(props: Props) {
   )
 }
 
-function PlaySpotifyTab(props: Props) {
+function PlaySpotifyTab(props: TabProps) {
   const [value, setValue] = React.useState("")
 
   return (
@@ -172,17 +175,19 @@ function TabPanel(props: TabPanelProps) {
   )
 }
 
-interface Props {
-  onSearchDone: (searchTerm: string) => void
-}
+interface EnqueueAreaProps {}
 
-function AddSongArea(props: Props) {
+function EnqueueArea(props: EnqueueAreaProps) {
+  const { sendCommand } = React.useContext(SocketContext)
+
   const classes = useStyles()
   const [value, setValue] = React.useState(0)
 
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setValue(newValue)
   }
+
+  const onSearchDone = React.useCallback(searchTerm => sendCommand("play", searchTerm), [sendCommand])
 
   return (
     <Paper className={classes.root}>
@@ -192,16 +197,16 @@ function AddSongArea(props: Props) {
         <Tab label="Play Spotify Playlist" />
       </Tabs>
       <TabPanel value={value} index={0}>
-        <SearchYoutubeTab onSearchDone={props.onSearchDone} />
+        <SearchYoutubeTab onSearchDone={onSearchDone} />
       </TabPanel>
       <TabPanel value={value} index={1}>
-        <PlayYoutubeTab onSearchDone={props.onSearchDone} />
+        <PlayYoutubeTab onSearchDone={onSearchDone} />
       </TabPanel>
       <TabPanel value={value} index={2}>
-        <PlaySpotifyTab onSearchDone={props.onSearchDone} />
+        <PlaySpotifyTab onSearchDone={onSearchDone} />
       </TabPanel>
     </Paper>
   )
 }
 
-export default AddSongArea
+export default React.memo(EnqueueArea)

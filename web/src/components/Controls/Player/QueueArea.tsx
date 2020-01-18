@@ -8,15 +8,30 @@ import Typography from "@material-ui/core/Typography"
 import Container from "@material-ui/core/Container"
 import Grid from "@material-ui/core/Grid"
 import { Link } from "@material-ui/core"
+import { trackError } from "../../../shared/util/trackError"
+import { SocketContext } from "../../../context/socket"
 
-interface Props {
-  currentQueue: Track[]
-}
+interface Props {}
 
 function QueueArea(props: Props) {
+  const { addListener, connectionState, guildID, sendControlMessage } = React.useContext(SocketContext)
+
+  const [currentQueue, setCurrentQueue] = React.useState<Track[]>([])
   const [show, setShow] = React.useState(true)
 
-  const { currentQueue } = props
+  React.useEffect(() => {
+    const unsubscribeCurrentQueue = addListener("currentQueue", setCurrentQueue)
+
+    if (connectionState === "connected" && guildID !== "") {
+      sendControlMessage("getCurrentQueue")
+        .then(setCurrentQueue)
+        .catch(trackError)
+    }
+
+    return () => {
+      unsubscribeCurrentQueue()
+    }
+  }, [addListener, connectionState, guildID, sendControlMessage])
 
   const toggleShow = React.useCallback(() => {
     setShow(!show)
@@ -57,4 +72,4 @@ function QueueArea(props: Props) {
   )
 }
 
-export default QueueArea
+export default React.memo(QueueArea)

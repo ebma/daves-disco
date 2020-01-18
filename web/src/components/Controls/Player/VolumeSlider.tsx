@@ -49,4 +49,4 @@ function VolumeSlider(props: Props) {
   )
 }
 
-export default VolumeSlider
+export default React.memo(VolumeSlider)

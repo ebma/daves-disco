@@ -6,7 +6,7 @@ import Headset from "@material-ui/icons/Headset"
 import Typography from "@material-ui/core/Typography"
 import { makeStyles } from "@material-ui/core/styles"
 import Container from "@material-ui/core/Container"
-import ControlsContainer from "../components/ControlsContainer"
+import ControlsContainer from "../components/Controls/ControlsContainer"
 import Paper from "@material-ui/core/Paper"
 
 const useStyles = makeStyles(theme => ({
