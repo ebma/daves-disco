@@ -143,10 +143,11 @@ function QueueArea(props: Props) {
 
     return (
       <>
-        <Tooltip arrow placement="top" title="Clear Queue">
+        <Tooltip arrow placement="top" title="Stop">
           <IconButton
-            onClick={() => {
-              sendCommand("clear")
+            onClick={event => {
+              event.stopPropagation()
+              sendCommand("stop")
             }}
           >
             <ClearIcon />
