@@ -10,6 +10,7 @@ const useStyles = makeStyles(theme => ({
 
 interface Props {
   alignIconBefore?: boolean
+  disabled?: boolean
   fullWidth?: boolean
   icon: JSX.Element
   style?: React.CSSProperties
@@ -21,14 +22,7 @@ function StyledButton(props: Props) {
   const classes = useStyles()
 
   return (
-    <Button
-      fullWidth={props.fullWidth}
-      variant="contained"
-      color="secondary"
-      className={classes.button}
-      style={props.style}
-      onClick={props.onClick}
-    >
+    <Button {...props} color="secondary" className={classes.button} variant="contained">
       {props.alignIconBefore ? props.icon : undefined}
       {props.text}
       {props.alignIconBefore ? undefined : props.icon}

@@ -1,5 +1,6 @@
 import React from "react"
 import Grid from "@material-ui/core/Grid"
+import ClearIcon from "@material-ui/icons/Clear"
 import PlayIcon from "@material-ui/icons/PlayArrow"
 import SkipPreviousIcon from "@material-ui/icons/SkipPrevious"
 import SkipNextIcon from "@material-ui/icons/SkipNext"
@@ -13,45 +14,66 @@ import VolumeSlider from "./VolumeSlider"
 
 interface DebouncedButtonProps {
   alignIconBefore?: boolean
+  disabled?: boolean
+  fullWidth?: boolean
   icon: JSX.Element
+  style?: React.CSSProperties
   text: string
   onClick?: () => void
 }
 
 function DebouncedButton(props: DebouncedButtonProps) {
-  const onButtonClick = useDebounce(() => props.onClick && props.onClick(), 300, { leading: true, trailing: false })
+  const onButtonClick = useDebounce(() => props.onClick && props.onClick(), 300, {
+    leading: true,
+    trailing: false
+  })
 
-  return <StyledButton icon={props.icon} text={props.text} onClick={onButtonClick} />
+  return <StyledButton {...props} onClick={onButtonClick} />
 }
 
 interface ControlItemProps {
+  disabled?: boolean
   onClick?: () => void
 }
 
 function PlayButton(props: ControlItemProps) {
-  return <DebouncedButton icon={<PlayIcon />} text="Play" onClick={props.onClick} />
+  return <DebouncedButton {...props} icon={<PlayIcon />} text="Play" />
 }
 
 function PauseButton(props: ControlItemProps) {
-  return <DebouncedButton icon={<PauseIcon />} text="Pause" onClick={props.onClick} />
+  return <DebouncedButton {...props} icon={<PauseIcon />} text="Pause" />
 }
 
 function SkipPreviousButton(props: ControlItemProps) {
-  return <DebouncedButton alignIconBefore icon={<SkipPreviousIcon />} text="Skip previous" onClick={props.onClick} />
+  return <DebouncedButton {...props} alignIconBefore icon={<SkipPreviousIcon />} text="Skip previous" />
 }
 
 function SkipNextButton(props: ControlItemProps) {
-  return <DebouncedButton icon={<SkipNextIcon />} text="Skip next" onClick={props.onClick} />
+  return <DebouncedButton {...props} icon={<SkipNextIcon />} text="Skip next" />
+}
+
+function StopPlayerButton(props: ControlItemProps) {
+  return (
+    <DebouncedButton
+      {...props}
+      alignIconBefore
+      fullWidth
+      icon={<ClearIcon />}
+      style={{ padding: 16, margin: 0, marginTop: 16 }}
+      text="Stop Player"
+    />
+  )
 }
 
 interface Props {
   currentTrack?: Track
   currentQueue: Track[]
+  disabled?: boolean
 }
 
 function ControlsArea(props: Props) {
-  const { currentTrack, currentQueue } = props
-  
+  const { currentTrack, disabled } = props
+
   const { addListener, connectionState, guildID, sendCommand, sendControlMessage } = React.useContext(SocketContext)
   const [isPaused, setPaused] = React.useState(false)
   const [volume, setVolume] = React.useState(50)
@@ -82,31 +104,31 @@ function ControlsArea(props: Props) {
       <Grid item>
         <CurrentSongCard currentTrack={currentTrack} style={{ alignSelf: "flex-start" }} />
       </Grid>
-      {currentQueue.length > 0 ? (
-        <Grid item>
-          <Grid container direction="row">
-            <Grid item>
-              <SkipPreviousButton onClick={() => sendCommand("skip-previous").catch(trackError)} />
-            </Grid>
-            <Grid item>
-              {isPaused ? (
-                <PlayButton onClick={() => sendCommand("resume").catch(trackError)} />
-              ) : (
-                <PauseButton onClick={() => sendCommand("pause").catch(trackError)} />
-              )}
-            </Grid>
-            <Grid item>{<SkipNextButton onClick={() => sendCommand("skip").catch(trackError)} />}</Grid>
+      <Grid item>
+        <Grid container direction="row">
+          <Grid item>
+            <SkipPreviousButton disabled={disabled} onClick={() => sendCommand("skip-previous").catch(trackError)} />
           </Grid>
-          <VolumeSlider
-            volume={volume}
-            onChange={(newVolume: number) => {
-              sendCommand("volume", newVolume)
-            }}
-          />
+          <Grid item>
+            {isPaused ? (
+              <PlayButton disabled={disabled} onClick={() => sendCommand("resume").catch(trackError)} />
+            ) : (
+              <PauseButton disabled={disabled} onClick={() => sendCommand("pause").catch(trackError)} />
+            )}
+          </Grid>
+          <Grid item>
+            {<SkipNextButton disabled={disabled} onClick={() => sendCommand("skip").catch(trackError)} />}
+          </Grid>
         </Grid>
-      ) : (
-        undefined
-      )}
+        <VolumeSlider
+          disabled={disabled}
+          volume={volume}
+          onChange={(newVolume: number) => {
+            sendCommand("volume", newVolume)
+          }}
+        />
+        <StopPlayerButton disabled={disabled} onClick={() => sendCommand("stop").catch(trackError)} />
+      </Grid>
     </Grid>
   )
 }

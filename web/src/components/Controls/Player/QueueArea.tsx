@@ -8,7 +8,6 @@ import ExpandLessIcon from "@material-ui/icons/ExpandLess"
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore"
 import Typography from "@material-ui/core/Typography"
 import Grid from "@material-ui/core/Grid"
-import ClearIcon from "@material-ui/icons/Clear"
 import { Avatar, Link, ListItemAvatar, makeStyles, Paper, IconButton, Tooltip, ListItemIcon } from "@material-ui/core"
 import { SocketContext } from "../../../context/socket"
 
@@ -123,21 +122,7 @@ function QueueArea(props: Props) {
       </Tooltip>
     )
 
-    return (
-      <>
-        <Tooltip arrow placement="top" title="Stop">
-          <IconButton
-            onClick={event => {
-              event.stopPropagation()
-              sendCommand("stop")
-            }}
-          >
-            <ClearIcon />
-          </IconButton>
-        </Tooltip>
-        {show ? expandLessIcon : expandMoreIcon}
-      </>
-    )
+    return show ? expandLessIcon : expandMoreIcon
   }, [sendCommand, show])
 
   return (

@@ -6,11 +6,14 @@ import VolumeUp from "@material-ui/icons/VolumeUp"
 import Grid from "@material-ui/core/Grid"
 
 interface Props {
+  disabled?: boolean
   volume: number
   onChange: (newVolume: number) => void
 }
 
 function VolumeSlider(props: Props) {
+  const { disabled, volume, onChange } = props
+
   const [privateValue, setValue] = React.useState<number>(50)
 
   const handleChange = (event: any, newValue: number | number[]) => {
@@ -18,10 +21,10 @@ function VolumeSlider(props: Props) {
   }
 
   React.useEffect(() => {
-    setValue(props.volume)
-  }, [props.volume])
+    setValue(volume)
+  }, [volume])
 
-  const handleChangeCommitted = (event: any, value: number | number[]) => props.onChange(value as number)
+  const handleChangeCommitted = (event: any, value: number | number[]) => onChange(value as number)
 
   return (
     <div style={{ marginTop: 32, flexGrow: 1 }}>
@@ -34,11 +37,12 @@ function VolumeSlider(props: Props) {
         </Grid>
         <Grid item xs>
           <Slider
-            value={privateValue}
+            aria-labelledby="continuous-slider"
+            disabled={disabled}
             onChange={handleChange}
             onChangeCommitted={handleChangeCommitted}
+            value={privateValue}
             valueLabelDisplay="auto"
-            aria-labelledby="continuous-slider"
           />
         </Grid>
         <Grid item>
