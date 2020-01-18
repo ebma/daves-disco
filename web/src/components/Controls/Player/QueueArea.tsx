@@ -6,7 +6,8 @@ import ExpandLessIcon from "@material-ui/icons/ExpandLess"
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore"
 import Typography from "@material-ui/core/Typography"
 import Grid from "@material-ui/core/Grid"
-import { Avatar, Link, ListItemAvatar, makeStyles, Paper } from "@material-ui/core"
+import ClearIcon from "@material-ui/icons/Clear"
+import { Avatar, Link, ListItemAvatar, makeStyles, Paper, IconButton, Tooltip } from "@material-ui/core"
 import { trackError } from "../../../shared/util/trackError"
 import { SocketContext } from "../../../context/socket"
 
@@ -14,11 +15,12 @@ const useStyles = makeStyles(theme => ({
   paper: {
     marginTop: 16,
     marginBottom: 16,
+    paddingTop: 8,
     padding: 16
   },
   queueItem: {
     position: "relative",
-    padding: "16px 24px",
+    padding: "16px 24px"
   }
 }))
 
@@ -52,7 +54,7 @@ interface Props {}
 function QueueArea(props: Props) {
   const classes = useStyles()
 
-  const { addListener, connectionState, guildID, sendControlMessage } = React.useContext(SocketContext)
+  const { addListener, connectionState, guildID, sendCommand, sendControlMessage } = React.useContext(SocketContext)
 
   const [currentQueue, setCurrentQueue] = React.useState<Track[]>([])
   const [show, setShow] = React.useState(true)
@@ -85,17 +87,48 @@ function QueueArea(props: Props) {
     )
   }, [currentQueue])
 
+  const itemRow = React.useMemo(() => {
+    const expandLessIcon = (
+      <Tooltip arrow placement="top" title="Hide">
+        <IconButton>
+          <ExpandLessIcon style={{ fontSize: 32 }} />
+        </IconButton>
+      </Tooltip>
+    )
+
+    const expandMoreIcon = (
+      <Tooltip arrow placement="top" title="Show">
+        <IconButton>
+          <ExpandMoreIcon style={{ fontSize: 32 }} />
+        </IconButton>
+      </Tooltip>
+    )
+
+    return (
+      <>
+        <Tooltip arrow placement="top" title="Clear Queue">
+          <IconButton
+            onClick={() => {
+              sendCommand("clear")
+            }}
+          >
+            <ClearIcon />
+          </IconButton>
+        </Tooltip>
+        {show ? expandLessIcon : expandMoreIcon}
+      </>
+    )
+  }, [show])
+
   return (
     <Paper className={classes.paper}>
-      <Grid container justify="space-between" onClick={toggleShow}>
+      <Grid container justify="space-between" onClick={toggleShow} alignItems="center">
         <Grid item>
           <Typography color="inherit" variant="h5">
             Queued songs
           </Typography>
         </Grid>
-        <Grid item>
-          {show ? <ExpandLessIcon style={{ fontSize: 32 }} /> : <ExpandMoreIcon style={{ fontSize: 32 }} />}
-        </Grid>
+        <Grid item>{itemRow}</Grid>
       </Grid>
 
       {show ? <List style={{ flexGrow: 1 }}>{listContent}</List> : undefined}

@@ -52,7 +52,7 @@ type ControlMessageType = "getGuilds" | "getUsers" | "getCurrentSong" | "getCurr
 
 // these have to equal the aliases of the actual commands as this is the criteria for
 // finding the corresponding command
-type CommandMessageType = "play" | "pause" | "resume" | "skip" | "skip-previous" | "volume"
+type CommandMessageType = "clear" | "play" | "pause" | "resume" | "skip" | "skip-previous" | "volume"
 
 type StreamOptions = {
   seek?: number
