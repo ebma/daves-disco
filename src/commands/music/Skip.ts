@@ -32,7 +32,7 @@ class SkipCommand extends MusicCommand {
 
     try {
       this.musicPlayer.skipForward(suppliedAmount)
-      return this.sendMessageToChannel(`Skipped ${suppliedAmount} songs!`)
+      return this.sendMessageToChannel(`Skipped ${suppliedAmount} song${suppliedAmount > 1 ? "s" : ""}!`)
     } catch (error) {
       trackError(error, "SkipCommand.execute")
       this.sendMessageToChannel(`Could not skip songs: ${error}`)

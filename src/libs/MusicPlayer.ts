@@ -129,10 +129,9 @@ class MusicPlayer {
           })
         })
         .once("end", reason => {
-          this.subject.next({ messageType: "info", message: `Played: *${track.title}*` })
-
           if (reason !== "forceStop") {
             if (reason !== "skip") {
+              this.subject.next({ messageType: "info", message: `Played: *${track.title}*` })
               this.queue.moveForward()
             }
           }

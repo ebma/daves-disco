@@ -1,8 +1,11 @@
 import { Command } from "discord-akairo"
+import _ from "lodash"
 import { Guild, GuildMember, Message, TextChannel, RichEmbed } from "discord.js"
 import MusicPlayer from "../../libs/MusicPlayer"
 import MusicPlayerManager from "../../libs/MusicPlayerManager"
 import { trackError } from "../../shared/util/trackError"
+
+let messageQueue: string[] = []
 
 export abstract class MusicCommand extends Command {
   protected musicPlayer: MusicPlayer
@@ -67,13 +70,28 @@ export abstract class MusicCommand extends Command {
     this.execute({ data })
   }
 
+  private sendStringMessage = _.debounce(
+    channel => {
+      if (channel && messageQueue.length > 0) {
+        const longMessage = messageQueue.join("\n")
+        channel.send(longMessage)
+        messageQueue = []
+      }
+    },
+    2000,
+    { leading: false, trailing: true }
+  )
+
   sendMessageToChannel(message: string | RichEmbed) {
     const defaultChannel = this.guild.channels.find(
       channel => channel.name === "general" && channel.type === "text"
     ) as TextChannel
 
-    if (defaultChannel && message) {
+    if (message instanceof RichEmbed) {
       defaultChannel.send(message)
+    } else {
+      messageQueue.push(message)
+      this.sendStringMessage(defaultChannel)
     }
   }
 }

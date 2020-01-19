@@ -32,7 +32,7 @@ class SkipPrevious extends MusicCommand {
 
     try {
       this.musicPlayer.skipPrevious(suppliedAmount)
-      return this.sendMessageToChannel(`Skipped ${suppliedAmount} songs backwards!`)
+      return this.sendMessageToChannel(`Skipped ${suppliedAmount} song${suppliedAmount > 1 ? "s" : ""} backwards!`)
     } catch (error) {
       trackError(error, "SkipPrevious.execute")
       return this.sendMessageToChannel(`Could not skip to previous song: ${error}`)
