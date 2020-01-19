@@ -36,25 +36,21 @@ const useStyles = makeStyles(theme => ({
 }))
 
 interface QueueItemProps {
-  old?: boolean
   current?: boolean
+  old?: boolean
   track: Track
+  onClick?: () => void
 }
 
 function QueueItem(props: QueueItemProps) {
   const classes = useStyles()
-  const { track } = props
+  const { current, old, track, onClick } = props
 
-  const listItemStyle: React.CSSProperties = props.old ? { opacity: 0.5 } : {}
+  const listItemStyle: React.CSSProperties = old ? { opacity: 0.5 } : {}
 
   return (
-    <ListItem
-      button
-      className={classes.queueItem}
-      onClick={() => window.open(track.url, "_blank")}
-      style={listItemStyle}
-    >
-      {props.current ? (
+    <ListItem button className={classes.queueItem} onClick={onClick} style={listItemStyle}>
+      {current ? (
         <ListItemIcon>
           <Tooltip placement="left" title="Current">
             <ArrowForwardIcon />
@@ -101,23 +97,33 @@ function QueueArea(props: Props) {
       : currentQueue.length
 
     return currentQueue.length > 0 ? (
-      currentQueue.map((track, index) => (
-        <>
-          {index > 0 ? <Divider variant="inset" component="li" /> : undefined}
-          <QueueItem
-            current={index === indexOfCurrentSong}
-            old={index < indexOfCurrentSong}
-            track={track}
-            key={index}
-          />
-        </>
-      ))
+      currentQueue.map((track, index) => {
+        const onClick =
+          index < indexOfCurrentSong
+            ? () => sendCommand("skip-previous", indexOfCurrentSong - index)
+            : index > indexOfCurrentSong
+            ? () => sendCommand("skip", index - indexOfCurrentSong)
+            : undefined
+
+        return (
+          <>
+            {index > 0 ? <Divider variant="inset" component="li" /> : undefined}
+            <QueueItem
+              current={index === indexOfCurrentSong}
+              old={index < indexOfCurrentSong}
+              track={track}
+              key={index}
+              onClick={onClick}
+            />
+          </>
+        )
+      })
     ) : (
       <ListItem onClick={() => undefined} key={0}>
         <ListItemText primary="No songs in queue..." />
       </ListItem>
     )
-  }, [currentQueue, currentTrack])
+  }, [currentQueue, currentTrack, sendCommand])
 
   const itemRow = React.useMemo(() => {
     const expandLessIcon = (
