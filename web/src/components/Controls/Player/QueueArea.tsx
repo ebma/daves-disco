@@ -1,24 +1,22 @@
-import React from "react"
+import React, { useRef } from "react"
 import _ from "lodash"
+import Avatar from "@material-ui/core/Avatar"
+import Divider from "@material-ui/core/Divider"
+import IconButton from "@material-ui/core/IconButton"
+import Link from "@material-ui/core/Link"
 import List from "@material-ui/core/List"
 import ListItem from "@material-ui/core/ListItem"
+import ListItemAvatar from "@material-ui/core/ListItemAvatar"
+import ListItemIcon from "@material-ui/core/ListItemIcon"
 import ListItemText from "@material-ui/core/ListItemText"
+import Paper from "@material-ui/core/Paper"
+import Tooltip from "@material-ui/core/Tooltip"
 import ArrowForwardIcon from "@material-ui/icons/ArrowForwardIos"
 import ExpandLessIcon from "@material-ui/icons/ExpandLess"
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore"
 import Typography from "@material-ui/core/Typography"
 import Grid from "@material-ui/core/Grid"
-import {
-  Avatar,
-  Link,
-  ListItemAvatar,
-  makeStyles,
-  Paper,
-  IconButton,
-  Tooltip,
-  ListItemIcon,
-  Divider
-} from "@material-ui/core"
+import makeStyles from "@material-ui/styles/makeStyles"
 import { SocketContext } from "../../../context/socket"
 
 const useStyles = makeStyles(theme => ({
@@ -32,6 +30,11 @@ const useStyles = makeStyles(theme => ({
     boxShadow: "1",
     position: "relative",
     padding: "16px 24px"
+  },
+  queueList: {
+    flexGrow: 1,
+    maxHeight: 500,
+    overflow: "auto"
   }
 }))
 
@@ -46,10 +49,17 @@ function QueueItem(props: QueueItemProps) {
   const classes = useStyles()
   const { current, old, track, onClick } = props
 
+  const myRef = useRef<HTMLDivElement>(null)
+  if (current) {
+    setTimeout(() => {
+      myRef.current && myRef.current.scrollIntoView()
+    }, 500)
+  }
+
   const listItemStyle: React.CSSProperties = old ? { opacity: 0.5 } : {}
 
   return (
-    <ListItem button className={classes.queueItem} onClick={onClick} style={listItemStyle}>
+    <ListItem button className={classes.queueItem} onClick={onClick} ref={myRef} style={listItemStyle}>
       {current ? (
         <ListItemIcon>
           <Tooltip placement="left" title="Current">
@@ -74,6 +84,49 @@ function QueueItem(props: QueueItemProps) {
   )
 }
 
+function QueueList(props: Props) {
+  const classes = useStyles()
+
+  const { currentTrack, currentQueue } = props
+  const { sendCommand } = React.useContext(SocketContext)
+
+  const indexOfCurrentSong = currentTrack
+    ? currentQueue.findIndex(track => _.isEqual(track, currentTrack))
+    : currentQueue.length
+
+  return (
+    <List className={classes.queueList}>
+      {currentQueue.length > 0 ? (
+        currentQueue.map((track, index) => {
+          const onClick =
+            index < indexOfCurrentSong
+              ? () => sendCommand("skip-previous", indexOfCurrentSong - index)
+              : index > indexOfCurrentSong
+              ? () => sendCommand("skip", index - indexOfCurrentSong)
+              : undefined
+
+          return (
+            <>
+              {index > 0 ? <Divider variant="inset" component="li" /> : undefined}
+              <QueueItem
+                current={index === indexOfCurrentSong}
+                key={index}
+                old={index < indexOfCurrentSong}
+                track={track}
+                onClick={onClick}
+              />
+            </>
+          )
+        })
+      ) : (
+        <ListItem onClick={() => undefined} key={0}>
+          <ListItemText primary="No songs in queue..." />
+        </ListItem>
+      )}
+    </List>
+  )
+}
+
 interface Props {
   currentTrack?: Track
   currentQueue: Track[]
@@ -84,46 +137,11 @@ function QueueArea(props: Props) {
 
   const { currentTrack, currentQueue } = props
 
-  const { sendCommand } = React.useContext(SocketContext)
   const [show, setShow] = React.useState(true)
 
   const toggleShow = React.useCallback(() => {
     setShow(!show)
   }, [show, setShow])
-
-  const listContent = React.useMemo(() => {
-    const indexOfCurrentSong = currentTrack
-      ? currentQueue.findIndex(track => _.isEqual(track, currentTrack))
-      : currentQueue.length
-
-    return currentQueue.length > 0 ? (
-      currentQueue.map((track, index) => {
-        const onClick =
-          index < indexOfCurrentSong
-            ? () => sendCommand("skip-previous", indexOfCurrentSong - index)
-            : index > indexOfCurrentSong
-            ? () => sendCommand("skip", index - indexOfCurrentSong)
-            : undefined
-
-        return (
-          <>
-            {index > 0 ? <Divider variant="inset" component="li" /> : undefined}
-            <QueueItem
-              current={index === indexOfCurrentSong}
-              old={index < indexOfCurrentSong}
-              track={track}
-              key={index}
-              onClick={onClick}
-            />
-          </>
-        )
-      })
-    ) : (
-      <ListItem onClick={() => undefined} key={0}>
-        <ListItemText primary="No songs in queue..." />
-      </ListItem>
-    )
-  }, [currentQueue, currentTrack, sendCommand])
 
   const itemRow = React.useMemo(() => {
     const expandLessIcon = (
@@ -155,8 +173,7 @@ function QueueArea(props: Props) {
         </Grid>
         <Grid item>{itemRow}</Grid>
       </Grid>
-
-      {show ? <List style={{ flexGrow: 1 }}>{listContent}</List> : undefined}
+      {show ? <QueueList currentQueue={currentQueue} currentTrack={currentTrack} /> : undefined}
     </Paper>
   )
 }
