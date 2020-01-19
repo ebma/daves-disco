@@ -8,7 +8,17 @@ import ExpandLessIcon from "@material-ui/icons/ExpandLess"
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore"
 import Typography from "@material-ui/core/Typography"
 import Grid from "@material-ui/core/Grid"
-import { Avatar, Link, ListItemAvatar, makeStyles, Paper, IconButton, Tooltip, ListItemIcon } from "@material-ui/core"
+import {
+  Avatar,
+  Link,
+  ListItemAvatar,
+  makeStyles,
+  Paper,
+  IconButton,
+  Tooltip,
+  ListItemIcon,
+  Divider
+} from "@material-ui/core"
 import { SocketContext } from "../../../context/socket"
 
 const useStyles = makeStyles(theme => ({
@@ -19,6 +29,7 @@ const useStyles = makeStyles(theme => ({
     padding: 16
   },
   queueItem: {
+    boxShadow: "1",
     position: "relative",
     padding: "16px 24px"
   }
@@ -91,12 +102,15 @@ function QueueArea(props: Props) {
 
     return currentQueue.length > 0 ? (
       currentQueue.map((track, index) => (
-        <QueueItem
-          current={index === indexOfCurrentSong}
-          old={index < indexOfCurrentSong}
-          track={track}
-          key={index}
-        ></QueueItem>
+        <>
+          {index > 0 ? <Divider variant="inset" component="li" /> : undefined}
+          <QueueItem
+            current={index === indexOfCurrentSong}
+            old={index < indexOfCurrentSong}
+            track={track}
+            key={index}
+          />
+        </>
       ))
     ) : (
       <ListItem onClick={() => undefined} key={0}>
@@ -123,7 +137,7 @@ function QueueArea(props: Props) {
     )
 
     return show ? expandLessIcon : expandMoreIcon
-  }, [sendCommand, show])
+  }, [show])
 
   return (
     <Paper className={classes.paper}>
