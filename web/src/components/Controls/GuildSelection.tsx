@@ -2,8 +2,8 @@ import React from "react"
 import Card from "@material-ui/core/Card"
 import Typography from "@material-ui/core/Typography"
 import { SocketContext } from "../../context/socket"
-import { trackError } from "../../shared/util/trackError"
 import UserIdentifierForm from "../Form/UserIdentifierForm"
+import { trackError } from "../../context/notifications"
 
 export type Guilds = Array<{ id: string; name: string }>
 export type Members = Array<{ id: string; name: string }>

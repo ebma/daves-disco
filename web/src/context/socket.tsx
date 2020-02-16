@@ -1,6 +1,6 @@
 import React from "react"
 import io from "socket.io-client"
-import { trackError } from "../shared/util/trackError"
+import { trackError } from "./notifications"
 
 const path =
   process.env.NODE_ENV === "production" && process.env.BOT_SERVER_PATH

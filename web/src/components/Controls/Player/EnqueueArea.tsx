@@ -11,9 +11,9 @@ import TextField from "@material-ui/core/TextField"
 import Typography from "@material-ui/core/Typography"
 import makeStyles from "@material-ui/styles/makeStyles"
 import Youtube from "../../../shared/util/Youtube"
-import { trackError } from "../../../shared/util/trackError"
 import StyledButton from "../../StyledButton"
 import { SocketContext } from "../../../context/socket"
+import { trackError } from "../../../context/notifications"
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -202,7 +202,7 @@ function EnqueueArea(props: EnqueueAreaProps) {
     setValue(newValue)
   }
 
-  const onSearchDone = React.useCallback(searchTerm => sendCommand("play", searchTerm), [sendCommand])
+  const onSearchDone = React.useCallback(searchTerm => sendCommand("play", searchTerm).catch(trackError), [sendCommand])
 
   return (
     <Paper className={classes.root}>

@@ -6,7 +6,7 @@ import EnqueueArea from "./Player/EnqueueArea"
 import QueueArea from "./Player/QueueArea"
 import GuildSelectionCard from "./GuildSelection"
 import ControlsArea from "./Player/ControlsArea"
-import { trackError } from "../../shared/util/trackError"
+import { trackError } from "../../context/notifications"
 
 interface ControlAreaProps {}
 

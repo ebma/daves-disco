@@ -2,14 +2,18 @@ import React from "react"
 import Footer from "./components/Footer"
 import ControlPage from "./pages/ControlPage"
 import { SocketProvider } from "./context/socket"
+import NotificationContainer from "./components/Notification/NotificationContainer"
+import { NotificationsProvider } from "./context/notifications"
 
 function App() {
-
   return (
-    <SocketProvider>
-      <ControlPage />
-      <Footer />
-    </SocketProvider>
+    <NotificationsProvider>
+      <SocketProvider>
+        <ControlPage />
+        <Footer />
+        <NotificationContainer />
+      </SocketProvider>
+    </NotificationsProvider>
   )
 }
 

@@ -8,9 +8,9 @@ import PauseIcon from "@material-ui/icons/Pause"
 import { useDebounce } from "../../../hooks/util"
 import { SocketContext } from "../../../context/socket"
 import StyledButton from "../../StyledButton"
-import { trackError } from "../../../shared/util/trackError"
 import CurrentSongCard from "./CurrentSongCard"
 import VolumeSlider from "./VolumeSlider"
+import { trackError } from "../../../context/notifications"
 
 interface DebouncedButtonProps {
   alignIconBefore?: boolean
