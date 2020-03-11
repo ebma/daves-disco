@@ -61,9 +61,9 @@ function SearchYoutubeTab(props: TabProps) {
   }, [inputValue, fetch])
 
   return (
-    <div style={{ display: "flex" }}>
+    <div style={{ display: "flex", flexWrap: "wrap" }}>
       <Autocomplete
-        style={{ flexGrow: 5, padding: 8 }}
+        style={{ flexGrow: 5, padding: 8, minWidth: "200px" }}
         getOptionLabel={option => option.title}
         filterOptions={x => x}
         options={options}
@@ -113,7 +113,7 @@ function PlayYoutubeTab(props: TabProps) {
   const [value, setValue] = React.useState("")
 
   return (
-    <div style={{ display: "flex" }}>
+    <div style={{ display: "flex", flexWrap: "wrap" }}>
       <TextField
         label="Enter video or playlist URL"
         placeholder="https://www.youtube.com/watch?v=..."
@@ -142,7 +142,7 @@ function PlaySpotifyTab(props: TabProps) {
 
   return (
     <>
-      <div style={{ display: "flex" }}>
+      <div style={{ display: "flex", flexWrap: "wrap" }}>
         <TextField
           label="Enter spotify playlist URI"
           placeholder="spotify:playlist:asdfghjkl..."
