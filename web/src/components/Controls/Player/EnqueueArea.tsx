@@ -14,12 +14,15 @@ import Youtube from "../../../shared/util/Youtube"
 import StyledButton from "../../StyledButton"
 import { SocketContext } from "../../../context/socket"
 import { trackError } from "../../../context/notifications"
+import { Theme, createStyles } from "@material-ui/core"
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    flexGrow: 1
-  }
-}))
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      flexGrow: 1
+    },
+  })
+)
 
 interface TabProps {
   onSearchDone: (searchTerm: string) => void
@@ -193,9 +196,9 @@ function TabPanel(props: TabPanelProps) {
 interface EnqueueAreaProps {}
 
 function EnqueueArea(props: EnqueueAreaProps) {
-  const { sendCommand } = React.useContext(SocketContext)
-
   const classes = useStyles()
+  
+  const { sendCommand } = React.useContext(SocketContext)
   const [value, setValue] = React.useState(0)
 
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
@@ -206,7 +209,14 @@ function EnqueueArea(props: EnqueueAreaProps) {
 
   return (
     <Paper className={classes.root}>
-      <Tabs value={value} onChange={handleChange} indicatorColor="primary" textColor="primary" centered>
+      <Tabs
+        centered
+        indicatorColor="primary"
+        onChange={handleChange}
+        textColor="primary"
+        variant="fullWidth"
+        value={value}
+      >
         <Tab label="Search Youtube Song" />
         <Tab label="Play Youtube Video/Playlist" />
         <Tab label="Play Spotify Playlist" />

@@ -1,4 +1,7 @@
-import { createMuiTheme } from "@material-ui/core/styles"
+import { createMuiTheme, responsiveFontSizes } from "@material-ui/core/styles"
+import createBreakpoints from "@material-ui/core/styles/createBreakpoints"
+
+export const breakpoints = createBreakpoints({})
 
 export const brandColor = {
   dark: "#b92b27",
@@ -35,8 +38,15 @@ const theme = createMuiTheme({
     }
   },
   overrides: {
-    MuiPaper: {}
+    MuiPaper: {},
+    MuiTab: {
+      root: {
+        [breakpoints.down("sm")]: {
+          fontSize: "0.6rem"
+        }
+      }
+    }
   }
 })
 
-export default theme
+export default responsiveFontSizes(theme)
