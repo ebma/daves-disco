@@ -11,13 +11,8 @@ import CardActions from "@material-ui/core/CardActions"
 const useSongCardStyles = makeStyles((theme: Theme) =>
   createStyles({
     card: {
-      maxWidth: 345,
-      [theme.breakpoints.down("xs")]: {
-        maxWidth: "65vw"
-      }
     },
     media: {
-      minWidth: 200
     }
   })
 )
