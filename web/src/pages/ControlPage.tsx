@@ -58,7 +58,7 @@ function ControlPage() {
   const classes = useStyles()
 
   return (
-    <Container component="main" maxWidth="md">
+    <Container component="main">
       <CssBaseline />
       <Paper className={classes.paper}>
         <Header />
