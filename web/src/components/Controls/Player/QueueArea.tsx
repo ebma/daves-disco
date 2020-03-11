@@ -21,8 +21,6 @@ import { SocketContext } from "../../../context/socket"
 
 const useStyles = makeStyles(theme => ({
   paper: {
-    marginTop: 16,
-    marginBottom: 16,
     paddingTop: 8,
     padding: 16
   },
