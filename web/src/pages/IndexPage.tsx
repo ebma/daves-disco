@@ -59,7 +59,7 @@ function IndexPage() {
                 disabled={currentQueue.length === 0}
               />
             </Grid>
-            <Grid item md={6} sm={12}>
+            <Grid item md={6} sm={12} style={{width: "100%"}}>
               <QueueArea currentQueue={currentQueue} currentTrack={currentTrack} />
             </Grid>
           </>
