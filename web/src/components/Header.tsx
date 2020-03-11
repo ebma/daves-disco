@@ -1,27 +1,9 @@
 import React from "react"
 import Avatar from "@material-ui/core/Avatar"
-import CssBaseline from "@material-ui/core/CssBaseline"
 import Grid from "@material-ui/core/Grid"
 import Headset from "@material-ui/icons/Headset"
 import Typography from "@material-ui/core/Typography"
 import { makeStyles } from "@material-ui/core/styles"
-import Container from "@material-ui/core/Container"
-import ControlsContainer from "../components/Controls/ControlsContainer"
-import Paper from "@material-ui/core/Paper"
-
-const useStyles = makeStyles(theme => ({
-  "@global": {
-    body: {
-      backgroundColor: theme.palette.common.white
-    }
-  },
-  paper: {
-    marginTop: theme.spacing(4),
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center"
-  }
-}))
 
 const useHeaderStyles = makeStyles(theme => ({
   avatar: {
@@ -30,7 +12,7 @@ const useHeaderStyles = makeStyles(theme => ({
   }
 }))
 
-const Header = () => {
+function Header() {
   const classes = useHeaderStyles()
 
   return (
@@ -54,18 +36,4 @@ const Header = () => {
   )
 }
 
-function ControlPage() {
-  const classes = useStyles()
-
-  return (
-    <Container component="main">
-      <CssBaseline />
-      <Paper className={classes.paper}>
-        <Header />
-        <ControlsContainer />
-      </Paper>
-    </Container>
-  )
-}
-
-export default ControlPage
+export default Header
