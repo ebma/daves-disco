@@ -113,11 +113,25 @@ function SearchYoutubeTab(props: TabProps) {
 
 function PlayYoutubeTab(props: TabProps) {
   const [value, setValue] = React.useState("")
+  const [error, setError] = React.useState<Error | undefined>(undefined)
+
+  const isValidValue = () => {
+    return Youtube.isYoutubeVideo(value) ? true : Youtube.isYoutubePlaylist(value)
+  }
+
+  React.useEffect(() => {
+    if (value && !isValidValue()) {
+      setError(new Error("Invalid URL"))
+    } else {
+      setError(undefined)
+    }
+  }, [value])
 
   return (
     <div style={{ display: "flex", flexWrap: "wrap" }}>
       <TextField
-        label="Enter video or playlist URL"
+        error={Boolean(error)}
+        label={error ? error.message : "Enter video or playlist URL"}
         placeholder="https://www.youtube.com/watch?v=..."
         style={{ flexGrow: 5 }}
         value={value}
@@ -130,7 +144,7 @@ function PlayYoutubeTab(props: TabProps) {
         }}
       />
       <StyledButton
-        disabled={!Boolean(value)}
+        disabled={!Boolean(value) || Boolean(error)}
         icon={<PlayIcon />}
         text="Enqueue"
         onClick={() => props.onSearchDone(value)}
