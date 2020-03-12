@@ -29,7 +29,7 @@ function DebouncedButton(props: DebouncedButtonProps) {
     trailing: false
   })
 
-  return <StyledButton {...props} onClick={onButtonClick} />
+  return <StyledButton {...props} text={undefined} onClick={onButtonClick} />
 }
 
 interface ControlItemProps {
