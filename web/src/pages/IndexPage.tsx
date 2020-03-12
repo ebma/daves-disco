@@ -11,8 +11,24 @@ import GuildSelectionCard from "../components/Controls/GuildSelection"
 import EnqueueArea from "../components/Controls/Player/EnqueueArea"
 import QueueArea from "../components/Controls/Player/QueueArea"
 import ControlsArea from "../components/Controls/Player/ControlsArea"
+import { makeStyles } from "@material-ui/core/styles"
+
+const useStyles = makeStyles(theme => ({
+  root: {
+    maxWidth: "85vw",
+    minHeight: "100vh"
+  },
+  container: {
+    marginTop: 16
+  },
+  item: {
+    width: "100%"
+  }
+}))
 
 function IndexPage() {
+  const classes = useStyles()
+
   const { addListener, connectionState, guildID, userID, sendControlMessage } = React.useContext(SocketContext)
 
   const [currentTrack, setCurrentTrack] = React.useState<Track | undefined>(undefined)
@@ -38,28 +54,28 @@ function IndexPage() {
   }, [addListener, connectionState, guildID, sendControlMessage])
 
   return (
-    <Container component="main" style={{ maxWidth: "85vw", minHeight: "100vh" }}>
+    <Container className={classes.root} component="main">
       <CssBaseline />
       <Header />
       <ConnectionStateIndicator />
 
-      <Grid container spacing={4} style={{ marginTop: 16 }}>
-        <Grid item md={userID ? 6 : 12} sm={12}>
+      <Grid className={classes.container} container spacing={4}>
+        <Grid className={classes.item} item md={userID ? 6 : 12} sm={12}>
           {connectionState === "connected" ? <GuildSelectionCard /> : undefined}
         </Grid>
         {connectionState === "connected" && userID ? (
           <>
-            <Grid item md={6} sm={12}>
+            <Grid className={classes.item} item md={6} sm={12}>
               <EnqueueArea />
             </Grid>
-            <Grid item md={6} sm={12}>
+            <Grid className={classes.item} item md={6} sm={12}>
               <ControlsArea
                 currentQueue={currentQueue}
                 currentTrack={currentTrack}
                 disabled={currentQueue.length === 0}
               />
             </Grid>
-            <Grid item md={6} sm={12} style={{width: "100%"}}>
+            <Grid className={classes.item} item md={6} sm={12}>
               <QueueArea currentQueue={currentQueue} currentTrack={currentTrack} />
             </Grid>
           </>
