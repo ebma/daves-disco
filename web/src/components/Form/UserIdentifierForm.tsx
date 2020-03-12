@@ -1,6 +1,6 @@
 import React from "react"
 import { makeStyles } from "@material-ui/core/styles"
-import { Typography, Box, MenuItem, FormControl, InputLabel, Select } from "@material-ui/core"
+import { Typography, Box, MenuItem, FormControl, InputLabel, Select, Link } from "@material-ui/core"
 import { Guilds, Members } from "../Controls/GuildSelection"
 
 const useStyles = makeStyles(theme => ({
@@ -9,7 +9,7 @@ const useStyles = makeStyles(theme => ({
     margin: theme.spacing(1)
   },
   formControl: {
-    margin: theme.spacing(1),
+    margin: theme.spacing(1)
   },
   textField: {
     marginLeft: theme.spacing(1),
@@ -87,6 +87,13 @@ function UserIdentifierForm(props: Props) {
           </Select>
         </FormControl>
       </Box>
+      <Typography color="secondary" align="center" style={{paddingTop: 16}}>
+        Not yet a member of the Server?
+        <br/>
+        <Link href="https://discord.gg/Q2t6yFT" target="_blak">
+          Join here!
+        </Link>
+      </Typography>
     </form>
   )
 }
