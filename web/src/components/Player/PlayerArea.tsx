@@ -6,12 +6,12 @@ import PlayIcon from "@material-ui/icons/PlayArrow"
 import SkipPreviousIcon from "@material-ui/icons/SkipPrevious"
 import SkipNextIcon from "@material-ui/icons/SkipNext"
 import PauseIcon from "@material-ui/icons/Pause"
-import { useDebounce } from "../../../hooks/util"
-import { SocketContext } from "../../../context/socket"
-import StyledButton from "../../StyledButton"
+import { useDebounce } from "../../hooks/util"
+import { SocketContext } from "../../context/socket"
+import StyledButton from "../StyledButton"
 import CurrentSongCard from "./CurrentSongCard"
 import VolumeSlider from "./VolumeSlider"
-import { trackError } from "../../../context/notifications"
+import { trackError } from "../../context/notifications"
 
 interface DebouncedButtonProps {
   alignIconBefore?: boolean
@@ -72,7 +72,7 @@ interface Props {
   disabled?: boolean
 }
 
-function ControlsArea(props: Props) {
+function PlayerArea(props: Props) {
   const { currentTrack, disabled } = props
 
   const { addListener, connectionState, guildID, sendCommand, sendControlMessage } = React.useContext(SocketContext)
@@ -136,4 +136,4 @@ function ControlsArea(props: Props) {
   )
 }
 
-export default React.memo(ControlsArea)
+export default React.memo(PlayerArea)

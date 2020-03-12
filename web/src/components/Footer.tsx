@@ -19,7 +19,7 @@ function Copyright() {
 
 const useStyles = makeStyles(theme => ({
   footer: {
-    marginTop: "auto",
+    marginTop: theme.spacing(4),
     padding: theme.spacing(2),
   }
 }))

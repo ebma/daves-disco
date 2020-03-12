@@ -9,13 +9,13 @@ import Tab from "@material-ui/core/Tab"
 import Tabs from "@material-ui/core/Tabs"
 import TextField from "@material-ui/core/TextField"
 import Typography from "@material-ui/core/Typography"
+import { Theme, createStyles } from "@material-ui/core/styles"
 import makeStyles from "@material-ui/styles/makeStyles"
-import Youtube from "../../../shared/util/Youtube"
-import StyledButton from "../../StyledButton"
-import { SocketContext } from "../../../context/socket"
-import { trackError } from "../../../context/notifications"
-import { Theme, createStyles } from "@material-ui/core"
-import Spotify from "../../../shared/util/Spotify"
+import Youtube from "../../shared/util/Youtube"
+import StyledButton from "../StyledButton"
+import { SocketContext } from "../../context/socket"
+import { trackError } from "../../context/notifications"
+import Spotify from "../../shared/util/Spotify"
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -116,17 +116,17 @@ function PlayYoutubeTab(props: TabProps) {
   const [value, setValue] = React.useState("")
   const [error, setError] = React.useState<Error | undefined>(undefined)
 
-  const isValidValue = () => {
-    return Youtube.isYoutubeVideo(value) ? true : Youtube.isYoutubePlaylist(value)
-  }
-
   React.useEffect(() => {
+    const isValidValue = () => {
+      return Youtube.isYoutubeVideo(value) ? true : Youtube.isYoutubePlaylist(value)
+    }
+
     if (value && !isValidValue()) {
       setError(new Error("Invalid URL"))
     } else {
       setError(undefined)
     }
-  }, [value, isValidValue])
+  }, [value])
 
   return (
     <div style={{ display: "flex", flexWrap: "wrap" }}>
@@ -159,17 +159,17 @@ function PlaySpotifyTab(props: TabProps) {
   const [value, setValue] = React.useState("")
   const [error, setError] = React.useState<Error | undefined>(undefined)
 
-  const isValidValue = () => {
-    return Spotify.isSpotifyPlaylistURI(value)
-  }
-
   React.useEffect(() => {
+    const isValidValue = () => {
+      return Spotify.isSpotifyPlaylistURI(value)
+    }
+
     if (value && !isValidValue()) {
       setError(new Error("Invalid URI"))
     } else {
       setError(undefined)
     }
-  }, [value, isValidValue])
+  }, [value])
 
   return (
     <>
@@ -228,7 +228,7 @@ function TabPanel(props: TabPanelProps) {
 
 interface EnqueueAreaProps {}
 
-function EnqueueArea(props: EnqueueAreaProps) {
+function SearchArea(props: EnqueueAreaProps) {
   const classes = useStyles()
 
   const { sendCommand } = React.useContext(SocketContext)
@@ -269,4 +269,4 @@ function EnqueueArea(props: EnqueueAreaProps) {
   )
 }
 
-export default React.memo(EnqueueArea)
+export default React.memo(SearchArea)

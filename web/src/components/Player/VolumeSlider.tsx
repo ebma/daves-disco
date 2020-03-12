@@ -1,9 +1,9 @@
 import React from "react"
-import Typography from "@material-ui/core/Typography"
+import Grid from "@material-ui/core/Grid"
 import Slider from "@material-ui/core/Slider"
+import Typography from "@material-ui/core/Typography"
 import VolumeDown from "@material-ui/icons/VolumeDown"
 import VolumeUp from "@material-ui/icons/VolumeUp"
-import Grid from "@material-ui/core/Grid"
 
 interface Props {
   disabled?: boolean

@@ -1,7 +1,13 @@
 import React from "react"
 import { makeStyles } from "@material-ui/core/styles"
-import { Typography, Box, MenuItem, FormControl, InputLabel, Select, Link } from "@material-ui/core"
-import { Guilds, Members } from "../Controls/GuildSelection"
+import Box from "@material-ui/core/Box"
+import FormControl from "@material-ui/core/FormControl"
+import InputLabel from "@material-ui/core/InputLabel"
+import Link from "@material-ui/core/Link"
+import MenuItem from "@material-ui/core/MenuItem"
+import Select from "@material-ui/core/Select"
+import Typography from "@material-ui/core/Typography"
+import { Guilds, Members } from "./GuildSelectionArea"
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -87,9 +93,9 @@ function UserIdentifierForm(props: Props) {
           </Select>
         </FormControl>
       </Box>
-      <Typography color="secondary" align="center" style={{paddingTop: 16}}>
+      <Typography color="secondary" align="center" style={{ paddingTop: 16 }}>
         Not yet a member of the Server?
-        <br/>
+        <br />
         <Link href="https://discord.gg/Q2t6yFT" target="_blak">
           Join here!
         </Link>

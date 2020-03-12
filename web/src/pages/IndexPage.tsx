@@ -2,16 +2,16 @@ import React from "react"
 import CssBaseline from "@material-ui/core/CssBaseline"
 import Container from "@material-ui/core/Container"
 import Grid from "@material-ui/core/Grid"
+import { makeStyles } from "@material-ui/core/styles"
 import Header from "../components/Header"
 import Footer from "../components/Footer"
-import ConnectionStateIndicator from "../components/ConnectionStateIndicator"
+import ConnectionStateIndicator from "../components/ConnectionState/ConnectionStateIndicator"
 import { SocketContext } from "../context/socket"
 import { trackError } from "../context/notifications"
-import GuildSelectionCard from "../components/Controls/GuildSelection"
-import EnqueueArea from "../components/Controls/Player/EnqueueArea"
-import QueueArea from "../components/Controls/Player/QueueArea"
-import ControlsArea from "../components/Controls/Player/ControlsArea"
-import { makeStyles } from "@material-ui/core/styles"
+import GuildSelectionArea from "../components/GuildSelection/GuildSelectionArea"
+import SearchArea from "../components/SearchArea/SearchArea"
+import QueueArea from "../components/Queue/QueueArea"
+import PlayerArea from "../components/Player/PlayerArea"
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -61,15 +61,15 @@ function IndexPage() {
 
       <Grid className={classes.container} container spacing={4}>
         <Grid className={classes.item} item md={userID ? 6 : 12} sm={12}>
-          {connectionState === "connected" ? <GuildSelectionCard /> : undefined}
+          {connectionState === "connected" ? <GuildSelectionArea /> : undefined}
         </Grid>
         {connectionState === "connected" && userID ? (
           <>
             <Grid className={classes.item} item md={6} sm={12}>
-              <EnqueueArea />
+              <SearchArea />
             </Grid>
             <Grid className={classes.item} item md={6} sm={12}>
-              <ControlsArea
+              <PlayerArea
                 currentQueue={currentQueue}
                 currentTrack={currentTrack}
                 disabled={currentQueue.length === 0}

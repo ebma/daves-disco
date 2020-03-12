@@ -1,7 +1,8 @@
 import React from "react"
 import { makeStyles } from "@material-ui/core/styles"
-import { Typography, Card } from "@material-ui/core"
-import { SocketContext } from "../context/socket"
+import Card from "@material-ui/core/Card"
+import Typography from "@material-ui/core/Typography"
+import { SocketContext } from "../../context/socket"
 
 const useStyles = makeStyles(theme => ({
   cardStyle: {

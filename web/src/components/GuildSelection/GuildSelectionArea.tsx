@@ -2,15 +2,15 @@ import React from "react"
 import Card from "@material-ui/core/Card"
 import Typography from "@material-ui/core/Typography"
 import { SocketContext } from "../../context/socket"
-import UserIdentifierForm from "../Form/UserIdentifierForm"
 import { trackError } from "../../context/notifications"
+import UserIdentifierForm from "./UserIdentifierForm"
 
 export type Guilds = Array<{ id: string; name: string }>
 export type Members = Array<{ id: string; name: string }>
 
 interface Props {}
 
-function GuildSelectionCard(props: Props) {
+function GuildSelectionArea(props: Props) {
   const { guildID, userID, sendControlMessage, setUserID, setGuildID } = React.useContext(SocketContext)
 
   const [guilds, setGuilds] = React.useState<Guilds | undefined>(undefined)
@@ -48,4 +48,4 @@ function GuildSelectionCard(props: Props) {
   )
 }
 
-export default React.memo(GuildSelectionCard)
+export default React.memo(GuildSelectionArea)
