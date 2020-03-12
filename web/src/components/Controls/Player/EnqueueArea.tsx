@@ -126,7 +126,7 @@ function PlayYoutubeTab(props: TabProps) {
     } else {
       setError(undefined)
     }
-  }, [value])
+  }, [value, isValidValue])
 
   return (
     <div style={{ display: "flex", flexWrap: "wrap" }}>
@@ -169,7 +169,7 @@ function PlaySpotifyTab(props: TabProps) {
     } else {
       setError(undefined)
     }
-  }, [value])
+  }, [value, isValidValue])
 
   return (
     <>
