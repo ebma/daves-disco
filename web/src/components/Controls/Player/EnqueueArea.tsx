@@ -243,11 +243,13 @@ function EnqueueArea(props: EnqueueAreaProps) {
   return (
     <Paper className={classes.root}>
       <Tabs
-        centered
         indicatorColor="primary"
         onChange={handleChange}
         textColor="primary"
-        variant="fullWidth"
+        variant="scrollable"
+        draggable
+        scrollButtons="auto"
+        style={{ paddingLeft: 8, paddingRight: 8 }}
         value={value}
       >
         <Tab label="Search Youtube Song" />

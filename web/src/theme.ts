@@ -5,7 +5,7 @@ export const breakpoints = createBreakpoints({})
 
 export const brandColor = {
   dark: "#b92b27",
-  main: "#1565c0",
+  main: "#039be5",
   light: "#fa669d"
 }
 
@@ -42,7 +42,7 @@ const theme = createMuiTheme({
     MuiTab: {
       root: {
         [breakpoints.down("sm")]: {
-          fontSize: "0.6rem"
+          fontSize: "0.7rem"
         }
       }
     }
