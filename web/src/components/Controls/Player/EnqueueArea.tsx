@@ -15,6 +15,7 @@ import StyledButton from "../../StyledButton"
 import { SocketContext } from "../../../context/socket"
 import { trackError } from "../../../context/notifications"
 import { Theme, createStyles } from "@material-ui/core"
+import Spotify from "../../../shared/util/Spotify"
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -156,12 +157,26 @@ function PlayYoutubeTab(props: TabProps) {
 
 function PlaySpotifyTab(props: TabProps) {
   const [value, setValue] = React.useState("")
+  const [error, setError] = React.useState<Error | undefined>(undefined)
+
+  const isValidValue = () => {
+    return Spotify.isSpotifyPlaylistURI(value)
+  }
+
+  React.useEffect(() => {
+    if (value && !isValidValue()) {
+      setError(new Error("Invalid URI"))
+    } else {
+      setError(undefined)
+    }
+  }, [value])
 
   return (
     <>
       <div style={{ display: "flex", flexWrap: "wrap" }}>
         <TextField
-          label="Enter spotify playlist URI"
+          error={Boolean(error)}
+          label={error ? error.message : "Enter spotify playlist URI"}
           placeholder="spotify:playlist:asdfghjkl..."
           style={{ flexGrow: 5 }}
           value={value}
@@ -174,7 +189,7 @@ function PlaySpotifyTab(props: TabProps) {
           }}
         />
         <StyledButton
-          disabled={!Boolean(value)}
+          disabled={!Boolean(value) || Boolean(error)}
           icon={<PlayIcon />}
           text="Enqueue"
           onClick={() => props.onSearchDone(value)}
