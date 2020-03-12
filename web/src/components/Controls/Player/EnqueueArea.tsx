@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       flexGrow: 1
-    },
+    }
   })
 )
 
@@ -31,6 +31,7 @@ interface TabProps {
 function SearchYoutubeTab(props: TabProps) {
   const [inputValue, setInputValue] = React.useState("")
   const [options, setOptions] = React.useState<Track[]>([])
+  const [selectedTrack, setSelectedTrack] = React.useState<Track | null>(null)
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value)
@@ -69,21 +70,17 @@ function SearchYoutubeTab(props: TabProps) {
         options={options}
         autoComplete
         includeInputInList
-        freeSolo
         disableOpenOnFocus
+        multiple={false}
+        onChange={(_: React.ChangeEvent<{}>, value: Track | null) => setSelectedTrack(value)}
         renderInput={params => (
           <TextField
+            {...params}
             fullWidth
             label="Search song"
             placeholder="bitch lasagna... ¯\_(ツ)_/¯"
             variant="outlined"
             onChange={handleChange}
-            onKeyDown={event => {
-              if (event.key === "Enter") {
-                props.onSearchDone(inputValue)
-              }
-            }}
-            {...params}
           />
         )}
         renderOption={(option: Track) => {
@@ -100,9 +97,14 @@ function SearchYoutubeTab(props: TabProps) {
         }}
       />
       <StyledButton
+        disabled={!Boolean(selectedTrack)}
         icon={<PlayIcon />}
         text="Enqueue"
-        onClick={() => props.onSearchDone(inputValue)}
+        onClick={() => {
+          if (selectedTrack && selectedTrack.url) {
+            props.onSearchDone(selectedTrack.url)
+          }
+        }}
         style={{ flexGrow: 1 }}
       />
     </div>
@@ -128,6 +130,7 @@ function PlayYoutubeTab(props: TabProps) {
         }}
       />
       <StyledButton
+        disabled={!Boolean(value)}
         icon={<PlayIcon />}
         text="Enqueue"
         onClick={() => props.onSearchDone(value)}
@@ -157,6 +160,7 @@ function PlaySpotifyTab(props: TabProps) {
           }}
         />
         <StyledButton
+          disabled={!Boolean(value)}
           icon={<PlayIcon />}
           text="Enqueue"
           onClick={() => props.onSearchDone(value)}
@@ -182,11 +186,11 @@ function TabPanel(props: TabPanelProps) {
 
   return (
     <Typography
+      {...other}
       component="div"
       role="tabpanel"
       hidden={value !== index}
       id={`scrollable-auto-tabpanel-${index}`}
-      {...other}
     >
       {value === index && <Box p={3}>{children}</Box>}
     </Typography>
@@ -197,7 +201,7 @@ interface EnqueueAreaProps {}
 
 function EnqueueArea(props: EnqueueAreaProps) {
   const classes = useStyles()
-  
+
   const { sendCommand } = React.useContext(SocketContext)
   const [value, setValue] = React.useState(0)
 
