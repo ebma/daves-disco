@@ -9,6 +9,7 @@ import ListItemText from "@material-ui/core/ListItemText"
 import makeStyles from "@material-ui/styles/makeStyles"
 import Tooltip from "@material-ui/core/Tooltip"
 import ArrowForwardIcon from "@material-ui/icons/ArrowForwardIos"
+import DeleteIcon from "@material-ui/icons/Delete"
 import Spotify from "../../shared/util/Spotify"
 
 const useStyles = makeStyles(theme => ({
@@ -26,11 +27,12 @@ interface Props {
   old?: boolean
   track: Track
   onClick?: () => void
+  onDeleteClick?: () => void
 }
 
 function QueueItem(props: Props) {
   const classes = useStyles()
-  const { current, id, index, old, track, onClick } = props
+  const { current, id, index, old, track, onClick, onDeleteClick } = props
 
   const myRef = useRef<HTMLDivElement>(null)
   if (current) {
@@ -38,6 +40,36 @@ function QueueItem(props: Props) {
       myRef.current && myRef.current.scrollIntoView()
     }, 500)
   }
+
+  const CurrentTrackArrow = React.useMemo(() => {
+    return current ? (
+      <ListItemIcon>
+        <Tooltip placement="left" title="Current">
+          <ArrowForwardIcon />
+        </Tooltip>
+      </ListItemIcon>
+    ) : (
+      undefined
+    )
+  }, [current])
+
+  const DeleteTrackButton = React.useMemo(() => {
+    return onDeleteClick ? (
+      <ListItemIcon
+        onClick={(event: React.MouseEvent) => {
+          event.preventDefault()
+          event.stopPropagation()
+          onDeleteClick()
+        }}
+      >
+        <Tooltip placement="left" title="Remove">
+          <DeleteIcon />
+        </Tooltip>
+      </ListItemIcon>
+    ) : (
+      undefined
+    )
+  }, [onDeleteClick])
 
   const listItemStyle: React.CSSProperties = old ? { opacity: 0.5 } : {}
 
@@ -55,15 +87,7 @@ function QueueItem(props: Props) {
           {...provided.draggableProps}
           {...provided.dragHandleProps}
         >
-          {current ? (
-            <ListItemIcon>
-              <Tooltip placement="left" title="Current">
-                <ArrowForwardIcon />
-              </Tooltip>
-            </ListItemIcon>
-          ) : (
-            undefined
-          )}
+          {CurrentTrackArrow}
           <ListItemAvatar>
             <Avatar alt="thumbnail" src={track.thumbnail} />
           </ListItemAvatar>
@@ -75,6 +99,7 @@ function QueueItem(props: Props) {
               </Link>
             }
           />
+          {DeleteTrackButton}
         </ListItem>
       )}
     </Draggable>

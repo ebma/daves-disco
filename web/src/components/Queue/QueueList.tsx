@@ -75,6 +75,15 @@ function QueueList(props: Props) {
             ? () => sendCommand("skip", index - indexOfCurrentSong).catch(trackError)
             : undefined
 
+        const onDeleteClick = () => {
+          const copiedQueue = localQueue.slice(0)
+          _.remove(copiedQueue, element => element.trackID === track.trackID)
+
+          sendControlMessage("updateQueue", {
+            items: copiedQueue
+          }).catch(trackError)
+        }
+
         return (
           <div key={index}>
             {index > 0 ? <Divider variant="inset" component="li" /> : undefined}
@@ -85,11 +94,12 @@ function QueueList(props: Props) {
               old={index < indexOfCurrentSong}
               track={track}
               onClick={onClick}
+              onDeleteClick={onDeleteClick}
             />
           </div>
         )
       }),
-    [indexOfCurrentSong, localQueue, sendCommand]
+    [indexOfCurrentSong, localQueue, sendCommand, sendControlMessage]
   )
 
   const EmptyQueueItem = React.useMemo(
