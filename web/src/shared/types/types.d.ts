@@ -48,7 +48,14 @@ interface InfoMessage {
 
 type InfoMessageType = "currentTrack" | "currentQueue" | "error" | "paused" | "resumed" | "volume"
 
-type ControlMessageType = "getGuilds" | "getUsers" | "getCurrentTrack" | "getCurrentQueue" | "getVolume" | "isPaused"
+type ControlMessageType =
+  | "getGuilds"
+  | "getUsers"
+  | "getCurrentTrack"
+  | "getCurrentQueue"
+  | "getVolume"
+  | "isPaused"
+  | "updateQueue"
 
 // these have to equal the aliases of the actual commands as this is the criteria for
 // finding the corresponding command

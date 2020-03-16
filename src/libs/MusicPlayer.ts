@@ -114,6 +114,15 @@ class MusicPlayer {
     this.queue.moveBack(amount)
   }
 
+  updateQueue(newItems: Track[]) {
+    const currentItem = this.queue.getCurrent()
+
+    const foundIndex = newItems.findIndex(track => track.trackID === currentItem.trackID)
+    const newIndex = foundIndex !== -1 ? foundIndex : 0
+
+    this.queue.replace(newItems, newIndex)
+  }
+
   private async startStreaming(track: Track) {
     try {
       this.startPending = true

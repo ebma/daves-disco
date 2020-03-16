@@ -100,6 +100,12 @@ class ObservableQueue<T extends object> {
     this.observers.push(callback)
   }
 
+  public replace(newItems: Array<T>, newCurrentIndex: number) {
+    this.itemList = newItems
+    this.currentIndex = newCurrentIndex
+    this.notifyObservers()
+  }
+
   notifyObservers() {
     this.observers.forEach(callback => {
       callback(this.getCurrent(), this.getAll())
