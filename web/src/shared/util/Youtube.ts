@@ -135,7 +135,7 @@ export class Youtube {
     const equivYoutubeTrack = results.length > 0 ? results[0] : null
     if (equivYoutubeTrack) {
       track.url = equivYoutubeTrack.url
-      track.thumbnail = equivYoutubeTrack.thumbnail
+      track.thumbnail = track.thumbnail ? track.thumbnail : equivYoutubeTrack.thumbnail
       track.publishedAt = equivYoutubeTrack.publishedAt
       track.description = equivYoutubeTrack.description
       return true
