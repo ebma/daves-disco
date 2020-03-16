@@ -1,4 +1,5 @@
 import React, { useRef } from "react"
+import { Draggable } from "react-beautiful-dnd"
 import Avatar from "@material-ui/core/Avatar"
 import Link from "@material-ui/core/Link"
 import ListItem from "@material-ui/core/ListItem"
@@ -8,7 +9,7 @@ import ListItemText from "@material-ui/core/ListItemText"
 import makeStyles from "@material-ui/styles/makeStyles"
 import Tooltip from "@material-ui/core/Tooltip"
 import ArrowForwardIcon from "@material-ui/icons/ArrowForwardIos"
-import { Draggable } from "react-beautiful-dnd"
+import Spotify from "../../shared/util/Spotify"
 
 const useStyles = makeStyles(theme => ({
   queueItem: {
@@ -40,6 +41,8 @@ function QueueItem(props: Props) {
 
   const listItemStyle: React.CSSProperties = old ? { opacity: 0.5 } : {}
 
+  const primaryText = Spotify.isSpotifyTrack(track) ? `${track.title} - ${track.artists}` : track.title
+
   return (
     <Draggable draggableId={id} key={id} index={index}>
       {provided => (
@@ -65,7 +68,7 @@ function QueueItem(props: Props) {
             <Avatar alt="thumbnail" src={track.thumbnail} />
           </ListItemAvatar>
           <ListItemText
-            primary={track.title}
+            primary={primaryText}
             secondary={
               <Link href={track.url} color="inherit" target="_blank" rel="noreferrer">
                 {track.url}
