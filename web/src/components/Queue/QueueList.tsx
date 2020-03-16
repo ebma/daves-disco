@@ -7,6 +7,7 @@ import ListItem from "@material-ui/core/ListItem"
 import ListItemText from "@material-ui/core/ListItemText"
 import makeStyles from "@material-ui/styles/makeStyles"
 import { SocketContext } from "../../context/socket"
+import { trackError } from "../../context/notifications"
 import QueueItem from "./QueueItem"
 
 function reorder<T>(list: Array<T>, startIndex: number, endIndex: number) {
@@ -34,7 +35,7 @@ function QueueList(props: Props) {
   const { currentTrack, currentQueue } = props
 
   const classes = useStyles()
-  const { sendCommand } = React.useContext(SocketContext)
+  const { sendCommand, sendControlMessage } = React.useContext(SocketContext)
   const [localQueue, setLocalQueue] = React.useState<Track[]>(props.currentQueue)
 
   React.useEffect(() => {
@@ -55,8 +56,9 @@ function QueueList(props: Props) {
 
       const orderedQueue = reorder(localQueue, result.source.index, result.destination.index)
       setLocalQueue(orderedQueue)
+      sendControlMessage("updateQueue", { items: orderedQueue }).catch(trackError)
     },
-    [localQueue]
+    [localQueue, sendControlMessage]
   )
 
   const indexOfCurrentSong = currentTrack
@@ -68,9 +70,9 @@ function QueueList(props: Props) {
       localQueue.map((track, index) => {
         const onClick =
           index < indexOfCurrentSong
-            ? () => sendCommand("skip-previous", indexOfCurrentSong - index)
+            ? () => sendCommand("skip-previous", indexOfCurrentSong - index).catch(trackError)
             : index > indexOfCurrentSong
-            ? () => sendCommand("skip", index - indexOfCurrentSong)
+            ? () => sendCommand("skip", index - indexOfCurrentSong).catch(trackError)
             : undefined
 
         return (
