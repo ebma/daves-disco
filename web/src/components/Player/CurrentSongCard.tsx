@@ -11,9 +11,9 @@ import { makeStyles, createStyles, Theme } from "@material-ui/core/styles"
 const useSongCardStyles = makeStyles((theme: Theme) =>
   createStyles({
     card: {
+      minHeight: "300px"
     },
-    media: {
-    }
+    media: {}
   })
 )
 
@@ -27,7 +27,7 @@ const CurrentSongCard = (props: Props) => {
   const { currentTrack } = props
 
   return (
-    <Card className={classes.card} style={props.style}>
+    <Card className={classes.card} elevation={10} style={props.style}>
       {currentTrack ? (
         <CardActionArea onClick={() => window.open(currentTrack.url, "_blank")}>
           <CardMedia
