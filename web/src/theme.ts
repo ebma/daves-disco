@@ -24,29 +24,32 @@ export const backgroundColor = {
   light: "#E0E0E0"
 }
 
-const theme = createMuiTheme({
-  palette: {
-    type: "dark",
-    primary: {
-      dark: brandColor.dark,
-      main: brandColor.main,
-      light: brandColor.light
-    },
-    text: {
-      primary: textColorDark.primary,
-      secondary: textColorDark.secondary
-    }
-  },
-  overrides: {
-    MuiPaper: {},
-    MuiTab: {
-      root: {
-        [breakpoints.down("sm")]: {
-          fontSize: "0.7rem"
+const createTheme = (darkMode: boolean) =>
+  responsiveFontSizes(
+    createMuiTheme({
+      palette: {
+        type: darkMode ? "dark" : "light",
+        primary: {
+          dark: brandColor.dark,
+          main: brandColor.main,
+          light: brandColor.light
+        },
+        text: {
+          primary: textColorDark.primary,
+          secondary: textColorDark.secondary
+        }
+      },
+      overrides: {
+        MuiPaper: {},
+        MuiTab: {
+          root: {
+            [breakpoints.down("sm")]: {
+              fontSize: "0.7rem"
+            }
+          }
         }
       }
-    }
-  }
-})
+    })
+  )
 
-export default responsiveFontSizes(theme)
+export default createTheme
