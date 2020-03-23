@@ -6,6 +6,7 @@
     "@material-ui/core": "^4.4.2",
     "@material-ui/icons": "^4.4.1",
     "@material-ui/lab": "^4.0.0-alpha.31",
+    "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.15",
     "react": "^16.9.0",
     "react-beautiful-dnd": "^13.0.0",
