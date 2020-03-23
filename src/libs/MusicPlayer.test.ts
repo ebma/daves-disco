@@ -123,11 +123,11 @@ it("can be subscribed", done => {
   musicPlayer.enqueue(testTrack2)
 
   setTimeout(() => {
-    expect(subscriberFunction).toBeCalledWith({ messageType: "status", message: "currentTrack", data: testTrack1 })
-    expect(subscriberFunction).toBeCalledWith({ messageType: "status", message: "currentQueue", data: [] })
+    expect(subscriberFunction).toBeCalledWith({ messageType: "status", message: "current-track", data: testTrack1 })
+    expect(subscriberFunction).toBeCalledWith({ messageType: "status", message: "current-queue", data: [] })
 
-    expect(subscriberFunction).toBeCalledWith({ messageType: "status", message: "currentTrack", data: testTrack1 })
-    expect(subscriberFunction).toBeCalledWith({ messageType: "status", message: "currentQueue", data: [testTrack2] })
+    expect(subscriberFunction).toBeCalledWith({ messageType: "status", message: "current-track", data: testTrack1 })
+    expect(subscriberFunction).toBeCalledWith({ messageType: "status", message: "current-queue", data: [testTrack2] })
 
     expect(subscriberFunction).toBeCalledWith({ messageType: "status", message: "playing" })
     done()

@@ -2,18 +2,19 @@ import { AkairoClient } from "discord-akairo"
 import express from "express"
 import { Server } from "http"
 import socketio, { Socket } from "socket.io"
-import { createControlMessageListener } from "./controlMessages"
-import { createCommandMessageListener } from "./commandMessages"
 import MessageSender from "./MessageSender"
+import { initHandlers } from "./messageHandlers"
 
 function initializeSocket(socket: Socket, client: AkairoClient) {
   MessageSender.setSocket(socket)
 
-  const controlMessageListener = createControlMessageListener(socket, client)
-  const commandMessageListener = createCommandMessageListener(socket, client)
+  initHandlers(client)
 
-  socket.on("command", commandMessageListener)
-  socket.on("control", controlMessageListener)
+  const messageHandler = (message: IPC.SocketMessage) =>
+    MessageSender.handleMessageEvent(client, message.messageType, message.messageID, message.args)
+
+  socket.on("message", messageHandler)
+
   socket.on("disconnect", () => undefined)
 }
 

@@ -1,11 +1,60 @@
 import { trackError } from "../shared/util/trackError"
+import { Messages } from "../shared/ipc"
+import MessageSender from "../socket/MessageSender"
 import MusicPlayer from "./MusicPlayer"
-import StreamManager from "./StreamManager"
 import MusicPlayerObserver from "./MusicPlayerObserver"
+import StreamManager from "./StreamManager"
 
 class MusicPlayerManager {
   private musicPlayerMap: { [key in GuildID]: MusicPlayer } = {}
   private musicPlayerObserverMap: { [key in GuildID]: MusicPlayerObserver } = {}
+
+  constructor() {
+    MessageSender.addHandler(Messages.GetTrack, guildID => {
+      const player = this.musicPlayerMap[guildID]
+      if (player) {
+        return player.currentTrack
+      } else {
+        throw Error("Player not available")
+      }
+    })
+
+    MessageSender.addHandler(Messages.GetQueue, guildID => {
+      const player = this.musicPlayerMap[guildID]
+      if (player) {
+        return player.queue.getAll()
+      } else {
+        throw Error("Player not available")
+      }
+    })
+
+    MessageSender.addHandler(Messages.GetVolume, guildID => {
+      const player = this.musicPlayerMap[guildID]
+      if (player) {
+        return player.volume
+      } else {
+        throw Error("Player not available")
+      }
+    })
+
+    MessageSender.addHandler(Messages.GetPausedState, guildID => {
+      const player = this.musicPlayerMap[guildID]
+      if (player) {
+        return player.paused
+      } else {
+        throw Error("Player not available")
+      }
+    })
+
+    MessageSender.addHandler(Messages.UpdateQueue, (guildID, newItems) => {
+      const player = this.musicPlayerMap[guildID]
+      if (player) {
+        player.updateQueue(newItems)
+      } else {
+        throw Error("Player not available")
+      }
+    })
+  }
 
   async createPlayerFor(guildID: GuildID, channel: Channel): Promise<MusicPlayer> {
     if (this.musicPlayerMap[guildID] !== undefined && !this.musicPlayerMap[guildID].destroyed) {

@@ -12,6 +12,7 @@ import GuildSelectionArea from "../components/GuildSelection/GuildSelectionArea"
 import SearchArea from "../components/SearchArea/SearchArea"
 import QueueArea from "../components/Queue/QueueArea"
 import PlayerArea from "../components/Player/PlayerArea"
+import { Messages } from "../shared/ipc"
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -29,20 +30,20 @@ const useStyles = makeStyles(theme => ({
 function IndexPage() {
   const classes = useStyles()
 
-  const { addListener, connectionState, guildID, userID, sendControlMessage } = React.useContext(SocketContext)
+  const { connectionState, guildID, userID, sendMessage, subscribeToMessages } = React.useContext(SocketContext)
 
   const [currentTrack, setCurrentTrack] = React.useState<Track | undefined>(undefined)
   const [currentQueue, setCurrentQueue] = React.useState<Track[]>([])
 
   React.useEffect(() => {
-    const unsubscribeCurrentTrack = addListener("currentTrack", setCurrentTrack)
-    const unsubscribeCurrentQueue = addListener("currentQueue", setCurrentQueue)
+    const unsubscribeCurrentTrack = subscribeToMessages(Messages.CurrentTrack, setCurrentTrack)
+    const unsubscribeCurrentQueue = subscribeToMessages(Messages.CurrentQueue, setCurrentQueue)
 
     if (connectionState === "connected" && guildID !== "") {
-      sendControlMessage("getCurrentTrack")
+      sendMessage(Messages.GetTrack, guildID)
         .then(setCurrentTrack)
         .catch(trackError)
-      sendControlMessage("getCurrentQueue")
+      sendMessage(Messages.GetQueue, guildID)
         .then(setCurrentQueue)
         .catch(trackError)
     }
@@ -51,7 +52,7 @@ function IndexPage() {
       unsubscribeCurrentTrack()
       unsubscribeCurrentQueue()
     }
-  }, [addListener, connectionState, guildID, sendControlMessage])
+  }, [connectionState, guildID, sendMessage, subscribeToMessages])
 
   return (
     <Container className={classes.root} component="main">

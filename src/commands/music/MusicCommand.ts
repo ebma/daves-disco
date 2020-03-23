@@ -35,7 +35,7 @@ export abstract class MusicCommand extends Command {
     }
   }
 
-  async exec(message: Message, args: CommandMessage | any) {
+  async exec(message: Message, args: any) {
     if (!message) {
       return this.executeSilent(args)
     } else {
@@ -57,7 +57,7 @@ export abstract class MusicCommand extends Command {
     }
   }
 
-  async executeSilent(args: CommandMessage) {
+  async executeSilent(args: any) {
     const { guildID, userID, data } = args
     const guild = this.client.guilds.find(g => g.id === guildID)
     const member = guild.members.find(m => m.id === userID)

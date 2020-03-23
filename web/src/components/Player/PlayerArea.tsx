@@ -12,6 +12,7 @@ import StyledButton from "../StyledButton"
 import CurrentSongCard from "./CurrentSongCard"
 import VolumeSlider from "./VolumeSlider"
 import { trackError } from "../../context/notifications"
+import { Messages } from "../../shared/ipc"
 
 interface DebouncedButtonProps {
   alignIconBefore?: boolean
@@ -75,30 +76,28 @@ interface Props {
 function PlayerArea(props: Props) {
   const { currentTrack, disabled } = props
 
-  const { addListener, connectionState, guildID, sendCommand, sendControlMessage } = React.useContext(SocketContext)
+  const { connectionState, guildID, sendMessage, subscribeToMessages } = React.useContext(SocketContext)
   const [isPaused, setPaused] = React.useState(false)
   const [volume, setVolume] = React.useState(50)
 
   React.useEffect(() => {
-    const unsubcribePause = addListener("paused", () => setPaused(true))
-    const unsubscribeResume = addListener("resumed", () => setPaused(false))
-    const unsubscribeVolume = addListener("volume", setVolume)
+    const unsubcribePause = subscribeToMessages(Messages.PauseChange, isPaused => setPaused(isPaused))
+    const unsubscribeVolume = subscribeToMessages(Messages.VolumeChange, setVolume)
 
     if (connectionState === "connected" && guildID !== "") {
-      sendControlMessage("getVolume")
+      sendMessage(Messages.GetVolume, guildID)
         .then(setVolume)
         .catch(trackError)
-      sendControlMessage("isPaused")
+      sendMessage(Messages.GetPausedState, guildID)
         .then(setPaused)
         .catch(trackError)
     }
 
     return () => {
       unsubcribePause()
-      unsubscribeResume()
       unsubscribeVolume()
     }
-  }, [addListener, connectionState, guildID, sendControlMessage])
+  }, [connectionState, guildID, sendMessage, subscribeToMessages])
 
   return (
     <Paper style={{ padding: 16 }}>
@@ -109,27 +108,41 @@ function PlayerArea(props: Props) {
         <Grid item sm={6} xs={12}>
           <Grid container direction="row" justify="center">
             <Grid item>
-              <SkipPreviousButton disabled={disabled} onClick={() => sendCommand("skip-previous").catch(trackError)} />
+              <SkipPreviousButton
+                disabled={disabled}
+                onClick={() => sendMessage(Messages.SkipPrevious, guildID, 1).catch(trackError)}
+              />
             </Grid>
             <Grid item>
               {isPaused ? (
-                <PlayButton disabled={disabled} onClick={() => sendCommand("resume").catch(trackError)} />
+                <PlayButton
+                  disabled={disabled}
+                  onClick={() => sendMessage(Messages.Resume, guildID).catch(trackError)}
+                />
               ) : (
-                <PauseButton disabled={disabled} onClick={() => sendCommand("pause").catch(trackError)} />
+                <PauseButton
+                  disabled={disabled}
+                  onClick={() => sendMessage(Messages.Pause, guildID).catch(trackError)}
+                />
               )}
             </Grid>
             <Grid item>
-              {<SkipNextButton disabled={disabled} onClick={() => sendCommand("skip").catch(trackError)} />}
+              {
+                <SkipNextButton
+                  disabled={disabled}
+                  onClick={() => sendMessage(Messages.Skip, guildID, 1).catch(trackError)}
+                />
+              }
             </Grid>
           </Grid>
           <VolumeSlider
             disabled={disabled}
             volume={volume}
             onChange={(newVolume: number) => {
-              sendCommand("volume", newVolume)
+              sendMessage(Messages.Volume, guildID, newVolume)
             }}
           />
-          <StopPlayerButton disabled={disabled} onClick={() => sendCommand("stop").catch(trackError)} />
+          <StopPlayerButton disabled={disabled} onClick={() => sendMessage(Messages.Stop, guildID).catch(trackError)} />
         </Grid>
       </Grid>
     </Paper>

@@ -16,6 +16,7 @@ import StyledButton from "../StyledButton"
 import { SocketContext } from "../../context/socket"
 import { trackError } from "../../context/notifications"
 import Spotify from "../../shared/util/Spotify"
+import { Messages } from "../../shared/ipc"
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -231,14 +232,14 @@ interface EnqueueAreaProps {}
 function SearchArea(props: EnqueueAreaProps) {
   const classes = useStyles()
 
-  const { sendCommand } = React.useContext(SocketContext)
+  const { guildID, sendMessage } = React.useContext(SocketContext)
   const [value, setValue] = React.useState(0)
 
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setValue(newValue)
   }
 
-  const onSearchDone = React.useCallback(searchTerm => sendCommand("play", searchTerm).catch(trackError), [sendCommand])
+  const onSearchDone = React.useCallback(searchTerm => sendMessage(Messages.Play, guildID, searchTerm).catch(trackError), [guildID, sendMessage])
 
   return (
     <Paper className={classes.root}>
@@ -249,7 +250,7 @@ function SearchArea(props: EnqueueAreaProps) {
         variant="scrollable"
         draggable
         scrollButtons="auto"
-        style={{ paddingLeft: 8, paddingRight: 8 }}
+        style={{ paddingLeft: 8, paddingRight: 8 }} 
         value={value}
       >
         <Tab label="Search Youtube Song" />

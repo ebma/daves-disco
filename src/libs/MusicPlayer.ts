@@ -20,8 +20,8 @@ class MusicPlayer {
       if (currentTrack && !this.startPending && !this.streamManager.playing && !this.paused) {
         this.startStreaming(currentTrack)
       }
-      this.subject.next({ messageType: "status", message: "currentTrack", data: currentTrack })
-      this.subject.next({ messageType: "status", message: "currentQueue", data: currentQueue })
+      this.subject.next({ messageType: "status", message: "current-track", data: currentTrack })
+      this.subject.next({ messageType: "status", message: "current-queue", data: currentQueue })
     })
   }
 
@@ -93,8 +93,8 @@ class MusicPlayer {
 
   destroy() {
     this.subject.next({ messageType: "info", message: "Stopping stream." })
-    this.subject.next({ messageType: "status", message: "currentTrack", data: undefined })
-    this.subject.next({ messageType: "status", message: "currentQueue", data: [] })
+    this.subject.next({ messageType: "status", message: "current-track", data: undefined })
+    this.subject.next({ messageType: "status", message: "current-queue", data: [] })
     this.streamManager.stop()
     this.streamManager.disconnect()
     this.destroyed = true

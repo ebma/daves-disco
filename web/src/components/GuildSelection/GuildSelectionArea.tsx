@@ -4,6 +4,7 @@ import Typography from "@material-ui/core/Typography"
 import { SocketContext } from "../../context/socket"
 import { trackError } from "../../context/notifications"
 import UserIdentifierForm from "./UserIdentifierForm"
+import { Messages } from "../../shared/ipc"
 
 export type Guilds = Array<{ id: string; name: string }>
 export type Members = Array<{ id: string; name: string }>
@@ -11,22 +12,22 @@ export type Members = Array<{ id: string; name: string }>
 interface Props {}
 
 function GuildSelectionArea(props: Props) {
-  const { guildID, userID, sendControlMessage, setUserID, setGuildID } = React.useContext(SocketContext)
+  const { guildID, userID, sendMessage, setUserID, setGuildID } = React.useContext(SocketContext)
 
   const [guilds, setGuilds] = React.useState<Guilds | undefined>(undefined)
   const [members, setMembers] = React.useState<Members | undefined>(undefined)
 
   React.useEffect(() => {
-    sendControlMessage("getGuilds")
+    sendMessage(Messages.GetGuilds)
       .then(setGuilds)
       .catch(trackError)
 
     if (guildID !== "") {
-      sendControlMessage("getUsers", { guildID })
+      sendMessage(Messages.GetMembers, guildID)
         .then(setMembers)
         .catch(trackError)
     }
-  }, [guildID, sendControlMessage])
+  }, [guildID, sendMessage])
 
   return (
     <Card>

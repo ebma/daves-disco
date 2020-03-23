@@ -1,6 +1,7 @@
 import { Subscription } from "rxjs"
 import MusicPlayer from "./MusicPlayer"
 import MessageSender from "../socket/MessageSender"
+import { Messages } from "../shared/ipc"
 
 const DEFAULT_TIMEOUT_TIME = 1000 * 60 * 30 // 30 minutes
 
@@ -53,29 +54,29 @@ class MusicPlayerObserver {
         case "playing":
           this.clearDestructionTimeout()
           break
-        case "currentTrack":
+        case "current-track":
           const currentTrack = message.data
-          MessageSender.sendMessage("currentTrack", currentTrack)
+          MessageSender.sendMessage(Messages.CurrentTrack, this.guildID, currentTrack)
           break
-        case "currentQueue":
+        case "current-queue":
           const remainingTracks = message.data
-          MessageSender.sendMessage("currentQueue", remainingTracks)
+          MessageSender.sendMessage(Messages.CurrentQueue, this.guildID, remainingTracks)
           break
         case "paused":
-          MessageSender.sendMessage("paused")
+          MessageSender.sendMessage(Messages.PauseChange, this.guildID, true)
           this.setupDestructionTimeout()
           break
         case "resumed":
-          MessageSender.sendMessage("resumed")
+          MessageSender.sendMessage(Messages.PauseChange, this.guildID, false)
           this.clearDestructionTimeout()
           break
         case "volume":
           const newVolume = message.data
-          MessageSender.sendMessage("volume", newVolume)
+          MessageSender.sendMessage(Messages.VolumeChange, this.guildID, newVolume)
           break
       }
     } else if (message.messageType === "error") {
-      MessageSender.sendMessage("error", message.data)
+      MessageSender.sendMessage(Messages.Error, this.guildID, message.data)
     }
   }
 }

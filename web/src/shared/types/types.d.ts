@@ -1,3 +1,5 @@
+// --- PLAYER ---
+
 interface Track {
   title: string
   url: string
@@ -19,47 +21,17 @@ interface Playlist {
   tracks: Track[]
 }
 
-interface ControlMessage {
-  guildID?: string
-  messageID: number
-  type: ControlMessageType
-  data: any
-}
+// --- DISCORD ---
 
-interface ControlMessageResponse {
-  type: ControlMessage["type"]
-  messageID: number
-  result?: any
-  error?: string
-}
+type MessageID = number
+type GuildID = string
+type UserID = string
+type ReducedGuilds = { id: string; name: string }[]
+type ReducedMembers = { id: string; name: string }[]
 
-interface CommandMessage {
-  command: CommandMessageType
-  messageID: number
-  userID: string
-  guildID: string
-  data: any
-}
+type ConnectionState = "disconnected" | "reconnecting" | "connected"
 
-interface InfoMessage {
-  type: InfoMessageType
-  data: any
-}
-
-type InfoMessageType = "currentTrack" | "currentQueue" | "error" | "paused" | "resumed" | "volume"
-
-type ControlMessageType =
-  | "getGuilds"
-  | "getUsers"
-  | "getCurrentTrack"
-  | "getCurrentQueue"
-  | "getVolume"
-  | "isPaused"
-  | "updateQueue"
-
-// these have to equal the aliases of the actual commands as this is the criteria for
-// finding the corresponding command
-type CommandMessageType = "clear" | "play" | "pause" | "resume" | "skip" | "stop" | "skip-previous" | "volume"
+// --- STREAMING ---
 
 type StreamOptions = {
   seek?: number
@@ -105,9 +77,6 @@ interface Dispatcher {
 
   once(event: string, listener: Function): this
 }
-
-type GuildID = string
-type UserID = string
 
 interface MusicPlayerSubjectMessage {
   messageType: "status" | "info" | "error" | "debug"

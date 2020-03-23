@@ -9,6 +9,7 @@ import makeStyles from "@material-ui/styles/makeStyles"
 import { SocketContext } from "../../context/socket"
 import { trackError } from "../../context/notifications"
 import QueueItem from "./QueueItem"
+import { Messages } from "../../shared/ipc"
 
 function reorder<T>(list: Array<T>, startIndex: number, endIndex: number) {
   const result = Array.from(list)
@@ -35,7 +36,7 @@ function QueueList(props: Props) {
   const { currentTrack, currentQueue } = props
 
   const classes = useStyles()
-  const { sendCommand, sendControlMessage } = React.useContext(SocketContext)
+  const { guildID, sendMessage } = React.useContext(SocketContext)
   const [localQueue, setLocalQueue] = React.useState<Track[]>(props.currentQueue)
 
   React.useEffect(() => {
@@ -56,9 +57,9 @@ function QueueList(props: Props) {
 
       const orderedQueue = reorder(localQueue, result.source.index, result.destination.index)
       setLocalQueue(orderedQueue)
-      sendControlMessage("updateQueue", { items: orderedQueue }).catch(trackError)
+      sendMessage(Messages.UpdateQueue, guildID, orderedQueue)
     },
-    [localQueue, sendControlMessage]
+    [guildID, localQueue, sendMessage]
   )
 
   const indexOfCurrentSong = currentTrack
@@ -70,18 +71,16 @@ function QueueList(props: Props) {
       localQueue.map((track, index) => {
         const onClick =
           index < indexOfCurrentSong
-            ? () => sendCommand("skip-previous", indexOfCurrentSong - index).catch(trackError)
+            ? () => sendMessage(Messages.SkipPrevious, guildID, indexOfCurrentSong - index)
             : index > indexOfCurrentSong
-            ? () => sendCommand("skip", index - indexOfCurrentSong).catch(trackError)
+            ? () => sendMessage(Messages.Skip, guildID, index - indexOfCurrentSong)
             : undefined
 
         const onDeleteClick = () => {
           const copiedQueue = localQueue.slice(0)
           _.remove(copiedQueue, element => element.trackID === track.trackID)
 
-          sendControlMessage("updateQueue", {
-            items: copiedQueue
-          }).catch(trackError)
+          sendMessage(Messages.UpdateQueue, guildID, copiedQueue)
         }
 
         return (
@@ -99,7 +98,7 @@ function QueueList(props: Props) {
           </div>
         )
       }),
-    [indexOfCurrentSong, localQueue, sendCommand, sendControlMessage]
+    [indexOfCurrentSong, guildID, localQueue, sendMessage]
   )
 
   const EmptyQueueItem = React.useMemo(

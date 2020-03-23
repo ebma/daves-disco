@@ -10,19 +10,36 @@ const MAX_RECONNECTION_ATTEMPTS = 10
 
 let messageID = 1
 
-function getNextMessageID() {
-  return messageID++
+type UnsubscribeFn = () => void
+
+function getGuildIDFromLocalStorage() {
+  const storedGuildID = localStorage.getItem("guildID")
+  return storedGuildID ? storedGuildID : ""
 }
 
-export type MessageListener = (message: any) => void
+function getUserIDFromLocalStorage() {
+  const storedUserID = localStorage.getItem("userID")
+  return storedUserID ? storedUserID : ""
+}
+
+function isErrorResponse<Message extends keyof IPC.MessageType>(
+  response: IPC.CallResponseMessage<Message>
+): response is IPC.CallErrorMessage<Message> {
+  return (response as IPC.CallErrorMessage<Message>).error !== undefined
+}
 
 export interface SocketContextType {
   connectionState: ConnectionState
   guildID: string
   userID: string
-  addListener: (type: InfoMessageType, listener: MessageListener) => () => void // returns unsubscribe method
-  sendCommand: (command: CommandMessageType, data?: any) => Promise<any>
-  sendControlMessage: (type: ControlMessage["type"], data?: any) => Promise<any>
+  sendMessage: <Message extends keyof IPC.MessageType>(
+    messageType: Message,
+    ...args: IPC.MessageArgs<Message>
+  ) => Promise<IPC.MessageReturnType<Message>>
+  subscribeToMessages: <Message extends keyof IPC.MessageType>(
+    messageType: Message,
+    callback: (message: any) => void
+  ) => UnsubscribeFn
   setGuildID: (guildID: string) => void
   setUserID: (userID: string) => void
 }
@@ -31,9 +48,8 @@ const SocketContext = React.createContext<SocketContextType>({
   connectionState: "disconnected",
   guildID: "",
   userID: "",
-  addListener: () => () => undefined,
-  sendCommand: () => Promise.reject("SocketProvider not ready."),
-  sendControlMessage: () => Promise.reject("SocketProvider not ready."),
+  sendMessage: () => Promise.reject("Not ready yet"),
+  subscribeToMessages: () => () => undefined,
   setGuildID: () => undefined,
   setUserID: () => undefined
 })
@@ -42,23 +58,11 @@ interface Props {
   children: React.ReactNode
 }
 
-export type ConnectionState = "disconnected" | "reconnecting" | "connected"
-
-function getGuildIDFromLocalStorage(){
-  const storedGuildID = localStorage.getItem("guildID")
-  return storedGuildID ? storedGuildID : ""
-}
-
-function getUserIDFromLocalStorage(){
-  const storedUserID = localStorage.getItem("userID")
-  return storedUserID ? storedUserID : ""
-}
-
 function SocketProvider(props: Props) {
   const [connectionState, setConnectionState] = React.useState<ConnectionState>("disconnected")
   const [currentSocket, setCurrentSocket] = React.useState<SocketIOClient.Socket | null>(null)
-  const [guildID, setGuildID] = React.useState<string>(getGuildIDFromLocalStorage)
-  const [userID, setUserID] = React.useState<string>(getUserIDFromLocalStorage)
+  const [guildID, setGuildID] = React.useState<GuildID>(getGuildIDFromLocalStorage)
+  const [userID, setUserID] = React.useState<UserID>(getUserIDFromLocalStorage)
 
   React.useEffect(() => {
     const socket = io(path, {
@@ -82,95 +86,78 @@ function SocketProvider(props: Props) {
     socket.on("error", trackError)
   }, [])
 
-  const addListener = React.useCallback(
-    (type: InfoMessageType, listener: MessageListener) => {
-      if (currentSocket) {
-        currentSocket.on("event", (response: InfoMessage) => {
-          if (response.type !== type) return
-          listener(response.data)
-        })
+  const sendMessage = React.useCallback(
+    function sendMessage<Message extends keyof IPC.MessageType>(
+      messageType: Message,
+      ...args: IPC.MessageArgs<Message>
+    ): Promise<IPC.MessageReturnType<Message>> {
+      if (!currentSocket) {
+        return Promise.reject("Socket not available")
       }
+      const currentID = messageID++
 
-      return () => {
-        if (currentSocket) {
-          currentSocket.removeListener("event", listener)
+      const responsePromise = new Promise<IPC.MessageReturnType<Message>>((resolve, reject) => {
+        const eventListener = (message: IPC.CallResponseMessage<Message>) => {
+          if (
+            !message ||
+            typeof message !== "object" ||
+            message.messageID !== currentID ||
+            message.messageType !== messageType
+          ) {
+            return
+          }
+
+          unsubscribe()
+
+          if (isErrorResponse(message)) {
+            reject(message.error)
+          } else {
+            resolve(message.result)
+          }
         }
-      }
+
+        currentSocket.on("message", eventListener)
+        const unsubscribe = () => currentSocket.removeEventListener("message", eventListener)
+
+        currentSocket.emit("message", { messageType, messageID: currentID, args })
+      })
+
+      return responsePromise
     },
     [currentSocket]
   )
 
-  const createCommandDataPackage = React.useCallback(
-    (command: CommandMessageType, data?: any): CommandMessage => {
-      return { command, messageID: getNextMessageID(), guildID, userID, data }
-    },
-    [guildID, userID]
-  )
+  const subscribeToMessages = React.useCallback(
+    function subscribeToMessages<Message extends keyof IPC.MessageType>(
+      messageType: Message,
+      callback: (message: any) => void
+    ): UnsubscribeFn {
+      if (!currentSocket) {
+        return () => Error("Socket not available")
+      }
 
-  const sendCommand = React.useCallback(
-    (command: CommandMessageType, data?: any) => {
-      return new Promise<any>((resolve, reject) => {
-        if (currentSocket) {
-          const dataPackage = createCommandDataPackage(command, data)
-          currentSocket.emit("command", dataPackage)
-
-          currentSocket.on("event", (response: any) => {
-            if (response && response.messageID && response.messageID === dataPackage.messageID) {
-              if (response.error) {
-                reject(response.error)
-              } else {
-                resolve(response.result)
-              }
-            }
-          })
-        } else {
-          reject("No socket available")
+      const eventListener = (message: IPC.CallResponseMessage<Message>) => {
+        if (message.messageType === messageType) {
+          if (isErrorResponse(message)) {
+            trackError(message.error)
+          } else {
+            callback(message.result)
+          }
         }
-      })
-    },
-    [createCommandDataPackage, currentSocket]
-  )
+      }
+      currentSocket.on("message", eventListener)
 
-  const createControlMessageDataPackage = React.useCallback(
-    (type: ControlMessageType, data?: any): ControlMessage => {
-      return { type, messageID: getNextMessageID(), guildID, data }
+      return () => currentSocket.removeEventListener("message", eventListener)
     },
-    [guildID]
-  )
-
-  const sendControlMessage = React.useCallback(
-    (type: ControlMessageType, data?: any) => {
-      return new Promise<any>((resolve, reject) => {
-        if (currentSocket) {
-          const dataPackage = createControlMessageDataPackage(type, data)
-          currentSocket.emit("control", dataPackage)
-
-          currentSocket.on("event", (response: any) => {
-            if (response && response.messageID && response.messageID === dataPackage.messageID) {
-              if (response.error) {
-                console.log("rejecting message", response)
-                reject(response.error)
-              } else {
-                console.log("resolving message", response)
-                resolve(response.result)
-              }
-            }
-          })
-        } else {
-          reject("No socket available")
-        }
-      })
-    },
-    [createControlMessageDataPackage, currentSocket]
+    [currentSocket]
   )
 
   const contextValue: SocketContextType = {
-    addListener,
     connectionState,
     userID,
     guildID,
-    sendCommand,
-    sendControlMessage,
+    sendMessage,
+    subscribeToMessages,
     setGuildID: (guildID: string) => {
       localStorage.setItem("guildID", guildID)
       setGuildID(guildID)
