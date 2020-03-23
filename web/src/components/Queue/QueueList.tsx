@@ -8,8 +8,8 @@ import ListItemText from "@material-ui/core/ListItemText"
 import makeStyles from "@material-ui/styles/makeStyles"
 import { SocketContext } from "../../context/socket"
 import { trackError } from "../../context/notifications"
-import QueueItem from "./QueueItem"
 import { Messages } from "../../shared/ipc"
+import QueueItem from "./QueueItem"
 
 function reorder<T>(list: Array<T>, startIndex: number, endIndex: number) {
   const result = Array.from(list)
@@ -57,7 +57,7 @@ function QueueList(props: Props) {
 
       const orderedQueue = reorder(localQueue, result.source.index, result.destination.index)
       setLocalQueue(orderedQueue)
-      sendMessage(Messages.UpdateQueue, guildID, orderedQueue)
+      sendMessage(Messages.UpdateQueue, guildID, orderedQueue).catch(trackError)
     },
     [guildID, localQueue, sendMessage]
   )
@@ -71,16 +71,16 @@ function QueueList(props: Props) {
       localQueue.map((track, index) => {
         const onClick =
           index < indexOfCurrentSong
-            ? () => sendMessage(Messages.SkipPrevious, guildID, indexOfCurrentSong - index)
+            ? () => sendMessage(Messages.SkipPrevious, guildID, indexOfCurrentSong - index).catch(trackError)
             : index > indexOfCurrentSong
-            ? () => sendMessage(Messages.Skip, guildID, index - indexOfCurrentSong)
+            ? () => sendMessage(Messages.Skip, guildID, index - indexOfCurrentSong).catch(trackError)
             : undefined
 
         const onDeleteClick = () => {
           const copiedQueue = localQueue.slice(0)
           _.remove(copiedQueue, element => element.trackID === track.trackID)
 
-          sendMessage(Messages.UpdateQueue, guildID, copiedQueue)
+          sendMessage(Messages.UpdateQueue, guildID, copiedQueue).catch(trackError)
         }
 
         return (

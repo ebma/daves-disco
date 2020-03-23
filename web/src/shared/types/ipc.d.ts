@@ -47,11 +47,11 @@ declare namespace IPC {
     [Messages.GetPausedState]: (guildID: GuildID) => boolean
     [Messages.UpdateQueue]: (guildID: GuildID, newItems: Track[]) => void
 
-    [Messages.CurrentTrack]: (track: Track) => void
-    [Messages.CurrentQueue]: (queue: Track[]) => void
-    [Messages.Error]: (error: any) => void
-    [Messages.PauseChange]: (paused: boolean) => void
-    [Messages.VolumeChange]: (volume: number) => void
+    [Messages.CurrentTrack]: (track: Track) => Track
+    [Messages.CurrentQueue]: (queue: Track[]) => Track[]
+    [Messages.Error]: (error: string) => any
+    [Messages.PauseChange]: (paused: boolean) => boolean
+    [Messages.VolumeChange]: (volume: number) => number
   }
 
   export type MessageArgs<Message extends keyof MessageType> = MessageSignatures[Message] extends () => any

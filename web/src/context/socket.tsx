@@ -38,7 +38,7 @@ export interface SocketContextType {
   ) => Promise<IPC.MessageReturnType<Message>>
   subscribeToMessages: <Message extends keyof IPC.MessageType>(
     messageType: Message,
-    callback: (message: any) => void
+    callback: (message: IPC.MessageReturnType<Message>) => void
   ) => UnsubscribeFn
   setGuildID: (guildID: string) => void
   setUserID: (userID: string) => void
@@ -130,7 +130,7 @@ function SocketProvider(props: Props) {
   const subscribeToMessages = React.useCallback(
     function subscribeToMessages<Message extends keyof IPC.MessageType>(
       messageType: Message,
-      callback: (message: any) => void
+      callback: (message: IPC.MessageReturnType<Message>) => void
     ): UnsubscribeFn {
       if (!currentSocket) {
         return () => Error("Socket not available")
