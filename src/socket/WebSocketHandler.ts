@@ -14,24 +14,8 @@ let messageHandlers: MessageHandlers = {}
 class MessageSender {
   socket: Socket
 
-  isReady() {
-    return this.socket !== null
-  }
-
-  setSocket(socket: Socket) {
+  constructor(socket: Socket) {
     this.socket = socket
-  }
-
-  addHandler<Message extends keyof IPC.MessageType>(
-    messageType: Message,
-    handler: (
-      ...args: IPC.MessageArgs<Message>
-    ) => IPC.MessageReturnType<Message> | Promise<IPC.MessageReturnType<Message>>
-  ) {
-    messageHandlers = {
-      ...messageHandlers,
-      [messageType]: handler
-    }
   }
 
   async handleMessageEvent<Message extends keyof IPC.MessageType>(
@@ -76,18 +60,57 @@ class MessageSender {
   sendMessage<Message extends keyof IPC.MessageType>(
     messageType: Message,
     guildID: GuildID,
-    ...args: IPC.MessageArgs<Message>
+    data: IPC.MessageReturnType<Message>
   ): void {
-    this.emitMessage({ messageType, guildID, args })
+    this.emitMessage({ messageType, guildID, data })
   }
 
   private emitMessage(message: any) {
-    if (this.socket) {
+    console.log("emitting message", message)
+    try {
       this.socket.emit("message", message)
-    } else {
-      trackError(`Cannot emit message ${message.type}. No socket available`, "MessageSender.emitMessage")
+    } catch (error) {
+      trackError(`Could not emit message: ${error}`, "MessageSender.emitMessage")
     }
   }
 }
 
-export default new MessageSender()
+class WebSocketHandler {
+  senders: MessageSender[] = []
+
+  addSocket(socket: Socket) {
+    const messageSender = new MessageSender(socket)
+    this.senders.push(messageSender)
+
+    const messageHandler = (message: IPC.SocketMessage) =>
+      messageSender.handleMessageEvent(message.messageType, message.messageID, message.args)
+
+    socket.on("message", messageHandler)
+
+    socket.on("disconnect", () => (this.senders = this.senders.filter(sender => sender !== messageSender)))
+  }
+
+  addHandler<Message extends keyof IPC.MessageType>(
+    messageType: Message,
+    handler: (
+      ...args: IPC.MessageArgs<Message>
+    ) => IPC.MessageReturnType<Message> | Promise<IPC.MessageReturnType<Message>>
+  ) {
+    messageHandlers = {
+      ...messageHandlers,
+      [messageType]: handler
+    }
+  }
+
+  sendMessage<Message extends keyof IPC.MessageType>(
+    messageType: Message,
+    guildID: GuildID,
+    data: IPC.MessageReturnType<Message>
+  ): void {
+    for (const sender of this.senders) {
+      sender.sendMessage(messageType, guildID, data)
+    }
+  }
+}
+
+export default new WebSocketHandler()

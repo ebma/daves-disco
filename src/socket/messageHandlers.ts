@@ -1,4 +1,4 @@
-import MessageSender from "./MessageSender"
+import WebSocketHandler from "./WebSocketHandler"
 import { Messages } from "../shared/ipc"
 import { MyClient } from "../MyClient"
 
@@ -35,6 +35,6 @@ const createGetUsersRequestHandler = (client: MyClient) =>
   }
 
 export function initHandlers(client: MyClient) {
-  MessageSender.addHandler(Messages.GetGuilds, createGetGuildRequestHandler(client))
-  MessageSender.addHandler(Messages.GetMembers, createGetUsersRequestHandler(client))
+  WebSocketHandler.addHandler(Messages.GetGuilds, createGetGuildRequestHandler(client))
+  WebSocketHandler.addHandler(Messages.GetMembers, createGetUsersRequestHandler(client))
 }

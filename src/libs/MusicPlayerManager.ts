@@ -1,6 +1,6 @@
 import { trackError } from "../shared/util/trackError"
 import { Messages } from "../shared/ipc"
-import MessageSender from "../socket/MessageSender"
+import WebSocketHandler from "../socket/WebSocketHandler"
 import MusicPlayer from "./MusicPlayer"
 import MusicPlayerObserver from "./MusicPlayerObserver"
 import StreamManager from "./StreamManager"
@@ -10,7 +10,7 @@ class MusicPlayerManager {
   private musicPlayerObserverMap: { [key in GuildID]: MusicPlayerObserver } = {}
 
   constructor() {
-    MessageSender.addHandler(Messages.GetTrack, guildID => {
+    WebSocketHandler.addHandler(Messages.GetTrack, guildID => {
       const player = this.musicPlayerMap[guildID]
       if (player) {
         return player.currentTrack
@@ -19,7 +19,7 @@ class MusicPlayerManager {
       }
     })
 
-    MessageSender.addHandler(Messages.GetQueue, guildID => {
+    WebSocketHandler.addHandler(Messages.GetQueue, guildID => {
       const player = this.musicPlayerMap[guildID]
       if (player) {
         return player.queue.getAll()
@@ -28,7 +28,7 @@ class MusicPlayerManager {
       }
     })
 
-    MessageSender.addHandler(Messages.GetVolume, guildID => {
+    WebSocketHandler.addHandler(Messages.GetVolume, guildID => {
       const player = this.musicPlayerMap[guildID]
       if (player) {
         return player.volume
@@ -37,7 +37,7 @@ class MusicPlayerManager {
       }
     })
 
-    MessageSender.addHandler(Messages.GetPausedState, guildID => {
+    WebSocketHandler.addHandler(Messages.GetPausedState, guildID => {
       const player = this.musicPlayerMap[guildID]
       if (player) {
         return player.paused
@@ -46,7 +46,7 @@ class MusicPlayerManager {
       }
     })
 
-    MessageSender.addHandler(Messages.UpdateQueue, (guildID, newItems) => {
+    WebSocketHandler.addHandler(Messages.UpdateQueue, (guildID, newItems) => {
       const player = this.musicPlayerMap[guildID]
       if (player) {
         player.updateQueue(newItems)

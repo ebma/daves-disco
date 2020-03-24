@@ -1,21 +1,12 @@
 import express from "express"
 import { Server } from "http"
 import socketio, { Socket } from "socket.io"
-import MessageSender from "./MessageSender"
 import { initHandlers } from "./messageHandlers"
 import { MyClient } from "../MyClient"
+import WebSocketHandler from "./WebSocketHandler"
 
-function initializeSocket(socket: Socket, client: MyClient) {
-  MessageSender.setSocket(socket)
-
-  initHandlers(client)
-
-  const messageHandler = (message: IPC.SocketMessage) =>
-    MessageSender.handleMessageEvent(message.messageType, message.messageID, message.args)
-
-  socket.on("message", messageHandler)
-
-  socket.on("disconnect", () => undefined)
+function initializeSocket(socket: Socket) {
+  WebSocketHandler.addSocket(socket)
 }
 
 export function startSocketConnection(client: MyClient) {
@@ -24,8 +15,10 @@ export function startSocketConnection(client: MyClient) {
   const io = socketio(http, {})
   const port = process.env.PORT || 1234
 
+  initHandlers(client)
+
   io.on("connection", socket => {
-    initializeSocket(socket, client)
+    initializeSocket(socket)
   })
 
   http.listen(port, () => {

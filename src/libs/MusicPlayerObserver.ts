@@ -1,6 +1,6 @@
 import { Subscription } from "rxjs"
 import MusicPlayer from "./MusicPlayer"
-import MessageSender from "../socket/MessageSender"
+import WebSocketHandler from "../socket/WebSocketHandler"
 import { Messages } from "../shared/ipc"
 
 const DEFAULT_TIMEOUT_TIME = 1000 * 60 * 30 // 30 minutes
@@ -56,27 +56,27 @@ class MusicPlayerObserver {
           break
         case "current-track":
           const currentTrack = message.data
-          MessageSender.sendMessage(Messages.CurrentTrack, this.guildID, currentTrack)
+          WebSocketHandler.sendMessage(Messages.CurrentTrack, this.guildID, currentTrack)
           break
         case "current-queue":
           const remainingTracks = message.data
-          MessageSender.sendMessage(Messages.CurrentQueue, this.guildID, remainingTracks)
+          WebSocketHandler.sendMessage(Messages.CurrentQueue, this.guildID, remainingTracks)
           break
         case "paused":
-          MessageSender.sendMessage(Messages.PauseChange, this.guildID, true)
+          WebSocketHandler.sendMessage(Messages.PauseChange, this.guildID, true)
           this.setupDestructionTimeout()
           break
         case "resumed":
-          MessageSender.sendMessage(Messages.PauseChange, this.guildID, false)
+          WebSocketHandler.sendMessage(Messages.PauseChange, this.guildID, false)
           this.clearDestructionTimeout()
           break
         case "volume":
           const newVolume = message.data
-          MessageSender.sendMessage(Messages.VolumeChange, this.guildID, newVolume)
+          WebSocketHandler.sendMessage(Messages.VolumeChange, this.guildID, newVolume)
           break
       }
     } else if (message.messageType === "error") {
-      MessageSender.sendMessage(Messages.Error, this.guildID, message.data)
+      WebSocketHandler.sendMessage(Messages.Error, this.guildID, message.data)
     }
   }
 }

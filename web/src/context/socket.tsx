@@ -136,13 +136,9 @@ function SocketProvider(props: Props) {
         return () => Error("Socket not available")
       }
 
-      const eventListener = (message: IPC.CallResponseMessage<Message>) => {
+      const eventListener = (message: IPC.ServerMessage<Message>) => {
         if (message.messageType === messageType) {
-          if (isErrorResponse(message)) {
-            trackError(message.error)
-          } else {
-            callback(message.result)
-          }
+          callback(message.data) 
         }
       }
       currentSocket.on("message", eventListener)

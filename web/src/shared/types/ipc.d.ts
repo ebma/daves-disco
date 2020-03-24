@@ -47,11 +47,11 @@ declare namespace IPC {
     [Messages.GetPausedState]: (guildID: GuildID) => boolean
     [Messages.UpdateQueue]: (guildID: GuildID, newItems: Track[]) => void
 
-    [Messages.CurrentTrack]: (track: Track) => Track
-    [Messages.CurrentQueue]: (queue: Track[]) => Track[]
-    [Messages.Error]: (error: string) => any
-    [Messages.PauseChange]: (paused: boolean) => boolean
-    [Messages.VolumeChange]: (volume: number) => number
+    [Messages.CurrentTrack]: () => Track
+    [Messages.CurrentQueue]: () => Track[]
+    [Messages.Error]: () => any
+    [Messages.PauseChange]: () => boolean
+    [Messages.VolumeChange]: () => number
   }
 
   export type MessageArgs<Message extends keyof MessageType> = MessageSignatures[Message] extends () => any
@@ -71,6 +71,12 @@ declare namespace IPC {
   export interface SocketMessage {
     args: any
     messageType: keyof IPC.MessageType
+    messageID: number
+  }
+
+  export interface ServerMessage<Message extends keyof MessageType> {
+    data: MessageReturnType<Message>
+    messageType: Message
     messageID: number
   }
 
