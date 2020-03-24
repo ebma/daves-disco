@@ -6,7 +6,7 @@ class PauseCommand extends MusicCommand {
   constructor() {
     super("pause", {
       aliases: ["pause"],
-      channelRestriction: "guild"
+      channel: "guild"
     })
   }
 

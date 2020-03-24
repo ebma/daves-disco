@@ -1,24 +1,24 @@
-import { AkairoClient } from "discord-akairo"
 import express from "express"
 import { Server } from "http"
 import socketio, { Socket } from "socket.io"
 import MessageSender from "./MessageSender"
 import { initHandlers } from "./messageHandlers"
+import { MyClient } from "../MyClient"
 
-function initializeSocket(socket: Socket, client: AkairoClient) {
+function initializeSocket(socket: Socket, client: MyClient) {
   MessageSender.setSocket(socket)
 
   initHandlers(client)
 
   const messageHandler = (message: IPC.SocketMessage) =>
-    MessageSender.handleMessageEvent(client, message.messageType, message.messageID, message.args)
+    MessageSender.handleMessageEvent(message.messageType, message.messageID, message.args)
 
   socket.on("message", messageHandler)
 
   socket.on("disconnect", () => undefined)
 }
 
-export function startSocketConnection(client: AkairoClient) {
+export function startSocketConnection(client: MyClient) {
   const app = express()
   const http = new Server(app)
   const io = socketio(http, {})

@@ -13,7 +13,7 @@ class BanCommand extends Command {
       ],
       clientPermissions: ["BAN_MEMBERS"],
       userPermissions: ["BAN_MEMBERS"],
-      channelRestriction: "guild"
+      channel: "guild"
     })
   }
 

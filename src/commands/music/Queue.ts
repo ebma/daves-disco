@@ -5,7 +5,7 @@ class QueueCommand extends MusicCommand {
   constructor() {
     super("queue", {
       aliases: ["queue", "list", "next-songs"],
-      channelRestriction: "guild"
+      channel: "guild"
     })
   }
 

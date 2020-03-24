@@ -21,13 +21,13 @@ class PlayCommand extends MusicCommand {
           }
         }
       ],
-      channelRestriction: "guild"
+      channel: "guild"
     })
   }
 
   handleYoutubeVideo = async (videoURL: string) => {
     const track = await Youtube.createTrackFromURL(videoURL)
-    await this.musicPlayer.enqueue(track)
+    this.musicPlayer.enqueue(track)
     return createEmbedForTrack(track)
   }
 

@@ -5,7 +5,7 @@ class ClearCommand extends MusicCommand {
   constructor() {
     super("clear", {
       aliases: ["clear", "shut up"],
-      channelRestriction: "guild"
+      channel: "guild"
     })
   }
 

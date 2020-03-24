@@ -10,9 +10,9 @@ class SkipCommand extends MusicCommand {
         {
           id: "data",
           default: 1,
-          type: word => {
-            if (!word || _.isNaN(word)) return null
-            const num = parseInt(word, 10)
+          type: (message, phrase) => {
+            if (!phrase || _.isNaN(phrase)) return null
+            const num = parseInt(phrase, 10)
             if (num < 1) return null
             return num
           },
@@ -23,7 +23,7 @@ class SkipCommand extends MusicCommand {
           }
         }
       ],
-      channelRestriction: "guild"
+      channel: "guild"
     })
   }
 

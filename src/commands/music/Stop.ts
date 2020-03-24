@@ -5,7 +5,7 @@ class StopCommand extends MusicCommand {
   constructor() {
     super("stop", {
       aliases: ["stop"],
-      channelRestriction: "guild"
+      channel: "guild"
     })
   }
 

@@ -5,7 +5,7 @@ class ResumeCommand extends MusicCommand {
   constructor() {
     super("resume", {
       aliases: ["resume"],
-      channelRestriction: "guild"
+      channel: "guild"
     })
   }
 

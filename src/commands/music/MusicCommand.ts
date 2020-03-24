@@ -11,7 +11,7 @@ export abstract class MusicCommand extends Command {
   protected musicPlayer: MusicPlayer
   protected guild: Guild
   protected member: GuildMember
-  protected message?: Message
+  protected message: Message
 
   abstract execute(args: { data: any }): void | Promise<void>
 
@@ -36,38 +36,21 @@ export abstract class MusicCommand extends Command {
   }
 
   async exec(message: Message, args: any) {
-    if (!message) {
-      return this.executeSilent(args)
-    } else {
-      this.message = message
-      this.guild = message.guild
-      this.member = message.member
+    this.message = message
+    this.guild = message.guild
+    this.member = message.member
 
-      try {
-        await this.initPlayer(this.member)
-        this.execute(args)
-      } catch (error) {
-        trackError(error, "MusicCommand.exec")
-        if (error instanceof Error) {
-          this.sendMessageToChannel(error.message)
-        } else {
-          this.sendMessageToChannel(error)
-        }
+    try {
+      await this.initPlayer(this.member)
+      this.execute(args)
+    } catch (error) {
+      trackError(error, "MusicCommand.exec")
+      if (error instanceof Error) {
+        this.sendMessageToChannel(error.message)
+      } else {
+        this.sendMessageToChannel(error)
       }
     }
-  }
-
-  async executeSilent(args: any) {
-    const { guildID, userID, data } = args
-    const guild = this.client.guilds.find(g => g.id === guildID)
-    const member = guild.members.find(m => m.id === userID)
-
-    this.guild = guild
-    this.member = member
-
-    await this.initPlayer(this.member)
-
-    this.execute({ data })
   }
 
   private sendStringMessage = _.debounce(
@@ -83,9 +66,9 @@ export abstract class MusicCommand extends Command {
   )
 
   sendMessageToChannel(message: string | RichEmbed) {
-    const defaultChannel = this.guild.channels.find(
-      channel => channel.name === "general" && channel.type === "text"
-    ) as TextChannel
+    const defaultChannel = this.message.channel
+      ? this.message.channel
+      : (this.guild.channels.find(channel => channel.name === "general" && channel.type === "text") as TextChannel)
 
     if (message instanceof RichEmbed) {
       defaultChannel.send(message)

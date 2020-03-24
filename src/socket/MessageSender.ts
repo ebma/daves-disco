@@ -1,4 +1,3 @@
-import { AkairoClient } from "discord-akairo"
 import { Socket } from "socket.io"
 import { trackError } from "../shared/util/trackError"
 
@@ -36,23 +35,13 @@ class MessageSender {
   }
 
   async handleMessageEvent<Message extends keyof IPC.MessageType>(
-    client: AkairoClient,
     messageType: Message,
     messageID: number,
     payload: IPC.MessageArgs<Message>
   ) {
-    const command = client.commandHandler.findCommand(messageType)
     const messageHandler = messageHandlers[messageType]
 
-    if (command) {
-      try {
-        const result = await command.exec(null, payload, false)
-        this.sendSuccessResponse(messageType, messageID, result)
-      } catch (error) {
-        trackError(error, "handleMessageEvent")
-        this.sendErrorResponse(messageType, messageID, error)
-      }
-    } else if (messageHandler) {
+    if (messageHandler) {
       try {
         const result = await messageHandler(...payload)
         this.sendSuccessResponse(messageType, messageID, result)

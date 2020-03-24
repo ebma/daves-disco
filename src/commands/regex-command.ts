@@ -25,10 +25,7 @@ class RegexCommand extends Command {
     })
   }
 
-  trigger(message: Message) {
-    const regex = new RegExp(Object.keys(expressions).join("|"), "i")
-    return regex
-  }
+  regex = new RegExp(Object.keys(expressions).join("|"), "i")
 
   exec(message: Message, match: any) {
     const matchingExpression = expressions[match[0].toLowerCase()]

@@ -1507,10 +1507,10 @@ diff@^4.0.1:
   resolved "https://registry.yarnpkg.com/diff/-/diff-4.0.2.tgz#60f3aecb89d5fae520c11aa19efc2bb982aade7d"
   integrity sha512-58lmxKSA4BNyLz+HHMUzlOEpg09FV+ev6ZMe3vJihgdxzgcwZ8VoEEPmALCZG9LmqfVoNMMKpttIYTVG6uDY7A==
 
-discord-akairo@^7.5.6:
-  version "7.5.6"
-  resolved "https://registry.yarnpkg.com/discord-akairo/-/discord-akairo-7.5.6.tgz#3508262106c91be135a3cbcece17f09727fa3934"
-  integrity sha512-u/hmpCs6IN2XJAm1Y5DUEawJc+ybWCzf4QPsOKsbbwWx2pHBCSGABazsstSEdVAhE3ZdwP/GAbgyKDR0ceQqsw==
+discord-akairo@^8.0.0:
+  version "8.0.0"
+  resolved "https://registry.yarnpkg.com/discord-akairo/-/discord-akairo-8.0.0.tgz#74cc7924007b13b1cba90d35e942534132ccd8b0"
+  integrity sha512-Cc1f8f3GFIhgHxg3TOSSfHD1Nt8haPGcmvoQeqlBKhDFwtWoPL+THBVVLaMUBDCzni7X4g6teM5PPvVocwlfZQ==
 
 discord.js@^11.5.1:
   version "11.6.2"

@@ -5,7 +5,7 @@ class ShuffleCommand extends MusicCommand {
   constructor() {
     super("shuffle", {
       aliases: ["shuffle", "mix"],
-      channelRestriction: "guild"
+      channel: "guild"
     })
   }
 

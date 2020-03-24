@@ -1,8 +1,8 @@
-import { AkairoClient } from "discord-akairo"
 import MessageSender from "./MessageSender"
 import { Messages } from "../shared/ipc"
+import { MyClient } from "../MyClient"
 
-const createGetGuildRequestHandler = (client: AkairoClient) =>
+const createGetGuildRequestHandler = (client: MyClient) =>
   function handleGetGuildRequest() {
     const guilds = client.guilds
     const reducedGuilds = guilds
@@ -14,7 +14,7 @@ const createGetGuildRequestHandler = (client: AkairoClient) =>
     return reducedGuilds
   }
 
-const createGetUsersRequestHandler = (client: AkairoClient) =>
+const createGetUsersRequestHandler = (client: MyClient) =>
   function handleGetUsersRequest(guildID: GuildID) {
     const guild = client.guilds.find(g => g.id === guildID)
     if (guild) {
@@ -34,7 +34,7 @@ const createGetUsersRequestHandler = (client: AkairoClient) =>
     }
   }
 
-export function initHandlers(client: AkairoClient) {
+export function initHandlers(client: MyClient) {
   MessageSender.addHandler(Messages.GetGuilds, createGetGuildRequestHandler(client))
   MessageSender.addHandler(Messages.GetMembers, createGetUsersRequestHandler(client))
 }
