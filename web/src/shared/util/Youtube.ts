@@ -63,6 +63,19 @@ export class Youtube {
     })
   }
 
+  private getThumbnailFromInfo(info: ytdl.videoInfo) {
+    if (info.thumbnail_url) {
+      return info.thumbnail_url
+    } else {
+      const thumbnails = info.player_response?.videoDetails?.thumbnail?.thumbnails
+      if (thumbnails) {
+        return thumbnails[thumbnails.length - 1]?.url
+      } else {
+        return undefined
+      }
+    }
+  }
+
   async createTrackFromURL(url: string): Promise<Track> {
     return new Promise<Track>(async (resolve, reject) => {
       try {
@@ -74,7 +87,7 @@ export class Youtube {
             url: info.video_url,
             source: "youtube",
             title: info.title,
-            thumbnail: info.thumbnail_url,
+            thumbnail: this.getThumbnailFromInfo(info),
             trackID: this.getNewTrackID()
           }
           resolve(track)
