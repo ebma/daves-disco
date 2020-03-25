@@ -14,7 +14,7 @@ import makeStyles from "@material-ui/styles/makeStyles"
 import Youtube from "../../shared/util/Youtube"
 import StyledButton from "../StyledButton"
 import { SocketContext } from "../../context/socket"
-import { trackError } from "../../context/notifications"
+import { trackError, NotificationsContext } from "../../context/notifications"
 import Spotify from "../../shared/util/Spotify"
 import { Messages } from "../../shared/ipc"
 
@@ -232,14 +232,23 @@ interface EnqueueAreaProps {}
 function SearchArea(props: EnqueueAreaProps) {
   const classes = useStyles()
 
-  const { guildID, sendMessage } = React.useContext(SocketContext)
+  const { guildID, userID, sendMessage } = React.useContext(SocketContext)
+  const { showNotification } = React.useContext(NotificationsContext)
+
   const [value, setValue] = React.useState(0)
 
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setValue(newValue)
   }
 
-  const onSearchDone = React.useCallback(searchTerm => sendMessage(Messages.Play, guildID, searchTerm).catch(trackError), [guildID, sendMessage])
+  const onSearchDone = React.useCallback(
+    async searchTerm => {
+      sendMessage(Messages.Play, guildID, userID, searchTerm)
+        .then(() => showNotification("success", "Successfully added track(s) to queue!"))
+        .catch(trackError)
+    },
+    [guildID, userID, sendMessage, showNotification]
+  )
 
   return (
     <Paper className={classes.root}>
@@ -250,7 +259,7 @@ function SearchArea(props: EnqueueAreaProps) {
         variant="scrollable"
         draggable
         scrollButtons="auto"
-        style={{ paddingLeft: 8, paddingRight: 8 }} 
+        style={{ paddingLeft: 8, paddingRight: 8 }}
         value={value}
       >
         <Tab label="Search Youtube Song" />
