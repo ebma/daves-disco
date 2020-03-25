@@ -5,22 +5,29 @@ import { SocketProvider } from "./context/socket"
 import NotificationContainer from "./components/Notification/NotificationContainer"
 import { NotificationsProvider } from "./context/notifications"
 import createTheme from "./theme"
-import useMediaQuery from "@material-ui/core/useMediaQuery"
+import { ColorSchemeContext, ColorSchemeProvider } from "./context/colorScheme"
 
-function App() {
-  const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)")
+function MaterialThemeProvider(props: { children: React.ReactNode }) {
+  const { colorScheme } = React.useContext(ColorSchemeContext)
 
+  const prefersDarkMode = colorScheme === "dark"
   const theme = React.useMemo(() => createTheme(prefersDarkMode), [prefersDarkMode])
 
+  return <ThemeProvider theme={theme}>{props.children}</ThemeProvider>
+}
+
+function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <NotificationsProvider>
-        <SocketProvider>
-          <IndexPage />
-          <NotificationContainer />
-        </SocketProvider>
-      </NotificationsProvider>
-    </ThemeProvider>
+    <ColorSchemeProvider>
+      <MaterialThemeProvider>
+        <NotificationsProvider>
+          <SocketProvider>
+            <IndexPage />
+            <NotificationContainer />
+          </SocketProvider>
+        </NotificationsProvider>
+      </MaterialThemeProvider>
+    </ColorSchemeProvider>
   )
 }
 
