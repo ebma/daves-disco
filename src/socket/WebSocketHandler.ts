@@ -66,7 +66,6 @@ class MessageSender {
   }
 
   private emitMessage(message: any) {
-    console.log("emitting message", message)
     try {
       this.socket.emit("message", message)
     } catch (error) {
@@ -75,7 +74,7 @@ class MessageSender {
   }
 }
 
-class WebSocketHandler {
+export class WebSocketHandler {
   senders: MessageSender[] = []
 
   addSocket(socket: Socket) {

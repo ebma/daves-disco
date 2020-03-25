@@ -66,9 +66,10 @@ export abstract class MusicCommand extends Command {
   )
 
   sendMessageToChannel(message: string | RichEmbed) {
-    const defaultChannel = this.message.channel
-      ? this.message.channel
-      : (this.guild.channels.find(channel => channel.name === "general" && channel.type === "text") as TextChannel)
+    const defaultChannel =
+      this.message && this.message.channel
+        ? this.message.channel
+        : (this.guild.channels.find(channel => channel.name === "general" && channel.type === "text") as TextChannel)
 
     if (message instanceof RichEmbed) {
       defaultChannel.send(message)

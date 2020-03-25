@@ -1,40 +1,12 @@
 import WebSocketHandler from "./WebSocketHandler"
-import { Messages } from "../shared/ipc"
 import { MyClient } from "../MyClient"
-
-const createGetGuildRequestHandler = (client: MyClient) =>
-  function handleGetGuildRequest() {
-    const guilds = client.guilds
-    const reducedGuilds = guilds
-      .map(g => {
-        return { id: g.id, name: g.name }
-      })
-      .sort((a, b) => a.name.localeCompare(b.name))
-
-    return reducedGuilds
-  }
-
-const createGetUsersRequestHandler = (client: MyClient) =>
-  function handleGetUsersRequest(guildID: GuildID) {
-    const guild = client.guilds.find(g => g.id === guildID)
-    if (guild) {
-      const members = guild.members
-      const reducedMembers = members
-        .filter(
-          member =>
-            !member.user.bot && (member.user.presence.status === "online" || member.user.presence.status === "idle")
-        )
-        .map(member => {
-          return { id: member.id, name: member.displayName }
-        })
-        .sort((a, b) => a.name.localeCompare(b.name))
-      return reducedMembers
-    } else {
-      throw Error(`Could not find guild with ID ${guildID}`)
-    }
-  }
+import MusicPlayerManager from "../libs/MusicPlayerManager"
+import { initGuildHandlers } from "./handlers/guild"
+import { initPlayerHandlers } from "./handlers/music"
 
 export function initHandlers(client: MyClient) {
-  WebSocketHandler.addHandler(Messages.GetGuilds, createGetGuildRequestHandler(client))
-  WebSocketHandler.addHandler(Messages.GetMembers, createGetUsersRequestHandler(client))
+  initGuildHandlers(client, WebSocketHandler)
+
+  const musicPlayerManager = MusicPlayerManager
+  initPlayerHandlers(client, WebSocketHandler, musicPlayerManager)
 }

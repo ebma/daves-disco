@@ -1,6 +1,6 @@
 declare namespace IPC {
   const Messages: {
-    // Commands (must match akairo command alias)
+    // Requests
     Clear: "Clear"
     Play: "Play"
     Pause: "Pause"
@@ -10,7 +10,6 @@ declare namespace IPC {
     SkipPrevious: "SkipPrevious"
     Volume: "Volume"
 
-    // Requests
     GetGuilds: "GetGuilds"
     GetMembers: "GetMembers"
     GetTrack: "GetTrack"
@@ -31,7 +30,7 @@ declare namespace IPC {
 
   export interface MessageSignatures {
     [Messages.Clear]: (guildID: GuildID) => void
-    [Messages.Play]: (guildID: GuildID, query: string) => void
+    [Messages.Play]: (guildID: GuildID, userID: UserID, query: string) => void
     [Messages.Pause]: (guildID: GuildID) => void
     [Messages.Resume]: (guildID: GuildID) => void
     [Messages.Skip]: (guildID: GuildID, amount: number) => void
