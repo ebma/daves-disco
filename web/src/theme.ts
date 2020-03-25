@@ -16,7 +16,7 @@ export const textColorDark = {
 
 export const textColorLight = {
   primary: "#212121",
-  secondary: "#b92b27"
+  secondary: "#d81b60"
 }
 
 export const backgroundColor = {
@@ -35,8 +35,8 @@ const createTheme = (darkMode: boolean) =>
           light: brandColor.light
         },
         text: {
-          primary: textColorDark.primary,
-          secondary: textColorDark.secondary
+          primary: darkMode ? textColorDark.primary : textColorLight.primary,
+          secondary: darkMode ? textColorDark.secondary : textColorLight.secondary
         }
       },
       overrides: {
