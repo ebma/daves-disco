@@ -59,6 +59,12 @@ const createStopRequestHandler = (musicPlayerManager: MusicPlayerManager) =>
     return player.destroy()
   }
 
+const createGetPlayerAvailableRequestHandler = (musicPlayerManager: MusicPlayerManager) =>
+  function handleGetPlayerAvailableRequest(guildID: string) {
+    const player = musicPlayerManager.getPlayerFor(guildID)
+    return Boolean(player)
+  }
+
 const createGetTrackRequestHandler = (musicPlayerManager: MusicPlayerManager) =>
   function handleGetTrackRequest(guildID: string) {
     const player = requirePlayer(guildID, musicPlayerManager)
@@ -101,6 +107,7 @@ export function initPlayerHandlers(
   handler.addHandler(Messages.SkipPrevious, createSkipPreviousRequestHandler(musicPlayerManager))
   handler.addHandler(Messages.Stop, createStopRequestHandler(musicPlayerManager))
 
+  handler.addHandler(Messages.GetPlayerAvailable, createGetPlayerAvailableRequestHandler(musicPlayerManager))
   handler.addHandler(Messages.GetTrack, createGetTrackRequestHandler(musicPlayerManager))
   handler.addHandler(Messages.GetQueue, createGetQueueRequestHandler(musicPlayerManager))
   handler.addHandler(Messages.GetVolume, createGetVolumeRequestHandler(musicPlayerManager))
