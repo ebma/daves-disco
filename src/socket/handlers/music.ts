@@ -17,9 +17,9 @@ const createPlayRequestHandler = (musicPlayerManager: MusicPlayerManager, client
   async function handlePlayRequest(guildID: string, userID: string, query: string) {
     let player = musicPlayerManager.getPlayerFor(guildID)
     if (!player) {
-      const userGuild = client.guilds.find(guild => guild.id === guildID)
-      const user = userGuild.members.find(member => member.id === userID)
-      const channel = user?.voiceChannel
+      const userGuild = client.guilds.cache.find(guild => guild.id === guildID)
+      const user = userGuild.members.cache.find(member => member.id === userID)
+      const channel = user?.voice.channel
       if (channel) {
         player = await musicPlayerManager.createPlayerFor(guildID, channel)
       } else {

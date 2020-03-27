@@ -137,9 +137,9 @@ class MusicPlayer {
             message: `Let me see your hands while I play *${track.title}* :raised_hands:`
           })
         })
-        .once("end", reason => {
-          if (reason !== "forceStop") {
-            if (reason !== "skip") {
+        .once("finish", (reason: Error | null) => {
+          if (reason?.message !== "forceStop") {
+            if (reason?.message !== "skip") {
               this.subject.next({ messageType: "info", message: `Played: *${track.title}*` })
               this.queue.moveForward()
             }

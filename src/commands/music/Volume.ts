@@ -25,7 +25,7 @@ class VolumeCommand extends MusicCommand {
   }
 
   async execute(args: { data: any }) {
-    if (!this.member.voiceChannel) {
+    if (!this.member.voice.channel) {
       return this.sendMessageToChannel("You can't change the volume if you are not even listening...")
     }
 

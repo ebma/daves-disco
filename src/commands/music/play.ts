@@ -1,4 +1,4 @@
-import { RichEmbed } from "discord.js"
+import { MessageEmbed } from "discord.js"
 import Youtube from "../../shared/util/Youtube"
 import Spotify from "../../shared/util/Spotify"
 import { createEmbedForTrack, createEmbedForTracks, createEmbedsForSpotifyPlaylist } from "../../libs/util/embeds"
@@ -30,7 +30,7 @@ async function handleSearch(searchTerm: string) {
 }
 
 export async function handlePlay(input: string, musicPlayer: MusicPlayer) {
-  let reply: RichEmbed | string = ""
+  let reply: MessageEmbed | string = ""
 
   if (Youtube.isYoutubePlaylist(input)) {
     const playlistID = new URL(input).searchParams.get("list")

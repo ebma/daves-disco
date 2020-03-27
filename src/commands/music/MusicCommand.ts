@@ -1,6 +1,6 @@
 import { Command } from "discord-akairo"
 import _ from "lodash"
-import { Guild, GuildMember, Message, TextChannel, RichEmbed } from "discord.js"
+import { Guild, GuildMember, Message, TextChannel, MessageEmbed } from "discord.js"
 import MusicPlayer from "../../libs/MusicPlayer"
 import MusicPlayerManager from "../../libs/MusicPlayerManager"
 import { trackError } from "../../shared/util/trackError"
@@ -18,12 +18,12 @@ export abstract class MusicCommand extends Command {
   private async initPlayer(member: GuildMember) {
     this.musicPlayer = MusicPlayerManager.getPlayerFor(member.guild.id)
     if (!this.musicPlayer) {
-      if (!member.voiceChannel) {
+      if (!member.voice.channel) {
         throw new Error("You have to be connected to a voice channel...")
-      } else if (!member.voiceChannel.joinable) {
+      } else if (!member.voice.channel.joinable) {
         throw new Error(`Could not join voice channel of ${member.displayName}`)
       } else {
-        this.musicPlayer = await MusicPlayerManager.createPlayerFor(member.guild.id, member.voiceChannel)
+        this.musicPlayer = await MusicPlayerManager.createPlayerFor(member.guild.id, member.voice.channel)
         this.musicPlayer.subscribe({
           next: message => {
             if (message.messageType === "info" || message.messageType === "error") {
@@ -65,13 +65,10 @@ export abstract class MusicCommand extends Command {
     { leading: false, trailing: true }
   )
 
-  sendMessageToChannel(message: string | RichEmbed) {
-    const defaultChannel =
-      this.message && this.message.channel
-        ? this.message.channel
-        : (this.guild.channels.find(channel => channel.name === "general" && channel.type === "text") as TextChannel)
+  sendMessageToChannel(message: string | MessageEmbed) {
+    const defaultChannel = this.message.channel
 
-    if (message instanceof RichEmbed) {
+    if (message instanceof MessageEmbed) {
       defaultChannel.send(message)
     } else {
       messageQueue.push(message)

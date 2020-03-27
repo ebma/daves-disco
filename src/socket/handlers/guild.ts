@@ -4,7 +4,7 @@ import { WebSocketHandler } from "../WebSocketHandler"
 
 const createGetGuildRequestHandler = (client: MyClient) =>
   function handleGetGuildRequest() {
-    const guilds = client.guilds
+    const guilds = client.guilds.cache
     const reducedGuilds = guilds
       .map(g => {
         return { id: g.id, name: g.name }
@@ -16,9 +16,9 @@ const createGetGuildRequestHandler = (client: MyClient) =>
 
 const createGetUsersRequestHandler = (client: MyClient) =>
   function handleGetUsersRequest(guildID: GuildID) {
-    const guild = client.guilds.find(g => g.id === guildID)
+    const guild = client.guilds.cache.find(g => g.id === guildID)
     if (guild) {
-      const members = guild.members
+      const members = guild.members.cache
       const reducedMembers = members
         .filter(
           member =>

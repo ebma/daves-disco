@@ -10,9 +10,7 @@ export class MyClient extends AkairoClient {
       {
         ownerID: process.env.OWNER_ID
       },
-      {
-        disableEveryone: true
-      }
+      {}
     )
 
     this.commandHandler = new CommandHandler(this, {

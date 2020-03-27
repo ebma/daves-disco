@@ -1,11 +1,13 @@
 import Youtube from "../shared/util/Youtube"
+import { StreamDispatcher } from "discord.js"
+import { VoiceConnection } from "discord.js"
 
 class StreamManager {
-  private streamHolder: StreamHolder
-  private dispatcher?: Dispatcher
+  private streamHolder: VoiceConnection
+  private dispatcher?: StreamDispatcher
   private volume: number = 0.1
 
-  constructor(streamHolder: StreamHolder) {
+  constructor(streamHolder: VoiceConnection) {
     this.streamHolder = streamHolder
   }
 
@@ -51,8 +53,8 @@ class StreamManager {
     }
   }
 
-  playTrack(track: Track): Promise<Dispatcher> {
-    return new Promise<Dispatcher>(async (resolve, reject) => {
+  playTrack(track: Track): Promise<StreamDispatcher> {
+    return new Promise<StreamDispatcher>(async (resolve, reject) => {
       try {
         if (!track.url) {
           const success = await Youtube.completePartialTrack(track)
@@ -62,7 +64,7 @@ class StreamManager {
         }
 
         const stream = await Youtube.createReadableStreamFor(track)
-        const dispatcher = this.streamHolder.playStream(stream, { seek: 0, volume: this.volume, passes: 3 })
+        const dispatcher = this.streamHolder.play(stream, { volume: this.volume, highWaterMark: 12 })
         dispatcher
           .once("end", () => {
             stream.destroy()
@@ -82,15 +84,11 @@ class StreamManager {
   }
 
   skip() {
-    if (this.dispatcher) {
-      this.dispatcher.end("skip")
-    }
+    this.dispatcher?.end("skip")
   }
 
   stop() {
-    if (this.dispatcher) {
-      this.dispatcher.end("forceStop")
-    }
+    this.dispatcher?.end("forceStop")
   }
 
   disconnect() {

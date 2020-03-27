@@ -1,9 +1,9 @@
-import { GuildMember, RichEmbed } from "discord.js"
+import { GuildMember, MessageEmbed } from "discord.js"
 import _ from "lodash"
 import Spotify from "../../shared/util/Spotify"
 
 export function createEmbedForTrack(track: Track, requester?: GuildMember) {
-  const embed = new RichEmbed()
+  const embed = new MessageEmbed()
     .setColor("#0099ff")
     .setTitle(track.title)
     .setURL(track.url)
@@ -15,7 +15,7 @@ export function createEmbedForTrack(track: Track, requester?: GuildMember) {
 }
 
 export function createEmbedForTracks(tracks: Track[], requester?: GuildMember) {
-  const embed = new RichEmbed()
+  const embed = new MessageEmbed()
     .setColor("#0099ff")
     .setTitle("Playlist")
     .setTimestamp()
@@ -48,7 +48,7 @@ export function createEmbedForTracks(tracks: Track[], requester?: GuildMember) {
 }
 
 export function createEmbedsForSpotifyPlaylist(playlist: Playlist, requester?: GuildMember) {
-  const playlistEmbed = new RichEmbed()
+  const playlistEmbed = new MessageEmbed()
     .setColor("#0099ff")
     .setTitle(playlist.name)
     .setAuthor(playlist.owner)
