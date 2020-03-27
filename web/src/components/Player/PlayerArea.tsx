@@ -7,6 +7,7 @@ import SkipPreviousIcon from "@material-ui/icons/SkipPrevious"
 import SkipNextIcon from "@material-ui/icons/SkipNext"
 import PauseIcon from "@material-ui/icons/Pause"
 import { useDebounce } from "../../hooks/util"
+import { GuildContext } from "../../context/guild"
 import { SocketContext } from "../../context/socket"
 import StyledButton from "../StyledButton"
 import CurrentSongCard from "./CurrentSongCard"
@@ -71,12 +72,15 @@ interface Props {
   currentTrack?: Track
   currentQueue: Track[]
   disabled?: boolean
+  guildID: GuildID
 }
 
 function PlayerArea(props: Props) {
-  const { currentTrack, disabled } = props
+  const { currentTrack, disabled, guildID } = props
 
-  const { connectionState, guildID, sendMessage, subscribeToMessages } = React.useContext(SocketContext)
+  const { isPlayerAvailable } = React.useContext(GuildContext)
+  const { connectionState, sendMessage, subscribeToMessages } = React.useContext(SocketContext)
+
   const [isPaused, setPaused] = React.useState(false)
   const [volume, setVolume] = React.useState(50)
 
@@ -84,7 +88,7 @@ function PlayerArea(props: Props) {
     const unsubcribePause = subscribeToMessages(Messages.PauseChange, isPaused => setPaused(isPaused))
     const unsubscribeVolume = subscribeToMessages(Messages.VolumeChange, setVolume)
 
-    if (connectionState === "connected" && guildID !== "") {
+    if (connectionState === "connected" && guildID && isPlayerAvailable(guildID)) {
       sendMessage(Messages.GetVolume, guildID)
         .then(setVolume)
         .catch(trackError)
@@ -97,7 +101,7 @@ function PlayerArea(props: Props) {
       unsubcribePause()
       unsubscribeVolume()
     }
-  }, [connectionState, guildID, sendMessage, subscribeToMessages])
+  }, [connectionState, guildID, isPlayerAvailable, sendMessage, subscribeToMessages])
 
   return (
     <Paper style={{ padding: 16 }}>

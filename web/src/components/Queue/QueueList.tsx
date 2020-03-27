@@ -30,13 +30,14 @@ const useStyles = makeStyles(theme => ({
 interface Props {
   currentTrack?: Track
   currentQueue: Track[]
+  guildID: string
 }
 
 function QueueList(props: Props) {
-  const { currentTrack, currentQueue } = props
-
+  const { currentTrack, currentQueue, guildID } = props
   const classes = useStyles()
-  const { guildID, sendMessage } = React.useContext(SocketContext)
+
+  const { sendMessage } = React.useContext(SocketContext)
   const [localQueue, setLocalQueue] = React.useState<Track[]>(props.currentQueue)
 
   React.useEffect(() => {

@@ -1,6 +1,7 @@
 import React from "react"
 import { ThemeProvider } from "@material-ui/core/styles"
 import IndexPage from "./pages/IndexPage"
+import { GuildProvider } from "./context/guild"
 import { SocketProvider } from "./context/socket"
 import NotificationContainer from "./components/Notification/NotificationContainer"
 import { NotificationsProvider } from "./context/notifications"
@@ -22,8 +23,10 @@ function App() {
       <MaterialThemeProvider>
         <NotificationsProvider>
           <SocketProvider>
-            <IndexPage />
-            <NotificationContainer />
+            <GuildProvider>
+              <IndexPage />
+              <NotificationContainer />
+            </GuildProvider>
           </SocketProvider>
         </NotificationsProvider>
       </MaterialThemeProvider>

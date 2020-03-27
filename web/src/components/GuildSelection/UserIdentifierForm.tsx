@@ -7,7 +7,6 @@ import Link from "@material-ui/core/Link"
 import MenuItem from "@material-ui/core/MenuItem"
 import Select from "@material-ui/core/Select"
 import Typography from "@material-ui/core/Typography"
-import { Guilds, Members } from "./GuildSelectionArea"
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -29,8 +28,8 @@ const useStyles = makeStyles(theme => ({
 interface Props {
   currentGuild?: string
   currentUser?: string
-  guilds: Guilds
-  members?: Members
+  guilds: ReducedGuilds
+  members?: ReducedMembers
   setUserID: (userID: string) => void
   setGuildID: (guildID: string) => void
   onClick?: () => void

@@ -19,12 +19,13 @@ const useStyles = makeStyles(theme => ({
 interface Props {
   currentTrack?: Track
   currentQueue: Track[]
+  guildID: string
 }
 
 function QueueArea(props: Props) {
   const classes = useStyles()
 
-  const { currentTrack, currentQueue } = props
+  const { currentTrack, currentQueue, guildID } = props
 
   const [show, setShow] = React.useState(true)
 
@@ -62,7 +63,7 @@ function QueueArea(props: Props) {
         </Grid>
         <Grid item>{itemRow}</Grid>
       </Grid>
-      {show ? <QueueList currentQueue={currentQueue} currentTrack={currentTrack} /> : undefined}
+      {show ? <QueueList currentQueue={currentQueue} currentTrack={currentTrack} guildID={guildID} /> : undefined}
     </Paper>
   )
 }

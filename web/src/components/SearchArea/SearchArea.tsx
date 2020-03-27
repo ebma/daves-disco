@@ -227,12 +227,16 @@ function TabPanel(props: TabPanelProps) {
   )
 }
 
-interface EnqueueAreaProps {}
+interface SearchAreaProps {
+  guildID: GuildID
+  userID: UserID
+}
 
-function SearchArea(props: EnqueueAreaProps) {
+function SearchArea(props: SearchAreaProps) {
+  const { guildID, userID } = props
   const classes = useStyles()
 
-  const { guildID, userID, sendMessage } = React.useContext(SocketContext)
+  const { sendMessage } = React.useContext(SocketContext)
   const { showNotification } = React.useContext(NotificationsContext)
 
   const [value, setValue] = React.useState(0)

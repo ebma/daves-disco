@@ -12,6 +12,7 @@ declare namespace IPC {
 
     GetGuilds: "GetGuilds"
     GetMembers: "GetMembers"
+    GetPlayerAvailable: "GetPlayerAvailable"
     GetTrack: "GetTrack"
     GetQueue: "GetQueue"
     GetVolume: "GetVolume"
@@ -40,6 +41,7 @@ declare namespace IPC {
 
     [Messages.GetGuilds]: () => ReducedGuilds
     [Messages.GetMembers]: (guildID: GuildID) => ReducedMembers
+    [Messages.GetPlayerAvailable]: (guildID: GuildID) => boolean
     [Messages.GetTrack]: (guildID: GuildID) => Track
     [Messages.GetQueue]: (guildID: GuildID) => Track[]
     [Messages.GetVolume]: (guildID: GuildID) => number

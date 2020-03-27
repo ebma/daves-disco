@@ -6,6 +6,7 @@ import { makeStyles } from "@material-ui/core/styles"
 import Header from "../components/Header"
 import Footer from "../components/Footer"
 import ConnectionStateIndicator from "../components/ConnectionState/ConnectionStateIndicator"
+import { GuildContext } from "../context/guild"
 import { SocketContext } from "../context/socket"
 import { trackError } from "../context/notifications"
 import GuildSelectionArea from "../components/GuildSelection/GuildSelectionArea"
@@ -30,7 +31,8 @@ const useStyles = makeStyles(theme => ({
 function IndexPage() {
   const classes = useStyles()
 
-  const { connectionState, guildID, userID, sendMessage, subscribeToMessages } = React.useContext(SocketContext)
+  const { guildID, userID, isPlayerAvailable } = React.useContext(GuildContext)
+  const { connectionState, sendMessage, subscribeToMessages } = React.useContext(SocketContext)
 
   const [currentTrack, setCurrentTrack] = React.useState<Track | undefined>(undefined)
   const [currentQueue, setCurrentQueue] = React.useState<Track[]>([])
@@ -39,7 +41,7 @@ function IndexPage() {
     const unsubscribeCurrentTrack = subscribeToMessages(Messages.CurrentTrack, setCurrentTrack)
     const unsubscribeCurrentQueue = subscribeToMessages(Messages.CurrentQueue, setCurrentQueue)
 
-    if (connectionState === "connected" && guildID !== "") {
+    if (connectionState === "connected" && guildID && isPlayerAvailable(guildID)) {
       sendMessage(Messages.GetTrack, guildID)
         .then(setCurrentTrack)
         .catch(trackError)
@@ -52,7 +54,7 @@ function IndexPage() {
       unsubscribeCurrentTrack()
       unsubscribeCurrentQueue()
     }
-  }, [connectionState, guildID, sendMessage, subscribeToMessages])
+  }, [connectionState, guildID, isPlayerAvailable, sendMessage, subscribeToMessages])
 
   return (
     <Container className={classes.root} component="main">
@@ -64,20 +66,21 @@ function IndexPage() {
         <Grid className={classes.item} item md={userID ? 6 : 12} sm={12}>
           {connectionState === "connected" ? <GuildSelectionArea /> : undefined}
         </Grid>
-        {connectionState === "connected" && userID ? (
+        {connectionState === "connected" && guildID && userID ? (
           <>
             <Grid className={classes.item} item md={6} sm={12}>
-              <SearchArea />
+              <SearchArea guildID={guildID} userID={userID} />
             </Grid>
             <Grid className={classes.item} item md={6} sm={12}>
               <PlayerArea
                 currentQueue={currentQueue}
                 currentTrack={currentTrack}
                 disabled={currentQueue.length === 0}
+                guildID={guildID}
               />
             </Grid>
             <Grid className={classes.item} item md={6} sm={12}>
-              <QueueArea currentQueue={currentQueue} currentTrack={currentTrack} />
+              <QueueArea currentQueue={currentQueue} currentTrack={currentTrack} guildID={guildID} />
             </Grid>
           </>
         ) : (

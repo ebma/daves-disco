@@ -10,6 +10,7 @@ export const Messages: IPC.MessageType = {
 
   GetGuilds: "GetGuilds",
   GetMembers: "GetMembers",
+  GetPlayerAvailable: "GetPlayerAvailable",
   GetTrack: "GetTrack",
   GetQueue: "GetQueue",
   GetVolume: "GetVolume",
