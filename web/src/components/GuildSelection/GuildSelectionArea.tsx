@@ -13,10 +13,10 @@ function GuildSelectionArea(props: Props) {
     <Card>
       {guilds ? (
         <UserIdentifierForm
-          currentGuild={guildID}
-          currentUser={userID}
+          guildID={guildID}
+          userID={userID}
           guilds={guilds}
-          members={guildID ? getMembers(guildID) : undefined}
+          getMembers={getMembers}
           setUserID={setUserID}
           setGuildID={setGuildID}
         />

@@ -1,19 +1,14 @@
 import React from "react"
 import { makeStyles } from "@material-ui/core/styles"
 import Box from "@material-ui/core/Box"
-import FormControl from "@material-ui/core/FormControl"
-import InputLabel from "@material-ui/core/InputLabel"
 import Link from "@material-ui/core/Link"
 import MenuItem from "@material-ui/core/MenuItem"
-import Select from "@material-ui/core/Select"
+import TextField from "@material-ui/core/TextField"
 import Typography from "@material-ui/core/Typography"
 
 const useStyles = makeStyles(theme => ({
   container: {
     padding: 16,
-    margin: theme.spacing(1)
-  },
-  formControl: {
     margin: theme.spacing(1)
   },
   textField: {
@@ -26,10 +21,10 @@ const useStyles = makeStyles(theme => ({
 }))
 
 interface Props {
-  currentGuild?: string
-  currentUser?: string
+  guildID?: GuildID
+  userID?: UserID
   guilds: ReducedGuilds
-  members?: ReducedMembers
+  getMembers: (guildID: GuildID) => ReducedMembers
   setUserID: (userID: string) => void
   setGuildID: (guildID: string) => void
   onClick?: () => void
@@ -38,7 +33,18 @@ interface Props {
 function UserIdentifierForm(props: Props) {
   const classes = useStyles()
 
-  const { currentGuild, currentUser, guilds, members, setUserID, setGuildID } = props
+  const { guildID, userID, guilds, getMembers, setUserID, setGuildID } = props
+
+  const handleChange = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
+    const name = event.target.name as "guildID" | "userID"
+    const value = event.target.value as string
+
+    if (name === "guildID") {
+      setGuildID(value)
+    } else if (name === "userID") {
+      setUserID(value)
+    }
+  }
 
   return (
     <form className={classes.container} noValidate autoComplete="off">
@@ -47,50 +53,38 @@ function UserIdentifierForm(props: Props) {
       </Typography>
 
       <Box display="flex">
-        <FormControl className={classes.formControl} fullWidth>
-          <InputLabel htmlFor="guildID">Guild</InputLabel>
-          <Select
-            value={currentGuild}
-            onChange={(event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
-              setGuildID(event.target.value as string)
-            }}
-            onClick={props.onClick}
-            inputProps={{
-              name: "guildID",
-              id: "guildID"
-            }}
-          >
-            {guilds
-              ? guilds.map(guild => (
-                  <MenuItem key={guild.id} value={guild.id}>
-                    {guild.name}
-                  </MenuItem>
-                ))
-              : undefined}
-          </Select>
-        </FormControl>
-
-        <FormControl className={classes.formControl} fullWidth>
-          <InputLabel htmlFor="userID">Member</InputLabel>
-          <Select
-            value={currentUser}
-            onChange={(event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
-              setUserID(event.target.value as string)
-            }}
-            inputProps={{
-              name: "userID",
-              id: "userID"
-            }}
-          >
-            {members
-              ? members.map(member => (
-                  <MenuItem key={member.id} value={member.id}>
-                    {member.name}
-                  </MenuItem>
-                ))
-              : undefined}
-          </Select>
-        </FormControl>
+        <TextField
+          className={classes.textField}
+          helperText={guildID ? undefined : "Please select your guild/server"}
+          fullWidth
+          label="Guild"
+          onChange={handleChange}
+          select
+          value={guildID}
+        >
+          {guilds.map(guild => (
+            <MenuItem key={guild.id} value={guild.id}>
+              {guild.name}
+            </MenuItem>
+          ))}
+        </TextField>
+        <TextField
+          className={classes.textField}
+          helperText={userID ? undefined : "Please select yourself"}
+          fullWidth
+          label="Member"
+          onChange={handleChange}
+          select
+          value={userID}
+        >
+          {guildID
+            ? getMembers(guildID).map(member => (
+                <MenuItem key={member.id} value={member.id}>
+                  {member.name}
+                </MenuItem>
+              ))
+            : undefined}
+        </TextField>
       </Box>
       <Typography color="secondary" align="center" style={{ paddingTop: 16 }}>
         Not yet a member of the Server?
