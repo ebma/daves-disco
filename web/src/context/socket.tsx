@@ -12,16 +12,6 @@ let messageID = 1
 
 type UnsubscribeFn = () => void
 
-function getGuildIDFromLocalStorage() {
-  const storedGuildID = localStorage.getItem("guildID")
-  return storedGuildID ? storedGuildID : ""
-}
-
-function getUserIDFromLocalStorage() {
-  const storedUserID = localStorage.getItem("userID")
-  return storedUserID ? storedUserID : ""
-}
-
 function isErrorResponse<Message extends keyof IPC.MessageType>(
   response: IPC.CallResponseMessage<Message>
 ): response is IPC.CallErrorMessage<Message> {
@@ -30,8 +20,6 @@ function isErrorResponse<Message extends keyof IPC.MessageType>(
 
 export interface SocketContextType {
   connectionState: ConnectionState
-  guildID: string
-  userID: string
   sendMessage: <Message extends keyof IPC.MessageType>(
     messageType: Message,
     ...args: IPC.MessageArgs<Message>
@@ -40,18 +28,12 @@ export interface SocketContextType {
     messageType: Message,
     callback: (message: IPC.MessageReturnType<Message>) => void
   ) => UnsubscribeFn
-  setGuildID: (guildID: string) => void
-  setUserID: (userID: string) => void
 }
 
 const SocketContext = React.createContext<SocketContextType>({
   connectionState: "disconnected",
-  guildID: "",
-  userID: "",
   sendMessage: () => Promise.reject("Not ready yet"),
-  subscribeToMessages: () => () => undefined,
-  setGuildID: () => undefined,
-  setUserID: () => undefined
+  subscribeToMessages: () => () => undefined
 })
 
 interface Props {
@@ -61,8 +43,6 @@ interface Props {
 function SocketProvider(props: Props) {
   const [connectionState, setConnectionState] = React.useState<ConnectionState>("disconnected")
   const [currentSocket, setCurrentSocket] = React.useState<SocketIOClient.Socket | null>(null)
-  const [guildID, setGuildID] = React.useState<GuildID>(getGuildIDFromLocalStorage)
-  const [userID, setUserID] = React.useState<UserID>(getUserIDFromLocalStorage)
 
   React.useEffect(() => {
     const socket = io(path, {
@@ -138,7 +118,7 @@ function SocketProvider(props: Props) {
 
       const eventListener = (message: IPC.ServerMessage<Message>) => {
         if (message.messageType === messageType) {
-          callback(message.data) 
+          callback(message.data)
         }
       }
       currentSocket.on("message", eventListener)
@@ -150,18 +130,8 @@ function SocketProvider(props: Props) {
 
   const contextValue: SocketContextType = {
     connectionState,
-    userID,
-    guildID,
     sendMessage,
-    subscribeToMessages,
-    setGuildID: (guildID: string) => {
-      localStorage.setItem("guildID", guildID)
-      setGuildID(guildID)
-    },
-    setUserID: (userID: string) => {
-      localStorage.setItem("userID", userID)
-      setUserID(userID)
-    }
+    subscribeToMessages
   }
 
   return <SocketContext.Provider value={contextValue}>{props.children}</SocketContext.Provider>
