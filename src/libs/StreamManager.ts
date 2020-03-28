@@ -1,7 +1,7 @@
+import { StreamDispatcher, VoiceConnection } from "discord.js"
+import { Observable } from "rxjs"
 import { trackError } from "../shared/util/trackError"
 import Youtube from "../shared/util/Youtube"
-import { StreamDispatcher } from "discord.js"
-import { VoiceConnection } from "discord.js"
 
 class StreamManager {
   private voiceConnection: VoiceConnection
@@ -54,38 +54,41 @@ class StreamManager {
     }
   }
 
-  playTrack(track: Track): Promise<StreamDispatcher> {
-    return new Promise<StreamDispatcher>(async (resolve, reject) => {
-      try {
-        if (!track.url) {
-          const success = await Youtube.completePartialTrack(track)
-          if (!success) {
-            throw new Error(`Could not get complete information about track ${track.title}!`)
-          }
+  async playTrack(track: Track) {
+    try {
+      if (!track.url) {
+        const success = await Youtube.completePartialTrack(track)
+        if (!success) {
+          throw new Error(`Could not get complete information about track ${track.title}!`)
         }
+      }
 
-        const stream = await Youtube.createReadableStreamFor(track)
-        const dispatcher = this.voiceConnection.play(stream, { volume: this.volume, highWaterMark: 12 })
+      const stream = await Youtube.createReadableStreamFor(track)
+      const dispatcher = this.voiceConnection.play(stream, { volume: this.volume, highWaterMark: 12 })
+      this.dispatcher = dispatcher
+
+      return new Observable<StreamManagerObservableMessage>(subscriber => {
         dispatcher
-          .once("finish", () => {
+          .on("debug", info => subscriber.next({ type: "debug", data: info }))
+          .on("start", () => subscriber.next({ type: "start" }))
+          .on("finish", () => {
             stream.destroy()
             this.dispatcher = null
+            subscriber.next({ type: "finish" })
           })
-          .once("error", (error: any) => {
+          .on("error", (error: any) => {
             trackError(error, "StreamManager.playTrack error")
             stream.destroy()
             this.dispatcher = null
+            subscriber.next({ type: "error", data: error && error.message ? error.message : error })
           })
-
-        this.dispatcher = dispatcher
-        resolve(dispatcher)
-      } catch (error) {
-        reject(error)
-      }
-    })
+      })
+    } catch (error) {
+      trackError(error)
+    }
   }
 
-  skip() {
+  endCurrent() {
     if (this.dispatcher && !this.dispatcher.writableFinished) {
       this.dispatcher.end()
     }

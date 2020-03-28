@@ -36,3 +36,8 @@ interface MusicPlayerSubjectMessage {
   message: string
   data?: any
 }
+
+interface StreamManagerObservableMessage {
+  type: "start" | "finish" | "error" | "debug"
+  data?: any
+}

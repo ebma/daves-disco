@@ -58,9 +58,10 @@ function UserIdentifierForm(props: Props) {
           helperText={guildID ? undefined : "Please select your guild/server"}
           fullWidth
           label="Guild"
+          name="guildID"
           onChange={handleChange}
           select
-          value={guildID}
+          value={guildID || ""}
         >
           {guilds.map(guild => (
             <MenuItem key={guild.id} value={guild.id}>
@@ -72,18 +73,23 @@ function UserIdentifierForm(props: Props) {
           className={classes.textField}
           helperText={userID ? undefined : "Please select yourself"}
           fullWidth
+          name="userID"
           label="Member"
           onChange={handleChange}
           select
-          value={userID}
+          value={userID || ""}
         >
-          {guildID
-            ? getMembers(guildID).map(member => (
-                <MenuItem key={member.id} value={member.id}>
-                  {member.name}
-                </MenuItem>
-              ))
-            : undefined}
+          {guildID ? (
+            getMembers(guildID).map(member => (
+              <MenuItem key={member.id} value={member.id}>
+                {member.name}
+              </MenuItem>
+            ))
+          ) : (
+            <MenuItem disabled value="None">
+              None
+            </MenuItem>
+          )}
         </TextField>
       </Box>
       <Typography color="secondary" align="center" style={{ paddingTop: 16 }}>

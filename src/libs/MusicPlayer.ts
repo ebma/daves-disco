@@ -1,5 +1,5 @@
 import _ from "lodash"
-import { Subject, PartialObserver, Subscription } from "rxjs"
+import { PartialObserver, Subject, Subscription } from "rxjs"
 import { trackError } from "../shared/util/trackError"
 import ObservableQueue from "./ObservableQueue"
 import StreamManager from "./StreamManager"
@@ -9,7 +9,7 @@ class MusicPlayer {
   queue: ObservableQueue<Track>
   private streamManager: StreamManager
   private subject: Subject<MusicPlayerSubjectMessage>
-  private startPending = false
+  private playingTrack: Track
 
   constructor(streamManager: StreamManager) {
     this.streamManager = streamManager
@@ -17,8 +17,12 @@ class MusicPlayer {
     this.subject = new Subject<MusicPlayerSubjectMessage>()
 
     this.queue.subscribe((currentTrack, currentQueue) => {
-      if (currentTrack && !this.startPending && !this.streamManager.playing && !this.paused) {
-        this.startStreaming(currentTrack)
+      if (currentTrack !== this.playingTrack) {
+        streamManager.endCurrent()
+        if (currentTrack) {
+          this.startStreaming(currentTrack)
+        }
+        this.playingTrack = currentTrack
       }
       this.subject.next({ messageType: "status", message: "current-track", data: currentTrack })
       this.subject.next({ messageType: "status", message: "current-queue", data: currentQueue })
@@ -87,7 +91,7 @@ class MusicPlayer {
         this.subject.next({ messageType: "error", message: error.message })
       }
     } else if (this.remainingTracks.length > 0) {
-      this.startStreaming(this.currentTrack)
+      this.startStreaming(this.playingTrack)
     }
   }
 
@@ -106,12 +110,10 @@ class MusicPlayer {
   }
 
   skipForward(amount: number = 1) {
-    this.streamManager.skip()
-    this.queue.moveForward(amount - 1)
+    this.queue.moveForward(amount)
   }
 
   skipPrevious(amount: number = 1) {
-    this.streamManager.skip()
     this.queue.moveBack(amount)
   }
 
@@ -126,32 +128,11 @@ class MusicPlayer {
 
   private async startStreaming(track: Track) {
     try {
-      this.startPending = true
-      const dispatcher = await this.streamManager.playTrack(track)
-      dispatcher
-        .once("start", () => {
-          this.startPending = false
-          this.subject.next({ messageType: "status", message: "playing" })
-          this.subject.next({ messageType: "status", message: "volume", data: this.volume })
-          this.subject.next({
-            messageType: "info",
-            message: `Let me see your hands while I play *${track.title}* :raised_hands:`
-          })
-        })
-        .once("finish", () => {
-          this.subject.next({ messageType: "info", message: `Played: *${track.title}*` })
-          this.queue.moveForward()
-
-          if (_.isNil(this.queue.getCurrent())) {
-            this.subject.next({ messageType: "status", message: "idle" })
-          }
-        })
-        .on("error", e => {
-          trackError(e, "MusicPlayer.startStreaming on-dispatcher-error")
-          this.subject.next({ messageType: "error", message: e.message })
-        })
+      const streamObservable = await this.streamManager.playTrack(track)
+      streamObservable.subscribe({
+        next: message => this.observeStream(message, track)
+      })
     } catch (error) {
-      this.startPending = false
       const errorMessage = `Could not start stream for track '${track.title}': ${error}`
       trackError(errorMessage, "MusicPlayer.startStreaming try-catch-error")
       this.subject.next({ messageType: "error", message: errorMessage })
@@ -160,6 +141,37 @@ class MusicPlayer {
 
   subscribe(observer: PartialObserver<MusicPlayerSubjectMessage>): Subscription {
     return this.subject.subscribe(observer)
+  }
+
+  private observeStream(message: StreamManagerObservableMessage, track: Track) {
+    switch (message.type) {
+      case "debug":
+        console.log("observeStream debug info: ", message.data)
+        this.subject.next({ messageType: "info", message: `Debug Info: ${message.data}` })
+      case "start":
+        this.subject.next({ messageType: "status", message: "playing" })
+        this.subject.next({ messageType: "status", message: "volume", data: this.volume })
+        this.subject.next({
+          messageType: "info",
+          message: `Let me see your hands while I play *${track.title}* :raised_hands:`
+        })
+        break
+      case "finish":
+        this.subject.next({ messageType: "info", message: `Played: *${track.title}*` })
+
+        if (_.isNil(this.queue.getCurrent())) {
+          this.subject.next({ messageType: "status", message: "idle" })
+        } else if (track === this.playingTrack) {
+          this.skipForward()
+        }
+
+        break
+      case "error":
+        const error = message.data
+        trackError(error, "MusicPlayer.startStreaming on-dispatcher-error")
+        this.subject.next({ messageType: "error", message: error.message })
+        break
+    }
   }
 }
 
