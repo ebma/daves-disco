@@ -8,7 +8,6 @@ import ListItemIcon from "@material-ui/core/ListItemIcon"
 import ListItemText from "@material-ui/core/ListItemText"
 import makeStyles from "@material-ui/styles/makeStyles"
 import Tooltip from "@material-ui/core/Tooltip"
-import ArrowForwardIcon from "@material-ui/icons/ArrowForwardIos"
 import DeleteIcon from "@material-ui/icons/Delete"
 import Spotify from "../../shared/util/Spotify"
 
@@ -16,6 +15,13 @@ const useStyles = makeStyles(theme => ({
   queueItem: {
     boxShadow: "1",
     position: "relative",
+    padding: 0
+  },
+  avatar: {
+    minHeight: "100px",
+    minWidth: "100px"
+  },
+  text: {
     padding: "16px 24px"
   }
 }))
@@ -40,18 +46,6 @@ function QueueItem(props: Props) {
       myRef.current && myRef.current.scrollIntoView()
     }, 500)
   }
-
-  const CurrentTrackArrow = React.useMemo(() => {
-    return current ? (
-      <ListItemIcon>
-        <Tooltip placement="left" title="Current">
-          <ArrowForwardIcon />
-        </Tooltip>
-      </ListItemIcon>
-    ) : (
-      undefined
-    )
-  }, [current])
 
   const DeleteTrackButton = React.useMemo(() => {
     return onDeleteClick ? (
@@ -83,15 +77,16 @@ function QueueItem(props: Props) {
           className={classes.queueItem}
           ref={provided.innerRef}
           onClick={onClick}
+          selected={current}
           style={listItemStyle}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
         >
-          {CurrentTrackArrow}
           <ListItemAvatar>
-            <Avatar alt="thumbnail" src={track.thumbnail} />
+            <Avatar alt="thumbnail" className={classes.avatar} src={track.thumbnail} variant="square" />
           </ListItemAvatar>
           <ListItemText
+            className={classes.text}
             primary={primaryText}
             secondary={
               <Link href={track.url} color="inherit" target="_blank" rel="noreferrer">
