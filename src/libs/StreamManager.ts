@@ -1,14 +1,15 @@
+import { trackError } from "../shared/util/trackError"
 import Youtube from "../shared/util/Youtube"
 import { StreamDispatcher } from "discord.js"
 import { VoiceConnection } from "discord.js"
 
 class StreamManager {
-  private streamHolder: VoiceConnection
+  private voiceConnection: VoiceConnection
   private dispatcher?: StreamDispatcher
   private volume: number = 0.1
 
-  constructor(streamHolder: VoiceConnection) {
-    this.streamHolder = streamHolder
+  constructor(voiceConnection: VoiceConnection) {
+    this.voiceConnection = voiceConnection
   }
 
   setVolume(volume: number) {
@@ -64,13 +65,14 @@ class StreamManager {
         }
 
         const stream = await Youtube.createReadableStreamFor(track)
-        const dispatcher = this.streamHolder.play(stream, { volume: this.volume, highWaterMark: 12 })
+        const dispatcher = this.voiceConnection.play(stream, { volume: this.volume, highWaterMark: 12 })
         dispatcher
-          .once("end", () => {
+          .once("finish", () => {
             stream.destroy()
             this.dispatcher = null
           })
-          .once("error", () => {
+          .once("error", (error: any) => {
+            trackError(error, "StreamManager.playTrack error")
             stream.destroy()
             this.dispatcher = null
           })
@@ -84,19 +86,21 @@ class StreamManager {
   }
 
   skip() {
-    this.dispatcher?.end("skip")
+    if (this.dispatcher && !this.dispatcher.writableFinished) {
+      this.dispatcher.end()
+    }
   }
 
   stop() {
-    this.dispatcher?.end("forceStop")
+    if (this.dispatcher && !this.dispatcher.destroyed) {
+      this.dispatcher.destroy()
+    }
   }
 
   disconnect() {
-    if (this.dispatcher) {
-      this.dispatcher.end()
-      this.dispatcher = null
-    }
-    this.streamHolder.disconnect()
+    this.stop()
+    this.dispatcher = null
+    this.voiceConnection.disconnect()
   }
 }
 

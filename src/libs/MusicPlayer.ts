@@ -95,6 +95,7 @@ class MusicPlayer {
     this.subject.next({ messageType: "info", message: "Stopping stream." })
     this.subject.next({ messageType: "status", message: "current-track", data: undefined })
     this.subject.next({ messageType: "status", message: "current-queue", data: [] })
+    this.queue.clear()
     this.streamManager.stop()
     this.streamManager.disconnect()
     this.destroyed = true
@@ -106,7 +107,7 @@ class MusicPlayer {
 
   skipForward(amount: number = 1) {
     this.streamManager.skip()
-    this.queue.moveForward(amount)
+    this.queue.moveForward(amount - 1)
   }
 
   skipPrevious(amount: number = 1) {
@@ -137,13 +138,9 @@ class MusicPlayer {
             message: `Let me see your hands while I play *${track.title}* :raised_hands:`
           })
         })
-        .once("finish", (reason: Error | null) => {
-          if (reason?.message !== "forceStop") {
-            if (reason?.message !== "skip") {
-              this.subject.next({ messageType: "info", message: `Played: *${track.title}*` })
-              this.queue.moveForward()
-            }
-          }
+        .once("finish", () => {
+          this.subject.next({ messageType: "info", message: `Played: *${track.title}*` })
+          this.queue.moveForward()
 
           if (_.isNil(this.queue.getCurrent())) {
             this.subject.next({ messageType: "status", message: "idle" })
