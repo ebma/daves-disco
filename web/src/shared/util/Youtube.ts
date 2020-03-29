@@ -133,7 +133,7 @@ export class Youtube {
       } else if (!this.isYoutubeVideo(track.url)) {
         reject(`Track has an invalid url '${track.url}'`)
       } else {
-        ytdlDiscord(track.url, { quality: "highestaudio", filter: "audioonly" })
+        ytdlDiscord(track.url, { quality: "highestaudio", filter: "audioonly", highWaterMark: 1 << 25 }) // fuck this shit (https://github.com/fent/node-ytdl-core/issues/402#issuecomment-538070017)
           .then(resolve)
           .catch(reject)
       }
