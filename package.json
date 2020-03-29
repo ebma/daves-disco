@@ -57,6 +57,7 @@
     "winston": "^3.2.1",
     "youtube-search": "^1.1.4",
     "ytdl-core": "^1.0.3",
+    "ytdl-core-discord": "^1.1.0",
     "ytpl": "^0.1.19"
   },
   "devDependencies": {

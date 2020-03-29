@@ -3,6 +3,7 @@ import { config } from "dotenv"
 import { Readable } from "stream"
 import search from "youtube-search"
 import ytdl from "ytdl-core"
+import ytdlDiscord from "ytdl-core-discord"
 import ytpl from "ytpl"
 import { trackError } from "./trackError"
 import Spotify from "./Spotify"
@@ -132,8 +133,9 @@ export class Youtube {
       } else if (!this.isYoutubeVideo(track.url)) {
         reject(`Track has an invalid url '${track.url}'`)
       } else {
-        const stream = ytdl(track.url, { quality: "highestaudio", filter: "audioonly" }).on("error", reject)
-        resolve(stream)
+        ytdlDiscord(track.url, { quality: "highestaudio", filter: "audioonly" })
+          .then(resolve)
+          .catch(reject)
       }
     })
   }
