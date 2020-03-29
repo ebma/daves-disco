@@ -40,7 +40,7 @@ class StreamManager {
     } else if (this.dispatcher.paused) {
       throw new Error("Stream paused already.")
     } else {
-      this.dispatcher.pause()
+      this.dispatcher.pause(true)
     }
   }
 
@@ -64,9 +64,8 @@ class StreamManager {
       }
 
       const stream = await Youtube.createReadableStreamFor(track)
-      const dispatcher = this.voiceConnection.play(stream, { volume: this.volume, highWaterMark: 12 })
+      const dispatcher = this.voiceConnection.play(stream, { volume: this.volume, highWaterMark: 50 })
       this.dispatcher = dispatcher
-
       return new Observable<StreamManagerObservableMessage>(subscriber => {
         dispatcher
           .on("debug", info => subscriber.next({ type: "debug", data: info }))
