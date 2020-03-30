@@ -87,11 +87,6 @@ class ObservableQueue<T extends object> {
     this.notifyObservers()
   }
 
-  public shuffle() {
-    this.itemList = _.shuffle(this.itemList)
-    this.notifyObservers()
-  }
-
   public size() {
     return this.itemList.length
   }

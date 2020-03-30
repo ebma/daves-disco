@@ -6,6 +6,7 @@ export const Messages: IPC.MessageType = {
   Skip: "Skip",
   Stop: "Stop",
   SkipPrevious: "SkipPrevious",
+  Shuffle: "Shuffle",
   Volume: "Volume",
 
   GetGuilds: "GetGuilds",

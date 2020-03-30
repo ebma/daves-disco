@@ -8,6 +8,7 @@ declare namespace IPC {
     Skip: "Skip"
     Stop: "Stop"
     SkipPrevious: "SkipPrevious"
+    Shuffle: "Shuffle"
     Volume: "Volume"
 
     GetGuilds: "GetGuilds"
@@ -37,6 +38,7 @@ declare namespace IPC {
     [Messages.Skip]: (guildID: GuildID, amount: number) => void
     [Messages.Stop]: (guildID: GuildID) => void
     [Messages.SkipPrevious]: (guildID: GuildID, amount: number) => void
+    [Messages.Shuffle]: (guildID: GuildID) => void
     [Messages.Volume]: (guildID: GuildID, newVolume: number) => void
 
     [Messages.GetGuilds]: () => ReducedGuilds

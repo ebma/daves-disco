@@ -17,7 +17,7 @@ import { Messages } from "../shared/ipc"
 
 const useStyles = makeStyles(theme => ({
   root: {
-    maxWidth: "85vw",
+    maxWidth: "95vw",
     minHeight: "100vh"
   },
   container: {

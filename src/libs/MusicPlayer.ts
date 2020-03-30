@@ -106,7 +106,13 @@ class MusicPlayer {
   }
 
   shuffle() {
-    this.queue.shuffle()
+    const currentItem = this.queue.getCurrent()
+    const shuffledItemList = _.shuffle(this.queue.getAll())
+
+    const foundIndex = shuffledItemList.findIndex(track => track.trackID === currentItem.trackID)
+    const newIndex = foundIndex !== -1 ? foundIndex : 0
+
+    this.queue.replace(shuffledItemList, newIndex)
   }
 
   skipForward(amount: number = 1) {
