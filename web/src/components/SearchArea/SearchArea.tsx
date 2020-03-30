@@ -72,7 +72,6 @@ function SearchYoutubeTab(props: TabProps) {
         options={options}
         autoComplete
         includeInputInList
-        disableOpenOnFocus
         multiple={false}
         onChange={(_: React.ChangeEvent<{}>, value: Track | null) => setSelectedTrack(value)}
         renderInput={params => (
