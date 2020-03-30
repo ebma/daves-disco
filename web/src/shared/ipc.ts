@@ -18,6 +18,9 @@ export const Messages: IPC.MessageType = {
   GetPausedState: "GetPausedState",
   UpdateQueue: "UpdateQueue",
 
+  Authenticate: "Authenticate",
+  IsAuthenticated: "IsAuthenticated",
+
   CurrentTrack: "CurrentTrack",
   CurrentQueue: "CurrentQueue",
   Error: "Error",

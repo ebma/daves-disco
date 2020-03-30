@@ -20,6 +20,9 @@ declare namespace IPC {
     GetPausedState: "GetPausedState"
     UpdateQueue: "UpdateQueue"
 
+    Authenticate: "Authenticate"
+    IsAuthenticated: "IsAuthenticated"
+
     // Subscribable Info Messages
     CurrentTrack: "CurrentTrack"
     CurrentQueue: "CurrentQueue"
@@ -40,6 +43,9 @@ declare namespace IPC {
     [Messages.SkipPrevious]: (guildID: GuildID, amount: number) => void
     [Messages.Shuffle]: (guildID: GuildID) => void
     [Messages.Volume]: (guildID: GuildID, newVolume: number) => void
+
+    [Messages.IsAuthenticated]: (guildID: GuildID, userID: UserID, token: string) => boolean
+    [Messages.Authenticate]: (guildID: GuildID, userID: UserID) => string
 
     [Messages.GetGuilds]: () => ReducedGuilds
     [Messages.GetMembers]: (guildID: GuildID) => ReducedMembers
@@ -73,6 +79,7 @@ declare namespace IPC {
 
   export interface SocketMessage {
     args: any
+    token: string
     messageType: keyof IPC.MessageType
     messageID: number
   }
