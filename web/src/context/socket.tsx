@@ -1,6 +1,7 @@
 import React from "react"
 import io from "socket.io-client"
 import { trackError } from "./notifications"
+import { Messages } from "../shared/ipc"
 
 const path =
   process.env.NODE_ENV === "production" && process.env.BOT_SERVER_PATH
@@ -18,7 +19,17 @@ function isErrorResponse<Message extends keyof IPC.MessageType>(
   return (response as IPC.CallErrorMessage<Message>).error !== undefined
 }
 
+function getAuthTokenFromStorage() {
+  return localStorage.getItem("auth-token")
+}
+
+function saveAuthTokenToStorage(token: string) {
+  localStorage.setItem("auth-token", token)
+}
+
 export interface SocketContextType {
+  authenticated: boolean
+  authenticate: (guild: GuildID, user: UserID) => Promise<void>
   connectionState: ConnectionState
   sendMessage: <Message extends keyof IPC.MessageType>(
     messageType: Message,
@@ -31,6 +42,8 @@ export interface SocketContextType {
 }
 
 const SocketContext = React.createContext<SocketContextType>({
+  authenticated: false,
+  authenticate: () => Promise.reject("Not ready yet"),
   connectionState: "disconnected",
   sendMessage: () => Promise.reject("Not ready yet"),
   subscribeToMessages: () => () => undefined
@@ -43,6 +56,8 @@ interface Props {
 function SocketProvider(props: Props) {
   const [connectionState, setConnectionState] = React.useState<ConnectionState>("disconnected")
   const [currentSocket, setCurrentSocket] = React.useState<SocketIOClient.Socket | null>(null)
+  const [authToken, setAuthToken] = React.useState<string | null>(getAuthTokenFromStorage)
+  const [authenticated, setAuthenticated] = React.useState<boolean>(false)
 
   React.useEffect(() => {
     const socket = io(path, {
@@ -99,12 +114,12 @@ function SocketProvider(props: Props) {
         currentSocket.on("message", eventListener)
         const unsubscribe = () => currentSocket.removeEventListener("message", eventListener)
 
-        currentSocket.emit("message", { messageType, messageID: currentID, args })
+        currentSocket.emit("message", { messageType, messageID: currentID, token: authToken, args })
       })
 
       return responsePromise
     },
-    [currentSocket]
+    [authToken, currentSocket]
   )
 
   const subscribeToMessages = React.useCallback(
@@ -128,7 +143,28 @@ function SocketProvider(props: Props) {
     [currentSocket]
   )
 
+  const authenticate = React.useCallback(
+    async (guildID: GuildID, userID: UserID) => {
+      try {
+        if (!authToken) {
+          const newToken = await sendMessage(Messages.Authenticate, guildID, userID)
+          setAuthenticated(true)
+          saveAuthTokenToStorage(newToken)
+          setAuthToken(newToken)
+        } else {
+          const isAuthenticated = await sendMessage(Messages.IsAuthenticated, guildID, userID, authToken)
+          setAuthenticated(isAuthenticated)
+        }
+      } catch (error) {
+        throw Error(`Authentication failed: ${error}`)
+      }
+    },
+    [authToken, sendMessage]
+  )
+
   const contextValue: SocketContextType = {
+    authenticated,
+    authenticate,
     connectionState,
     sendMessage,
     subscribeToMessages

@@ -11,6 +11,9 @@ const useStyles = makeStyles(theme => ({
     padding: 16,
     margin: theme.spacing(1)
   },
+  info: {
+    paddingTop: 16
+  },
   textField: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1)
@@ -21,6 +24,8 @@ const useStyles = makeStyles(theme => ({
 }))
 
 interface Props {
+  authenticate: (guild: GuildID, user: UserID) => Promise<void>
+  authenticated: boolean
   guildID?: GuildID
   userID?: UserID
   guilds: ReducedGuilds
@@ -33,7 +38,19 @@ interface Props {
 function UserIdentifierForm(props: Props) {
   const classes = useStyles()
 
-  const { guildID, userID, guilds, getMembers, setUserID, setGuildID } = props
+  const { authenticate, authenticated, guildID, userID, guilds, getMembers, setUserID, setGuildID } = props
+
+  const [authenticationError, setAuthenticationError] = React.useState<Error | null>(null)
+  const [authenticationPending, setAuthenticationPending] = React.useState<boolean>(false)
+
+  React.useEffect(() => {
+    if (!authenticated && guildID && userID) {
+      setAuthenticationPending(true)
+      authenticate(guildID, userID)
+        .catch(setAuthenticationError)
+        .finally(() => setAuthenticationPending(false))
+    }
+  }, [authenticated, authenticate, guildID, userID])
 
   const handleChange = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
     const name = event.target.name as "guildID" | "userID"
@@ -92,12 +109,21 @@ function UserIdentifierForm(props: Props) {
           )}
         </TextField>
       </Box>
-      <Typography color="secondary" align="center" style={{ paddingTop: 16 }}>
-        Not yet a member of the Server?
-        <br />
-        <Link href="https://discord.gg/Q2t6yFT" target="_blak">
-          Join here!
-        </Link>
+
+      <Typography className={classes.info} color="textSecondary" align="center">
+        {authenticationError ? (
+          authenticationError.message
+        ) : authenticationPending ? (
+          "Authentication is pending. Check for a received message on your discord account."
+        ) : (
+          <>
+            Not yet a member of the Server?
+            <br />
+            <Link href="https://discord.gg/Q2t6yFT" target="_blak">
+              Join here!
+            </Link>
+          </>
+        )}
       </Typography>
     </form>
   )

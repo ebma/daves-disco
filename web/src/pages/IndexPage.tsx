@@ -32,7 +32,7 @@ function IndexPage() {
   const classes = useStyles()
 
   const { guildID, userID, isPlayerAvailable } = React.useContext(GuildContext)
-  const { connectionState, sendMessage, subscribeToMessages } = React.useContext(SocketContext)
+  const { authenticated, connectionState, sendMessage, subscribeToMessages } = React.useContext(SocketContext)
 
   const [currentTrack, setCurrentTrack] = React.useState<Track | undefined>(undefined)
   const [currentQueue, setCurrentQueue] = React.useState<Track[]>([])
@@ -63,10 +63,10 @@ function IndexPage() {
       <ConnectionStateIndicator />
 
       <Grid className={classes.container} container spacing={4}>
-        <Grid className={classes.item} item md={userID ? 6 : 12} sm={12}>
+        <Grid className={classes.item} item md={authenticated ? 6 : 12} sm={12}>
           {connectionState === "connected" ? <GuildSelectionArea /> : undefined}
         </Grid>
-        {connectionState === "connected" && guildID && userID ? (
+        {connectionState === "connected" && authenticated && guildID && userID ? (
           <>
             <Grid className={classes.item} item md={6} sm={12}>
               <SearchArea guildID={guildID} userID={userID} />
