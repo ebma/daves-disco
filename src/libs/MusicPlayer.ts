@@ -17,7 +17,7 @@ class MusicPlayer {
     this.subject = new Subject<MusicPlayerSubjectMessage>()
 
     this.queue.subscribe((currentTrack, currentQueue) => {
-      if (currentTrack !== this.playingTrack) {
+      if (currentTrack?.trackID !== this.playingTrack?.trackID) {
         streamManager.endCurrent()
         if (currentTrack) {
           this.startStreaming(currentTrack)
