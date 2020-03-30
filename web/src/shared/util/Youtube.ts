@@ -184,4 +184,6 @@ export class Youtube {
 
 config()
 
-export default new Youtube(process.env.YOUTUBE_API_KEY!)
+const GlobalInstance = new Youtube(process.env.YOUTUBE_API_KEY!)
+
+export default GlobalInstance
