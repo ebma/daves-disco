@@ -22,7 +22,7 @@
   "scripts": {
     "clear-cache": "rm -rf ./dist",
     "precommit": "lint-staged",
-    "start": "npm run serve",
+    "start": "npm run build-and-run",
     "serve": "node dist/index.js",
     "build-and-run": "npm run build && npm run serve",
     "build": "npm run build-ts && npm run lint",
