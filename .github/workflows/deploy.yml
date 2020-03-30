@@ -1,0 +1,54 @@
+name: Deploy Website
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Deploying to surge
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Cache node modules
+        uses: actions/cache@v1
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install dependencies
+        run: npm install && cd web && npm install
+
+      - name: Define env variable No.1
+        uses: TickX/var-to-dotenv@v1.1.1
+        with:
+          key: "BOT_SERVER_PATH"
+          value: ${{ secrets.BOT_SERVER_PATH }}
+          envPath: "./web/.env"
+      - name: Define env variable No.2
+        uses: TickX/var-to-dotenv@v1.1.1
+        with:
+          key: "YOUTUBE_API_KEY"
+          value: ${{ secrets.YOUTUBE_API_KEY }}
+          envPath: "./web/.env"
+      - name: Define env variable No.3
+        uses: TickX/var-to-dotenv@v1.1.1
+        with:
+          key: "SPOTIFY_CLIENT_ID"
+          value: ${{ secrets.SPOTIFY_CLIENT_ID }}
+          envPath: "./web/.env"
+      - name: Define env variable No.4
+        uses: TickX/var-to-dotenv@v1.1.1
+        with:
+          key: "SPOTIFY_CLIENT_SECRET"
+          value: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+          envPath: "./web/.env"
+
+      - name: Build
+        run: npm run build
+        working-directory: ./web
+
+      - name: Deploy
+        run: npx surge ./build ${{ secrets.SURGE_DOMAIN }} --token ${{ secrets.SURGE_TOKEN }}
+        working-directory: ./web
