@@ -7,6 +7,7 @@ import CardContent from "@material-ui/core/CardContent"
 import CardMedia from "@material-ui/core/CardMedia"
 import Typography from "@material-ui/core/Typography"
 import { makeStyles, createStyles, Theme } from "@material-ui/core/styles"
+import Spotify from "../../shared/util/Spotify"
 
 const useSongCardStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -38,7 +39,9 @@ const CurrentSongCard = (props: Props) => {
           />
           <CardContent>
             <Typography gutterBottom variant="h5" component="h2">
-              {currentTrack.title}
+              {Spotify.isSpotifyTrack(currentTrack)
+                ? `${currentTrack.title} - ${currentTrack.artists}`
+                : currentTrack.title}
             </Typography>
           </CardContent>
         </CardActionArea>
