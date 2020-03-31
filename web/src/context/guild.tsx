@@ -39,12 +39,12 @@ interface Props {
 
 export function GuildProvider(props: Props) {
   const { connectionState, sendMessage } = React.useContext(SocketContext)
-  const [guilds, setGuilds] = React.useState<ReducedGuilds>([])
-  const [memberMap, setMemberMap] = React.useState<Record<string, ReducedMembers>>({})
-  const [playerAvailableMap, setPlayerAvailableMap] = React.useState<Record<string, boolean>>({})
 
-  const [guildID, setGuildID] = React.useState<GuildID | undefined>(getGuildIDFromLocalStorage)
-  const [userID, setUserID] = React.useState<UserID | undefined>(getUserIDFromLocalStorage)
+  const [guilds, setGuilds] = React.useState<ReducedGuilds>([])
+  const [guildID, setGuildID] = React.useState<GuildID | undefined>()
+  const [memberMap, setMemberMap] = React.useState<Record<string, ReducedMembers>>({})
+  const [userID, setUserID] = React.useState<UserID | undefined>()
+  const [playerAvailableMap, setPlayerAvailableMap] = React.useState<Record<string, boolean>>({})
 
   const pollInfo = React.useCallback(async () => {
     if (connectionState !== "connected") return
@@ -80,6 +80,29 @@ export function GuildProvider(props: Props) {
     return () => clearInterval(interval)
   }, [pollInfo])
 
+  React.useEffect(() => {
+    let gID = guildID
+    if (!gID) {
+      const previousGuildID = getGuildIDFromLocalStorage()
+      if (guilds.find(guild => guild.id === previousGuildID)) {
+        gID = previousGuildID
+        setGuildID(previousGuildID)
+      }
+    }
+
+    if (gID) {
+      const previousUserID = getUserIDFromLocalStorage()
+      const members = memberMap[gID]
+      if (members && members.find(member => member.id === previousUserID)) {
+        if (!userID) {
+          setUserID(previousUserID)
+        }
+      } else {
+        setUserID(undefined)
+      }
+    }
+  }, [guildID, userID, guilds, memberMap])
+
   const isPlayerAvailable = React.useCallback(
     (guildID: GuildID) => {
       return playerAvailableMap[guildID] || false
@@ -94,20 +117,24 @@ export function GuildProvider(props: Props) {
     [memberMap]
   )
 
+  const setAndSaveGuildID = React.useCallback((guildID: GuildID) => {
+    localStorage.setItem("guildID", guildID)
+    setGuildID(guildID)
+  }, [])
+
+  const setAndSaveUserID = React.useCallback((userID: UserID) => {
+    localStorage.setItem("userID", userID)
+    setUserID(userID)
+  }, [])
+
   const contextValue: GuildContextType = {
     guilds,
     guildID,
     userID,
     isPlayerAvailable,
     getMembers,
-    setGuildID: (guildID: GuildID) => {
-      localStorage.setItem("guildID", guildID)
-      setGuildID(guildID)
-    },
-    setUserID: (userID: UserID) => {
-      localStorage.setItem("userID", userID)
-      setUserID(userID)
-    }
+    setGuildID: setAndSaveGuildID,
+    setUserID: setAndSaveUserID
   }
 
   return <GuildContext.Provider value={contextValue}>{props.children}</GuildContext.Provider>

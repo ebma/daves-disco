@@ -63,7 +63,7 @@ function IndexPage() {
       <ConnectionStateIndicator />
 
       <Grid className={classes.container} container spacing={4}>
-        <Grid className={classes.item} item md={authenticated ? 6 : 12} sm={12}>
+        <Grid className={classes.item} item md={userID && authenticated ? 6 : 12} sm={12}>
           {connectionState === "connected" ? <GuildSelectionArea /> : undefined}
         </Grid>
         {connectionState === "connected" && authenticated && guildID && userID ? (
