@@ -43,7 +43,7 @@ function QueueItem(props: Props) {
   const myRef = useRef<HTMLDivElement>(null)
   if (current) {
     setTimeout(() => {
-      myRef.current && myRef.current.scrollIntoView()
+      myRef.current && myRef.current.scrollIntoView({ behavior: "smooth", block: "start" })
     }, 500)
   }
 
@@ -82,7 +82,7 @@ function QueueItem(props: Props) {
           {...provided.draggableProps}
           {...provided.dragHandleProps}
         >
-          <ListItemAvatar>
+          <ListItemAvatar ref={myRef}>
             <Avatar alt="thumbnail" className={classes.avatar} src={track.thumbnail} variant="square" />
           </ListItemAvatar>
           <ListItemText
