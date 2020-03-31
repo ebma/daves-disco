@@ -41,11 +41,13 @@ function QueueItem(props: Props) {
   const { current, id, index, old, track, onClick, onDeleteClick } = props
 
   const myRef = useRef<HTMLDivElement>(null)
-  if (current) {
-    setTimeout(() => {
-      myRef.current && myRef.current.scrollIntoView({ behavior: "smooth", block: "start" })
-    }, 500)
-  }
+  React.useEffect(() => {
+    if (current) {
+      setTimeout(() => {
+        myRef.current && myRef.current.scrollIntoView({ behavior: "smooth", block: "start" })
+      }, 500)
+    }
+  }, [current])
 
   const DeleteTrackButton = React.useMemo(() => {
     return onDeleteClick ? (
@@ -101,4 +103,4 @@ function QueueItem(props: Props) {
   )
 }
 
-export default QueueItem
+export default React.memo(QueueItem)
