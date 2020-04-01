@@ -15,7 +15,12 @@ const AuthenticationWhiteList: Array<string> = [
   Messages.GetMembers
 ]
 
-let loginTimeouts: Record<UserID, number> = {}
+interface Timeout {
+  until: number
+  reason: "login-declined" | "default"
+}
+
+let loginTimeouts: Record<UserID, Timeout> = {}
 
 interface DecodedToken {
   guildID: string
@@ -23,18 +28,23 @@ interface DecodedToken {
 }
 
 function getTimeout(user: GuildMember) {
-  if (loginTimeouts[user.id]) {
-    if (moment.now() < loginTimeouts[user.id]) {
-      return moment(loginTimeouts[user.id]).fromNow()
-    }
-  }
+  return loginTimeouts[user.id]
+}
+
+function addTimeout(user: GuildMember, reason: Timeout["reason"]) {
+  const until = reason === "login-declined" ? moment.now() + 5 * 60 * 1000 : moment.now() + 60 * 1000
+  loginTimeouts[user.id] = { until, reason }
 }
 
 export async function initLogin(user: GuildMember) {
   if (getTimeout(user)) {
-    throw Error(`Too many login attempts. Try again ${getTimeout(user)}!`)
+    const errorMessage =
+      getTimeout(user).reason === "login-declined"
+        ? `Login was declined by user. Try again ${moment(getTimeout(user).until).fromNow()}!`
+        : `Too many login attempts. Try again ${moment(getTimeout(user).until).fromNow()}!`
+    throw Error(errorMessage)
   } else {
-    loginTimeouts[user.id] = moment.now() + 60 * 1000
+    addTimeout(user, "default")
   }
 
   const dmChannel = await user.createDM()
@@ -49,14 +59,17 @@ export async function initLogin(user: GuildMember) {
   if (answer.startsWith("y")) {
     try {
       const token = jwt.sign({ guildID: user.guild.id, userID: user.id }, secret, {
-        expiresIn: "24h"
+        expiresIn: "14d"
       })
+      dmChannel.send("Login successful. You can head back to your browser.")
       return token
     } catch (error) {
       throw Error(`Something went wrong: ${error?.message}`)
     }
   } else {
-    throw Error("User declined authentication request!")
+    dmChannel.send("Login denied. Someone tried to login to the web interface as your user.")
+    addTimeout(user, "login-declined")
+    throw Error("User declined the authentication request!")
   }
 }
 
