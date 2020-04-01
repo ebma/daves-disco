@@ -152,8 +152,15 @@ function SocketProvider(props: Props) {
           saveAuthTokenToStorage(newToken)
           setAuthToken(newToken)
         } else {
-          const isAuthenticated = await sendMessage(Messages.IsAuthenticated, guildID, userID, authToken)
-          setAuthenticated(isAuthenticated)
+          try {
+            const isAuthenticated = await sendMessage(Messages.IsAuthenticated, guildID, userID, authToken)
+            setAuthenticated(isAuthenticated)
+          } catch (error) {
+            if (error && error.includes("jwt expired")) {
+              setAuthToken(null)
+              authenticate(guildID, userID)
+            }
+          }
         }
       } catch (error) {
         throw Error(`Authentication failed: ${error}`)
