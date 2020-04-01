@@ -55,17 +55,25 @@ export function GuildProvider(props: Props) {
     for (const guild of guilds) {
       sendMessage(Messages.GetMembers, guild.id).then(members => {
         setMemberMap(prevState => {
-          const copy = { ...prevState }
-          copy[guild.id] = members
-          return copy
+          if (prevState[guild.id] !== members) {
+            const copy = { ...prevState }
+            copy[guild.id] = members
+            return copy
+          } else {
+            return prevState
+          }
         })
       })
 
       sendMessage(Messages.GetPlayerAvailable, guild.id).then(available => {
         setPlayerAvailableMap(prevState => {
-          const copy = { ...prevState }
-          copy[guild.id] = available
-          return copy
+          if (prevState[guild.id] !== available) {
+            const copy = { ...prevState }
+            copy[guild.id] = available
+            return copy
+          } else {
+            return prevState
+          }
         })
       })
     }
