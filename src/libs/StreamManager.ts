@@ -64,7 +64,7 @@ class StreamManager {
       }
 
       const stream = await Youtube.createReadableStreamFor(track)
-      const dispatcher = this.voiceConnection.play(stream, { volume: this.volume, highWaterMark: 50, type: "opus" })
+      const dispatcher = this.voiceConnection.play(stream, { volume: this.volume, highWaterMark: 512, type: "opus" })
       this.dispatcher = dispatcher
       return new Observable<StreamManagerObservableMessage>(subscriber => {
         dispatcher
