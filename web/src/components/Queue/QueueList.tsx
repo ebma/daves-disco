@@ -79,7 +79,7 @@ function QueueList(props: Props) {
 
         const onDeleteClick = () => {
           const copiedQueue = localQueue.slice(0)
-          _.remove(copiedQueue, element => element.trackID === track.trackID)
+          _.remove(copiedQueue, element => element.id === track.id)
 
           sendMessage(Messages.UpdateQueue, guildID, copiedQueue).catch(trackError)
         }
@@ -89,7 +89,7 @@ function QueueList(props: Props) {
             {index > 0 ? <Divider variant="inset" component="li" /> : undefined}
             <QueueItem
               current={index === indexOfCurrentSong}
-              id={track.trackID}
+              id={track.id}
               index={index}
               old={index < indexOfCurrentSong}
               track={track}
