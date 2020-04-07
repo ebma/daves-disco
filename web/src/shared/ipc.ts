@@ -18,12 +18,14 @@ export const Messages: IPC.MessageType = {
   GetPausedState: "GetPausedState",
   UpdateQueue: "UpdateQueue",
 
-  Authenticate: "Authenticate",
-  IsAuthenticated: "IsAuthenticated",
+  GetTracksFromTerm: "GetTracksFromTerm",
 
   CurrentTrack: "CurrentTrack",
   CurrentQueue: "CurrentQueue",
   Error: "Error",
   PauseChange: "PauseChange",
-  VolumeChange: "VolumeChange"
+  VolumeChange: "VolumeChange",
+
+  RecentHistoryChange: "RecentHistoryChange",
+  FavouritesChange: "FavouritesChange"
 } as const
