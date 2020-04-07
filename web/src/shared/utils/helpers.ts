@@ -14,6 +14,13 @@ function isYoutubePlaylist(playlist: Playlist): playlist is YoutubePlaylist {
   return playlist.source === "youtube"
 }
 
+function createTracksFromSearchTerm(term: string, maxResults: number): Promise<Track[]> {
+  return new Promise<Track[]>((resolve, reject) => {
+    // TODO make request to server and request tracks
+    resolve([])
+  })
+}
+
 export const YoutubeHelper = {
   describesYoutubePlaylist,
   isYoutubeVideo,
