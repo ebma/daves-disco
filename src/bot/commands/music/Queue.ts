@@ -1,4 +1,4 @@
-import { createEmbedForTracks } from "../../libs/util/embeds"
+import { createEmbedForTracks } from "../../../utils/embeds"
 import { MusicCommand } from "./MusicCommand"
 
 class QueueCommand extends MusicCommand {

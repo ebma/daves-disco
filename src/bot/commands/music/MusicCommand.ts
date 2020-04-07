@@ -1,9 +1,9 @@
 import { Command } from "discord-akairo"
 import _ from "lodash"
 import { Guild, GuildMember, Message, TextChannel, MessageEmbed } from "discord.js"
-import MusicPlayer from "../../libs/MusicPlayer"
-import MusicPlayerManager from "../../libs/MusicPlayerManager"
-import { trackError } from "../../shared/util/trackError"
+import MusicPlayer from "../../../libs/MusicPlayer"
+import MusicPlayerManager from "../../../libs/MusicPlayerManager"
+import { trackError } from "../../../utils/trackError"
 
 let messageQueue: string[] = []
 

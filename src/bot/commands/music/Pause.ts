@@ -1,6 +1,6 @@
 import _ from "lodash"
 import { MusicCommand } from "./MusicCommand"
-import { trackError } from "../../shared/util/trackError"
+import { trackError } from "../../../utils/trackError"
 
 class PauseCommand extends MusicCommand {
   constructor() {

@@ -1,5 +1,5 @@
 import _ from "lodash"
-import { trackError } from "../../shared/util/trackError"
+import { trackError } from "../../../utils/trackError"
 import { MusicCommand } from "./MusicCommand"
 
 class SkipPrevious extends MusicCommand {

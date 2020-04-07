@@ -1,6 +1,5 @@
 import _ from "lodash"
-
-import { trackError } from "../../shared/util/trackError"
+import { trackError } from "../../../utils/trackError"
 import { MusicCommand } from "./MusicCommand"
 import { handlePlay } from "./play"
 
@@ -25,9 +24,10 @@ class PlayCommand extends MusicCommand {
 
   async execute(args: { data: string }) {
     const userInput: string = args.data
+    const guildID = this.member.guild.id
 
     try {
-      const result = await handlePlay(userInput, this.musicPlayer)
+      const result = await handlePlay(userInput, guildID, this.musicPlayer)
       return this.sendMessageToChannel(result)
     } catch (error) {
       trackError(error, "PlayCommand.execute")
