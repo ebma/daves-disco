@@ -1,13 +1,28 @@
 // --- PLAYER ---
 
+type MusicItem = TrackModel | PlaylistModel
+
+interface Thumbnail {
+  small?: string
+  medium?: string
+  large?: string
+}
+
 interface Track {
+  artists?: string
+  id: string
   title: string
-  url: string
-  thumbnail?: string
+  url?: string
+  thumbnail?: Thumbnail
   description?: string
   publishedAt?: string
   source: "spotify" | "youtube"
-  trackID: string
+}
+
+interface TrackModel extends Track {
+  favourite?: boolean
+  guild: string
+  lastTouchedAt?: Date
 }
 
 interface SpotifyTrack extends Track {
@@ -15,10 +30,35 @@ interface SpotifyTrack extends Track {
   source: "spotify"
 }
 
+interface YoutubeTrack extends Track {
+  source: "youtube"
+}
+
 interface Playlist {
+  id: string
   name: string
   owner?: string
-  tracks: Track[]
+  source: "spotify" | "youtube"
+  tracks?: Track[]
+  thumbnail?: Thumbnail
+  uri?: string
+  url?: string
+}
+
+interface PlaylistModel extends Playlist {
+  favourite?: boolean
+  guild: string
+  lastTouchedAt?: Date
+}
+
+interface SpotifyPlaylist extends Playlist {
+  source: "spotify"
+  uri: string
+}
+
+interface YoutubePlaylist extends Playlist {
+  source: "youtube"
+  url: string
 }
 
 // --- DISCORD ---
@@ -40,4 +80,11 @@ interface MusicPlayerSubjectMessage {
 interface StreamManagerObservableMessage {
   type: "start" | "finish" | "error" | "debug"
   data?: any
+}
+
+// --- AUTH ---
+
+interface DecodedToken {
+  guildID: string
+  userID: string
 }

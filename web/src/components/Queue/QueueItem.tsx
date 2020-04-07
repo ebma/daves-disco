@@ -1,6 +1,7 @@
 import React, { useRef } from "react"
 import { Draggable } from "react-beautiful-dnd"
 import Avatar from "@material-ui/core/Avatar"
+import IconButton from "@material-ui/core/IconButton"
 import Link from "@material-ui/core/Link"
 import ListItem from "@material-ui/core/ListItem"
 import ListItemAvatar from "@material-ui/core/ListItemAvatar"
@@ -9,7 +10,7 @@ import ListItemText from "@material-ui/core/ListItemText"
 import makeStyles from "@material-ui/styles/makeStyles"
 import Tooltip from "@material-ui/core/Tooltip"
 import DeleteIcon from "@material-ui/icons/Delete"
-import Spotify from "../../shared/util/Spotify"
+import { SpotifyHelper } from "../../shared/utils/helpers"
 
 const useStyles = makeStyles(theme => ({
   queueItem: {
@@ -18,11 +19,11 @@ const useStyles = makeStyles(theme => ({
     padding: 0
   },
   avatar: {
-    minHeight: "100px",
-    minWidth: "100px"
+    minHeight: "64px",
+    minWidth: "64px"
   },
   text: {
-    padding: "16px 24px"
+    padding: "0px 24px"
   }
 }))
 
@@ -59,7 +60,9 @@ function QueueItem(props: Props) {
         }}
       >
         <Tooltip placement="left" title="Remove">
-          <DeleteIcon />
+          <IconButton>
+            <DeleteIcon />
+          </IconButton>
         </Tooltip>
       </ListItemIcon>
     ) : (
@@ -69,7 +72,7 @@ function QueueItem(props: Props) {
 
   const listItemStyle: React.CSSProperties = old ? { opacity: 0.5 } : {}
 
-  const primaryText = Spotify.isSpotifyTrack(track) ? `${track.title} - ${track.artists}` : track.title
+  const primaryText = SpotifyHelper.isSpotifyTrack(track) ? `${track.title} - ${track.artists}` : track.title
 
   return (
     <Draggable draggableId={id} key={id} index={index}>
@@ -85,15 +88,29 @@ function QueueItem(props: Props) {
           {...provided.dragHandleProps}
         >
           <ListItemAvatar ref={myRef}>
-            <Avatar alt="thumbnail" className={classes.avatar} src={track.thumbnail} variant="square" />
+            <Avatar
+              alt="thumbnail"
+              className={classes.avatar}
+              src={track.thumbnail?.small || track.thumbnail?.medium || track.thumbnail?.large}
+              variant="square"
+            />
           </ListItemAvatar>
           <ListItemText
             className={classes.text}
             primary={primaryText}
+            primaryTypographyProps={{
+              style: {
+                overflow: "hidden",
+                whiteSpace: "nowrap",
+                textOverflow: "ellipsis"
+              }
+            }}
             secondary={
-              <Link href={track.url} color="inherit" target="_blank" rel="noreferrer">
-                {track.url}
-              </Link>
+              track.url && (
+                <Link href={track.url} color="inherit" target="_blank" rel="noreferrer">
+                  {track.url}
+                </Link>
+              )
             }
           />
           {DeleteTrackButton}

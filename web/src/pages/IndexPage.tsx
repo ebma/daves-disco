@@ -14,6 +14,7 @@ import SearchArea from "../components/SearchArea/SearchArea"
 import QueueArea from "../components/Queue/QueueArea"
 import PlayerArea from "../components/Player/PlayerArea"
 import { Messages } from "../shared/ipc"
+import MusicCollectionArea from "../components/MusicCollection/MusicCollectionArea"
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -32,7 +33,7 @@ function IndexPage() {
   const classes = useStyles()
 
   const { guildID, userID, isPlayerAvailable } = React.useContext(GuildContext)
-  const { authenticated, connectionState, sendMessage, subscribeToMessages } = React.useContext(SocketContext)
+  const { connectionState, sendMessage, subscribeToMessages } = React.useContext(SocketContext)
 
   const [currentTrack, setCurrentTrack] = React.useState<Track | undefined>(undefined)
   const [currentQueue, setCurrentQueue] = React.useState<Track[]>([])
@@ -63,14 +64,12 @@ function IndexPage() {
       <ConnectionStateIndicator />
 
       <Grid className={classes.container} container spacing={4}>
-        <Grid className={classes.item} item md={userID && authenticated ? 6 : 12} sm={12}>
+        <Grid className={classes.item} item md={12} sm={12}>
           {connectionState === "connected" ? <GuildSelectionArea /> : undefined}
         </Grid>
-        {connectionState === "connected" && authenticated && guildID && userID ? (
+        {connectionState === "connected" && guildID && userID ? (
           <>
-            <Grid className={classes.item} item md={6} sm={12}>
-              <SearchArea guildID={guildID} userID={userID} />
-            </Grid>
+          
             <Grid className={classes.item} item md={6} sm={12}>
               <PlayerArea
                 currentQueue={currentQueue}
@@ -78,6 +77,12 @@ function IndexPage() {
                 disabled={currentQueue.length === 0}
                 guildID={guildID}
               />
+            </Grid>
+            <Grid className={classes.item} item md={6} sm={12}>
+              <SearchArea guildID={guildID} userID={userID} />
+            </Grid>
+            <Grid className={classes.item} item md={6} sm={12}>
+              <MusicCollectionArea guildID={guildID} userID={userID} />
             </Grid>
             <Grid className={classes.item} item md={6} sm={12}>
               <QueueArea currentQueue={currentQueue} currentTrack={currentTrack} guildID={guildID} />

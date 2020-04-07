@@ -7,7 +7,7 @@ import CardContent from "@material-ui/core/CardContent"
 import CardMedia from "@material-ui/core/CardMedia"
 import Typography from "@material-ui/core/Typography"
 import { makeStyles, createStyles, Theme } from "@material-ui/core/styles"
-import Spotify from "../../shared/util/Spotify"
+import { SpotifyHelper } from "../../shared/utils/helpers"
 
 const useSongCardStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -34,12 +34,12 @@ const CurrentSongCard = (props: Props) => {
           <CardMedia
             className={classes.media}
             component="img"
-            image={currentTrack.thumbnail}
+            image={currentTrack.thumbnail?.large || currentTrack.thumbnail?.medium || currentTrack.thumbnail?.small}
             title={`Thumbnail of ${currentTrack.title}`}
           />
           <CardContent>
             <Typography gutterBottom variant="h5" component="h2">
-              {Spotify.isSpotifyTrack(currentTrack)
+              {SpotifyHelper.isSpotifyTrack(currentTrack)
                 ? `${currentTrack.title} - ${currentTrack.artists}`
                 : currentTrack.title}
             </Typography>
