@@ -11,12 +11,11 @@ import TextField from "@material-ui/core/TextField"
 import Typography from "@material-ui/core/Typography"
 import { Theme, createStyles } from "@material-ui/core/styles"
 import makeStyles from "@material-ui/styles/makeStyles"
-import Youtube from "../../shared/util/Youtube"
 import StyledButton from "../StyledButton"
 import { SocketContext } from "../../context/socket"
 import { trackError, NotificationsContext } from "../../context/notifications"
-import Spotify from "../../shared/util/Spotify"
 import { Messages } from "../../shared/ipc"
+import { SpotifyHelper, YoutubeHelper } from "../../shared/utils/helpers"
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -42,7 +41,7 @@ function SearchYoutubeTab(props: TabProps) {
   const fetch = React.useMemo(
     () =>
       _.throttle(async (input: string, callback: (results: Track[]) => void) => {
-        const results = await Youtube.createTracksFromSearchTerm(input, 5)
+        const results = await YoutubeHelper.createTracksFromSearchTerm(input, 5)
         callback(results)
       }, 1000),
     []
@@ -118,7 +117,7 @@ function PlayYoutubeTab(props: TabProps) {
 
   React.useEffect(() => {
     const isValidValue = () => {
-      return Youtube.isYoutubeVideo(value) ? true : Youtube.isYoutubePlaylist(value)
+      return YoutubeHelper.isYoutubeVideo(value) ? true : YoutubeHelper.describesYoutubePlaylist(value)
     }
 
     if (value && !isValidValue()) {
@@ -161,7 +160,7 @@ function PlaySpotifyTab(props: TabProps) {
 
   React.useEffect(() => {
     const isValidValue = () => {
-      return Spotify.isSpotifyPlaylistURI(value)
+      return SpotifyHelper.isSpotifyPlaylistURI(value)
     }
 
     if (value && !isValidValue()) {
