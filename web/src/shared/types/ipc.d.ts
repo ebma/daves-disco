@@ -20,8 +20,7 @@ declare namespace IPC {
     GetPausedState: "GetPausedState"
     UpdateQueue: "UpdateQueue"
 
-    Authenticate: "Authenticate"
-    IsAuthenticated: "IsAuthenticated"
+    GetTracksFromTerm: "GetTracksFromTerm"
 
     // Subscribable Info Messages
     CurrentTrack: "CurrentTrack"
@@ -29,6 +28,8 @@ declare namespace IPC {
     Error: "Error"
     PauseChange: "PauseChange"
     VolumeChange: "VolumeChange"
+    RecentHistoryChange: "RecentHistoryChange"
+    FavouritesChange: "FavouritesChange"
   }
 
   export type MessageType = typeof Messages
@@ -44,9 +45,6 @@ declare namespace IPC {
     [Messages.Shuffle]: (guildID: GuildID) => void
     [Messages.Volume]: (guildID: GuildID, newVolume: number) => void
 
-    [Messages.IsAuthenticated]: (guildID: GuildID, userID: UserID, token: string) => boolean
-    [Messages.Authenticate]: (guildID: GuildID, userID: UserID) => string
-
     [Messages.GetGuilds]: () => ReducedGuilds
     [Messages.GetMembers]: (guildID: GuildID) => ReducedMembers
     [Messages.GetPlayerAvailable]: (guildID: GuildID) => boolean
@@ -56,11 +54,16 @@ declare namespace IPC {
     [Messages.GetPausedState]: (guildID: GuildID) => boolean
     [Messages.UpdateQueue]: (guildID: GuildID, newItems: Track[]) => void
 
+    [Messages.GetTracksFromTerm]: (term: string) => Track[]
+
     [Messages.CurrentTrack]: () => Track
     [Messages.CurrentQueue]: () => Track[]
     [Messages.Error]: () => any
     [Messages.PauseChange]: () => boolean
     [Messages.VolumeChange]: () => number
+
+    [Messages.RecentHistoryChange]: () => void
+    [Messages.FavouritesChange]: () => void
   }
 
   export type MessageArgs<Message extends keyof MessageType> = MessageSignatures[Message] extends () => any

@@ -25,11 +25,13 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 )
 
-interface TabProps {
+interface SearchYoutubeTabProps {
+  getTracks: (term: string) => Promise<Track[]>
   onSearchDone: (searchTerm: string) => void
 }
 
-function SearchYoutubeTab(props: TabProps) {
+function SearchYoutubeTab(props: SearchYoutubeTabProps) {
+  const {getTracks, onSearchDone} = props
   const [inputValue, setInputValue] = React.useState("")
   const [options, setOptions] = React.useState<Track[]>([])
   const [selectedTrack, setSelectedTrack] = React.useState<Track | null>(null)
@@ -41,10 +43,10 @@ function SearchYoutubeTab(props: TabProps) {
   const fetch = React.useMemo(
     () =>
       _.throttle(async (input: string, callback: (results: Track[]) => void) => {
-        const results = await YoutubeHelper.createTracksFromSearchTerm(input, 5)
+        const results = await getTracks(input)
         callback(results)
       }, 1000),
-    []
+    [getTracks]
   )
 
   React.useEffect(() => {
@@ -102,7 +104,7 @@ function SearchYoutubeTab(props: TabProps) {
         text="Enqueue"
         onClick={() => {
           if (selectedTrack && selectedTrack.url) {
-            props.onSearchDone(selectedTrack.url)
+            onSearchDone(selectedTrack.url)
           }
         }}
         style={{ flexGrow: 1 }}
@@ -111,7 +113,11 @@ function SearchYoutubeTab(props: TabProps) {
   )
 }
 
-function PlayYoutubeTab(props: TabProps) {
+interface PlayYoutubeTabProps {
+  onSearchDone: (searchTerm: string) => void
+}
+
+function PlayYoutubeTab(props: PlayYoutubeTabProps) {
   const [value, setValue] = React.useState("")
   const [error, setError] = React.useState<Error | undefined>(undefined)
 
@@ -154,7 +160,12 @@ function PlayYoutubeTab(props: TabProps) {
   )
 }
 
-function PlaySpotifyTab(props: TabProps) {
+
+interface PlaySpotifyTabProps {
+  onSearchDone: (searchTerm: string) => void
+}
+
+function PlaySpotifyTab(props: PlaySpotifyTabProps) {
   const [value, setValue] = React.useState("")
   const [error, setError] = React.useState<Error | undefined>(undefined)
 
@@ -252,6 +263,13 @@ function SearchArea(props: SearchAreaProps) {
     [guildID, userID, sendMessage, showNotification]
   )
 
+  const getTrackFromSearchTerm = React.useCallback(
+    (searchTerm: string) => {
+      return sendMessage(Messages.GetTracksFromTerm, searchTerm)
+    },
+    [sendMessage]
+  )
+
   return (
     <Paper className={classes.root}>
       <Tabs
@@ -269,7 +287,7 @@ function SearchArea(props: SearchAreaProps) {
         <Tab label="Play Spotify Playlist" />
       </Tabs>
       <TabPanel value={value} index={0}>
-        <SearchYoutubeTab onSearchDone={onSearchDone} />
+        <SearchYoutubeTab onSearchDone={onSearchDone} getTracks={getTrackFromSearchTerm} />
       </TabPanel>
       <TabPanel value={value} index={1}>
         <PlayYoutubeTab onSearchDone={onSearchDone} />
