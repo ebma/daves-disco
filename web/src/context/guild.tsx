@@ -40,7 +40,7 @@ interface Props {
 }
 
 export function GuildProvider(props: Props) {
-  const { sendMessage } = React.useContext(SocketContext)
+  const { connectionState, sendMessage } = React.useContext(SocketContext)
 
   const [guilds, setGuilds] = React.useState<ReducedGuilds>([])
   const [guildID, setGuildID] = React.useState<GuildID | undefined>()
@@ -66,22 +66,24 @@ export function GuildProvider(props: Props) {
           })
         })
 
-        sendMessage(Messages.GetPlayerAvailable, guild.id).then(available => {
-          setPlayerAvailableMap(prevState => {
-            if (prevState[guild.id] !== available) {
-              const copy = { ...prevState }
-              copy[guild.id] = available
-              return copy
-            } else {
-              return prevState
-            }
+        if (connectionState === "connected") {
+          sendMessage(Messages.GetPlayerAvailable, guild.id).then(available => {
+            setPlayerAvailableMap(prevState => {
+              if (prevState[guild.id] !== available) {
+                const copy = { ...prevState }
+                copy[guild.id] = available
+                return copy
+              } else {
+                return prevState
+              }
+            })
           })
-        })
+        }
       }
     } catch (error) {
       trackError(error)
     }
-  }, [sendMessage])
+  }, [connectionState, sendMessage])
 
   React.useEffect(() => {
     pollInfo()

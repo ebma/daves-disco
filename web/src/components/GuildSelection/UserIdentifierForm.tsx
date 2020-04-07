@@ -64,7 +64,7 @@ function UserIdentifierForm(props: Props) {
 
   React.useEffect(() => {
     if (guildID && userID && connectionState === "disconnected" && token) {
-      init(token)
+      init(token).catch(setAuthenticationError)
     }
   }, [connectionState, init, guildID, userID, token])
 
