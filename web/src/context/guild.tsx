@@ -1,6 +1,8 @@
 import React from "react"
 import { SocketContext } from "./socket"
 import { Messages } from "../shared/ipc"
+import GuildService from "../services/guilds"
+import { trackError } from "./notifications"
 
 export interface GuildContextType {
   guilds: ReducedGuilds
@@ -38,7 +40,7 @@ interface Props {
 }
 
 export function GuildProvider(props: Props) {
-  const { connectionState, sendMessage } = React.useContext(SocketContext)
+  const { sendMessage } = React.useContext(SocketContext)
 
   const [guilds, setGuilds] = React.useState<ReducedGuilds>([])
   const [guildID, setGuildID] = React.useState<GuildID | undefined>()
@@ -47,37 +49,39 @@ export function GuildProvider(props: Props) {
   const [playerAvailableMap, setPlayerAvailableMap] = React.useState<Record<string, boolean>>({})
 
   const pollInfo = React.useCallback(async () => {
-    if (connectionState !== "connected") return
+    try {
+      const guilds = await GuildService.getGuilds()
+      setGuilds(guilds)
 
-    const guilds = await sendMessage(Messages.GetGuilds)
-    setGuilds(guilds)
-
-    for (const guild of guilds) {
-      sendMessage(Messages.GetMembers, guild.id).then(members => {
-        setMemberMap(prevState => {
-          if (prevState[guild.id] !== members) {
-            const copy = { ...prevState }
-            copy[guild.id] = members
-            return copy
-          } else {
-            return prevState
-          }
+      for (const guild of guilds) {
+        GuildService.getMembers(guild.id).then(members => {
+          setMemberMap(prevState => {
+            if (prevState[guild.id] !== members) {
+              const copy = { ...prevState }
+              copy[guild.id] = members
+              return copy
+            } else {
+              return prevState
+            }
+          })
         })
-      })
 
-      sendMessage(Messages.GetPlayerAvailable, guild.id).then(available => {
-        setPlayerAvailableMap(prevState => {
-          if (prevState[guild.id] !== available) {
-            const copy = { ...prevState }
-            copy[guild.id] = available
-            return copy
-          } else {
-            return prevState
-          }
+        sendMessage(Messages.GetPlayerAvailable, guild.id).then(available => {
+          setPlayerAvailableMap(prevState => {
+            if (prevState[guild.id] !== available) {
+              const copy = { ...prevState }
+              copy[guild.id] = available
+              return copy
+            } else {
+              return prevState
+            }
+          })
         })
-      })
+      }
+    } catch (error) {
+      trackError(error)
     }
-  }, [connectionState, sendMessage])
+  }, [sendMessage])
 
   React.useEffect(() => {
     pollInfo()
