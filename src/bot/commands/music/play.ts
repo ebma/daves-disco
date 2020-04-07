@@ -5,7 +5,6 @@ import { createEmbedForTrack, createEmbedForTracks, createEmbedsForSpotifyPlayli
 import MusicPlayer from "../../../libs/MusicPlayer"
 import Playlist from "../../../db/models/playlist"
 import Track from "../../../db/models/track"
-import { notifyRecentHistoryChange } from "../../../socket/handlers/database"
 import { SpotifyHelper } from "../../../shared/utils/helpers"
 
 function trySavingPlaylist(playlist: Playlist, guildID: GuildID) {
@@ -14,7 +13,7 @@ function trySavingPlaylist(playlist: Playlist, guildID: GuildID) {
     if (err) {
       console.log(`Saving playlist '${playlist.name}' failed`, err.message)
     } else {
-      notifyRecentHistoryChange(guildID)
+      // notifyRecentHistoryChange(guildID)
     }
   })
 }
@@ -25,7 +24,7 @@ function trySavingTrack(track: Track, guildID: GuildID) {
     if (err) {
       console.log(`Saving track '${track.title}' failed`, err.message)
     } else {
-      notifyRecentHistoryChange(guildID)
+      // notifyRecentHistoryChange(guildID)
     }
   })
 }

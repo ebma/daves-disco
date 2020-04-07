@@ -1,6 +1,5 @@
 import { Socket } from "socket.io"
-import { trackError } from "../shared/util/trackError"
-import { authenticateMessage } from "./middleware"
+import { trackError } from "../utils/trackError"
 
 type MessageHandler<Message extends keyof IPC.MessageType> = (
   ...args: any
@@ -82,11 +81,8 @@ export class WebSocketHandler {
     const messageSender = new MessageSender(socket)
     this.senders.push(messageSender)
 
-    const messageHandler = (message: IPC.SocketMessage) => {
-      authenticateMessage(message)
-        .then(() => messageSender.handleMessageEvent(message.messageType, message.messageID, message.args))
-        .catch(error => messageSender.sendErrorResponse(message.messageType, message.messageID, error?.message))
-    }
+    const messageHandler = (message: IPC.SocketMessage) =>
+      messageSender.handleMessageEvent(message.messageType, message.messageID, message.args)
 
     socket.on("message", messageHandler)
 

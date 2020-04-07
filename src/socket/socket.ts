@@ -1,28 +1,30 @@
-import express from "express"
 import { Server } from "http"
 import socketio, { Socket } from "socket.io"
-import { initHandlers } from "./messageHandlers"
-import { MyClient } from "../MyClient"
+import socketioJwt from "socketio-jwt"
+import config from "../utils/config"
+import { MyClient } from "../bot/MyClient"
+import { initHandlers } from "./handlers/init"
 import WebSocketHandler from "./WebSocketHandler"
 
 function initializeSocket(socket: Socket) {
   WebSocketHandler.addSocket(socket)
 }
 
-export function startSocketConnection(client: MyClient) {
-  const app = express()
-  const http = new Server(app)
-  const io = socketio(http, {})
-  const port = process.env.PORT || 1234
+export function startSocketConnection(server: Server, client: MyClient) {
+  const io = socketio(server, {})
 
   initHandlers(client)
 
-  io.on("connection", socket => {
-    initializeSocket(socket)
-  })
-
-  http.listen(port, () => {
-    // tslint:disable-next-line: no-console
-    console.log(`listening on port ${port}`)
-  })
+  io.sockets
+    .on(
+      "connection",
+      socketioJwt.authorize({
+        decodedPropertyName: "decoded_token",
+        secret: config.SECRET,
+        timeout: 15000 // 15 seconds to send the authentication message
+      })
+    )
+    .on("authenticated", (socket: Socket) => {
+      initializeSocket(socket)
+    })
 }

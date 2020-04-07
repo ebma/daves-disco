@@ -1,7 +1,7 @@
 import { WebSocketHandler } from "../WebSocketHandler"
 import { Messages } from "../../shared/ipc"
-import { MyClient } from "../../MyClient"
-import { handlePlay } from "../../commands/music/play"
+import { MyClient } from "../../bot/MyClient"
+import { handlePlay } from "../../bot/commands/music/play"
 import { MusicPlayerManager } from "../../libs/MusicPlayerManager"
 
 function requirePlayer(guildID: string, musicPlayerManager: MusicPlayerManager) {
@@ -26,7 +26,7 @@ const createPlayRequestHandler = (musicPlayerManager: MusicPlayerManager, client
         throw Error("User is not connected to voice channel!")
       }
     }
-    await handlePlay(query, player)
+    await handlePlay(query, guildID, player)
   }
 
 const createPauseRequestHandler = (musicPlayerManager: MusicPlayerManager) =>
