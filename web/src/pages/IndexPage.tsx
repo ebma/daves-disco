@@ -5,7 +5,6 @@ import Grid from "@material-ui/core/Grid"
 import { makeStyles } from "@material-ui/core/styles"
 import Header from "../components/Header"
 import Footer from "../components/Footer"
-import ConnectionStateIndicator from "../components/ConnectionState/ConnectionStateIndicator"
 import { GuildContext } from "../context/guild"
 import { SocketContext } from "../context/socket"
 import { trackError } from "../context/notifications"
@@ -61,15 +60,12 @@ function IndexPage() {
     <Container className={classes.root} component="main">
       <CssBaseline />
       <Header />
-      <ConnectionStateIndicator />
-
       <Grid className={classes.container} container spacing={4}>
         <Grid className={classes.item} item md={12} sm={12}>
-          {connectionState === "connected" ? <GuildSelectionArea /> : undefined}
+          <GuildSelectionArea />
         </Grid>
         {connectionState === "connected" && guildID && userID ? (
           <>
-          
             <Grid className={classes.item} item md={6} sm={12}>
               <PlayerArea
                 currentQueue={currentQueue}

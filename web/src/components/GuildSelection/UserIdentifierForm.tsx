@@ -5,6 +5,9 @@ import Link from "@material-ui/core/Link"
 import MenuItem from "@material-ui/core/MenuItem"
 import TextField from "@material-ui/core/TextField"
 import Typography from "@material-ui/core/Typography"
+import { SocketContext } from "../../context/socket"
+import { GuildContext } from "../../context/guild"
+import loginService from "../../services/login"
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -24,33 +27,46 @@ const useStyles = makeStyles(theme => ({
 }))
 
 interface Props {
-  authenticate: (guild: GuildID, user: UserID) => Promise<void>
-  authenticated: boolean
-  guildID?: GuildID
-  userID?: UserID
-  guilds: ReducedGuilds
-  getMembers: (guildID: GuildID) => ReducedMembers
-  setUserID: (userID: string) => void
-  setGuildID: (guildID: string) => void
   onClick?: () => void
+}
+
+function getTokenFromStorage() {
+  return localStorage.getItem("auth-token")
+}
+
+function saveTokenToStorage(token: string) {
+  localStorage.setItem("auth-token", token)
 }
 
 function UserIdentifierForm(props: Props) {
   const classes = useStyles()
 
-  const { authenticate, authenticated, guildID, userID, guilds, getMembers, setUserID, setGuildID } = props
+  const { init, connectionState } = React.useContext(SocketContext)
+  const { guilds, getMembers, guildID, userID, setUserID, setGuildID } = React.useContext(GuildContext)
 
   const [authenticationError, setAuthenticationError] = React.useState<Error | null>(null)
   const [authenticationPending, setAuthenticationPending] = React.useState<boolean>(false)
+  const [token, setToken] = React.useState<string | null>(getTokenFromStorage)
 
   React.useEffect(() => {
-    if (!authenticated && guildID && userID) {
+    if (!token && guildID && userID) {
       setAuthenticationPending(true)
-      authenticate(guildID, userID)
+      loginService
+        .login({ guildID, userID })
+        .then(token => {
+          setToken(token)
+          saveTokenToStorage(token)
+        })
         .catch(setAuthenticationError)
         .finally(() => setAuthenticationPending(false))
     }
-  }, [authenticated, authenticate, guildID, userID])
+  }, [guildID, userID, token])
+
+  React.useEffect(() => {
+    if (guildID && userID && connectionState === "disconnected" && token) {
+      init(token)
+    }
+  }, [connectionState, init, guildID, userID, token])
 
   const handleChange = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
     const name = event.target.name as "guildID" | "userID"
