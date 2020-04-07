@@ -1,7 +1,7 @@
 import { StreamDispatcher, VoiceConnection } from "discord.js"
 import { Observable } from "rxjs"
-import { trackError } from "../shared/util/trackError"
-import Youtube from "../shared/util/Youtube"
+import { trackError } from "../utils/trackError"
+import Youtube from "../libs/Youtube"
 
 class StreamManager {
   private voiceConnection: VoiceConnection
