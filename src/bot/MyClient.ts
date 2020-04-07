@@ -1,4 +1,5 @@
 import { AkairoClient, CommandHandler, InhibitorHandler, ListenerHandler } from "discord-akairo"
+import config from "../utils/config"
 
 export class MyClient extends AkairoClient {
   commandHandler: CommandHandler
@@ -8,7 +9,7 @@ export class MyClient extends AkairoClient {
   constructor() {
     super(
       {
-        ownerID: process.env.OWNER_ID
+        ownerID: config.OWNER_ID
       },
       {}
     )

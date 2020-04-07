@@ -1,4 +1,4 @@
-import { trackError } from "../../shared/util/trackError"
+import { trackError } from "../../../utils/trackError"
 import { MusicCommand } from "./MusicCommand"
 
 class ResumeCommand extends MusicCommand {
