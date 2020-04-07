@@ -1,4 +1,4 @@
-import { MyClient } from "../../MyClient"
+import { MyClient } from "../../bot/MyClient"
 import { Messages } from "../../shared/ipc"
 import { WebSocketHandler } from "../WebSocketHandler"
 
