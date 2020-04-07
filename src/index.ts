@@ -1,27 +1,33 @@
-import { config } from "dotenv"
-import { startSocketConnection } from "./socket/socket"
+import http from "http"
 import https from "https"
-import { trackError } from "./shared/util/trackError"
-import { MyClient } from "./MyClient"
-
-if (process.env.NODE_ENV !== "production") {
-  config()
-}
+import { initApp } from "./server/app"
+import config from "./utils/config"
+import { MyClient } from "./bot/MyClient"
+import { startSocketConnection } from "./socket/socket"
+import { trackError } from "./utils/trackError"
 
 process.on("unhandledRejection", (error: any) => trackError(error, "Unhandled Promise Rejection"))
 
+const client = new MyClient()
+
+const app = initApp(client)
+const server = http.createServer(app)
+const port = config.PORT || 1234
+
+server.listen(port, () => {
+  console.log(`listening on port ${port}`)
+})
+
+startSocketConnection(server, client)
+
+client.login(config.BOT_TOKEN)
+
 function preventSleeping() {
-  if (process.env.DEPLOYED_URL) {
+  if (config.DEPLOYED_URL) {
     setInterval(() => {
-      https.get(process.env.DEPLOYED_URL)
+      https.get(config.DEPLOYED_URL)
     }, 1000 * 60 * 5)
   }
 }
-
-const client = new MyClient()
-
-startSocketConnection(client)
-
-client.login(process.env.BOT_TOKEN)
 
 preventSleeping()
