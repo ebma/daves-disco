@@ -17,7 +17,7 @@ function isErrorResponse<Message extends keyof IPC.MessageType>(
 
 export interface SocketContextType {
   connectionState: ConnectionState
-  init: (token: string) => void
+  init: (token: string) => Promise<void>
   sendMessage: <Message extends keyof IPC.MessageType>(
     messageType: Message,
     ...args: IPC.MessageArgs<Message>
@@ -44,26 +44,36 @@ function SocketProvider(props: Props) {
   const [currentSocket, setCurrentSocket] = React.useState<SocketIOClient.Socket | null>(null)
 
   const init = React.useCallback((token: string) => {
-    const socket = io.connect(path, {
-      forceNew: true,
-      reconnectionAttempts: MAX_RECONNECTION_ATTEMPTS,
-      timeout: 10000,
-      query: `token=${token}`
+    return new Promise<void>((resolve, reject) => {
+      const socket = io.connect(path, {
+        forceNew: true,
+        reconnectionAttempts: MAX_RECONNECTION_ATTEMPTS
+      })
+
+      setCurrentSocket(socket)
+
+      socket.on("reconnecting", () => setConnectionState("reconnecting"))
+
+      socket.on("reconnect_failed", () => setConnectionState("disconnected"))
+
+      socket.on("reconnect", () => setConnectionState("connected"))
+
+      socket.on("connect", () => {
+        socket
+          .emit("authenticate", { token })
+          .on("authenticated", () => {
+            setConnectionState("connected")
+            resolve()
+          })
+          .on("unauthorized", (msg: any) => {
+            reject(`unauthorized: ${JSON.stringify(msg.data)}`)
+          })
+      })
+
+      socket.on("disconnect", () => setConnectionState("disconnected"))
+
+      socket.on("error", trackError)
     })
-
-    setCurrentSocket(socket)
-
-    socket.on("reconnecting", () => setConnectionState("reconnecting"))
-
-    socket.on("reconnect_failed", () => setConnectionState("disconnected"))
-
-    socket.on("reconnect", () => setConnectionState("connected"))
-
-    socket.on("connect", () => setConnectionState("connected"))
-
-    socket.on("disconnect", () => setConnectionState("disconnected"))
-
-    socket.on("error", trackError)
   }, [])
 
   const sendMessage = React.useCallback(

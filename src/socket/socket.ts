@@ -15,15 +15,16 @@ export function startSocketConnection(server: Server, client: MyClient) {
 
   initHandlers(client)
 
-  io.use(
-    socketioJwt.authorize({
-      decodedPropertyName: "decoded_token",
-      secret: config.SECRET,
-      handshake: true
+  io.sockets
+    .on(
+      "connection",
+      socketioJwt.authorize({
+        decodedPropertyName: "decoded_token",
+        secret: config.SECRET,
+        timeout: 15000
+      })
+    )
+    .on("authenticated", (socket: Socket) => {
+      initializeSocket(socket)
     })
-  )
-
-  io.on("connection", (socket: Socket) => {
-    initializeSocket(socket)
-  })
 }
