@@ -1,6 +1,6 @@
 import _ from "lodash"
 import { PartialObserver, Subject, Subscription } from "rxjs"
-import { trackError } from "../shared/util/trackError"
+import { trackError } from "../utils/trackError"
 import ObservableQueue from "./ObservableQueue"
 import StreamManager from "./StreamManager"
 
@@ -17,7 +17,7 @@ class MusicPlayer {
     this.subject = new Subject<MusicPlayerSubjectMessage>()
 
     this.queue.subscribe((currentTrack, currentQueue) => {
-      if (currentTrack?.trackID !== this.playingTrack?.trackID) {
+      if (currentTrack?.id !== this.playingTrack?.id) {
         streamManager.endCurrent()
         if (currentTrack) {
           this.startStreaming(currentTrack)
@@ -109,7 +109,7 @@ class MusicPlayer {
     const currentItem = this.queue.getCurrent()
     const shuffledItemList = _.shuffle(this.queue.getAll())
 
-    const foundIndex = shuffledItemList.findIndex(track => track.trackID === currentItem.trackID)
+    const foundIndex = shuffledItemList.findIndex(track => track.id === currentItem.id)
     const newIndex = foundIndex !== -1 ? foundIndex : 0
 
     this.queue.replace(shuffledItemList, newIndex)
@@ -126,7 +126,7 @@ class MusicPlayer {
   updateQueue(newItems: Track[]) {
     const currentItem = this.queue.getCurrent()
 
-    const foundIndex = newItems.findIndex(track => track.trackID === currentItem.trackID)
+    const foundIndex = newItems.findIndex(track => track.id === currentItem.id)
     const newIndex = foundIndex !== -1 ? foundIndex : 0
 
     this.queue.replace(newItems, newIndex)

@@ -1,6 +1,6 @@
 import { GuildMember, MessageEmbed } from "discord.js"
 import _ from "lodash"
-import Spotify from "../../shared/util/Spotify"
+import { SpotifyHelper } from "../shared/utils/helpers"
 
 export function createEmbedForTrack(track: Track, requester?: GuildMember) {
   const embed = new MessageEmbed()
@@ -8,7 +8,7 @@ export function createEmbedForTrack(track: Track, requester?: GuildMember) {
     .setTitle(track.title)
     .setURL(track.url)
     .setDescription(track.description.substring(0, 97).concat("..."))
-    .setThumbnail(track.thumbnail)
+    .setThumbnail(track.thumbnail?.medium)
     .setTimestamp()
 
   return embed
@@ -22,7 +22,7 @@ export function createEmbedForTracks(tracks: Track[], requester?: GuildMember) {
 
   let trackDescription = ""
   _.forEach(tracks, (track, index) => {
-    if (Spotify.isSpotifyTrack(track)) {
+    if (SpotifyHelper.isSpotifyTrack(track)) {
       trackDescription += `${index + 1}: ${track.title} - ${track.artists} \n`
     } else {
       trackDescription += `${index + 1}: ${track.title}\n`

@@ -1,5 +1,5 @@
 import { VoiceChannel } from "discord.js"
-import { trackError } from "../shared/util/trackError"
+import { trackError } from "../utils/trackError"
 import MusicPlayer from "./MusicPlayer"
 import MusicPlayerObserver from "./MusicPlayerObserver"
 import StreamManager from "./StreamManager"
