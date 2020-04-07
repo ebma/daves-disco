@@ -17,7 +17,7 @@
     "socket.io-client": "^2.3.0",
     "surge": "^0.21.3",
     "youtube-search": "^1.1.4",
-    "ytdl-core": "^1.0.0"
+    "ytdl-core": "^1.0.9"
   },
   "devDependencies": {
     "@types/jest": "24.0.18",
