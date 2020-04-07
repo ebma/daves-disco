@@ -18,7 +18,15 @@ const getTokenFrom = (request: Request) => {
 }
 
 router.get("/", async (request: TrackRequest, response) => {
-  const tracks = await Track.find({})
+  const guild = request.query.guild || undefined
+  const favourite = Boolean(request.query.favourite) || false
+
+  const query = Track.find({ favourite })
+  if (guild) {
+    query.where("guild").equals(guild)
+  }
+
+  const tracks = await query.exec()
 
   response.json(tracks.map(track => track.toJSON()))
 })

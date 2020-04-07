@@ -18,7 +18,14 @@ const getTokenFrom = (request: Request) => {
 }
 
 router.get("/", async (request: PlaylistRequest, response) => {
-  const playlists = await Playlist.find({})
+  const guild = request.query.guild || null
+  const favourite = Boolean(request.query.favourite) || false
+  const query = Playlist.find({ favourite })
+  if (guild) {
+    query.where("guild").equals(guild)
+  }
+
+  const playlists = await query.exec()
 
   response.json(playlists.map(playlist => playlist.toJSON()))
 })

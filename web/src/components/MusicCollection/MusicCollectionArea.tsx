@@ -8,6 +8,8 @@ import { SocketContext } from "../../context/socket"
 import { trackError } from "../../context/notifications"
 import { Messages } from "../../shared/ipc"
 import CollectionList from "./CollectionList"
+import TrackService from "../../services/tracks"
+import PlaylistService from "../../services/playlists"
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -33,14 +35,28 @@ function MusicCollectionArea(props: MusicCollectionAreaProps) {
   const [favourites, setFavourites] = React.useState<MusicItem[]>([])
 
   React.useEffect(() => {
-    // TODO implement
-    const fetchRecents = () => undefined
-    const fetchFavourites = () => undefined
-    
+    const fetchRecents = async () => {
+      const newItems: MusicItem[] = []
+      const playlists = await PlaylistService.getAll()
+      const tracks = await TrackService.getAll()
+      newItems.push(...playlists)
+      newItems.push(...tracks)
+      setRecents(newItems)
+    }
+    const fetchFavourites = async () => {
+      const newItems: MusicItem[] = []
+      const playlists = await PlaylistService.getFavourites()
+      const tracks = await TrackService.getFavourites()
+      newItems.push(...playlists)
+      newItems.push(...tracks)
+      setFavourites(newItems)
+    }
+
     const unsubscribeRecentHistory = subscribeToMessages(Messages.RecentHistoryChange, fetchRecents)
     const unsubscribeFavourites = subscribeToMessages(Messages.FavouritesChange, fetchFavourites)
 
-    // TODO make get requests
+    fetchRecents()
+    fetchFavourites()
 
     return () => {
       unsubscribeRecentHistory()
