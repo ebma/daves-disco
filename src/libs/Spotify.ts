@@ -1,6 +1,6 @@
-import { config } from "dotenv"
 import SpotifyWebAPI from "spotify-web-api-node"
-import { trackError } from "./trackError"
+import config from "../utils/config"
+import { trackError } from "../utils/trackError"
 
 class Spotify {
   private clientID: string
@@ -21,15 +21,6 @@ class Spotify {
     })
   }
 
-  isSpotifyPlaylistURI(term: string) {
-    const regex = /spotify:playlist:[\d\w]+/g
-    return term.match(regex)
-  }
-
-  isSpotifyTrack(track: Track): track is SpotifyTrack {
-    return track.source === "spotify"
-  }
-
   async getSpotifyPlaylist(playlistID: string): Promise<Playlist | null> {
     try {
       await this.checkAccessToken()
@@ -37,9 +28,6 @@ class Spotify {
       const name = playlistData.body.name
 
       const total = playlistData.body.tracks.total
-      const defaultArt = playlistData.body.images.length
-        ? playlistData.body.images[0].url
-        : "http://beatmakerleague.com/images/No_Album_Art.png"
       let items = playlistData.body.tracks.items
       while (items.length < total) {
         await this.checkAccessToken()
@@ -51,17 +39,28 @@ class Spotify {
       }
 
       return {
+        id: playlistData.body.id,
         name,
         owner: playlistData.body.owner.display_name,
+        source: "spotify",
+        thumbnail: {
+          small: playlistData.body.images.length >= 3 ? playlistData.body.images[2].url : undefined,
+          medium: playlistData.body.images.length >= 2 ? playlistData.body.images[1].url : undefined,
+          large: playlistData.body.images.length >= 1 ? playlistData.body.images[0].url : undefined
+        },
         tracks: items.map(item => ({
           artists: item.track.artists.map(x => x.name).join(", "),
-          initialized: false,
+          id: item.track.id,
           source: "spotify",
           title: item.track.name,
-          thumbnail: item.track.album.images.length ? item.track.album.images[0].url : defaultArt,
-          trackID: item.track.uri,
-          url: ""
-        }))
+          thumbnail: {
+            small: item.track.album.images.length >= 3 ? item.track.album.images[2].url : undefined,
+            medium: item.track.album.images.length >= 2 ? item.track.album.images[1].url : undefined,
+            large: item.track.album.images.length >= 1 ? item.track.album.images[0].url : undefined
+          },
+          trackID: item.track.uri
+        })),
+        uri: playlistData.body.uri
       }
     } catch (error) {
       trackError(error, "Spotify.getSpotifyPlaylist")
@@ -78,8 +77,6 @@ class Spotify {
   }
 }
 
-config()
-
-const GlobalInstance = new Spotify(process.env.SPOTIFY_CLIENT_ID!, process.env.SPOTIFY_CLIENT_SECRET!)
+const GlobalInstance = new Spotify(config.SPOTIFY_CLIENT_ID, config.SPOTIFY_CLIENT_SECRET)
 
 export default GlobalInstance

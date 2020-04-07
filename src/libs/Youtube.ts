@@ -1,14 +1,12 @@
 import _ from "lodash"
-import { config } from "dotenv"
+import config from "../utils/config"
 import { Readable } from "stream"
 import search from "youtube-search"
 import ytdl from "ytdl-core"
 import ytdlDiscord from "ytdl-core-discord"
 import ytpl from "ytpl"
-import { trackError } from "./trackError"
-import Spotify from "./Spotify"
-
-let trackID = 0
+import { trackError } from "../utils/trackError"
+import { SpotifyHelper } from "../shared/utils/helpers"
 
 export class Youtube {
   private key: string
@@ -22,10 +20,14 @@ export class Youtube {
     return ytdl.validateURL(url)
   }
 
-  isYoutubePlaylist(term: string): boolean {
+  describesYoutubePlaylist(term: string): boolean {
     const regex = /(^|\s)(https?:\/\/)?(www\.)?youtube\.com\/(playlist)\?(list)=([^\s&]+)[^\s]*($|\s)/g
     const valid = term.match(regex)
     return valid ? true : false
+  }
+
+  isYoutubePlaylist(playlist: Playlist): playlist is YoutubePlaylist {
+    return playlist.source === "youtube"
   }
 
   createTracksFromSearchTerm(term: string, maxResults: number): Promise<Track[]> {
@@ -44,11 +46,11 @@ export class Youtube {
                 searchResult.thumbnails.default || searchResult.thumbnails.standard || searchResult.thumbnails.high
               ytTracks.push({
                 description: searchResult.description,
+                id: searchResult.id,
                 publishedAt: searchResult.publishedAt,
                 source: "youtube",
                 title: searchResult.title,
-                thumbnail: thumbnail ? thumbnail.url : undefined,
-                trackID: this.getNewTrackID(),
+                thumbnail: { medium: thumbnail ? thumbnail.url : undefined },
                 url: searchResult.link
               })
             })
@@ -64,15 +66,19 @@ export class Youtube {
     })
   }
 
-  private getThumbnailFromInfo(info: ytdl.videoInfo) {
+  private getThumbnailFromInfo(info: ytdl.videoInfo): Thumbnail {
     if (info.thumbnail_url) {
-      return info.thumbnail_url
+      return { medium: info.thumbnail_url }
     } else {
       const thumbnails = info.player_response?.videoDetails?.thumbnail?.thumbnails
       if (thumbnails) {
-        return thumbnails[thumbnails.length - 1]?.url
+        return {
+          small: thumbnails[0]?.url,
+          medium: thumbnails[1]?.url,
+          large: thumbnails[thumbnails.length - 1]?.url
+        }
       } else {
-        return undefined
+        return {}
       }
     }
   }
@@ -84,12 +90,12 @@ export class Youtube {
 
         if (info) {
           const track: Track = {
+            id: info.video_id,
             description: info.description,
             url: info.video_url,
             source: "youtube",
             title: info.title,
-            thumbnail: this.getThumbnailFromInfo(info),
-            trackID: this.getNewTrackID()
+            thumbnail: this.getThumbnailFromInfo(info)
           }
           resolve(track)
         } else {
@@ -111,16 +117,23 @@ export class Youtube {
           let tracks: Track[] = []
           _.forEach(result.items, item => {
             const newTrack: Track = {
-              thumbnail: item.thumbnail,
+              id: item.id,
+              thumbnail: { medium: item.thumbnail },
               source: "youtube",
               title: item.title,
-              trackID: this.getNewTrackID(),
               url: item.url
             }
             tracks.push(newTrack)
           })
 
-          resolve({ name: result.title, owner: result.author.name, tracks })
+          resolve({
+            id: result.id,
+            name: result.title,
+            owner: result.author.name,
+            source: "youtube",
+            tracks,
+            url: result.url
+          })
         }
       })
     })
@@ -142,7 +155,7 @@ export class Youtube {
 
   async completePartialTrack(track: Track): Promise<boolean> {
     let searchTerm = track.title
-    if (Spotify.isSpotifyTrack(track)) {
+    if (SpotifyHelper.isSpotifyTrack(track)) {
       searchTerm = `${track.title} - ${track.artists}`
     }
 
@@ -176,14 +189,8 @@ export class Youtube {
       }
     })
   }
-
-  private getNewTrackID() {
-    return String(trackID++)
-  }
 }
 
-config()
-
-const GlobalInstance = new Youtube(process.env.YOUTUBE_API_KEY!)
+const GlobalInstance = new Youtube(config.YOUTUBE_API_KEY)
 
 export default GlobalInstance
