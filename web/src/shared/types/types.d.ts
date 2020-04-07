@@ -84,6 +84,11 @@ interface StreamManagerObservableMessage {
 
 // --- AUTH ---
 
+interface Credentials {
+  guildID: string
+  userID: string
+}
+
 interface DecodedToken {
   guildID: string
   userID: string

@@ -33,15 +33,14 @@ function MusicCollectionArea(props: MusicCollectionAreaProps) {
   const [favourites, setFavourites] = React.useState<MusicItem[]>([])
 
   React.useEffect(() => {
-    const unsubscribeRecentHistory = subscribeToMessages(Messages.RecentHistory, setRecents)
-    const unsubscribeFavourites = subscribeToMessages(Messages.Favourites, setFavourites)
+    // TODO implement
+    const fetchRecents = () => undefined
+    const fetchFavourites = () => undefined
+    
+    const unsubscribeRecentHistory = subscribeToMessages(Messages.RecentHistoryChange, fetchRecents)
+    const unsubscribeFavourites = subscribeToMessages(Messages.FavouritesChange, fetchFavourites)
 
-    sendMessage(Messages.GetRecentHistory, guildID)
-      .then(setRecents)
-      .catch(trackError)
-    sendMessage(Messages.GetFavourites, guildID)
-      .then(setFavourites)
-      .catch(trackError)
+    // TODO make get requests
 
     return () => {
       unsubscribeRecentHistory()
