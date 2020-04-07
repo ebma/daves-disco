@@ -1,7 +1,8 @@
 import { Request, Router } from "express"
 import jwt from "jsonwebtoken"
-import Playlist from "../../db/models/playlist"
+import Playlist, { IPlaylist } from "../../db/models/playlist"
 import config from "../../utils/config"
+import Spotify from "../../libs/Spotify"
 
 const router = Router()
 
@@ -27,7 +28,16 @@ router.get("/", async (request: PlaylistRequest, response) => {
 
   const playlists = await query.exec()
 
-  response.json(playlists.map(playlist => playlist.toJSON()))
+  const populatedPlaylists = await Promise.all(
+    playlists.map(async playlist => {
+      const populatedPlaylist = await Spotify.getSpotifyPlaylist(playlist.id)
+      const object: IPlaylist = { ...playlist.toJSON(), tracks: populatedPlaylist.tracks }
+
+      return object
+    })
+  )
+
+  response.json(populatedPlaylists)
 })
 
 router.post("/", async (request: PlaylistRequest, response) => {
