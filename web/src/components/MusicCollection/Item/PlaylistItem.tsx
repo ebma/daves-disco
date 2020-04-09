@@ -9,7 +9,7 @@ import ListItemText from "@material-ui/core/ListItemText"
 import makeStyles from "@material-ui/styles/makeStyles"
 import Tooltip from "@material-ui/core/Tooltip"
 import ListIcon from "@material-ui/icons/List"
-import { SpotifyHelper } from "../../shared/utils/helpers"
+import { SpotifyHelper } from "../../../shared/utils/helpers"
 
 const useStyles = makeStyles(theme => ({
   queueItem: {

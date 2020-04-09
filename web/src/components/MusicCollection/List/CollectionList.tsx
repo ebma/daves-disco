@@ -1,7 +1,7 @@
 import React from "react"
 import List from "@material-ui/core/List"
-import TrackItem from "./TrackItem"
-import PlaylistItem from "./PlaylistItem"
+import { TrackItem } from "../Item/TrackItem"
+import PlaylistItem from "../Item/PlaylistItem"
 import { makeStyles } from "@material-ui/core/styles"
 import Box from "@material-ui/core/Box"
 import Button from "@material-ui/core/Button"
@@ -10,8 +10,8 @@ import ArrowBackIcon from "@material-ui/icons/ArrowBack"
 import FavoriteIcon from "@material-ui/icons/Favorite"
 import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder"
 import PlayIcon from "@material-ui/icons/PlayArrow"
-import PlaylistService from "../../services/playlists"
-import { trackError } from "../../context/notifications"
+import PlaylistService from "../../../services/playlists"
+import { trackError } from "../../../context/notifications"
 
 function isTrack(item: MusicItem): item is TrackModel {
   return (item as TrackModel).title !== undefined

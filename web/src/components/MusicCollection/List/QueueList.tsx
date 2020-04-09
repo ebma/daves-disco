@@ -6,10 +6,10 @@ import List from "@material-ui/core/List"
 import ListItem from "@material-ui/core/ListItem"
 import ListItemText from "@material-ui/core/ListItemText"
 import makeStyles from "@material-ui/styles/makeStyles"
-import { SocketContext } from "../../context/socket"
-import { trackError } from "../../context/notifications"
-import { Messages } from "../../shared/ipc"
-import QueueItem from "./QueueItem"
+import { SocketContext } from "../../../context/socket"
+import { trackError } from "../../../context/notifications"
+import { Messages } from "../../../shared/ipc"
+import { DraggableTrackItem } from "../Item/TrackItem"
 
 function reorder<T>(list: Array<T>, startIndex: number, endIndex: number) {
   const result = Array.from(list)
@@ -87,7 +87,7 @@ function QueueList(props: Props) {
         return (
           <div key={index}>
             {index > 0 ? <Divider variant="inset" component="li" /> : undefined}
-            <QueueItem
+            <DraggableTrackItem
               current={index === indexOfCurrentSong}
               id={track.id}
               index={index}

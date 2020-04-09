@@ -1,14 +1,13 @@
 import React from "react"
-import _ from "lodash"
 import Box from "@material-ui/core/Box"
 import Button from "@material-ui/core/Button"
 import Tooltip from "@material-ui/core/Tooltip"
 import ShuffleIcon from "@material-ui/icons/Shuffle"
-import { SocketContext } from "../../context/socket"
-import { Messages } from "../../shared/ipc"
-import { GuildContext } from "../../context/guild"
-import { trackError } from "../../context/notifications"
-import QueueList from "../Queue/QueueList"
+import { SocketContext } from "../../../context/socket"
+import { Messages } from "../../../shared/ipc"
+import { GuildContext } from "../../../context/guild"
+import { trackError } from "../../../context/notifications"
+import QueueList from "../List/QueueList"
 
 interface QueueHeaderProps {
   onShuffleClick: () => void
@@ -36,11 +35,10 @@ function QueueHeader(props: QueueHeaderProps) {
 
 interface QueueTabProps {
   guildID: GuildID
-  enqueueTrack: (track: Track) => void
 }
 
 function QueueTab(props: QueueTabProps) {
-  const { enqueueTrack, guildID } = props
+  const { guildID } = props
   const { sendMessage, subscribeToMessages } = React.useContext(SocketContext)
   const { isPlayerAvailable } = React.useContext(GuildContext)
 

@@ -9,9 +9,9 @@ import Typography from "@material-ui/core/Typography"
 import { SocketContext } from "../../context/socket"
 import { trackError } from "../../context/notifications"
 import { Messages } from "../../shared/ipc"
-import RecentHistoryTab from "./RecentHistoryTab"
-import FavouritesTab from "./FavouritesTab"
-import QueueTab from "./QueueTab"
+import RecentHistoryTab from "./Tab/RecentHistoryTab"
+import FavouritesTab from "./Tab/FavouritesTab"
+import QueueTab from "./Tab/QueueTab"
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -90,7 +90,7 @@ function MusicCollectionArea(props: MusicCollectionAreaProps) {
         <Tab label="Favourites" />
       </Tabs>
       <TabPanel value={tab} index={0}>
-        <QueueTab guildID={guildID} enqueueTrack={enqueueTrack} />
+        <QueueTab guildID={guildID} />
       </TabPanel>
       <TabPanel value={tab} index={1}>
         <RecentHistoryTab guildID={guildID} enqueueTrack={enqueueTrack} enqueuePlaylist={enqueuePlaylist} />

@@ -1,10 +1,9 @@
 import React from "react"
-import _ from "lodash"
-import CollectionList from "./CollectionList"
-import { SocketContext } from "../../context/socket"
-import TrackService from "../../services/tracks"
-import PlaylistService from "../../services/playlists"
-import { Messages } from "../../shared/ipc"
+import CollectionList from "../List/CollectionList"
+import { SocketContext } from "../../../context/socket"
+import TrackService from "../../../services/tracks"
+import PlaylistService from "../../../services/playlists"
+import { Messages } from "../../../shared/ipc"
 
 interface FavouritesTabProps {
   guildID: GuildID
