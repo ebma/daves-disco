@@ -30,6 +30,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 interface Props {
+  current?: boolean
   favourite?: boolean
   track: Track
   onClick?: () => void
@@ -39,7 +40,7 @@ interface Props {
 
 export const TrackItem = React.forwardRef(function TrackItem(props: Props, ref: React.Ref<HTMLDivElement>) {
   const classes = useStyles()
-  const { favourite, track, onClick, onDeleteClick, toggleFavourite } = props
+  const { current, favourite, track, onClick, onDeleteClick, toggleFavourite } = props
 
   const DeleteTrackButton = React.useMemo(() => {
     return onDeleteClick ? (
@@ -92,7 +93,7 @@ export const TrackItem = React.forwardRef(function TrackItem(props: Props, ref: 
   const primaryText = SpotifyHelper.isSpotifyTrack(track) ? `${track.title} - ${track.artists}` : track.title
 
   return (
-    <ListItem button className={classes.queueItem} onClick={onClick} ref={ref}>
+    <ListItem button className={classes.queueItem} onClick={onClick} ref={ref} selected={current}>
       <ListItemAvatar>
         <Avatar
           alt="thumbnail"
@@ -158,7 +159,7 @@ export function DraggableTrackItem(props: DraggableTrackItemProps) {
     <Draggable draggableId={id} key={id} index={index}>
       {provided => (
         <div ref={provided.innerRef} {...provided.dragHandleProps} {...provided.draggableProps}>
-          <TrackItem {...props} />
+          <TrackItem {...props} ref={myRef} />
         </div>
       )}
     </Draggable>
