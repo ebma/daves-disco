@@ -91,6 +91,12 @@ const createStopRequestHandler = (musicPlayerManager: MusicPlayerManager) =>
     return player.destroy()
   }
 
+const createClearRequestHandler = (musicPlayerManager: MusicPlayerManager) =>
+  function handleClearRequest(guildID: string) {
+    const player = requirePlayer(guildID, musicPlayerManager)
+    return player.clear()
+  }
+
 const createShuffleRequestHandler = (musicPlayerManager: MusicPlayerManager) =>
   function handleShuffleRequest(guildID: string) {
     const player = requirePlayer(guildID, musicPlayerManager)
@@ -152,6 +158,7 @@ export function initPlayerHandlers(
   handler.addHandler(Messages.Skip, createSkipRequestHandler(musicPlayerManager))
   handler.addHandler(Messages.SkipPrevious, createSkipPreviousRequestHandler(musicPlayerManager))
   handler.addHandler(Messages.Stop, createStopRequestHandler(musicPlayerManager))
+  handler.addHandler(Messages.Clear, createClearRequestHandler(musicPlayerManager))
   handler.addHandler(Messages.Shuffle, createShuffleRequestHandler(musicPlayerManager))
   handler.addHandler(Messages.Volume, createVolumeRequestHandler(musicPlayerManager))
 
