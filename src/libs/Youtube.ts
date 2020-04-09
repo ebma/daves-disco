@@ -37,24 +37,12 @@ export class Youtube {
       }
 
       search(term, { maxResults, key: this.key, type: "video" }).then(
-        value => {
+        async value => {
           const results = value.results
           if (results.length > 0) {
-            const ytTracks: Track[] = []
-            _.forEach(results, searchResult => {
-              const thumbnail =
-                searchResult.thumbnails.default || searchResult.thumbnails.standard || searchResult.thumbnails.high
-              ytTracks.push({
-                description: searchResult.description,
-                id: searchResult.id,
-                publishedAt: searchResult.publishedAt,
-                source: "youtube",
-                title: searchResult.title,
-                thumbnail: { medium: thumbnail ? thumbnail.url : undefined },
-                url: searchResult.link
-              })
-            })
-            resolve(ytTracks)
+            const urls = results.map(result => result.link)
+            const tracks = await Promise.all(urls.map(url => this.createTrackFromURL(url)))
+            resolve(tracks)
           } else {
             reject("No results for search term.")
           }
