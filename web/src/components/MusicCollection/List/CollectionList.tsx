@@ -22,7 +22,7 @@ function isPlaylist(item: MusicItem): item is PlaylistModel {
 const useStyles = makeStyles({
   root: {
     padding: 16,
-    maxHeight: 500,
+    maxHeight: "50vh",
     overflowY: "auto"
   }
 })

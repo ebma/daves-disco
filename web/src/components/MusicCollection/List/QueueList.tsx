@@ -22,7 +22,7 @@ function reorder<T>(list: Array<T>, startIndex: number, endIndex: number) {
 const useStyles = makeStyles(theme => ({
   queueList: {
     flexGrow: 1,
-    maxHeight: 500,
+    maxHeight: "50vh",
     overflowY: "auto"
   }
 }))
