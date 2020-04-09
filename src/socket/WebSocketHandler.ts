@@ -104,7 +104,7 @@ export class WebSocketHandler {
   sendMessage<Message extends keyof IPC.MessageType>(
     messageType: Message,
     guildID: GuildID,
-    data: IPC.MessageReturnType<Message>
+    data?: IPC.MessageReturnType<Message>
   ): void {
     for (const sender of this.senders) {
       sender.sendMessage(messageType, guildID, data)

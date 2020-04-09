@@ -21,9 +21,10 @@ const getFavourites = async (guildID?: GuildID): Promise<TrackModel[]> => {
   return response.data
 }
 
-const update = (id: number, newObject: TrackModel) => {
+const update = async (id: string, newObject: TrackModel) => {
   const request = axios.put(`${baseUrl}/${id}`, newObject)
-  return request.then(response => response.data)
+  const response = await request
+  return response.data
 }
 
 const trackService = {

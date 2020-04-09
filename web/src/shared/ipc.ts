@@ -29,6 +29,6 @@ export const Messages: IPC.MessageType = {
   PauseChange: "PauseChange",
   VolumeChange: "VolumeChange",
 
-  RecentHistoryChange: "RecentHistoryChange",
-  FavouritesChange: "FavouritesChange"
+  TracksChange: "TracksChange",
+  PlaylistsChange: "PlaylistsChange"
 } as const

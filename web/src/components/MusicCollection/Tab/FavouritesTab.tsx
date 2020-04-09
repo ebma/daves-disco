@@ -18,7 +18,7 @@ function FavouritesTab(props: FavouritesTabProps) {
   const [items, setItems] = React.useState<MusicItem[]>([])
 
   React.useEffect(() => {
-    const fetchRecents = async () => {
+    const fetchFavourites = async () => {
       const newItems: MusicItem[] = []
       const playlists = await PlaylistService.getFavourites(guildID)
       const tracks = await TrackService.getFavourites(guildID)
@@ -27,17 +27,33 @@ function FavouritesTab(props: FavouritesTabProps) {
       setItems(newItems)
     }
 
-    const unsubscribeFavourites = subscribeToMessages(Messages.FavouritesChange, fetchRecents)
-    fetchRecents()
+    const unsubscribeTracks = subscribeToMessages(Messages.TracksChange, fetchFavourites)
+    const unsubscribePlaylists = subscribeToMessages(Messages.PlaylistsChange, fetchFavourites)
+    fetchFavourites()
 
     return () => {
-      unsubscribeFavourites()
+      unsubscribeTracks()
+      unsubscribePlaylists()
     }
   }, [guildID, sendMessage, subscribeToMessages])
 
+  const toggleFavouriteTrack = React.useCallback((track: TrackModel) => {
+    TrackService.update(track.id, { ...track, favourite: !track.favourite })
+  }, [])
+
+  const toggleFavouritePlaylist = React.useCallback((playlist: PlaylistModel) => {
+    PlaylistService.update(playlist.id, { ...playlist, favourite: !playlist.favourite })
+  }, [])
+
   return (
     <>
-      <CollectionList collection={items} enqueueTrack={enqueueTrack} enqueuePlaylist={enqueuePlaylist} />
+      <CollectionList
+        collection={items}
+        enqueueTrack={enqueueTrack}
+        enqueuePlaylist={enqueuePlaylist}
+        toggleFavouritePlaylist={toggleFavouritePlaylist}
+        toggleFavouriteTrack={toggleFavouriteTrack}
+      />
     </>
   )
 }

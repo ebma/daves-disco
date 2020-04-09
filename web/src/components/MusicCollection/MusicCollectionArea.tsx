@@ -16,8 +16,8 @@ import QueueTab from "./Tab/QueueTab"
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      flexGrow: 1
-    }
+      height: "100%"
+    },
   })
 )
 

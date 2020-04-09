@@ -13,7 +13,7 @@ function trySavingPlaylist(playlist: Playlist, guildID: GuildID) {
     if (err) {
       console.log(`Saving playlist '${playlist.name}' failed`, err.message)
     } else {
-      // notifyRecentHistoryChange(guildID)
+      // notifyTracksChange(guildID)
     }
   })
 }
@@ -24,7 +24,7 @@ function trySavingTrack(track: Track, guildID: GuildID) {
     if (err) {
       console.log(`Saving track '${track.title}' failed`, err.message)
     } else {
-      // notifyRecentHistoryChange(guildID)
+      // notifyTracksChange(guildID)
     }
   })
 }

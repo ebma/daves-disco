@@ -4,6 +4,8 @@ import Playlist, { IPlaylist } from "../../db/models/playlist"
 import config from "../../utils/config"
 import Spotify from "../../libs/Spotify"
 import Youtube from "../../libs/Youtube"
+import WebSocketHandler from "../../socket/WebSocketHandler"
+import { Messages } from "../../shared/ipc"
 
 const router = Router()
 
@@ -91,9 +93,10 @@ router.put("/:id", (request: PlaylistRequest, response, next) => {
     url: body.url
   }
 
-  Playlist.findByIdAndUpdate(request.params.id, playlist, { new: true })
+  Playlist.findOneAndUpdate({ id: request.params.id }, playlist, { new: true })
     .then(updatedPlaylist => {
       response.json(updatedPlaylist.toJSON())
+      WebSocketHandler.sendMessage(Messages.PlaylistsChange, playlist.guild)
     })
     .catch(error => next(error))
 })

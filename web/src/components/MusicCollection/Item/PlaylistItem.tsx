@@ -9,6 +9,8 @@ import ListItemText from "@material-ui/core/ListItemText"
 import makeStyles from "@material-ui/styles/makeStyles"
 import Tooltip from "@material-ui/core/Tooltip"
 import ListIcon from "@material-ui/icons/List"
+import FavoriteIcon from "@material-ui/icons/Favorite"
+import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder"
 import { SpotifyHelper } from "../../../shared/utils/helpers"
 
 const useStyles = makeStyles(theme => ({
@@ -36,7 +38,7 @@ interface Props {
 
 function PlaylistItem(props: Props) {
   const classes = useStyles()
-  const { playlist, onClick } = props
+  const { favourite, playlist, onClick, toggleFavourite } = props
 
   const ShowListButton = React.useMemo(
     () => (
@@ -56,6 +58,35 @@ function PlaylistItem(props: Props) {
     ),
     [onClick]
   )
+
+
+  const FavorPlaylistButton = React.useMemo(() => {
+    return toggleFavourite ? (
+      <ListItemIcon
+        onClick={(event: React.MouseEvent) => {
+          event.preventDefault()
+          event.stopPropagation()
+          toggleFavourite()
+        }}
+      >
+        {favourite ? (
+          <Tooltip placement="bottom" title="Remove from favourites">
+            <IconButton>
+              <FavoriteIcon />
+            </IconButton>
+          </Tooltip>
+        ) : (
+          <Tooltip placement="bottom" title="Add to favourites">
+            <IconButton>
+              <FavoriteBorderIcon />
+            </IconButton>
+          </Tooltip>
+        )}
+      </ListItemIcon>
+    ) : (
+      undefined
+    )
+  }, [favourite, toggleFavourite])
 
   const secondaryText = React.useMemo(
     () =>
@@ -101,6 +132,7 @@ function PlaylistItem(props: Props) {
         secondary={secondaryText}
       />
       {ShowListButton}
+      {FavorPlaylistButton}
     </ListItem>
   )
 }

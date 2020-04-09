@@ -2,6 +2,8 @@ import { Request, Router } from "express"
 import jwt from "jsonwebtoken"
 import Track from "../../db/models/track"
 import config from "../../utils/config"
+import WebSocketHandler from "../../socket/WebSocketHandler"
+import { Messages } from "../../shared/ipc"
 
 const router = Router()
 
@@ -81,9 +83,10 @@ router.put("/:id", (request: TrackRequest, response, next) => {
     url: body.url
   }
 
-  Track.findByIdAndUpdate(request.params.id, track, { new: true })
+  Track.findOneAndUpdate({ id: request.params.id }, track, { new: true })
     .then(updatedTrack => {
       response.json(updatedTrack.toJSON())
+      WebSocketHandler.sendMessage(Messages.TracksChange, track.guild)
     })
     .catch(error => next(error))
 })

@@ -31,8 +31,8 @@ declare namespace IPC {
     Error: "Error"
     PauseChange: "PauseChange"
     VolumeChange: "VolumeChange"
-    RecentHistoryChange: "RecentHistoryChange"
-    FavouritesChange: "FavouritesChange"
+    TracksChange: "TracksChange"
+    PlaylistsChange: "PlaylistsChange"
   }
 
   export type MessageType = typeof Messages
@@ -68,8 +68,8 @@ declare namespace IPC {
     [Messages.PauseChange]: () => boolean
     [Messages.VolumeChange]: () => number
 
-    [Messages.RecentHistoryChange]: () => void
-    [Messages.FavouritesChange]: () => void
+    [Messages.TracksChange]: () => void
+    [Messages.PlaylistsChange]: () => void
   }
 
   export type MessageArgs<Message extends keyof MessageType> = MessageSignatures[Message] extends () => any

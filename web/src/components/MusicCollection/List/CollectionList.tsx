@@ -7,8 +7,6 @@ import Box from "@material-ui/core/Box"
 import Button from "@material-ui/core/Button"
 import Typography from "@material-ui/core/Typography"
 import ArrowBackIcon from "@material-ui/icons/ArrowBack"
-import FavoriteIcon from "@material-ui/icons/Favorite"
-import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder"
 import PlayIcon from "@material-ui/icons/PlayArrow"
 import PlaylistService from "../../../services/playlists"
 import { trackError } from "../../../context/notifications"
@@ -30,14 +28,12 @@ const useStyles = makeStyles({
 })
 
 interface PlaylistHeaderProps {
-  favourite: boolean
   onBack: () => void
   onEnqueueAll: () => void
-  onToggleFavourite: () => void
 }
 
 function PlaylistHeader(props: PlaylistHeaderProps) {
-  const { favourite, onBack, onEnqueueAll, onToggleFavourite } = props
+  const { onBack, onEnqueueAll } = props
 
   return (
     <Box display="flex">
@@ -59,27 +55,20 @@ function PlaylistHeader(props: PlaylistHeaderProps) {
       >
         Enqueue All
       </Button>
-      <Button
-        variant="contained"
-        color="secondary"
-        onClick={onToggleFavourite}
-        startIcon={favourite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-        style={{ margin: 16 }}
-      >
-        {favourite ? "Remove from favourites" : "Add to favourites"}
-      </Button>
     </Box>
   )
 }
 
 interface MusicItemListProps {
   items: MusicItem[]
+  toggleFavouriteTrack: (track: TrackModel) => void
+  toggleFavouritePlaylist: (playlist: PlaylistModel) => void
   onTrackSelect: (track: TrackModel) => void
   onPlaylistSelect: (playlist: PlaylistModel) => void
 }
 
 const MusicItemList = React.memo(function MusicItemList(props: MusicItemListProps) {
-  const { items, onPlaylistSelect, onTrackSelect } = props
+  const { items, onPlaylistSelect, onTrackSelect, toggleFavouriteTrack, toggleFavouritePlaylist } = props
   const classes = useStyles()
 
   const collectionItems = React.useMemo(
@@ -92,7 +81,7 @@ const MusicItemList = React.memo(function MusicItemList(props: MusicItemListProp
               favourite={item.favourite}
               track={item}
               onClick={() => onTrackSelect(item)}
-              toggleFavourite={() => undefined}
+              toggleFavourite={() => toggleFavouriteTrack(item)}
             />
           )
         } else if (isPlaylist(item)) {
@@ -102,14 +91,14 @@ const MusicItemList = React.memo(function MusicItemList(props: MusicItemListProp
               favourite={item.favourite}
               onClick={() => onPlaylistSelect(item)}
               playlist={item}
-              toggleFavourite={() => undefined}
+              toggleFavourite={() => toggleFavouritePlaylist(item)}
             />
           )
         } else {
           throw Error(`Unknown item ${item}`)
         }
       }),
-    [items, onPlaylistSelect, onTrackSelect]
+    [items, onPlaylistSelect, onTrackSelect, toggleFavouritePlaylist, toggleFavouriteTrack]
   )
 
   return <List className={classes.root}>{collectionItems}</List>
@@ -119,10 +108,12 @@ interface Props {
   collection: MusicItem[]
   enqueueTrack: (track: Track) => void
   enqueuePlaylist: (playlist: Playlist) => void
+  toggleFavouriteTrack: (track: TrackModel) => void
+  toggleFavouritePlaylist: (playlist: PlaylistModel) => void
 }
 
 function CollectionList(props: Props) {
-  const { collection, enqueueTrack, enqueuePlaylist } = props
+  const { collection, enqueueTrack, enqueuePlaylist, toggleFavouritePlaylist, toggleFavouriteTrack } = props
 
   const [selectedPlaylist, setSelectedPlaylist] = React.useState<PlaylistModel | null>(null)
 
@@ -159,18 +150,13 @@ function CollectionList(props: Props) {
   return (
     <>
       {collection.length === 0 && NoItemsInfo}
-      {selectedPlaylist && (
-        <PlaylistHeader
-          favourite={selectedPlaylist.favourite || false}
-          onBack={() => setSelectedPlaylist(null)}
-          onEnqueueAll={onEnqueueAll}
-          onToggleFavourite={() => undefined}
-        />
-      )}
+      {selectedPlaylist && <PlaylistHeader onBack={() => setSelectedPlaylist(null)} onEnqueueAll={onEnqueueAll} />}
       <MusicItemList
         items={selectedTracks ? selectedTracks : collection}
         onTrackSelect={onTrackSelect}
         onPlaylistSelect={onPlaylistSelect}
+        toggleFavouritePlaylist={toggleFavouritePlaylist}
+        toggleFavouriteTrack={toggleFavouriteTrack}
       />
     </>
   )

@@ -26,9 +26,10 @@ const get = async (id: string): Promise<PlaylistModel> => {
   return response.data
 }
 
-const update = (id: number, newObject: PlaylistModel) => {
+const update = async (id: string, newObject: PlaylistModel) => {
   const request = axios.put(`${baseUrl}/${id}`, newObject)
-  return request.then(response => response.data)
+  const response = await request
+  return response.data
 }
 
 const playlistService = {

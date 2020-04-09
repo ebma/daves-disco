@@ -27,17 +27,33 @@ function RecentHistoryTab(props: RecentHistoryTabProps) {
       setItems(newItems)
     }
 
-    const unsubscribeRecentHistory = subscribeToMessages(Messages.RecentHistoryChange, fetchRecents)
+    const unsubscribeTracksChange = subscribeToMessages(Messages.TracksChange, fetchRecents)
+    const unsubscribePlaylistsChange = subscribeToMessages(Messages.PlaylistsChange, fetchRecents)
     fetchRecents()
 
     return () => {
-      unsubscribeRecentHistory()
+      unsubscribeTracksChange()
+      unsubscribePlaylistsChange()
     }
   }, [guildID, sendMessage, subscribeToMessages])
 
+  const toggleFavouriteTrack = React.useCallback((track: TrackModel) => {
+    TrackService.update(track.id, { ...track, favourite: !track.favourite })
+  }, [])
+
+  const toggleFavouritePlaylist = React.useCallback((playlist: PlaylistModel) => {
+    PlaylistService.update(playlist.id, { ...playlist, favourite: !playlist.favourite })
+  }, [])
+
   return (
     <>
-      <CollectionList collection={items} enqueueTrack={enqueueTrack} enqueuePlaylist={enqueuePlaylist} />
+      <CollectionList
+        collection={items}
+        enqueueTrack={enqueueTrack}
+        enqueuePlaylist={enqueuePlaylist}
+        toggleFavouritePlaylist={toggleFavouritePlaylist}
+        toggleFavouriteTrack={toggleFavouriteTrack}
+      />
     </>
   )
 }
