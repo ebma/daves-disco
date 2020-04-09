@@ -37,9 +37,9 @@ function RecentHistoryTab(props: RecentHistoryTabProps) {
 
   return (
     <>
-        <CollectionList collection={items} enqueueTrack={enqueueTrack} enqueuePlaylist={enqueuePlaylist} />
+      <CollectionList collection={items} enqueueTrack={enqueueTrack} enqueuePlaylist={enqueuePlaylist} />
     </>
   )
 }
 
-export default RecentHistoryTab
+export default React.memo(RecentHistoryTab)

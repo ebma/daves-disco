@@ -228,7 +228,7 @@ function TabPanel(props: TabPanelProps) {
       hidden={value !== index}
       id={`scrollable-auto-tabpanel-${index}`}
     >
-      {value === index && <Box p={3}>{children}</Box>}
+      <Box p={3}>{children}</Box>
     </Typography>
   )
 }
