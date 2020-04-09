@@ -20,8 +20,13 @@ export const YoutubeHelper = {
   isYoutubePlaylist
 }
 
-function isSpotifyPlaylistURI(term: string) {
+function isSpotifyPlaylistUri(term: string) {
   const regex = /spotify:playlist:[\d\w]+/g
+  return term.match(regex)
+}
+
+function isSpotifyPlaylistUrl(term: string) {
+  const regex = /^https:\/\/open\.spotify\.com\/playlist\/[\d\w]+$/g
   return term.match(regex)
 }
 
@@ -39,9 +44,18 @@ function getIDFromUri(uri: string) {
   return id
 }
 
+function getIDFromUrl(url: string) {
+  const urlObject = new URL(url)
+  const pathNames = urlObject.pathname.split("/")
+  const id = pathNames[pathNames.length - 1]
+  return id
+}
+
 export const SpotifyHelper = {
   isSpotifyTrack,
   isSpotifyPlaylist,
-  isSpotifyPlaylistURI,
-  getIDFromUri
+  isSpotifyPlaylistUri,
+  isSpotifyPlaylistUrl,
+  getIDFromUri,
+  getIDFromUrl
 }

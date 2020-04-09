@@ -72,8 +72,16 @@ export async function handlePlay(input: string, guildID: GuildID, musicPlayer: M
     trySavingTrack(track, guildID)
 
     reply = createEmbedForTrack(track)
-  } else if (SpotifyHelper.isSpotifyPlaylistURI(input)) {
-    const playlistID = input.split(":")[input.split(":").length - 1]
+  } else if (SpotifyHelper.isSpotifyPlaylistUri(input)) {
+    const playlistID = SpotifyHelper.getIDFromUri(input)
+    const playlist = await handleSpotifyPlaylist(playlistID)
+
+    musicPlayer.enqueueAll(playlist.tracks)
+    trySavingPlaylist(playlist, guildID)
+
+    reply = createEmbedsForSpotifyPlaylist(playlist)
+  } else if (SpotifyHelper.isSpotifyPlaylistUrl(input)) {
+    const playlistID = SpotifyHelper.getIDFromUrl(input)
     const playlist = await handleSpotifyPlaylist(playlistID)
 
     musicPlayer.enqueueAll(playlist.tracks)

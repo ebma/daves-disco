@@ -15,7 +15,7 @@ function PlaySpotifyTab(props: PlaySpotifyTabProps) {
 
   React.useEffect(() => {
     const isValidValue = () => {
-      return SpotifyHelper.isSpotifyPlaylistURI(value)
+      return SpotifyHelper.isSpotifyPlaylistUri(value) || SpotifyHelper.isSpotifyPlaylistUrl(value)
     }
 
     if (value && !isValidValue()) {
@@ -30,8 +30,8 @@ function PlaySpotifyTab(props: PlaySpotifyTabProps) {
       <div style={{ display: "flex", flexWrap: "wrap" }}>
         <TextField
           error={Boolean(error)}
-          label={error ? error.message : "Enter spotify playlist URI"}
-          placeholder="spotify:playlist:asdfghjkl..."
+          label={error ? error.message : "Enter spotify playlist URL or URI"}
+          placeholder="https://open.spotify.com/playlist/..."
           style={{ flexGrow: 5 }}
           value={value}
           variant="outlined"
@@ -52,7 +52,7 @@ function PlaySpotifyTab(props: PlaySpotifyTabProps) {
       </div>
       <Typography component="div" color="textSecondary" variant="caption" style={{ paddingTop: 8 }}>
         <b>Hint:</b> You can find the URI of your playlist by right-clicking it in the overview and selecting "Share" >
-        "Copy Spotify URI".
+        "Copy Spotify Link" or "Copy Spotify URI" (both work).
       </Typography>
     </>
   )

@@ -59,7 +59,6 @@ function PlaylistItem(props: Props) {
     [onClick]
   )
 
-
   const FavorPlaylistButton = React.useMemo(() => {
     return toggleFavourite ? (
       <ListItemIcon
@@ -123,6 +122,13 @@ function PlaylistItem(props: Props) {
         className={classes.text}
         primary={playlist.name}
         primaryTypographyProps={{
+          style: {
+            overflow: "hidden",
+            whiteSpace: "nowrap",
+            textOverflow: "ellipsis"
+          }
+        }}
+        secondaryTypographyProps={{
           style: {
             overflow: "hidden",
             whiteSpace: "nowrap",
