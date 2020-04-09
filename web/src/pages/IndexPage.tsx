@@ -1,4 +1,5 @@
 import React from "react"
+import Box from "@material-ui/core/Box"
 import CssBaseline from "@material-ui/core/CssBaseline"
 import Container from "@material-ui/core/Container"
 import Grid from "@material-ui/core/Grid"
@@ -67,21 +68,19 @@ function IndexPage() {
         {connectionState === "connected" && guildID && userID ? (
           <>
             <Grid className={classes.item} item md={6} sm={12}>
-              <PlayerArea
-                currentQueue={currentQueue}
-                currentTrack={currentTrack}
-                disabled={currentQueue.length === 0}
-                guildID={guildID}
-              />
-            </Grid>
-            <Grid className={classes.item} item md={6} sm={12}>
-              <SearchArea guildID={guildID} userID={userID} />
+              <Box display="flex" flexDirection="column" height="100%" justifyContent="space-evenly">
+                <SearchArea guildID={guildID} userID={userID} style={{ marginBottom: 16 }} />
+                <PlayerArea
+                  currentQueue={currentQueue}
+                  currentTrack={currentTrack}
+                  disabled={currentQueue.length === 0}
+                  guildID={guildID}
+                  style={{ marginTop: 16 }}
+                />
+              </Box>
             </Grid>
             <Grid className={classes.item} item md={6} sm={12}>
               <MusicCollectionArea guildID={guildID} userID={userID} />
-            </Grid>
-            <Grid className={classes.item} item md={6} sm={12}>
-              <QueueArea currentQueue={currentQueue} currentTrack={currentTrack} guildID={guildID} />
             </Grid>
           </>
         ) : (

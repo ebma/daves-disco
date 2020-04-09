@@ -1,18 +1,17 @@
 import React from "react"
+import Box from "@material-ui/core/Box"
 import Paper from "@material-ui/core/Paper"
+import makeStyles from "@material-ui/styles/makeStyles"
 import Tab from "@material-ui/core/Tab"
 import Tabs from "@material-ui/core/Tabs"
 import { Theme, createStyles } from "@material-ui/core/styles"
-import makeStyles from "@material-ui/styles/makeStyles"
+import Typography from "@material-ui/core/Typography"
 import { SocketContext } from "../../context/socket"
 import { trackError } from "../../context/notifications"
 import { Messages } from "../../shared/ipc"
-import TrackService from "../../services/tracks"
-import PlaylistService from "../../services/playlists"
-import Typography from "@material-ui/core/Typography"
 import RecentHistoryTab from "./RecentHistoryTab"
-import Box from "@material-ui/core/Box"
 import FavouritesTab from "./FavouritesTab"
+import QueueTab from "./QueueTab"
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -90,6 +89,9 @@ function MusicCollectionArea(props: MusicCollectionAreaProps) {
         <Tab label="Recent History" />
         <Tab label="Favourites" />
       </Tabs>
+      <TabPanel value={tab} index={0}>
+        <QueueTab guildID={guildID} enqueueTrack={enqueueTrack} />
+      </TabPanel>
       <TabPanel value={tab} index={1}>
         <RecentHistoryTab guildID={guildID} enqueueTrack={enqueueTrack} enqueuePlaylist={enqueuePlaylist} />
       </TabPanel>

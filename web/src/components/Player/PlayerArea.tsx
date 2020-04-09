@@ -73,10 +73,11 @@ interface Props {
   currentQueue: Track[]
   disabled?: boolean
   guildID: GuildID
+  style?: React.CSSProperties
 }
 
 function PlayerArea(props: Props) {
-  const { currentTrack, disabled, guildID } = props
+  const { currentTrack, disabled, guildID, style } = props
 
   const { isPlayerAvailable } = React.useContext(GuildContext)
   const { connectionState, sendMessage, subscribeToMessages } = React.useContext(SocketContext)
@@ -104,7 +105,7 @@ function PlayerArea(props: Props) {
   }, [connectionState, guildID, isPlayerAvailable, sendMessage, subscribeToMessages])
 
   return (
-    <Paper style={{ padding: 16 }}>
+    <Paper style={{ ...style, padding: 16 }}>
       <Grid container direction="row" alignItems="center" spacing={5}>
         <Grid item sm={6} xs={12}>
           <CurrentSongCard currentTrack={currentTrack} style={{ alignSelf: "flex-start" }} />

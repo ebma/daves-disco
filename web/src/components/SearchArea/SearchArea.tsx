@@ -19,9 +19,7 @@ import { SpotifyHelper, YoutubeHelper } from "../../shared/utils/helpers"
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    root: {
-      flexGrow: 1
-    }
+    root: {}
   })
 )
 
@@ -31,7 +29,7 @@ interface SearchYoutubeTabProps {
 }
 
 function SearchYoutubeTab(props: SearchYoutubeTabProps) {
-  const {getTracks, onSearchDone} = props
+  const { getTracks, onSearchDone } = props
   const [inputValue, setInputValue] = React.useState("")
   const [options, setOptions] = React.useState<Track[]>([])
   const [selectedTrack, setSelectedTrack] = React.useState<Track | null>(null)
@@ -160,7 +158,6 @@ function PlayYoutubeTab(props: PlayYoutubeTabProps) {
   )
 }
 
-
 interface PlaySpotifyTabProps {
   onSearchDone: (searchTerm: string) => void
 }
@@ -239,10 +236,11 @@ function TabPanel(props: TabPanelProps) {
 interface SearchAreaProps {
   guildID: GuildID
   userID: UserID
+  style?: React.CSSProperties
 }
 
 function SearchArea(props: SearchAreaProps) {
-  const { guildID, userID } = props
+  const { guildID, userID, style } = props
   const classes = useStyles()
 
   const { sendMessage } = React.useContext(SocketContext)
@@ -271,7 +269,7 @@ function SearchArea(props: SearchAreaProps) {
   )
 
   return (
-    <Paper className={classes.root}>
+    <Paper className={classes.root} style={style}>
       <Tabs
         indicatorColor="primary"
         onChange={handleChange}
