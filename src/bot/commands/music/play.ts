@@ -90,3 +90,16 @@ export async function handlePlay(input: string, guildID: GuildID, musicPlayer: M
   }
   return reply
 }
+
+export async function playPlaylist(playlist: Playlist, guildID: GuildID, musicPlayer: MusicPlayer) {
+  const populatedPlaylist =
+    playlist.source === "spotify" ? await handleSpotifyPlaylist(playlist.id) : await getYoutubePlaylist(playlist.id)
+
+  musicPlayer.enqueueAll(populatedPlaylist.tracks)
+  trySavingPlaylist(populatedPlaylist, guildID)
+}
+
+export async function playTrack(track: Track, guildID: GuildID, musicPlayer: MusicPlayer) {
+  musicPlayer.enqueue(track)
+  trySavingTrack(track, guildID)
+}

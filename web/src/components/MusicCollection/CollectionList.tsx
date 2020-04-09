@@ -117,36 +117,28 @@ const MusicItemList = React.memo(function MusicItemList(props: MusicItemListProp
 
 interface Props {
   collection: MusicItem[]
-  enqueue: (id: string) => void
+  enqueueTrack: (track: Track) => void
+  enqueuePlaylist: (playlist: Playlist) => void
 }
 
 function CollectionList(props: Props) {
-  const { collection, enqueue } = props
+  const { collection, enqueueTrack, enqueuePlaylist } = props
 
   const [selectedPlaylist, setSelectedPlaylist] = React.useState<PlaylistModel | null>(null)
 
   const selectedTracks = selectedPlaylist?.tracks?.map(track => ({ ...track, guild: "" }))
 
   const onEnqueueAll = React.useCallback(() => {
-    const id = selectedPlaylist && (selectedPlaylist.uri ? selectedPlaylist.uri : selectedPlaylist.url)
-    if (id) {
-      enqueue(id)
+    if (selectedPlaylist) {
+      enqueuePlaylist(selectedPlaylist)
     }
-  }, [enqueue, selectedPlaylist])
+  }, [enqueuePlaylist, selectedPlaylist])
 
   const onTrackSelect = React.useCallback(
     (track: TrackModel) => {
-      if (track.url) {
-        enqueue(track.url)
-      } else {
-        if ((track as SpotifyTrack).artists) {
-          enqueue(`${track.title} - ${track.artists}`)
-        } else {
-          enqueue(track.title)
-        }
-      }
+      enqueueTrack(track)
     },
-    [enqueue]
+    [enqueueTrack]
   )
 
   const onPlaylistSelect = React.useCallback((playlist: PlaylistModel) => {

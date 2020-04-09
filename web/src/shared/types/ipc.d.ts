@@ -20,6 +20,9 @@ declare namespace IPC {
     GetPausedState: "GetPausedState"
     UpdateQueue: "UpdateQueue"
 
+    PlayTrack: "PlayTrack"
+    PlayPlaylist: "PlayPlaylist"
+
     GetTracksFromTerm: "GetTracksFromTerm"
 
     // Subscribable Info Messages
@@ -53,6 +56,9 @@ declare namespace IPC {
     [Messages.GetVolume]: (guildID: GuildID) => number
     [Messages.GetPausedState]: (guildID: GuildID) => boolean
     [Messages.UpdateQueue]: (guildID: GuildID, newItems: Track[]) => void
+
+    [Messages.PlayTrack]: (guildID: GuildID, userID: UserID, track: Track) => void
+    [Messages.PlayPlaylist]: (guildID: GuildID, userID: UserID, playlist: Playlist) => void
 
     [Messages.GetTracksFromTerm]: (term: string) => Track[]
 

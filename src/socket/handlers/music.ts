@@ -1,7 +1,7 @@
 import { WebSocketHandler } from "../WebSocketHandler"
 import { Messages } from "../../shared/ipc"
 import { MyClient } from "../../bot/MyClient"
-import { handlePlay } from "../../bot/commands/music/play"
+import { handlePlay, playTrack, playPlaylist } from "../../bot/commands/music/play"
 import { MusicPlayerManager } from "../../libs/MusicPlayerManager"
 
 function requirePlayer(guildID: string, musicPlayerManager: MusicPlayerManager) {
@@ -27,6 +27,38 @@ const createPlayRequestHandler = (musicPlayerManager: MusicPlayerManager, client
       }
     }
     await handlePlay(query, guildID, player)
+  }
+
+const createPlayTrackRequestHandler = (musicPlayerManager: MusicPlayerManager, client: MyClient) =>
+  async function handlePlayTrackRequest(guildID: string, userID: string, track: Track) {
+    let player = musicPlayerManager.getPlayerFor(guildID)
+    if (!player) {
+      const userGuild = client.guilds.cache.find(guild => guild.id === guildID)
+      const user = userGuild.members.cache.find(member => member.id === userID)
+      const channel = user?.voice.channel
+      if (channel) {
+        player = await musicPlayerManager.createPlayerFor(guildID, channel)
+      } else {
+        throw Error("User is not connected to voice channel!")
+      }
+    }
+    await playTrack(track, guildID, player)
+  }
+
+const createPlayPlaylistRequestHandler = (musicPlayerManager: MusicPlayerManager, client: MyClient) =>
+  async function handlePlayPlaylistRequest(guildID: string, userID: string, playlist: Playlist) {
+    let player = musicPlayerManager.getPlayerFor(guildID)
+    if (!player) {
+      const userGuild = client.guilds.cache.find(guild => guild.id === guildID)
+      const user = userGuild.members.cache.find(member => member.id === userID)
+      const channel = user?.voice.channel
+      if (channel) {
+        player = await musicPlayerManager.createPlayerFor(guildID, channel)
+      } else {
+        throw Error("User is not connected to voice channel!")
+      }
+    }
+    await playPlaylist(playlist, guildID, player)
   }
 
 const createPauseRequestHandler = (musicPlayerManager: MusicPlayerManager) =>
@@ -113,6 +145,8 @@ export function initPlayerHandlers(
   musicPlayerManager: MusicPlayerManager
 ) {
   handler.addHandler(Messages.Play, createPlayRequestHandler(musicPlayerManager, client))
+  handler.addHandler(Messages.PlayTrack, createPlayTrackRequestHandler(musicPlayerManager, client))
+  handler.addHandler(Messages.PlayPlaylist, createPlayPlaylistRequestHandler(musicPlayerManager, client))
   handler.addHandler(Messages.Pause, createPauseRequestHandler(musicPlayerManager))
   handler.addHandler(Messages.Resume, createResumeRequestHandler(musicPlayerManager))
   handler.addHandler(Messages.Skip, createSkipRequestHandler(musicPlayerManager))

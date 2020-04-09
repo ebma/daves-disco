@@ -64,9 +64,16 @@ function MusicCollectionArea(props: MusicCollectionAreaProps) {
     }
   }, [guildID, sendMessage, subscribeToMessages])
 
-  const onSearchDone = React.useCallback(
-    async input => {
-      sendMessage(Messages.Play, guildID, userID, input).catch(trackError)
+  const enqueueTrack = React.useCallback(
+    async track => {
+      sendMessage(Messages.PlayTrack, guildID, userID, track).catch(trackError)
+    },
+    [guildID, userID, sendMessage]
+  )
+
+  const enqueuePlaylist = React.useCallback(
+    async playlist => {
+      sendMessage(Messages.PlayPlaylist, guildID, userID, playlist).catch(trackError)
     },
     [guildID, userID, sendMessage]
   )
@@ -91,7 +98,7 @@ function MusicCollectionArea(props: MusicCollectionAreaProps) {
         <Tab label="Recent History" />
         <Tab label="Favourites" />
       </Tabs>
-      <CollectionList collection={items} enqueue={onSearchDone} />
+      <CollectionList collection={items} enqueueTrack={enqueueTrack} enqueuePlaylist={enqueuePlaylist} />
     </Paper>
   )
 }

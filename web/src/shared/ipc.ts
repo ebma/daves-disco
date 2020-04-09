@@ -18,6 +18,9 @@ export const Messages: IPC.MessageType = {
   GetPausedState: "GetPausedState",
   UpdateQueue: "UpdateQueue",
 
+  PlayTrack: "PlayTrack",
+  PlayPlaylist: "PlayPlaylist",
+
   GetTracksFromTerm: "GetTracksFromTerm",
 
   CurrentTrack: "CurrentTrack",
