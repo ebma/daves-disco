@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken"
 import Playlist, { IPlaylist } from "../../db/models/playlist"
 import config from "../../utils/config"
 import Spotify from "../../libs/Spotify"
+import Youtube from "../../libs/Youtube"
 
 const router = Router()
 
@@ -28,16 +29,7 @@ router.get("/", async (request: PlaylistRequest, response) => {
 
   const playlists = await query.exec()
 
-  const populatedPlaylists = await Promise.all(
-    playlists.map(async playlist => {
-      const populatedPlaylist = await Spotify.getSpotifyPlaylist(playlist.id)
-      const object: IPlaylist = { ...playlist.toJSON(), tracks: populatedPlaylist.tracks }
-
-      return object
-    })
-  )
-
-  response.json(populatedPlaylists)
+  response.json(playlists)
 })
 
 router.post("/", async (request: PlaylistRequest, response) => {
@@ -68,9 +60,16 @@ router.post("/", async (request: PlaylistRequest, response) => {
 })
 
 router.get("/:id", async (request: PlaylistRequest, response) => {
-  const playlist = await Playlist.findById(request.params.id)
+  const playlist = await Playlist.findOne({ id: request.params.id })
   if (playlist) {
-    response.json(playlist.toJSON())
+    const populatedPlaylist =
+      playlist.source === "spotify"
+        ? await Spotify.getSpotifyPlaylist(playlist.id)
+        : await Youtube.createPlaylistFrom(playlist.id)
+
+    const playlistModel: IPlaylist = { ...playlist.toJSON(), tracks: populatedPlaylist.tracks }
+
+    response.json(playlistModel)
   } else {
     response.status(404).end()
   }

@@ -10,6 +10,8 @@ import ArrowBackIcon from "@material-ui/icons/ArrowBack"
 import FavoriteIcon from "@material-ui/icons/Favorite"
 import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder"
 import PlayIcon from "@material-ui/icons/PlayArrow"
+import PlaylistService from "../../services/playlists"
+import { trackError } from "../../context/notifications"
 
 function isTrack(item: MusicItem): item is TrackModel {
   return (item as TrackModel).title !== undefined
@@ -121,19 +123,19 @@ interface Props {
 function CollectionList(props: Props) {
   const { collection, enqueue } = props
 
-  const [selected, setSelected] = React.useState<PlaylistModel | null>(null)
+  const [selectedPlaylist, setSelectedPlaylist] = React.useState<PlaylistModel | null>(null)
 
-  const selectedTracks = selected?.tracks?.map(track => ({ ...track, guild: "" }))
+  const selectedTracks = selectedPlaylist?.tracks?.map(track => ({ ...track, guild: "" }))
 
   const onEnqueueAll = React.useCallback(() => {
-    const id = selected && (selected.uri ? selected.uri : selected.url)
+    const id = selectedPlaylist && (selectedPlaylist.uri ? selectedPlaylist.uri : selectedPlaylist.url)
     if (id) {
       enqueue(id)
     }
-  }, [enqueue, selected])
+  }, [enqueue, selectedPlaylist])
 
   const onTrackSelect = React.useCallback(
-    (track: Track) => {
+    (track: TrackModel) => {
       if (track.url) {
         enqueue(track.url)
       } else {
@@ -147,6 +149,12 @@ function CollectionList(props: Props) {
     [enqueue]
   )
 
+  const onPlaylistSelect = React.useCallback((playlist: PlaylistModel) => {
+    PlaylistService.get(playlist.id)
+      .then(setSelectedPlaylist)
+      .catch(trackError)
+  }, [])
+
   const NoItemsInfo = React.useMemo(
     () => (
       <Typography color="textPrimary" style={{ padding: 16 }}>
@@ -159,10 +167,10 @@ function CollectionList(props: Props) {
   return (
     <>
       {collection.length === 0 && NoItemsInfo}
-      {selected && (
+      {selectedPlaylist && (
         <PlaylistHeader
-          favourite={selected.favourite || false}
-          onBack={() => setSelected(null)}
+          favourite={selectedPlaylist.favourite || false}
+          onBack={() => setSelectedPlaylist(null)}
           onEnqueueAll={onEnqueueAll}
           onToggleFavourite={() => undefined}
         />
@@ -170,7 +178,7 @@ function CollectionList(props: Props) {
       <MusicItemList
         items={selectedTracks ? selectedTracks : collection}
         onTrackSelect={onTrackSelect}
-        onPlaylistSelect={setSelected}
+        onPlaylistSelect={onPlaylistSelect}
       />
     </>
   )
