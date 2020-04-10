@@ -67,7 +67,9 @@ class MusicPlayer {
   }
 
   clear() {
-    this.updateQueue([])
+    // clear everything excepct current track to not stop playing
+    const currentTrack = this.currentTrack
+    this.updateQueue([currentTrack])
   }
 
   pauseStream() {
