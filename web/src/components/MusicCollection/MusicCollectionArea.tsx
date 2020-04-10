@@ -16,8 +16,15 @@ import QueueTab from "./Tab/QueueTab"
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
+      display: "flex",
+      flexDirection: "column",
       height: "100%"
     },
+    tabPanel: {
+      height: "60vh",
+      flexGrow: 1,
+      overflow: "auto"
+    }
   })
 )
 
@@ -29,10 +36,11 @@ interface TabPanelProps {
 
 function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props
-
+  const classes = useStyles()
   return (
     <Typography
       {...other}
+      className={classes.tabPanel}
       component="div"
       role="tabpanel"
       hidden={value !== index}

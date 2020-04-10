@@ -88,9 +88,7 @@ function QueueTab(props: QueueTabProps) {
   return (
     <>
       {currentQueue.length > 0 && <QueueHeader onClearClick={clear} onShuffleClick={shuffle} />}
-      <Box padding="0px 16px">
-        <QueueList currentQueue={currentQueue} currentTrack={currentTrack} guildID={guildID} />
-      </Box>
+      <QueueList currentQueue={currentQueue} currentTrack={currentTrack} guildID={guildID} />
     </>
   )
 }

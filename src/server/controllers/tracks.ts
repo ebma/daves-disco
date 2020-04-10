@@ -83,7 +83,7 @@ router.put("/:id", (request: TrackRequest, response, next) => {
     url: body.url
   }
 
-  Track.findOneAndUpdate({ id: request.params.id }, track, { new: true })
+  Track.findOneAndUpdate({ id: request.params.id }, track, { new: true, upsert: true })
     .then(updatedTrack => {
       response.json(updatedTrack.toJSON())
       WebSocketHandler.sendMessage(Messages.TracksChange, track.guild)

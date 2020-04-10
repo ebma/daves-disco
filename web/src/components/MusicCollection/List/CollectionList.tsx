@@ -5,6 +5,7 @@ import PlaylistItem from "../Item/PlaylistItem"
 import { makeStyles } from "@material-ui/core/styles"
 import Box from "@material-ui/core/Box"
 import Button from "@material-ui/core/Button"
+import Divider from "@material-ui/core/Divider"
 import Typography from "@material-ui/core/Typography"
 import ArrowBackIcon from "@material-ui/icons/ArrowBack"
 import PlayIcon from "@material-ui/icons/PlayArrow"
@@ -22,8 +23,7 @@ function isPlaylist(item: MusicItem): item is PlaylistModel {
 const useStyles = makeStyles({
   root: {
     padding: 16,
-    maxHeight: "50vh",
-    overflowY: "auto"
+    paddingTop: 8,
   }
 })
 
@@ -73,29 +73,35 @@ const MusicItemList = React.memo(function MusicItemList(props: MusicItemListProp
 
   const collectionItems = React.useMemo(
     () =>
-      items.map(item => {
+      items.map((item, index) => {
         if (isTrack(item)) {
           return (
-            <TrackItem
-              key={item.id}
-              favourite={item.favourite}
-              track={item}
-              onClick={() => onTrackSelect(item)}
-              toggleFavourite={() => toggleFavouriteTrack(item)}
-            />
+            <>
+              {index > 0 && <Divider variant="inset" component="li" />}
+              <TrackItem
+                key={item.id}
+                favourite={item.favourite}
+                track={item}
+                onClick={() => onTrackSelect(item)}
+                toggleFavourite={() => toggleFavouriteTrack(item)}
+              />
+            </>
           )
         } else if (isPlaylist(item)) {
           return (
-            <PlaylistItem
-              key={item.id}
-              favourite={item.favourite}
-              onClick={() => onPlaylistSelect(item)}
-              playlist={item}
-              toggleFavourite={() => toggleFavouritePlaylist(item)}
-            />
+            <>
+              {index > 0 && <Divider variant="inset" component="li" />}
+              <PlaylistItem
+                key={item.id}
+                favourite={item.favourite}
+                onClick={() => onPlaylistSelect(item)}
+                playlist={item}
+                toggleFavourite={() => toggleFavouritePlaylist(item)}
+              />
+            </>
           )
         } else {
-          throw Error(`Unknown item ${item}`)
+          throw Error(`Unknown item ${JSON.stringify(item)}`)
         }
       }),
     [items, onPlaylistSelect, onTrackSelect, toggleFavouritePlaylist, toggleFavouriteTrack]
@@ -117,7 +123,7 @@ function CollectionList(props: Props) {
 
   const [selectedPlaylist, setSelectedPlaylist] = React.useState<PlaylistModel | null>(null)
 
-  const selectedTracks = selectedPlaylist?.tracks?.map(track => ({ ...track, guild: "" }))
+  const selectedTracks = selectedPlaylist?.tracks?.map(track => ({ ...track, guild: selectedPlaylist.guild }))
 
   const onEnqueueAll = React.useCallback(() => {
     if (selectedPlaylist) {
