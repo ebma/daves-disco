@@ -1,12 +1,11 @@
 import React from "react"
 import { ThemeProvider } from "@material-ui/core/styles"
-import IndexPage from "./pages/IndexPage"
-import { GuildProvider } from "./context/guild"
-import { SocketProvider } from "./context/socket"
-import NotificationContainer from "./components/Notification/NotificationContainer"
-import { NotificationsProvider } from "./context/notifications"
-import createTheme from "./theme"
-import { ColorSchemeContext, ColorSchemeProvider } from "./context/colorScheme"
+import IndexPage from "../pages/IndexPage"
+import { ColorSchemeContext, ColorSchemeProvider } from "../context/colorScheme"
+import NotificationContainer from "../components/Notification/NotificationContainer"
+import { NotificationsProvider } from "../context/notifications"
+import createTheme from "../theme"
+import ErrorHandler from "./ErrorHandler"
 
 function MaterialThemeProvider(props: { children: React.ReactNode }) {
   const { colorScheme } = React.useContext(ColorSchemeContext)
@@ -22,12 +21,9 @@ function App() {
     <ColorSchemeProvider>
       <MaterialThemeProvider>
         <NotificationsProvider>
-          <SocketProvider>
-            <GuildProvider>
-              <IndexPage />
-              <NotificationContainer />
-            </GuildProvider>
-          </SocketProvider>
+          <IndexPage />
+          <ErrorHandler />
+          <NotificationContainer />
         </NotificationsProvider>
       </MaterialThemeProvider>
     </ColorSchemeProvider>
