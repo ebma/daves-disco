@@ -11,28 +11,14 @@ declare namespace IPC {
     Shuffle: "Shuffle"
     Volume: "Volume"
 
-    GetGuilds: "GetGuilds"
-    GetMembers: "GetMembers"
-    GetPlayerAvailable: "GetPlayerAvailable"
-    GetTrack: "GetTrack"
-    GetQueue: "GetQueue"
-    GetVolume: "GetVolume"
-    GetPausedState: "GetPausedState"
-    UpdateQueue: "UpdateQueue"
-
     PlayTrack: "PlayTrack"
     PlayPlaylist: "PlayPlaylist"
 
-    GetTracksFromTerm: "GetTracksFromTerm"
-
     // Subscribable Info Messages
-    CurrentTrack: "CurrentTrack"
-    CurrentQueue: "CurrentQueue"
     Error: "Error"
-    PauseChange: "PauseChange"
-    VolumeChange: "VolumeChange"
     TracksChange: "TracksChange"
     PlaylistsChange: "PlaylistsChange"
+    PlayerChange: "PlayerChange"
   }
 
   export type MessageType = typeof Messages
@@ -48,19 +34,8 @@ declare namespace IPC {
     [Messages.Shuffle]: (guildID: GuildID) => void
     [Messages.Volume]: (guildID: GuildID, newVolume: number) => void
 
-    [Messages.GetGuilds]: () => ReducedGuilds
-    [Messages.GetMembers]: (guildID: GuildID) => ReducedMembers
-    [Messages.GetPlayerAvailable]: (guildID: GuildID) => boolean
-    [Messages.GetTrack]: (guildID: GuildID) => Track
-    [Messages.GetQueue]: (guildID: GuildID) => Track[]
-    [Messages.GetVolume]: (guildID: GuildID) => number
-    [Messages.GetPausedState]: (guildID: GuildID) => boolean
-    [Messages.UpdateQueue]: (guildID: GuildID, newItems: Track[]) => void
-
     [Messages.PlayTrack]: (guildID: GuildID, userID: UserID, track: Track) => void
     [Messages.PlayPlaylist]: (guildID: GuildID, userID: UserID, playlist: Playlist) => void
-
-    [Messages.GetTracksFromTerm]: (term: string) => Track[]
 
     [Messages.CurrentTrack]: () => Track
     [Messages.CurrentQueue]: () => Track[]
@@ -70,6 +45,7 @@ declare namespace IPC {
 
     [Messages.TracksChange]: () => void
     [Messages.PlaylistsChange]: () => void
+    [Messages.PlayerChange]: () => void
   }
 
   export type MessageArgs<Message extends keyof MessageType> = MessageSignatures[Message] extends () => any
@@ -95,6 +71,7 @@ declare namespace IPC {
 
   export interface ServerMessage<Message extends keyof MessageType> {
     data: MessageReturnType<Message>
+    guildID: GuildID
     messageType: Message
     messageID: number
   }

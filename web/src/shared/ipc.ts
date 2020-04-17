@@ -9,26 +9,12 @@ export const Messages: IPC.MessageType = {
   Shuffle: "Shuffle",
   Volume: "Volume",
 
-  GetGuilds: "GetGuilds",
-  GetMembers: "GetMembers",
-  GetPlayerAvailable: "GetPlayerAvailable",
-  GetTrack: "GetTrack",
-  GetQueue: "GetQueue",
-  GetVolume: "GetVolume",
-  GetPausedState: "GetPausedState",
-  UpdateQueue: "UpdateQueue",
-
   PlayTrack: "PlayTrack",
   PlayPlaylist: "PlayPlaylist",
 
-  GetTracksFromTerm: "GetTracksFromTerm",
-
-  CurrentTrack: "CurrentTrack",
-  CurrentQueue: "CurrentQueue",
   Error: "Error",
-  PauseChange: "PauseChange",
-  VolumeChange: "VolumeChange",
 
   TracksChange: "TracksChange",
-  PlaylistsChange: "PlaylistsChange"
+  PlaylistsChange: "PlaylistsChange",
+  PlayerChange: "PlayerChange"
 } as const

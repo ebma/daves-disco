@@ -8,6 +8,11 @@ interface Thumbnail {
   large?: string
 }
 
+interface TrackSearchResult {
+  title: string
+  url: string
+}
+
 interface Track {
   artists?: string
   id: string
@@ -20,9 +25,11 @@ interface Track {
 }
 
 interface TrackModel extends Track {
+  _id: string
   favourite?: boolean
   guild: string
-  lastTouchedAt?: Date
+  lastTouchedAt: string
+  touchedByUser: boolean
 }
 
 interface SpotifyTrack extends Track {
@@ -46,9 +53,11 @@ interface Playlist {
 }
 
 interface PlaylistModel extends Playlist {
+  _id: string
   favourite?: boolean
   guild: string
-  lastTouchedAt?: Date
+  lastTouchedAt: string
+  tracks: TrackModel[]
 }
 
 interface SpotifyPlaylist extends Playlist {
@@ -61,6 +70,14 @@ interface YoutubePlaylist extends Playlist {
   url: string
 }
 
+interface PlayerModel {
+  available: boolean
+  currentTrack: TrackModel | null
+  paused: boolean
+  queue: TrackModel[]
+  volume: number
+}
+
 // --- DISCORD ---
 
 type MessageID = number
@@ -69,7 +86,7 @@ type UserID = string
 type ReducedGuilds = { id: string; name: string }[]
 type ReducedMembers = { id: string; name: string }[]
 
-type ConnectionState = "disconnected" | "reconnecting" | "connected"
+type ConnectionState = "disconnected" | "reconnecting" | "connected" | "authenticated"
 
 interface MusicPlayerSubjectMessage {
   messageType: "status" | "info" | "error" | "debug"
@@ -93,3 +110,5 @@ interface DecodedToken {
   guildID: string
   userID: string
 }
+
+type UnsubscribeFn = () => void
