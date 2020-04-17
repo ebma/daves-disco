@@ -15,6 +15,7 @@ const TrackSchema: Schema = new Schema<TrackModel>({
     medium: { type: String, required: false },
     large: { type: String, required: false }
   },
+  touchedByUser: { type: Boolean, default: false },
   url: { type: String, required: false }
 }).index({ id: 1, guild: 1 }, { unique: true })
 
