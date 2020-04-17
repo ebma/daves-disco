@@ -3,31 +3,8 @@ import Youtube from "../../../libs/Youtube"
 import Spotify from "../../../libs/Spotify"
 import { createEmbedForTrack, createEmbedForTracks, createEmbedsForSpotifyPlaylist } from "../../../utils/embeds"
 import MusicPlayer from "../../../libs/MusicPlayer"
-import Playlist from "../../../db/models/playlist"
-import Track from "../../../db/models/track"
 import { SpotifyHelper } from "../../../shared/utils/helpers"
-
-function trySavingPlaylist(playlist: Playlist, guildID: GuildID) {
-  const playlistModel = new Playlist({ guild: guildID, ...playlist })
-  playlistModel.save({}, err => {
-    if (err) {
-      console.log(`Saving playlist '${playlist.name}' failed`, err.message)
-    } else {
-      // notifyTracksChange(guildID)
-    }
-  })
-}
-
-function trySavingTrack(track: Track, guildID: GuildID) {
-  const trackModel = new Track({ guild: guildID, ...track })
-  trackModel.save({}, err => {
-    if (err) {
-      console.log(`Saving track '${track.title}' failed`, err.message)
-    } else {
-      // notifyTracksChange(guildID)
-    }
-  })
-}
+import { createAndSavePlaylistModel, createAndSaveTrackModel } from "../../../db/models/helper"
 
 async function getTrackFromYoutubeVideo(videoURL: string) {
   const track = await Youtube.createTrackFromURL(videoURL)
@@ -61,38 +38,38 @@ export async function handlePlay(input: string, guildID: GuildID, musicPlayer: M
     const playlistID = new URL(input).searchParams.get("list")
     const playlist = await getYoutubePlaylist(playlistID)
 
-    musicPlayer.enqueueAll(playlist.tracks)
-    trySavingPlaylist(playlist, guildID)
+    const playlistModel = await createAndSavePlaylistModel(playlist, guildID)
+    musicPlayer.enqueueAll(playlistModel.tracks)
 
     reply = createEmbedForTracks(playlist.tracks)
   } else if (Youtube.isYoutubeVideo(input)) {
     const track = await getTrackFromYoutubeVideo(input)
 
-    musicPlayer.enqueue(track)
-    trySavingTrack(track, guildID)
+    const trackModel = await createAndSaveTrackModel(track, guildID)
+    musicPlayer.enqueue(trackModel)
 
     reply = createEmbedForTrack(track)
   } else if (SpotifyHelper.isSpotifyPlaylistUri(input)) {
     const playlistID = SpotifyHelper.getIDFromUri(input)
     const playlist = await handleSpotifyPlaylist(playlistID)
 
-    musicPlayer.enqueueAll(playlist.tracks)
-    trySavingPlaylist(playlist, guildID)
+    const playlistModel = await createAndSavePlaylistModel(playlist, guildID)
+    musicPlayer.enqueueAll(playlistModel.tracks)
 
     reply = createEmbedsForSpotifyPlaylist(playlist)
   } else if (SpotifyHelper.isSpotifyPlaylistUrl(input)) {
     const playlistID = SpotifyHelper.getIDFromUrl(input)
     const playlist = await handleSpotifyPlaylist(playlistID)
 
-    musicPlayer.enqueueAll(playlist.tracks)
-    trySavingPlaylist(playlist, guildID)
+    const playlistModel = await createAndSavePlaylistModel(playlist, guildID)
+    musicPlayer.enqueueAll(playlistModel.tracks)
 
     reply = createEmbedsForSpotifyPlaylist(playlist)
   } else {
     const track = await handleSearch(input)
 
-    musicPlayer.enqueue(track)
-    trySavingTrack(track, guildID)
+    const trackModel = await createAndSaveTrackModel(track, guildID)
+    musicPlayer.enqueue(trackModel)
 
     reply = createEmbedForTrack(track)
   }
@@ -103,11 +80,11 @@ export async function playPlaylist(playlist: Playlist, guildID: GuildID, musicPl
   const populatedPlaylist =
     playlist.source === "spotify" ? await handleSpotifyPlaylist(playlist.id) : await getYoutubePlaylist(playlist.id)
 
-  musicPlayer.enqueueAll(populatedPlaylist.tracks)
-  trySavingPlaylist(populatedPlaylist, guildID)
+  const playlistModel = await createAndSavePlaylistModel(populatedPlaylist, guildID)
+  musicPlayer.enqueueAll(playlistModel.tracks)
 }
 
 export async function playTrack(track: Track, guildID: GuildID, musicPlayer: MusicPlayer) {
-  musicPlayer.enqueue(track)
-  trySavingTrack(track, guildID)
+  const trackModel = await createAndSaveTrackModel(track, guildID)
+  musicPlayer.enqueue(trackModel)
 }
