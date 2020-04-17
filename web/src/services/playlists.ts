@@ -1,6 +1,6 @@
 import axios from "./axios-client"
 
-const baseUrl = "/api/playlists/"
+const baseUrl = "/api/playlists"
 
 const getAll = async (guildID?: GuildID): Promise<PlaylistModel[]> => {
   const response = await axios.get(baseUrl, {
@@ -21,8 +21,12 @@ const getFavourites = async (guildID?: GuildID): Promise<PlaylistModel[]> => {
   return response.data
 }
 
-const get = async (id: string): Promise<PlaylistModel> => {
-  const response = await axios.get(baseUrl + id)
+const get = async (id: string, useCached: boolean = true): Promise<PlaylistModel> => {
+  const response = await axios.get(`${baseUrl}/${id}`, {
+    params: {
+      cached: useCached
+    }
+  })
   return response.data
 }
 
