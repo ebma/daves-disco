@@ -1,5 +1,6 @@
 import { createEmbedForTracks } from "../../../utils/embeds"
 import { MusicCommand } from "./MusicCommand"
+import Track from "../../../db/models/track"
 
 class QueueCommand extends MusicCommand {
   constructor() {
@@ -10,7 +11,7 @@ class QueueCommand extends MusicCommand {
   }
 
   async execute() {
-    const tracks = this.musicPlayer.remainingTracks
+    const tracks = await Track.find({ _id: { $in: this.musicPlayer.remainingTracks } })
 
     if (tracks.length === 0) {
       return this.sendMessageToChannel("I've nothing to play... :flushed:")
