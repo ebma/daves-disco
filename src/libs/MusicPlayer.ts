@@ -3,26 +3,32 @@ import { PartialObserver, Subject, Subscription } from "rxjs"
 import { trackError } from "../utils/trackError"
 import ObservableQueue from "./ObservableQueue"
 import StreamManager from "./StreamManager"
+import Youtube from "./Youtube"
+import { createAndSaveTrackModel, updateTrackModel } from "../db/models/helper"
+import Track from "../db/models/track"
+
+type TrackModelID = string
 
 class MusicPlayer {
   destroyed = false
-  queue: ObservableQueue<Track>
+  queue: ObservableQueue<TrackModelID>
   private streamManager: StreamManager
   private subject: Subject<MusicPlayerSubjectMessage>
-  private playingTrack: Track
+  private playingTrack: TrackModel
 
   constructor(streamManager: StreamManager) {
     this.streamManager = streamManager
-    this.queue = new ObservableQueue<Track>()
+    this.queue = new ObservableQueue<TrackModelID>()
     this.subject = new Subject<MusicPlayerSubjectMessage>()
 
-    this.queue.subscribe((currentTrack, currentQueue) => {
-      if (currentTrack?.id !== this.playingTrack?.id) {
+    this.queue.subscribe(async (currentTrack, currentQueue) => {
+      if (currentTrack !== this.playingTrack?._id) {
         streamManager.endCurrent()
+        const currentTrackModel = await Track.findById(currentTrack)
         if (currentTrack) {
-          this.startStreaming(currentTrack)
+          this.startStreaming(currentTrackModel)
         }
-        this.playingTrack = currentTrack
+        this.playingTrack = currentTrackModel
       }
       this.subject.next({ messageType: "status", message: "current-track", data: currentTrack })
       this.subject.next({ messageType: "status", message: "current-queue", data: currentQueue })
@@ -58,12 +64,12 @@ class MusicPlayer {
     }
   }
 
-  enqueue(track: Track) {
-    this.queue.addElement(track)
+  enqueue(track: TrackModel) {
+    this.queue.addElement(track._id)
   }
 
-  enqueueAll(tracks: Track[]) {
-    this.queue.addAll(tracks)
+  enqueueAll(tracks: TrackModel[]) {
+    this.queue.addAll(tracks.map(track => track._id))
   }
 
   clear() {
@@ -108,7 +114,7 @@ class MusicPlayer {
     const currentItem = this.queue.getCurrent()
     const shuffledItemList = _.shuffle(this.queue.getAll())
 
-    const foundIndex = shuffledItemList.findIndex(track => track.id === currentItem.id)
+    const foundIndex = shuffledItemList.findIndex(track => track === currentItem)
     const newIndex = foundIndex !== -1 ? foundIndex : 0
 
     this.queue.replace(shuffledItemList, newIndex)
@@ -122,17 +128,24 @@ class MusicPlayer {
     this.queue.moveBack(amount)
   }
 
-  updateQueue(newItems: Track[]) {
+  updateQueue(newItems: TrackModelID[]) {
     const currentItem = this.queue.getCurrent()
 
-    const foundIndex = newItems.findIndex(track => track.id === currentItem.id)
+    const foundIndex = newItems.findIndex(track => track === currentItem)
     const newIndex = foundIndex !== -1 ? foundIndex : 0
 
     this.queue.replace(newItems, newIndex)
   }
 
-  private async startStreaming(track: Track) {
+  private async startStreaming(track: TrackModel) {
     try {
+      if (!track.url) {
+        const success = await Youtube.completePartialTrack(track)
+        updateTrackModel(track)
+        if (!success) {
+          throw new Error(`Could not get complete information about track ${track.title}!`)
+        }
+      }
       const streamObservable = await this.streamManager.playTrack(track)
       streamObservable.subscribe({
         next: message => this.observeStream(message, track)
@@ -148,7 +161,7 @@ class MusicPlayer {
     return this.subject.subscribe(observer)
   }
 
-  private observeStream(message: StreamManagerObservableMessage, track: Track) {
+  private observeStream(message: StreamManagerObservableMessage, track: TrackModel) {
     switch (message.type) {
       case "debug":
         console.log("observeStream debug info: ", message.data)

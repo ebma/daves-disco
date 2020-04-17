@@ -2,7 +2,7 @@ import _ from "lodash"
 
 export type SubscriptionCallback<T> = (currentElement: T, currentQueue: T[]) => void
 
-class ObservableQueue<T extends object> {
+class ObservableQueue<T extends object | string> {
   private itemList: T[] = []
   private observers: SubscriptionCallback<T>[] = []
   private currentIndex = 0

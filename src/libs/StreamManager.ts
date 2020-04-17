@@ -56,13 +56,6 @@ class StreamManager {
 
   async playTrack(track: Track) {
     try {
-      if (!track.url) {
-        const success = await Youtube.completePartialTrack(track)
-        if (!success) {
-          throw new Error(`Could not get complete information about track ${track.title}!`)
-        }
-      }
-
       const stream = await Youtube.createReadableStreamFor(track)
       const dispatcher = this.voiceConnection.play(stream, { volume: this.volume, highWaterMark: 512, type: "opus" })
       this.dispatcher = dispatcher
