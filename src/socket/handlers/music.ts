@@ -109,42 +109,6 @@ const createVolumeRequestHandler = (musicPlayerManager: MusicPlayerManager) =>
     return player.setVolume(volume)
   }
 
-const createGetPlayerAvailableRequestHandler = (musicPlayerManager: MusicPlayerManager) =>
-  function handleGetPlayerAvailableRequest(guildID: string) {
-    const player = musicPlayerManager.getPlayerFor(guildID)
-    return Boolean(player)
-  }
-
-const createGetTrackRequestHandler = (musicPlayerManager: MusicPlayerManager) =>
-  function handleGetTrackRequest(guildID: string) {
-    const player = requirePlayer(guildID, musicPlayerManager)
-    return player.currentTrack
-  }
-
-const createGetQueueRequestHandler = (musicPlayerManager: MusicPlayerManager) =>
-  function handleGetQueueRequest(guildID: string) {
-    const player = requirePlayer(guildID, musicPlayerManager)
-    return player.queue.getAll()
-  }
-
-const createGetVolumeRequestHandler = (musicPlayerManager: MusicPlayerManager) =>
-  function handleGetVolumeRequest(guildID: string) {
-    const player = requirePlayer(guildID, musicPlayerManager)
-    return player.volume
-  }
-
-const createGetPausedStateRequestHandler = (musicPlayerManager: MusicPlayerManager) =>
-  function handleGetPausedStateRequest(guildID: string) {
-    const player = requirePlayer(guildID, musicPlayerManager)
-    return player.paused
-  }
-
-const createUpdateQueueRequestHandler = (musicPlayerManager: MusicPlayerManager) =>
-  function handleUpdateQueueRequest(guildID: string, newItems: Track[]) {
-    const player = requirePlayer(guildID, musicPlayerManager)
-    player.updateQueue(newItems)
-  }
-
 export function initPlayerHandlers(
   client: MyClient,
   handler: WebSocketHandler,
@@ -161,11 +125,4 @@ export function initPlayerHandlers(
   handler.addHandler(Messages.Clear, createClearRequestHandler(musicPlayerManager))
   handler.addHandler(Messages.Shuffle, createShuffleRequestHandler(musicPlayerManager))
   handler.addHandler(Messages.Volume, createVolumeRequestHandler(musicPlayerManager))
-
-  handler.addHandler(Messages.GetPlayerAvailable, createGetPlayerAvailableRequestHandler(musicPlayerManager))
-  handler.addHandler(Messages.GetTrack, createGetTrackRequestHandler(musicPlayerManager))
-  handler.addHandler(Messages.GetQueue, createGetQueueRequestHandler(musicPlayerManager))
-  handler.addHandler(Messages.GetVolume, createGetVolumeRequestHandler(musicPlayerManager))
-  handler.addHandler(Messages.GetPausedState, createGetPausedStateRequestHandler(musicPlayerManager))
-  handler.addHandler(Messages.UpdateQueue, createUpdateQueueRequestHandler(musicPlayerManager))
 }
