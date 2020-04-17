@@ -55,24 +55,22 @@ class MusicPlayerObserver {
           this.clearDestructionTimeout()
           break
         case "current-track":
-          const currentTrack = message.data
-          WebSocketHandler.sendMessage(Messages.CurrentTrack, this.guildID, currentTrack)
+          WebSocketHandler.sendMessage(Messages.PlayerChange, this.guildID)
           break
         case "current-queue":
-          const remainingTracks = message.data
-          WebSocketHandler.sendMessage(Messages.CurrentQueue, this.guildID, remainingTracks)
+          WebSocketHandler.sendMessage(Messages.PlayerChange, this.guildID)
           break
         case "paused":
-          WebSocketHandler.sendMessage(Messages.PauseChange, this.guildID, true)
+          WebSocketHandler.sendMessage(Messages.PlayerChange, this.guildID)
           this.setupDestructionTimeout()
           break
         case "resumed":
-          WebSocketHandler.sendMessage(Messages.PauseChange, this.guildID, false)
+          WebSocketHandler.sendMessage(Messages.PlayerChange, this.guildID)
           this.clearDestructionTimeout()
           break
         case "volume":
           const newVolume = message.data
-          WebSocketHandler.sendMessage(Messages.VolumeChange, this.guildID, newVolume)
+          WebSocketHandler.sendMessage(Messages.PlayerChange, this.guildID)
           break
       }
     } else if (message.messageType === "error") {
