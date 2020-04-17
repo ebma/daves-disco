@@ -1,4 +1,5 @@
 import React from "react"
+import { useSelector, useDispatch } from "react-redux"
 import Grid from "@material-ui/core/Grid"
 import Paper from "@material-ui/core/Paper"
 import ClearIcon from "@material-ui/icons/Clear"
@@ -7,13 +8,19 @@ import SkipPreviousIcon from "@material-ui/icons/SkipPrevious"
 import SkipNextIcon from "@material-ui/icons/SkipNext"
 import PauseIcon from "@material-ui/icons/Pause"
 import { useDebounce } from "../../hooks/util"
-import { GuildContext } from "../../context/guild"
-import { SocketContext } from "../../context/socket"
 import StyledButton from "../StyledButton"
 import CurrentSongCard from "./CurrentSongCard"
 import VolumeSlider from "./VolumeSlider"
-import { trackError } from "../../context/notifications"
-import { Messages } from "../../shared/ipc"
+import { RootState } from "../../app/rootReducer"
+import { AppDispatch } from "../../app/store"
+import {
+  skipTracks,
+  skipPreviousTracks,
+  pausePlayer,
+  resumePlayer,
+  setPlayerVolume,
+  stopPlayer
+} from "../../redux/playerSlice"
 
 interface DebouncedButtonProps {
   alignIconBefore?: boolean
@@ -69,85 +76,50 @@ function StopPlayerButton(props: ControlItemProps) {
 }
 
 interface Props {
-  currentTrack?: Track
-  currentQueue: Track[]
-  disabled?: boolean
-  guildID: GuildID
   style?: React.CSSProperties
 }
 
 function PlayerArea(props: Props) {
-  const { currentTrack, disabled, guildID, style } = props
+  const { style } = props
 
-  const { isPlayerAvailable } = React.useContext(GuildContext)
-  const { connectionState, sendMessage, subscribeToMessages } = React.useContext(SocketContext)
+  const dispatch: AppDispatch = useDispatch()
+  const { available, currentTrack, paused, queue, volume } = useSelector((state: RootState) => state.player)
 
-  const [isPaused, setPaused] = React.useState(false)
-  const [volume, setVolume] = React.useState(50)
-
-  React.useEffect(() => {
-    const unsubcribePause = subscribeToMessages(Messages.PauseChange, isPaused => setPaused(isPaused))
-    const unsubscribeVolume = subscribeToMessages(Messages.VolumeChange, setVolume)
-
-    if (connectionState === "connected" && guildID && isPlayerAvailable(guildID)) {
-      sendMessage(Messages.GetVolume, guildID)
-        .then(setVolume)
-        .catch(trackError)
-      sendMessage(Messages.GetPausedState, guildID)
-        .then(setPaused)
-        .catch(trackError)
-    }
-
-    return () => {
-      unsubcribePause()
-      unsubscribeVolume()
-    }
-  }, [connectionState, guildID, isPlayerAvailable, sendMessage, subscribeToMessages])
+  const disabled = !available || queue.length === 0
 
   return (
     <Paper style={{ ...style, padding: 16 }}>
       <Grid container direction="row" alignItems="center" spacing={5}>
         <Grid item sm={6} xs={12}>
-          <CurrentSongCard currentTrack={currentTrack} style={{ alignSelf: "flex-start" }} />
+          <CurrentSongCard currentTrack={currentTrack || undefined} style={{ alignSelf: "flex-start" }} />
         </Grid>
         <Grid item sm={6} xs={12}>
           <Grid container direction="row" justify="center">
             <Grid item>
               <SkipPreviousButton
                 disabled={disabled}
-                onClick={() => sendMessage(Messages.SkipPrevious, guildID, 1).catch(trackError)}
+                onClick={() => dispatch(skipPreviousTracks(1))}
               />
             </Grid>
             <Grid item>
-              {isPaused ? (
-                <PlayButton
-                  disabled={disabled}
-                  onClick={() => sendMessage(Messages.Resume, guildID).catch(trackError)}
-                />
+              {paused ? (
+                <PlayButton disabled={disabled} onClick={() => dispatch(resumePlayer())} />
               ) : (
-                <PauseButton
-                  disabled={disabled}
-                  onClick={() => sendMessage(Messages.Pause, guildID).catch(trackError)}
-                />
+                <PauseButton disabled={disabled} onClick={() => dispatch(pausePlayer())} />
               )}
             </Grid>
             <Grid item>
-              {
-                <SkipNextButton
-                  disabled={disabled}
-                  onClick={() => sendMessage(Messages.Skip, guildID, 1).catch(trackError)}
-                />
-              }
+              {<SkipNextButton disabled={disabled} onClick={() => dispatch(skipTracks(1))} />}
             </Grid>
           </Grid>
           <VolumeSlider
             disabled={disabled}
             volume={volume}
             onChange={(newVolume: number) => {
-              sendMessage(Messages.Volume, guildID, newVolume)
+              dispatch(setPlayerVolume(newVolume))
             }}
           />
-          <StopPlayerButton disabled={disabled} onClick={() => sendMessage(Messages.Stop, guildID).catch(trackError)} />
+          <StopPlayerButton disabled={disabled} onClick={() => dispatch(stopPlayer())} />
         </Grid>
       </Grid>
     </Paper>

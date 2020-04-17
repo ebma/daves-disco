@@ -12,6 +12,9 @@ import ListIcon from "@material-ui/icons/List"
 import FavoriteIcon from "@material-ui/icons/Favorite"
 import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder"
 import { SpotifyHelper } from "../../../shared/utils/helpers"
+import { updatePlaylist } from "../../../redux/playlistsSlice"
+import { AppDispatch } from "../../../app/store"
+import { useDispatch } from "react-redux"
 
 const useStyles = makeStyles(theme => ({
   queueItem: {
@@ -30,15 +33,16 @@ const useStyles = makeStyles(theme => ({
 }))
 
 interface Props {
-  favourite?: boolean
-  playlist: Playlist
+  playlist: PlaylistModel
   onClick?: () => void
-  toggleFavourite?: () => void
+  showFavourite?: boolean
 }
 
 function PlaylistItem(props: Props) {
+  const { playlist, onClick, showFavourite } = props
   const classes = useStyles()
-  const { favourite, playlist, onClick, toggleFavourite } = props
+
+  const dispatch: AppDispatch = useDispatch()
 
   const ShowListButton = React.useMemo(
     () => (
@@ -59,8 +63,12 @@ function PlaylistItem(props: Props) {
     [onClick]
   )
 
+  const toggleFavourite = React.useCallback(() => {
+    dispatch(updatePlaylist({ ...playlist, favourite: !playlist.favourite }))
+  }, [dispatch, playlist])
+
   const FavorPlaylistButton = React.useMemo(() => {
-    return toggleFavourite ? (
+    return showFavourite ? (
       <ListItemIcon
         onClick={(event: React.MouseEvent) => {
           event.preventDefault()
@@ -68,7 +76,7 @@ function PlaylistItem(props: Props) {
           toggleFavourite()
         }}
       >
-        {favourite ? (
+        {playlist.favourite ? (
           <Tooltip placement="bottom" title="Remove from favourites">
             <IconButton>
               <FavoriteIcon />
@@ -85,7 +93,7 @@ function PlaylistItem(props: Props) {
     ) : (
       undefined
     )
-  }, [favourite, toggleFavourite])
+  }, [showFavourite, playlist.favourite, toggleFavourite])
 
   const secondaryText = React.useMemo(
     () =>

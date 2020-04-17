@@ -1,61 +1,45 @@
 import React from "react"
-import { SocketContext } from "../../../context/socket"
-import TrackService from "../../../services/tracks"
-import PlaylistService from "../../../services/playlists"
-import { Messages } from "../../../shared/ipc"
+import { useSelector } from "react-redux"
+import Typography from "@material-ui/core/Typography"
+import { RootState } from "../../../app/rootReducer"
 import CollectionList from "../List/CollectionList"
 
-interface RecentHistoryTabProps {
-  guildID: GuildID
-  enqueueTrack: (track: Track) => void
-  enqueuePlaylist: (playlist: Playlist) => void
-}
+interface RecentHistoryTabProps {}
 
 function RecentHistoryTab(props: RecentHistoryTabProps) {
-  const { enqueueTrack, enqueuePlaylist, guildID } = props
-  const { sendMessage, subscribeToMessages } = React.useContext(SocketContext)
+  const { playlists } = useSelector((state: RootState) => state.playlists)
+  const { tracks } = useSelector((state: RootState) => state.tracks)
 
   const [items, setItems] = React.useState<MusicItem[]>([])
 
   React.useEffect(() => {
-    const fetchRecents = async () => {
-      const newItems: MusicItem[] = []
-      const playlists = await PlaylistService.getAll(guildID)
-      const tracks = await TrackService.getAll(guildID)
-      newItems.push(...playlists)
-      newItems.push(...tracks)
-      setItems(newItems)
-    }
+    const newItems = []
+    newItems.push(...playlists)
+    newItems.push(...tracks)
+    const touchedByUser = newItems.filter(item => {
+      if ((item as TrackModel).touchedByUser === false) return false
+      else return true
+    })
 
-    const unsubscribeTracksChange = subscribeToMessages(Messages.TracksChange, fetchRecents)
-    const unsubscribePlaylistsChange = subscribeToMessages(Messages.PlaylistsChange, fetchRecents)
-    fetchRecents()
+    touchedByUser.sort((a: MusicItem, b: MusicItem) => {
+      return new Date(b.lastTouchedAt).getTime() - new Date(a.lastTouchedAt).getTime()
+    })
 
-    return () => {
-      unsubscribeTracksChange()
-      unsubscribePlaylistsChange()
-    }
-  }, [guildID, sendMessage, subscribeToMessages])
+    const last20Items = touchedByUser.slice(0, 20)
 
-  const toggleFavouriteTrack = React.useCallback((track: TrackModel) => {
-    TrackService.update(track.id, { ...track, favourite: !track.favourite })
-  }, [])
+    setItems(last20Items)
+  }, [playlists, tracks])
 
-  const toggleFavouritePlaylist = React.useCallback((playlist: PlaylistModel) => {
-    PlaylistService.update(playlist.id, { ...playlist, favourite: !playlist.favourite })
-  }, [])
-
-  return (
-    <>
-      <CollectionList
-        collection={items}
-        enqueueTrack={enqueueTrack}
-        enqueuePlaylist={enqueuePlaylist}
-        toggleFavouritePlaylist={toggleFavouritePlaylist}
-        toggleFavouriteTrack={toggleFavouriteTrack}
-      />
-    </>
+  const NoItemsInfo = React.useMemo(
+    () => (
+      <Typography color="textPrimary" style={{ padding: 16 }}>
+        No favourites yet...
+      </Typography>
+    ),
+    []
   )
+
+  return items.length === 0 ? NoItemsInfo : <CollectionList collection={items} />
 }
 
 export default React.memo(RecentHistoryTab)

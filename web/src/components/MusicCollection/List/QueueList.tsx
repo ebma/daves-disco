@@ -6,10 +6,11 @@ import List from "@material-ui/core/List"
 import ListItem from "@material-ui/core/ListItem"
 import ListItemText from "@material-ui/core/ListItemText"
 import makeStyles from "@material-ui/styles/makeStyles"
-import { SocketContext } from "../../../context/socket"
-import { trackError } from "../../../context/notifications"
-import { Messages } from "../../../shared/ipc"
 import { DraggableTrackItem } from "../Item/TrackItem"
+import { useSelector, useDispatch } from "react-redux"
+import { RootState } from "../../../app/rootReducer"
+import { AppDispatch } from "../../../app/store"
+import { skipTracks, skipPreviousTracks, updateQueue } from "../../../redux/playerSlice"
 
 function reorder<T>(list: Array<T>, startIndex: number, endIndex: number) {
   const result = Array.from(list)
@@ -26,22 +27,19 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-interface Props {
-  currentTrack?: Track
-  currentQueue: Track[]
-  guildID: string
-}
+interface Props {}
 
 function QueueList(props: Props) {
-  const { currentTrack, currentQueue, guildID } = props
   const classes = useStyles()
 
-  const { sendMessage } = React.useContext(SocketContext)
-  const [localQueue, setLocalQueue] = React.useState<Track[]>(props.currentQueue)
+  const dispatch: AppDispatch = useDispatch()
+  const { currentTrack, queue } = useSelector((state: RootState) => state.player)
+
+  const [localQueue, setLocalQueue] = React.useState<TrackModel[]>(queue)
 
   React.useEffect(() => {
-    setLocalQueue(props.currentQueue)
-  }, [props.currentQueue])
+    setLocalQueue(queue)
+  }, [queue])
 
   const onDragStart = React.useCallback(() => {
     if (window.navigator.vibrate) {
@@ -57,9 +55,9 @@ function QueueList(props: Props) {
 
       const orderedQueue = reorder(localQueue, result.source.index, result.destination.index)
       setLocalQueue(orderedQueue)
-      sendMessage(Messages.UpdateQueue, guildID, orderedQueue).catch(trackError)
+      dispatch(updateQueue(orderedQueue))
     },
-    [guildID, localQueue, sendMessage]
+    [dispatch, localQueue]
   )
 
   const indexOfCurrentSong = currentTrack
@@ -68,19 +66,19 @@ function QueueList(props: Props) {
 
   const QueueItems = React.useMemo(
     () =>
-      localQueue.map((track, index) => {
+      localQueue.map((trackModel, index) => {
         const onClick =
           index < indexOfCurrentSong
-            ? () => sendMessage(Messages.SkipPrevious, guildID, indexOfCurrentSong - index).catch(trackError)
+            ? () => dispatch(skipPreviousTracks(indexOfCurrentSong - index))
             : index > indexOfCurrentSong
-            ? () => sendMessage(Messages.Skip, guildID, index - indexOfCurrentSong).catch(trackError)
+            ? () => dispatch(skipTracks(index - indexOfCurrentSong))
             : undefined
 
         const onDeleteClick = () => {
           const copiedQueue = localQueue.slice(0)
-          _.remove(copiedQueue, element => element.id === track.id)
+          _.remove(copiedQueue, element => element.id === trackModel.id)
 
-          sendMessage(Messages.UpdateQueue, guildID, copiedQueue).catch(trackError)
+          dispatch(updateQueue(copiedQueue))
         }
 
         return (
@@ -88,17 +86,18 @@ function QueueList(props: Props) {
             {index > 0 ? <Divider variant="inset" component="li" /> : undefined}
             <DraggableTrackItem
               current={index === indexOfCurrentSong}
-              id={track.id}
+              id={trackModel.id}
               index={index}
               old={index < indexOfCurrentSong}
-              track={track}
               onClick={onClick}
               onDeleteClick={onDeleteClick}
+              showFavourite
+              track={trackModel}
             />
           </div>
         )
       }),
-    [indexOfCurrentSong, guildID, localQueue, sendMessage]
+    [dispatch, indexOfCurrentSong, localQueue]
   )
 
   const EmptyQueueItem = React.useMemo(
@@ -115,7 +114,7 @@ function QueueList(props: Props) {
       <Droppable droppableId="queue-list">
         {provided => (
           <div ref={provided.innerRef} {...provided.droppableProps} className={classes.queueList}>
-            <List>{currentQueue.length > 0 ? QueueItems : EmptyQueueItem}</List>
+            <List>{queue.length > 0 ? QueueItems : EmptyQueueItem}</List>
             {provided.placeholder}
           </div>
         )}

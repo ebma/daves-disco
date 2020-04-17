@@ -5,9 +5,11 @@ import Link from "@material-ui/core/Link"
 import MenuItem from "@material-ui/core/MenuItem"
 import TextField from "@material-ui/core/TextField"
 import Typography from "@material-ui/core/Typography"
-import { SocketContext } from "../../context/socket"
-import { GuildContext } from "../../context/guild"
 import loginService from "../../services/login"
+import { useSelector, useDispatch } from "react-redux"
+import { RootState } from "../../app/rootReducer"
+import { initAuthenticationAction } from "../../redux/socketSlice"
+import { AppDispatch } from "../../app/store"
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -41,18 +43,27 @@ function saveTokenToStorage(token: string) {
 function UserIdentifierForm(props: Props) {
   const classes = useStyles()
 
-  const { init, connectionState } = React.useContext(SocketContext)
-  const { guilds, getMembers, guildID, userID, setUserID, setGuildID } = React.useContext(GuildContext)
+  const dispatch: AppDispatch = useDispatch()
+  const { connectionState, error } = useSelector((state: RootState) => state.socket)
+  const { guilds } = useSelector((state: RootState) => state.guilds)
+  const { user } = useSelector((state: RootState) => state.user)
 
-  const [authenticationError, setAuthenticationError] = React.useState<Error | null>(null)
+  const [authenticationError, setAuthenticationError] = React.useState<string | null>(null)
   const [authenticationPending, setAuthenticationPending] = React.useState<boolean>(false)
   const [token, setToken] = React.useState<string | null>(getTokenFromStorage)
 
+  const [selectedGuildID, setSelectedGuild] = React.useState<GuildID>(user?.guildID || "")
+  const [selectedMember, setSelectedMember] = React.useState<UserID>(user?.id || "")
+
   React.useEffect(() => {
-    if (!token && guildID && userID) {
+    setAuthenticationError(error)
+  }, [error])
+
+  React.useEffect(() => {
+    if (!token && user) {
       setAuthenticationPending(true)
       loginService
-        .login({ guildID, userID })
+        .login({ guildID: user.guildID, userID: user.id })
         .then(token => {
           setToken(token)
           saveTokenToStorage(token)
@@ -60,22 +71,22 @@ function UserIdentifierForm(props: Props) {
         .catch(setAuthenticationError)
         .finally(() => setAuthenticationPending(false))
     }
-  }, [guildID, userID, token])
+  }, [user])
 
   React.useEffect(() => {
-    if (guildID && userID && connectionState === "disconnected" && token) {
-      init(token).catch(setAuthenticationError)
+    if (connectionState === "disconnected" && user && token) {
+      dispatch(initAuthenticationAction(token))
     }
-  }, [connectionState, init, guildID, userID, token])
+  }, [connectionState, initAuthenticationAction, user, token])
 
   const handleChange = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
     const name = event.target.name as "guildID" | "userID"
     const value = event.target.value as string
 
     if (name === "guildID") {
-      setGuildID(value)
+      setSelectedGuild(value)
     } else if (name === "userID") {
-      setUserID(value)
+      setSelectedMember(value)
     }
   }
 
@@ -88,13 +99,13 @@ function UserIdentifierForm(props: Props) {
       <Box display="flex">
         <TextField
           className={classes.textField}
-          helperText={guildID ? undefined : "Please select your guild/server"}
+          helperText={selectedGuildID ? undefined : "Please select your guild/server"}
           fullWidth
           label="Guild"
           name="guildID"
           onChange={handleChange}
           select
-          value={guildID || ""}
+          value={selectedGuildID}
         >
           {guilds.map(guild => (
             <MenuItem key={guild.id} value={guild.id}>
@@ -104,20 +115,22 @@ function UserIdentifierForm(props: Props) {
         </TextField>
         <TextField
           className={classes.textField}
-          helperText={userID ? undefined : "Please select yourself"}
+          helperText={selectedMember ? undefined : "Please select yourself"}
           fullWidth
           name="userID"
           label="Member"
           onChange={handleChange}
           select
-          value={userID || ""}
+          value={selectedMember}
         >
-          {guildID ? (
-            getMembers(guildID).map(member => (
-              <MenuItem key={member.id} value={member.id}>
-                {member.name}
-              </MenuItem>
-            ))
+          {selectedGuildID ? (
+            guilds
+              .find(guild => guild.id === selectedGuildID)
+              ?.members.map(member => (
+                <MenuItem key={member.id} value={member.id}>
+                  {member.name}
+                </MenuItem>
+              ))
           ) : (
             <MenuItem disabled value="None">
               None
@@ -128,7 +141,7 @@ function UserIdentifierForm(props: Props) {
 
       <Typography className={classes.info} color="textSecondary" align="center">
         {authenticationError ? (
-          authenticationError.message
+          authenticationError
         ) : authenticationPending ? (
           "Authentication is pending. Check for a received message on your discord account."
         ) : (

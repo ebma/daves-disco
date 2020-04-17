@@ -1,4 +1,5 @@
 import React from "react"
+import { useDispatch } from "react-redux"
 import Box from "@material-ui/core/Box"
 import Paper from "@material-ui/core/Paper"
 import makeStyles from "@material-ui/styles/makeStyles"
@@ -6,12 +7,12 @@ import Tab from "@material-ui/core/Tab"
 import Tabs from "@material-ui/core/Tabs"
 import { Theme, createStyles } from "@material-ui/core/styles"
 import Typography from "@material-ui/core/Typography"
-import { SocketContext } from "../../context/socket"
-import { trackError } from "../../context/notifications"
-import { Messages } from "../../shared/ipc"
 import RecentHistoryTab from "./Tab/RecentHistoryTab"
 import FavouritesTab from "./Tab/FavouritesTab"
 import QueueTab from "./Tab/QueueTab"
+import { AppDispatch } from "../../app/store"
+import { fetchPlaylists, subscribePlaylists } from "../../redux/playlistsSlice"
+import { fetchTracks, subscribeTracks } from "../../redux/tracksSlice"
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -51,36 +52,34 @@ function TabPanel(props: TabPanelProps) {
   )
 }
 
-interface MusicCollectionAreaProps {
-  guildID: GuildID
-  userID: UserID
-}
+interface MusicCollectionAreaProps {}
 
 function MusicCollectionArea(props: MusicCollectionAreaProps) {
-  const { guildID, userID } = props
   const classes = useStyles()
 
-  const { sendMessage } = React.useContext(SocketContext)
-
+  const dispatch: AppDispatch = useDispatch()
   const [tab, setTab] = React.useState(0)
+
+  React.useEffect(() => {
+    const fetchRecents = async () => {
+      dispatch(fetchPlaylists())
+      dispatch(fetchTracks())
+    }
+
+    const unsubscribePlaylists = dispatch(subscribePlaylists())
+    const unsubscribeTracks = dispatch(subscribeTracks())
+
+    fetchRecents()
+
+    return () => {
+      unsubscribePlaylists()
+      unsubscribeTracks()
+    }
+  }, [dispatch])
 
   const handleChange = React.useCallback((event: React.ChangeEvent<{}>, newValue: number) => {
     setTab(newValue)
   }, [])
-
-  const enqueueTrack = React.useCallback(
-    async track => {
-      sendMessage(Messages.PlayTrack, guildID, userID, track).catch(trackError)
-    },
-    [guildID, userID, sendMessage]
-  )
-
-  const enqueuePlaylist = React.useCallback(
-    async playlist => {
-      sendMessage(Messages.PlayPlaylist, guildID, userID, playlist).catch(trackError)
-    },
-    [guildID, userID, sendMessage]
-  )
 
   return (
     <Paper className={classes.root}>
@@ -98,13 +97,13 @@ function MusicCollectionArea(props: MusicCollectionAreaProps) {
         <Tab label="Favourites" />
       </Tabs>
       <TabPanel value={tab} index={0}>
-        <QueueTab guildID={guildID} />
+        <QueueTab />
       </TabPanel>
       <TabPanel value={tab} index={1}>
-        <RecentHistoryTab guildID={guildID} enqueueTrack={enqueueTrack} enqueuePlaylist={enqueuePlaylist} />
+        <RecentHistoryTab />
       </TabPanel>
       <TabPanel value={tab} index={2}>
-        <FavouritesTab guildID={guildID} enqueueTrack={enqueueTrack} enqueuePlaylist={enqueuePlaylist} />
+        <FavouritesTab />
       </TabPanel>
     </Paper>
   )

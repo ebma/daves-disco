@@ -9,15 +9,15 @@ import StyledButton from "../../StyledButton"
 import { trackError } from "../../../context/notifications"
 
 interface SearchYoutubeTabProps {
-  getTracks: (term: string) => Promise<Track[]>
+  getTracks: (term: string) => Promise<TrackSearchResult[]>
   onSearchDone: (searchTerm: string) => void
 }
 
 function SearchYoutubeTab(props: SearchYoutubeTabProps) {
   const { getTracks, onSearchDone } = props
   const [inputValue, setInputValue] = React.useState("")
-  const [options, setOptions] = React.useState<Track[]>([])
-  const [selectedTrack, setSelectedTrack] = React.useState<Track | null>(null)
+  const [options, setOptions] = React.useState<TrackSearchResult[]>([])
+  const [selectedTrack, setSelectedTrack] = React.useState<TrackSearchResult | null>(null)
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value)
@@ -25,10 +25,14 @@ function SearchYoutubeTab(props: SearchYoutubeTabProps) {
 
   const fetch = React.useMemo(
     () =>
-      _.throttle(async (input: string, callback: (results: Track[]) => void) => {
-        const results = await getTracks(input)
-        callback(results)
-      }, 1000),
+      _.debounce(
+        async (input: string, callback: (results: TrackSearchResult[]) => void) => {
+          const results = await getTracks(input)
+          callback(results)
+        },
+        500,
+        { leading: false, trailing: true }
+      ),
     [getTracks]
   )
 
@@ -39,7 +43,7 @@ function SearchYoutubeTab(props: SearchYoutubeTabProps) {
     }
 
     try {
-      fetch(inputValue, (results: Track[]) => {
+      fetch(inputValue, (results: TrackSearchResult[]) => {
         setOptions(results || [])
       })
     } catch (error) {
@@ -57,7 +61,7 @@ function SearchYoutubeTab(props: SearchYoutubeTabProps) {
         autoComplete
         includeInputInList
         multiple={false}
-        onChange={(_: React.ChangeEvent<{}>, value: Track | null) => setSelectedTrack(value)}
+        onChange={(_: React.ChangeEvent<{}>, value: TrackSearchResult | null) => setSelectedTrack(value)}
         renderInput={params => (
           <TextField
             {...params}
@@ -68,7 +72,7 @@ function SearchYoutubeTab(props: SearchYoutubeTabProps) {
             onChange={handleChange}
           />
         )}
-        renderOption={(option: Track) => {
+        renderOption={(option: TrackSearchResult) => {
           return (
             <Grid item xs>
               <Typography variant="body1" color="textPrimary">

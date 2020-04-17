@@ -1,4 +1,5 @@
 import React from "react"
+import { useSelector, useDispatch } from "react-redux"
 import Box from "@material-ui/core/Box"
 import CssBaseline from "@material-ui/core/CssBaseline"
 import Container from "@material-ui/core/Container"
@@ -6,14 +7,13 @@ import Grid from "@material-ui/core/Grid"
 import { makeStyles } from "@material-ui/core/styles"
 import Header from "../components/Header"
 import Footer from "../components/Footer"
-import { GuildContext } from "../context/guild"
-import { SocketContext } from "../context/socket"
-import { trackError } from "../context/notifications"
 import GuildSelectionArea from "../components/GuildSelection/GuildSelectionArea"
 import SearchArea from "../components/SearchArea/SearchArea"
 import PlayerArea from "../components/Player/PlayerArea"
-import { Messages } from "../shared/ipc"
 import MusicCollectionArea from "../components/MusicCollection/MusicCollectionArea"
+import { RootState } from "../app/rootReducer"
+import { fetchPlayerState, subscribePlayerState } from "../redux/playerSlice"
+import { AppDispatch } from "../app/store"
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -31,30 +31,18 @@ const useStyles = makeStyles(theme => ({
 function IndexPage() {
   const classes = useStyles()
 
-  const { guildID, userID, isPlayerAvailable } = React.useContext(GuildContext)
-  const { connectionState, sendMessage, subscribeToMessages } = React.useContext(SocketContext)
-
-  const [currentTrack, setCurrentTrack] = React.useState<Track | undefined>(undefined)
-  const [currentQueue, setCurrentQueue] = React.useState<Track[]>([])
+  const dispatch: AppDispatch = useDispatch()
+  const { connectionState } = useSelector((state: RootState) => state.socket)
 
   React.useEffect(() => {
-    const unsubscribeCurrentTrack = subscribeToMessages(Messages.CurrentTrack, setCurrentTrack)
-    const unsubscribeCurrentQueue = subscribeToMessages(Messages.CurrentQueue, setCurrentQueue)
-
-    if (connectionState === "connected" && guildID && isPlayerAvailable(guildID)) {
-      sendMessage(Messages.GetTrack, guildID)
-        .then(setCurrentTrack)
-        .catch(trackError)
-      sendMessage(Messages.GetQueue, guildID)
-        .then(setCurrentQueue)
-        .catch(trackError)
+    if (connectionState === "connected") {
+      dispatch(fetchPlayerState())
     }
 
-    return () => {
-      unsubscribeCurrentTrack()
-      unsubscribeCurrentQueue()
-    }
-  }, [connectionState, guildID, isPlayerAvailable, sendMessage, subscribeToMessages])
+    const unsubscribe = dispatch(subscribePlayerState())
+
+    return unsubscribe
+  }, [connectionState, dispatch])
 
   return (
     <Container className={classes.root} component="main">
@@ -64,26 +52,18 @@ function IndexPage() {
         <Grid className={classes.item} item md={12} sm={12}>
           <GuildSelectionArea />
         </Grid>
-        {connectionState === "connected" && guildID && userID ? (
+        {connectionState === "authenticated" && (
           <>
             <Grid className={classes.item} item md={6} sm={12}>
               <Box display="flex" flexDirection="column" height="100%" justifyContent="space-evenly">
-                <SearchArea guildID={guildID} userID={userID} style={{ marginBottom: 16 }} />
-                <PlayerArea
-                  currentQueue={currentQueue}
-                  currentTrack={currentTrack}
-                  disabled={currentQueue.length === 0}
-                  guildID={guildID}
-                  style={{ marginTop: 16 }}
-                />
+                <SearchArea style={{ marginBottom: 16 }} />
+                <PlayerArea style={{ marginTop: 16 }} />
               </Box>
             </Grid>
             <Grid className={classes.item} item md={6} sm={12}>
-              <MusicCollectionArea guildID={guildID} userID={userID} />
+              <MusicCollectionArea />
             </Grid>
           </>
-        ) : (
-          undefined
         )}
       </Grid>
       <Footer />

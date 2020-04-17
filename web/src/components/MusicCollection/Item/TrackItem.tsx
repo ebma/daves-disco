@@ -13,6 +13,9 @@ import DeleteIcon from "@material-ui/icons/Delete"
 import FavoriteIcon from "@material-ui/icons/Favorite"
 import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder"
 import { SpotifyHelper } from "../../../shared/utils/helpers"
+import { updateTrack } from "../../../redux/tracksSlice"
+import { AppDispatch } from "../../../app/store"
+import { useDispatch } from "react-redux"
 
 const useStyles = makeStyles(theme => ({
   queueItem: {
@@ -29,18 +32,19 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-interface Props {
+interface TrackItemProps {
   current?: boolean
-  favourite?: boolean
-  track: Track
+  track: TrackModel
   onClick?: () => void
   onDeleteClick?: () => void
-  toggleFavourite?: () => void
+  showFavourite?: boolean
 }
 
-export const TrackItem = React.forwardRef(function TrackItem(props: Props, ref: React.Ref<HTMLDivElement>) {
+export const TrackItem = React.forwardRef(function TrackItem(props: TrackItemProps, ref: React.Ref<HTMLDivElement>) {
+  const { current, track, onClick, onDeleteClick, showFavourite } = props
   const classes = useStyles()
-  const { current, favourite, track, onClick, onDeleteClick, toggleFavourite } = props
+
+  const dispatch: AppDispatch = useDispatch()
 
   const DeleteTrackButton = React.useMemo(() => {
     return onDeleteClick ? (
@@ -62,8 +66,12 @@ export const TrackItem = React.forwardRef(function TrackItem(props: Props, ref: 
     )
   }, [onDeleteClick])
 
+  const toggleFavourite = React.useCallback(() => {
+    dispatch(updateTrack({ ...track, favourite: !track.favourite }))
+  }, [dispatch, track])
+
   const FavorTrackButton = React.useMemo(() => {
-    return toggleFavourite ? (
+    return showFavourite ? (
       <ListItemIcon
         onClick={(event: React.MouseEvent) => {
           event.preventDefault()
@@ -71,7 +79,7 @@ export const TrackItem = React.forwardRef(function TrackItem(props: Props, ref: 
           toggleFavourite()
         }}
       >
-        {favourite ? (
+        {track.favourite ? (
           <Tooltip placement="bottom" title="Remove from favourites">
             <IconButton>
               <FavoriteIcon />
@@ -88,7 +96,7 @@ export const TrackItem = React.forwardRef(function TrackItem(props: Props, ref: 
     ) : (
       undefined
     )
-  }, [favourite, toggleFavourite])
+  }, [showFavourite, track.favourite, toggleFavourite])
 
   const primaryText = SpotifyHelper.isSpotifyTrack(track) ? `${track.title} - ${track.artists}` : track.title
 
@@ -133,14 +141,10 @@ export const TrackItem = React.forwardRef(function TrackItem(props: Props, ref: 
   )
 })
 
-interface DraggableTrackItemProps {
-  current?: boolean
+interface DraggableTrackItemProps extends TrackItemProps {
   id: string
   index: number
   old?: boolean
-  track: Track
-  onClick?: () => void
-  onDeleteClick?: () => void
 }
 
 export function DraggableTrackItem(props: DraggableTrackItemProps) {

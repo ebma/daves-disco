@@ -6,11 +6,15 @@ import { makeStyles } from "@material-ui/core/styles"
 import Box from "@material-ui/core/Box"
 import Button from "@material-ui/core/Button"
 import Divider from "@material-ui/core/Divider"
-import Typography from "@material-ui/core/Typography"
 import ArrowBackIcon from "@material-ui/icons/ArrowBack"
 import PlayIcon from "@material-ui/icons/PlayArrow"
-import PlaylistService from "../../../services/playlists"
-import { trackError } from "../../../context/notifications"
+import RefreshIcon from "@material-ui/icons/Cached"
+import { useDispatch, useSelector } from "react-redux"
+import { AppDispatch } from "../../../app/store"
+import { playPlaylist, fetchPlaylistByID } from "../../../redux/playlistsSlice"
+import { playTrack } from "../../../redux/tracksSlice"
+import { RootState } from "../../../app/rootReducer"
+import { NotificationsContext } from "../../../context/notifications"
 
 function isTrack(item: MusicItem): item is TrackModel {
   return (item as TrackModel).title !== undefined
@@ -23,52 +27,66 @@ function isPlaylist(item: MusicItem): item is PlaylistModel {
 const useStyles = makeStyles({
   root: {
     padding: 16,
-    paddingTop: 8,
+    paddingTop: 8
   }
 })
 
 interface PlaylistHeaderProps {
-  onBack: () => void
-  onEnqueueAll: () => void
+  onBack?: () => void
+  onEnqueueAll?: () => void
+  onRefresh?: () => void
 }
 
 function PlaylistHeader(props: PlaylistHeaderProps) {
-  const { onBack, onEnqueueAll } = props
+  const { onBack, onEnqueueAll, onRefresh } = props
 
   return (
     <Box display="flex">
-      <Button
-        variant="contained"
-        color="secondary"
-        onClick={onBack}
-        startIcon={<ArrowBackIcon />}
-        style={{ margin: 16 }}
-      >
-        Go Back
-      </Button>
-      <Button
-        variant="contained"
-        color="secondary"
-        onClick={onEnqueueAll}
-        startIcon={<PlayIcon />}
-        style={{ margin: 16 }}
-      >
-        Enqueue All
-      </Button>
+      {onBack && (
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={onBack}
+          startIcon={<ArrowBackIcon />}
+          style={{ margin: 16 }}
+        >
+          Go Back
+        </Button>
+      )}
+      {onEnqueueAll && (
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={onEnqueueAll}
+          startIcon={<PlayIcon />}
+          style={{ margin: 16 }}
+        >
+          Enqueue All
+        </Button>
+      )}
+      {onRefresh && (
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={onRefresh}
+          startIcon={<RefreshIcon />}
+          style={{ margin: 16 }}
+        >
+          Refresh
+        </Button>
+      )}
     </Box>
   )
 }
 
 interface MusicItemListProps {
   items: MusicItem[]
-  toggleFavouriteTrack: (track: TrackModel) => void
-  toggleFavouritePlaylist: (playlist: PlaylistModel) => void
   onTrackSelect: (track: TrackModel) => void
   onPlaylistSelect: (playlist: PlaylistModel) => void
 }
 
 const MusicItemList = React.memo(function MusicItemList(props: MusicItemListProps) {
-  const { items, onPlaylistSelect, onTrackSelect, toggleFavouriteTrack, toggleFavouritePlaylist } = props
+  const { items, onPlaylistSelect, onTrackSelect } = props
   const classes = useStyles()
 
   const collectionItems = React.useMemo(
@@ -78,33 +96,21 @@ const MusicItemList = React.memo(function MusicItemList(props: MusicItemListProp
           return (
             <>
               {index > 0 && <Divider variant="inset" component="li" />}
-              <TrackItem
-                key={item.id}
-                favourite={item.favourite}
-                track={item}
-                onClick={() => onTrackSelect(item)}
-                toggleFavourite={() => toggleFavouriteTrack(item)}
-              />
+              <TrackItem key={item.id} track={item} onClick={() => onTrackSelect(item)} showFavourite />
             </>
           )
         } else if (isPlaylist(item)) {
           return (
             <>
               {index > 0 && <Divider variant="inset" component="li" />}
-              <PlaylistItem
-                key={item.id}
-                favourite={item.favourite}
-                onClick={() => onPlaylistSelect(item)}
-                playlist={item}
-                toggleFavourite={() => toggleFavouritePlaylist(item)}
-              />
+              <PlaylistItem key={item.id} onClick={() => onPlaylistSelect(item)} playlist={item} showFavourite />
             </>
           )
         } else {
           throw Error(`Unknown item ${JSON.stringify(item)}`)
         }
       }),
-    [items, onPlaylistSelect, onTrackSelect, toggleFavouritePlaylist, toggleFavouriteTrack]
+    [items, onPlaylistSelect, onTrackSelect]
   )
 
   return <List className={classes.root}>{collectionItems}</List>
@@ -112,57 +118,56 @@ const MusicItemList = React.memo(function MusicItemList(props: MusicItemListProp
 
 interface Props {
   collection: MusicItem[]
-  enqueueTrack: (track: Track) => void
-  enqueuePlaylist: (playlist: Playlist) => void
-  toggleFavouriteTrack: (track: TrackModel) => void
-  toggleFavouritePlaylist: (playlist: PlaylistModel) => void
 }
 
 function CollectionList(props: Props) {
-  const { collection, enqueueTrack, enqueuePlaylist, toggleFavouritePlaylist, toggleFavouriteTrack } = props
+  const { collection } = props
 
-  const [selectedPlaylist, setSelectedPlaylist] = React.useState<PlaylistModel | null>(null)
+  const dispatch: AppDispatch = useDispatch()
+  const { playlists } = useSelector((state: RootState) => state.playlists)
+  const [selectedPlaylistID, setSelectedPlaylistID] = React.useState<string | undefined>(undefined)
+  const { showNotification } = React.useContext(NotificationsContext)
 
-  const selectedTracks = selectedPlaylist?.tracks?.map(track => ({ ...track, guild: selectedPlaylist.guild }))
-
-  const onEnqueueAll = React.useCallback(() => {
-    if (selectedPlaylist) {
-      enqueuePlaylist(selectedPlaylist)
-    }
-  }, [enqueuePlaylist, selectedPlaylist])
+  const selectedPlaylist = playlists.find(playlist => playlist.id === selectedPlaylistID)
 
   const onTrackSelect = React.useCallback(
     (track: TrackModel) => {
-      enqueueTrack(track)
+      dispatch(playTrack(track)).then(() => showNotification("success", `Added '${track.title}' to queue`))
     },
-    [enqueueTrack]
+    [dispatch, showNotification]
   )
 
   const onPlaylistSelect = React.useCallback((playlist: PlaylistModel) => {
-    PlaylistService.get(playlist.id)
-      .then(setSelectedPlaylist)
-      .catch(trackError)
+    setSelectedPlaylistID(playlist.id)
   }, [])
 
-  const NoItemsInfo = React.useMemo(
-    () => (
-      <Typography color="textPrimary" style={{ padding: 16 }}>
-        No items yet...
-      </Typography>
-    ),
-    []
-  )
+  const PlaylistHeaderMemo = React.useMemo(() => {
+    return selectedPlaylist ? (
+      <PlaylistHeader
+        onBack={() => setSelectedPlaylistID(undefined)}
+        onEnqueueAll={() =>
+          dispatch(playPlaylist(selectedPlaylist)).then(() =>
+            showNotification("success", `Added all songs of '${selectedPlaylist.name}' to queue`)
+          )
+        }
+        onRefresh={() =>
+          dispatch(fetchPlaylistByID(selectedPlaylist._id, false)).then(() =>
+            showNotification("success", `Refreshed '${selectedPlaylist.name}'`)
+          )
+        }
+      />
+    ) : (
+      undefined
+    )
+  }, [dispatch, selectedPlaylist, showNotification])
 
   return (
     <>
-      {collection.length === 0 && NoItemsInfo}
-      {selectedPlaylist && <PlaylistHeader onBack={() => setSelectedPlaylist(null)} onEnqueueAll={onEnqueueAll} />}
+      {PlaylistHeaderMemo}
       <MusicItemList
-        items={selectedTracks ? selectedTracks : collection}
+        items={selectedPlaylist ? selectedPlaylist.tracks : collection}
         onTrackSelect={onTrackSelect}
         onPlaylistSelect={onPlaylistSelect}
-        toggleFavouritePlaylist={toggleFavouritePlaylist}
-        toggleFavouriteTrack={toggleFavouriteTrack}
       />
     </>
   )

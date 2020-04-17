@@ -1,61 +1,53 @@
 import React from "react"
+import { useSelector } from "react-redux"
+import Typography from "@material-ui/core/Typography"
 import CollectionList from "../List/CollectionList"
-import { SocketContext } from "../../../context/socket"
-import TrackService from "../../../services/tracks"
-import PlaylistService from "../../../services/playlists"
-import { Messages } from "../../../shared/ipc"
+import { RootState } from "../../../app/rootReducer"
 
-interface FavouritesTabProps {
-  guildID: GuildID
-  enqueueTrack: (track: Track) => void
-  enqueuePlaylist: (playlist: Playlist) => void
-}
+interface FavouritesTabProps {}
 
 function FavouritesTab(props: FavouritesTabProps) {
-  const { enqueueTrack, enqueuePlaylist, guildID } = props
-  const { sendMessage, subscribeToMessages } = React.useContext(SocketContext)
+  const { playlists } = useSelector((state: RootState) => state.playlists)
+  const { tracks } = useSelector((state: RootState) => state.tracks)
 
   const [items, setItems] = React.useState<MusicItem[]>([])
 
   React.useEffect(() => {
-    const fetchFavourites = async () => {
-      const newItems: MusicItem[] = []
-      const playlists = await PlaylistService.getFavourites(guildID)
-      const tracks = await TrackService.getFavourites(guildID)
-      newItems.push(...playlists)
-      newItems.push(...tracks)
-      setItems(newItems)
+    const newItems = []
+    for (const playlist of playlists) {
+      if (playlist.favourite) {
+        newItems.push(playlist)
+      }
+    }
+    for (const track of tracks) {
+      if (track.favourite) {
+        newItems.push(track)
+      }
     }
 
-    const unsubscribeTracks = subscribeToMessages(Messages.TracksChange, fetchFavourites)
-    const unsubscribePlaylists = subscribeToMessages(Messages.PlaylistsChange, fetchFavourites)
-    fetchFavourites()
+    newItems.sort((a: MusicItem, b: MusicItem) => {
+      if ((a as Track).title !== undefined && (b as Track).title !== undefined) {
+        return (a as Track).title.localeCompare((b as Track).title)
+      } else if ((a as Playlist).name !== undefined && (b as Playlist).name !== undefined) {
+        return (a as Playlist).name.localeCompare((b as Playlist).name)
+      } else {
+        return 0
+      }
+    })
 
-    return () => {
-      unsubscribeTracks()
-      unsubscribePlaylists()
-    }
-  }, [guildID, sendMessage, subscribeToMessages])
+    setItems(newItems)
+  }, [playlists, tracks])
 
-  const toggleFavouriteTrack = React.useCallback((track: TrackModel) => {
-    TrackService.update(track.id, { ...track, favourite: !track.favourite })
-  }, [])
-
-  const toggleFavouritePlaylist = React.useCallback((playlist: PlaylistModel) => {
-    PlaylistService.update(playlist.id, { ...playlist, favourite: !playlist.favourite })
-  }, [])
-
-  return (
-    <>
-      <CollectionList
-        collection={items}
-        enqueueTrack={enqueueTrack}
-        enqueuePlaylist={enqueuePlaylist}
-        toggleFavouritePlaylist={toggleFavouritePlaylist}
-        toggleFavouriteTrack={toggleFavouriteTrack}
-      />
-    </>
+  const NoItemsInfo = React.useMemo(
+    () => (
+      <Typography color="textPrimary" style={{ padding: 16 }}>
+        No favourites yet...
+      </Typography>
+    ),
+    []
   )
+
+  return items.length === 0 ? NoItemsInfo : <CollectionList collection={items} />
 }
 
 export default FavouritesTab

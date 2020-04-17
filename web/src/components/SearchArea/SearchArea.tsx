@@ -6,12 +6,14 @@ import Tabs from "@material-ui/core/Tabs"
 import Typography from "@material-ui/core/Typography"
 import { Theme, createStyles } from "@material-ui/core/styles"
 import makeStyles from "@material-ui/styles/makeStyles"
-import { SocketContext } from "../../context/socket"
-import { trackError, NotificationsContext } from "../../context/notifications"
-import { Messages } from "../../shared/ipc"
 import SearchYoutubeTab from "./Tab/SearchYoutubeTab"
 import PlayYoutubeTab from "./Tab/PlayYoutubeTab"
 import PlaySpotifyTab from "./Tab/PlaySpotifyTab"
+import { useSelector, useDispatch } from "react-redux"
+import { RootState } from "../../app/rootReducer"
+import { playSearchTerm } from "../../redux/playerSlice"
+import { AppDispatch } from "../../app/store"
+import { getTrackFromSearchTerm } from "../../redux/tracksSlice"
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -42,17 +44,15 @@ function TabPanel(props: TabPanelProps) {
 }
 
 interface SearchAreaProps {
-  guildID: GuildID
-  userID: UserID
   style?: React.CSSProperties
 }
 
 function SearchArea(props: SearchAreaProps) {
-  const { guildID, userID, style } = props
-  const classes = useStyles()
+  const { style } = props
 
-  const { sendMessage } = React.useContext(SocketContext)
-  const { showNotification } = React.useContext(NotificationsContext)
+  const dispatch: AppDispatch = useDispatch()
+  const { user } = useSelector((state: RootState) => state.user)
+  const classes = useStyles()
 
   const [value, setValue] = React.useState(0)
 
@@ -62,19 +62,16 @@ function SearchArea(props: SearchAreaProps) {
 
   const onSearchDone = React.useCallback(
     async searchTerm => {
-      sendMessage(Messages.Play, guildID, userID, searchTerm)
-        .then(() => showNotification("success", "Successfully added track(s) to queue!"))
-        .catch(trackError)
+      if (user) {
+        dispatch(playSearchTerm(searchTerm))
+      }
     },
-    [guildID, userID, sendMessage, showNotification]
+    [dispatch, user]
   )
 
-  const getTrackFromSearchTerm = React.useCallback(
-    (searchTerm: string) => {
-      return sendMessage(Messages.GetTracksFromTerm, searchTerm)
-    },
-    [sendMessage]
-  )
+  const getTracks = React.useCallback((searchTerm: string) => {
+    return getTrackFromSearchTerm(searchTerm)
+  }, [])
 
   return (
     <Paper className={classes.root} style={style}>
@@ -93,7 +90,7 @@ function SearchArea(props: SearchAreaProps) {
         <Tab label="Play Spotify Playlist" />
       </Tabs>
       <TabPanel value={value} index={0}>
-        <SearchYoutubeTab onSearchDone={onSearchDone} getTracks={getTrackFromSearchTerm} />
+        <SearchYoutubeTab onSearchDone={onSearchDone} getTracks={getTracks} />
       </TabPanel>
       <TabPanel value={value} index={1}>
         <PlayYoutubeTab onSearchDone={onSearchDone} />
