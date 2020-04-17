@@ -41,18 +41,24 @@ export function NotificationsProvider(props: Props) {
   const nextIDRef = React.useRef(1)
   const [notifications, setNotifications] = React.useState<Notification[]>([])
 
-  const showNotification = (type: NotificationType, message: string, options: NotificationOptions = {}) => {
-    const id = nextIDRef.current++
+  const showNotification = React.useCallback(
+    (type: NotificationType, message: string, options: NotificationOptions = {}) => {
+      const id = nextIDRef.current++
 
-    setNotifications(prevNotifications => prevNotifications.concat({ ...options, id, message, type }))
-  }
-  
-  const showError = (error: any) => {
-    showNotification("error", String(error.message || error))
-    
-    // tslint:disable-next-line:no-console
-    console.error(error)
-  }
+      setNotifications(prevNotifications => prevNotifications.concat({ ...options, id, message, type }))
+    },
+    []
+  )
+
+  const showError = React.useCallback(
+    (error: any) => {
+      showNotification("error", String(error.message || error))
+
+      // tslint:disable-next-line:no-console
+      console.error(error)
+    },
+    [showNotification]
+  )
 
   trackErrorImplementation = showError
 
