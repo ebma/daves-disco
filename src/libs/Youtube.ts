@@ -54,6 +54,32 @@ export class Youtube {
     })
   }
 
+  fastSearch(term: string, maxResults: number): Promise<TrackSearchResult[]> {
+    return new Promise<TrackSearchResult[]>((resolve, reject) => {
+      if (maxResults <= 0 || maxResults > 50) {
+        reject("Size of maxResults must be between 1 and 50")
+      }
+
+      search(term, { maxResults, key: this.key, type: "video" }).then(
+        async value => {
+          const results = value.results
+          if (results.length > 0) {
+            const trackSearchResults: TrackSearchResult[] = results.map(result => ({
+              title: result.title,
+              url: result.link
+            }))
+            resolve(trackSearchResults)
+          } else {
+            reject("No results for search term.")
+          }
+        },
+        reason => {
+          reject(reason)
+        }
+      )
+    })
+  }
+
   private getThumbnailFromInfo(info: ytdl.videoInfo): Thumbnail {
     if (info.thumbnail_url) {
       return { medium: info.thumbnail_url }
