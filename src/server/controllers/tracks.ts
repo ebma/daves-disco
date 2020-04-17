@@ -21,9 +21,12 @@ const getTokenFrom = (request: Request) => {
 
 router.get("/", async (request: TrackRequest, response) => {
   const guild = request.query.guild || undefined
-  const favourite = Boolean(request.query.favourite) || false
+  const favourite = Boolean(request.query.favourite) || undefined
 
-  const query = Track.find({ favourite })
+  const query = Track.find()
+  if (favourite) {
+    query.where("favourite").equals(favourite)
+  }
   if (guild) {
     query.where("guild").equals(guild)
   }
@@ -79,11 +82,12 @@ router.put("/:id", (request: TrackRequest, response, next) => {
     lastTouchedAt: body.lastTouchedAt,
     source: body.source,
     title: body.title,
+    touchedByUser: body.touchedByUser,
     thumbnail: body.thumbnail,
     url: body.url
   }
 
-  Track.findOneAndUpdate({ id: request.params.id }, track, { new: true, upsert: true })
+  Track.findByIdAndUpdate(request.params.id, track, { upsert: true })
     .then(updatedTrack => {
       response.json(updatedTrack.toJSON())
       WebSocketHandler.sendMessage(Messages.TracksChange, track.guild)

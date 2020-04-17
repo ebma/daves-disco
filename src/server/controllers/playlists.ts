@@ -1,12 +1,10 @@
 import { Request, Router } from "express"
 import jwt from "jsonwebtoken"
-import Playlist, { IPlaylist } from "../../db/models/playlist"
-import Track from "../../db/models/track"
+import Playlist from "../../db/models/playlist"
 import config from "../../utils/config"
-import Spotify from "../../libs/Spotify"
-import Youtube from "../../libs/Youtube"
 import WebSocketHandler from "../../socket/WebSocketHandler"
 import { Messages } from "../../shared/ipc"
+import { repopulatePlaylistTracks } from "../../db/models/helper"
 
 const router = Router()
 
@@ -24,11 +22,17 @@ const getTokenFrom = (request: Request) => {
 
 router.get("/", async (request: PlaylistRequest, response) => {
   const guild = request.query.guild || null
-  const favourite = Boolean(request.query.favourite) || false
-  const query = Playlist.find({ favourite })
+  const favourite = Boolean(request.query.favourite) || undefined
+
+  const query = Playlist.find()
   if (guild) {
     query.where("guild").equals(guild)
   }
+  if (favourite) {
+    query.where("favourite").equals(favourite)
+  }
+
+  query.populate("tracks")
 
   const playlists = await query.exec()
 
@@ -63,22 +67,22 @@ router.post("/", async (request: PlaylistRequest, response) => {
 })
 
 router.get("/:id", async (request: PlaylistRequest, response) => {
-  const playlist = await Playlist.findOne({ id: request.params.id })
-  if (playlist) {
-    const populatedPlaylist =
-      playlist.source === "spotify"
-        ? await Spotify.getSpotifyPlaylist(playlist.id)
-        : await Youtube.createPlaylistFrom(playlist.id)
+  const useCached = request.params.cached
+  const playlistModel = await Playlist.findById(request.params.id).populate("tracks")
+  if (playlistModel) {
+    if (!useCached) {
+      const latestTrackModels = await repopulatePlaylistTracks(playlistModel)
+      playlistModel.tracks = latestTrackModels
 
-    const populatedTracks = await Promise.all(
-      populatedPlaylist.tracks.map(async track => {
-        const savedTrack = await Track.findOne({ id: track.id })
-        return savedTrack || track
-      })
-    )
-    const playlistModel: IPlaylist = { ...playlist.toJSON(), tracks: populatedTracks }
-
-    response.json(playlistModel)
+      Playlist.findByIdAndUpdate(request.params.id, playlistModel, { new: true })
+        .populate("tracks")
+        .then(updatedPlaylist => {
+          response.json(updatedPlaylist.toJSON())
+          WebSocketHandler.sendMessage(Messages.PlaylistsChange, playlistModel.guild)
+        })
+    } else {
+      response.json(playlistModel.toJSON())
+    }
   } else {
     response.status(404).end()
   }
@@ -96,11 +100,13 @@ router.put("/:id", (request: PlaylistRequest, response, next) => {
     owner: body.owner,
     source: body.source,
     thumbnail: body.thumbnail,
+    tracks: body.tracks,
     uri: body.uri,
     url: body.url
   }
 
-  Playlist.findOneAndUpdate({ id: request.params.id }, playlist, { new: true })
+  Playlist.findByIdAndUpdate(request.params.id, playlist, { new: true })
+    .populate("tracks")
     .then(updatedPlaylist => {
       response.json(updatedPlaylist.toJSON())
       WebSocketHandler.sendMessage(Messages.PlaylistsChange, playlist.guild)
