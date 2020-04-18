@@ -26,7 +26,7 @@ class MusicPlayer {
         if (currentTrack) {
           this.startStreaming(currentTrackModel)
         }
-        this.playingTrack = currentTrackModel
+        this.playingTrack = currentTrackModel.toJSON()
       }
       this.subject.next({ messageType: "status", message: "current-track", data: currentTrack })
       this.subject.next({ messageType: "status", message: "current-queue", data: currentQueue })

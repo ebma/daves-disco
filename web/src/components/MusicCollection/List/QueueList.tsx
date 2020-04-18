@@ -7,14 +7,10 @@ import ListItem from "@material-ui/core/ListItem"
 import ListItemText from "@material-ui/core/ListItemText"
 import makeStyles from "@material-ui/styles/makeStyles"
 import { DraggableTrackItem } from "../Item/TrackItem"
-import { useSelector, useDispatch } from "react-redux"
+import { useSelector, useDispatch, shallowEqual } from "react-redux"
 import { RootState } from "../../../app/rootReducer"
 import { AppDispatch } from "../../../app/store"
-import {
-  skipTracks,
-  skipPreviousTracks,
-  updateQueue,
-} from "../../../redux/playerSlice"
+import { skipTracks, skipPreviousTracks, updateQueue } from "../../../redux/playerSlice"
 
 function reorder<T>(list: Array<T>, startIndex: number, endIndex: number) {
   const result = Array.from(list)
@@ -37,7 +33,7 @@ function QueueList(props: Props) {
   const classes = useStyles()
 
   const dispatch: AppDispatch = useDispatch()
-  const { currentTrack, queue } = useSelector((state: RootState) => state.player)
+  const { currentTrack, queue } = useSelector((state: RootState) => state.player, shallowEqual)
 
   const [localQueue, setLocalQueue] = React.useState<TrackModel[]>(queue)
 
@@ -64,45 +60,43 @@ function QueueList(props: Props) {
     [dispatch, localQueue]
   )
 
-  const indexOfCurrentSong = currentTrack
-    ? localQueue.findIndex(track => _.isEqual(track, currentTrack))
-    : localQueue.length
+  const QueueItems = React.useMemo(() => {
+    const indexOfCurrentSong = currentTrack
+      ? localQueue.findIndex(track => _.isEqual(track, currentTrack))
+      : localQueue.length
 
-  const QueueItems = React.useMemo(
-    () =>
-      localQueue.map((trackModel, index) => {
-        const onClick =
-          index < indexOfCurrentSong
-            ? () => dispatch(skipPreviousTracks(indexOfCurrentSong - index))
-            : index > indexOfCurrentSong
-            ? () => dispatch(skipTracks(index - indexOfCurrentSong))
-            : undefined
+    return localQueue.map((trackModel, index) => {
+      const onClick =
+        index < indexOfCurrentSong
+          ? () => dispatch(skipPreviousTracks(indexOfCurrentSong - index))
+          : index > indexOfCurrentSong
+          ? () => dispatch(skipTracks(index - indexOfCurrentSong))
+          : undefined
 
-        const onDeleteClick = () => {
-          const copiedQueue = localQueue.slice(0)
-          _.remove(copiedQueue, element => element.id === trackModel.id)
+      const onDeleteClick = () => {
+        const copiedQueue = localQueue.slice(0)
+        _.remove(copiedQueue, element => element.id === trackModel.id)
 
-          dispatch(updateQueue(copiedQueue.map(track => track._id)))
-        }
+        dispatch(updateQueue(copiedQueue.map(track => track._id)))
+      }
 
-        return (
-          <div key={index}>
-            {index > 0 ? <Divider variant="inset" component="li" /> : undefined}
-            <DraggableTrackItem
-              current={index === indexOfCurrentSong}
-              id={trackModel.id}
-              index={index}
-              old={index < indexOfCurrentSong}
-              onClick={onClick}
-              onDeleteClick={onDeleteClick}
-              showFavourite
-              track={trackModel}
-            />
-          </div>
-        )
-      }),
-    [dispatch, indexOfCurrentSong, localQueue]
-  )
+      return (
+        <div key={index}>
+          {index > 0 ? <Divider variant="inset" component="li" /> : undefined}
+          <DraggableTrackItem
+            current={index === indexOfCurrentSong}
+            id={trackModel.id}
+            index={index}
+            old={index < indexOfCurrentSong}
+            onClick={onClick}
+            onDeleteClick={onDeleteClick}
+            showFavourite
+            track={trackModel}
+          />
+        </div>
+      )
+    })
+  }, [currentTrack, dispatch, localQueue])
 
   const EmptyQueueItem = React.useMemo(
     () => (

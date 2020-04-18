@@ -94,17 +94,17 @@ const MusicItemList = React.memo(function MusicItemList(props: MusicItemListProp
       items.map((item, index) => {
         if (isTrack(item)) {
           return (
-            <>
+            <div key={item._id}>
               {index > 0 && <Divider variant="inset" component="li" />}
-              <TrackItem key={item.id} track={item} onClick={() => onTrackSelect(item)} showFavourite />
-            </>
+              <TrackItem track={item} onClick={() => onTrackSelect(item)} showFavourite />
+            </div>
           )
         } else if (isPlaylist(item)) {
           return (
-            <>
+            <div key={item._id}>
               {index > 0 && <Divider variant="inset" component="li" />}
-              <PlaylistItem key={item.id} onClick={() => onPlaylistSelect(item)} playlist={item} showFavourite />
-            </>
+              <PlaylistItem onClick={() => onPlaylistSelect(item)} playlist={item} showFavourite />
+            </div>
           )
         } else {
           throw Error(`Unknown item ${JSON.stringify(item)}`)
