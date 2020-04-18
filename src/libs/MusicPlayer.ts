@@ -22,7 +22,7 @@ class MusicPlayer {
     this.subject = new Subject<MusicPlayerSubjectMessage>()
 
     this.queue.subscribe(async (currentTrack, currentQueue) => {
-      if (currentTrack !== this.playingTrack?._id) {
+      if (currentTrack !== this.playingTrack?._id.toString()) {
         streamManager.endCurrent()
         const currentTrackModel = await Track.findById(currentTrack)
         if (currentTrack) {
@@ -65,11 +65,11 @@ class MusicPlayer {
   }
 
   enqueue(track: TrackModel) {
-    this.queue.addElement(track._id)
+    this.queue.addElement(track._id.toString())
   }
 
   enqueueAll(tracks: TrackModel[]) {
-    this.queue.addAll(tracks.map(track => track._id))
+    this.queue.addAll(tracks.map(track => track._id.toString()))
   }
 
   clear() {

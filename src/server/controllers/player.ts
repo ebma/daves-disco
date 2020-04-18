@@ -27,13 +27,17 @@ export function createPlayerRouter(client: MyClient) {
       } else {
         const currentTrack = await Track.findById(player.currentTrack)
         const queue = await Track.find({ _id: { $in: player.queue.getAll() } })
-        console.log("generated queue", queue)
+        // finding many will mix the original order
+        const sortedQueue = player.queue
+          .getAll()
+          .map(trackID => queue.find(track => track.toJSON()._id.toString() === trackID))
+          .filter(track => track)
 
         playerState = {
           available: true,
           currentTrack,
           paused: player.paused,
-          queue,
+          queue: sortedQueue,
           volume: player.volume
         }
       }
