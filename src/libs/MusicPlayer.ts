@@ -23,10 +23,12 @@ class MusicPlayer {
       if (currentTrack !== this.playingTrack?._id.toString()) {
         streamManager.endCurrent()
         const currentTrackModel = await Track.findById(currentTrack)
-        if (currentTrack) {
-          this.startStreaming(currentTrackModel)
+        if (currentTrackModel) {
+          this.startStreaming(currentTrackModel.toJSON())
+          this.playingTrack = currentTrackModel.toJSON()
+        } else {
+          this.playingTrack = null
         }
-        this.playingTrack = currentTrackModel.toJSON()
       }
       this.subject.next({ messageType: "status", message: "current-track", data: currentTrack })
       this.subject.next({ messageType: "status", message: "current-queue", data: currentQueue })
@@ -177,7 +179,7 @@ class MusicPlayer {
 
         if (_.isNil(this.queue.getCurrent())) {
           this.subject.next({ messageType: "status", message: "idle" })
-        } else if (track === this.playingTrack) {
+        } else if (track?._id.toString() === this.playingTrack?._id.toString()) {
           this.skipForward()
         }
 
