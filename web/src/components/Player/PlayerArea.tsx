@@ -96,10 +96,7 @@ function PlayerArea(props: Props) {
         <Grid item sm={6} xs={12}>
           <Grid container direction="row" justify="center">
             <Grid item>
-              <SkipPreviousButton
-                disabled={disabled}
-                onClick={() => dispatch(skipPreviousTracks(1))}
-              />
+              <SkipPreviousButton disabled={disabled} onClick={() => dispatch(skipPreviousTracks(1))} />
             </Grid>
             <Grid item>
               {paused ? (
@@ -108,9 +105,7 @@ function PlayerArea(props: Props) {
                 <PauseButton disabled={disabled} onClick={() => dispatch(pausePlayer())} />
               )}
             </Grid>
-            <Grid item>
-              {<SkipNextButton disabled={disabled} onClick={() => dispatch(skipTracks(1))} />}
-            </Grid>
+            <Grid item>{<SkipNextButton disabled={disabled} onClick={() => dispatch(skipTracks(1))} />}</Grid>
           </Grid>
           <VolumeSlider
             disabled={disabled}

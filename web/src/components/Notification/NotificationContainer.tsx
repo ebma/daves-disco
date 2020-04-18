@@ -35,12 +35,7 @@ function NotificationsContainer() {
 
   return (
     <>
-      <Snackbar
-        autoHideDuration={5000}
-        onClick={onNotificationClick}
-        onClose={closeNotification}
-        open={open}
-      >
+      <Snackbar autoHideDuration={5000} onClick={onNotificationClick} onClose={closeNotification} open={open}>
         <Alert onClose={closeNotification} severity={visibleNotification && visibleNotification.type}>
           {visibleNotification?.message}
         </Alert>

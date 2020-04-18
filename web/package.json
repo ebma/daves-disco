@@ -39,6 +39,7 @@
     "typescript": "^3.8.3"
   },
   "scripts": {
+    "precommit": "lint-staged",
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
     "deploy": "npm run build && surge ./build --domain discord-bot.marcel-ebert.de",
@@ -57,6 +58,12 @@
       "last 1 chrome version",
       "last 1 firefox version",
       "last 1 safari version"
+    ]
+  },
+  "lint-staged": {
+    "*.{js,ts,json,css,md}": [
+      "prettier --write",
+      "git add"
     ]
   }
 }
