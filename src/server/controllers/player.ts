@@ -1,10 +1,9 @@
 import { Request, Router } from "express"
 import { MyClient } from "../../bot/MyClient"
 import MusicPlayerManager from "../../libs/MusicPlayerManager"
-import Track from "../../db/models/track"
 
 interface QueuePostRequest extends Request {
-  body: { queue: TrackModel[] }
+  body: { queue: TrackModelID[] }
 }
 
 export function createPlayerRouter(client: MyClient) {
@@ -19,25 +18,17 @@ export function createPlayerRouter(client: MyClient) {
       if (!player) {
         playerState = {
           available: false,
-          currentTrack: null,
+          currentTrackID: null,
           paused: false,
-          queue: [],
+          queueIDs: [],
           volume: 50
         }
       } else {
-        const currentTrack = await Track.findById(player.currentTrack)
-        const queue = await Track.find({ _id: { $in: player.queue.getAll() } })
-        // finding many will mix the original order
-        const sortedQueue = player.queue
-          .getAll()
-          .map(trackID => queue.find(track => track.toJSON()._id.toString() === trackID))
-          .filter(track => track)
-
         playerState = {
           available: true,
-          currentTrack,
+          currentTrackID: player.currentTrack,
           paused: player.paused,
-          queue: sortedQueue,
+          queueIDs: player.queue.getAll(),
           volume: player.volume
         }
       }
@@ -53,7 +44,7 @@ export function createPlayerRouter(client: MyClient) {
 
     if (guild) {
       const player = MusicPlayerManager.getPlayerFor(guild.id)
-      player.updateQueue(request.body.queue.map(track => track._id))
+      player.updateQueue(request.body.queue)
 
       const updatedQueue = player.queue.getAll()
       response.json(updatedQueue)

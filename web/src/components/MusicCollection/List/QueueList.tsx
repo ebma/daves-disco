@@ -10,7 +10,11 @@ import { DraggableTrackItem } from "../Item/TrackItem"
 import { useSelector, useDispatch } from "react-redux"
 import { RootState } from "../../../app/rootReducer"
 import { AppDispatch } from "../../../app/store"
-import { skipTracks, skipPreviousTracks, updateQueue } from "../../../redux/playerSlice"
+import {
+  skipTracks,
+  skipPreviousTracks,
+  updateQueue,
+} from "../../../redux/playerSlice"
 
 function reorder<T>(list: Array<T>, startIndex: number, endIndex: number) {
   const result = Array.from(list)
@@ -55,7 +59,7 @@ function QueueList(props: Props) {
 
       const orderedQueue = reorder(localQueue, result.source.index, result.destination.index)
       setLocalQueue(orderedQueue)
-      dispatch(updateQueue(orderedQueue))
+      dispatch(updateQueue(orderedQueue.map(track => track._id)))
     },
     [dispatch, localQueue]
   )
@@ -78,7 +82,7 @@ function QueueList(props: Props) {
           const copiedQueue = localQueue.slice(0)
           _.remove(copiedQueue, element => element.id === trackModel.id)
 
-          dispatch(updateQueue(copiedQueue))
+          dispatch(updateQueue(copiedQueue.map(track => track._id)))
         }
 
         return (

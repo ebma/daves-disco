@@ -70,11 +70,13 @@ interface YoutubePlaylist extends Playlist {
   url: string
 }
 
+type TrackModelID = string
+
 interface PlayerModel {
   available: boolean
-  currentTrack: TrackModel | null
+  currentTrackID: TrackModelID | null
   paused: boolean
-  queue: TrackModel[]
+  queueIDs: TrackModelID[]
   volume: number
 }
 

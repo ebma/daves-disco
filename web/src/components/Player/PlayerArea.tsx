@@ -83,15 +83,15 @@ function PlayerArea(props: Props) {
   const { style } = props
 
   const dispatch: AppDispatch = useDispatch()
-  const { available, currentTrack, paused, queue, volume } = useSelector((state: RootState) => state.player)
+  const { available, paused, queue: queueIDs, volume } = useSelector((state: RootState) => state.player)
 
-  const disabled = !available || queue.length === 0
+  const disabled = !available || queueIDs.length === 0
 
   return (
     <Paper style={{ ...style, padding: 16 }}>
       <Grid container direction="row" alignItems="center" spacing={5}>
         <Grid item sm={6} xs={12}>
-          <CurrentSongCard currentTrack={currentTrack || undefined} style={{ alignSelf: "flex-start" }} />
+          <CurrentSongCard style={{ alignSelf: "flex-start" }} />
         </Grid>
         <Grid item sm={6} xs={12}>
           <Grid container direction="row" justify="center">

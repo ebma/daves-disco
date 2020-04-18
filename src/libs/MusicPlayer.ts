@@ -4,10 +4,8 @@ import { trackError } from "../utils/trackError"
 import ObservableQueue from "./ObservableQueue"
 import StreamManager from "./StreamManager"
 import Youtube from "./Youtube"
-import { createAndSaveTrackModel, updateTrackModel } from "../db/models/helper"
+import { updateTrackModel } from "../db/models/helper"
 import Track from "../db/models/track"
-
-type TrackModelID = string
 
 class MusicPlayer {
   destroyed = false

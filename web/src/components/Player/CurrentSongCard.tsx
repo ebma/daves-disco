@@ -8,6 +8,8 @@ import CardMedia from "@material-ui/core/CardMedia"
 import Typography from "@material-ui/core/Typography"
 import { makeStyles, createStyles, Theme } from "@material-ui/core/styles"
 import { SpotifyHelper } from "../../shared/utils/helpers"
+import { useSelector } from "react-redux"
+import { RootState } from "../../app/rootReducer"
 
 const useSongCardStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -19,13 +21,12 @@ const useSongCardStyles = makeStyles((theme: Theme) =>
 )
 
 interface Props {
-  currentTrack?: Track
   style?: React.CSSProperties
 }
 
 const CurrentSongCard = (props: Props) => {
   const classes = useSongCardStyles()
-  const { currentTrack } = props
+  const { currentTrack } = useSelector((state: RootState) => state.player)
 
   return (
     <Card className={classes.card} elevation={10} style={props.style}>

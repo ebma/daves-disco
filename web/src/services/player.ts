@@ -7,7 +7,7 @@ const getPlayer = async (guildID: GuildID): Promise<PlayerModel> => {
   return response.data
 }
 
-const updateQueue = async (guildID: GuildID, queue: TrackModel[]): Promise<TrackModel[]> => {
+const updateQueue = async (guildID: GuildID, queue: TrackModelID[]): Promise<TrackModelID[]> => {
   const response = await axios.post(`${baseUrl}/queue/${guildID}`, {
     queue
   })
