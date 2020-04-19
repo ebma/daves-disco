@@ -19,7 +19,7 @@ const tracksSlice = createSlice({
   name: "tracks",
   initialState,
   reducers: {
-    setError(state, action: PayloadAction<string>) {
+    setError(state, action: PayloadAction<string | null>) {
       state.error = action.payload
     },
     setTrack(state, action: PayloadAction<TrackModel>) {

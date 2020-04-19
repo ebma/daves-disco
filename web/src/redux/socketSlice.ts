@@ -18,13 +18,13 @@ const socketSlice = createSlice({
     setConnectionState(state, action: PayloadAction<ConnectionState>) {
       state.connectionState = action.payload
     },
-    socketError(state, action: PayloadAction<string>) {
+    setError(state, action: PayloadAction<string | null>) {
       state.error = action.payload
     }
   }
 })
 
-export const { setConnectionState, socketError } = socketSlice.actions
+export const { setConnectionState, setError } = socketSlice.actions
 
 export default socketSlice.reducer
 

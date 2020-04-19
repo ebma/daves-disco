@@ -74,6 +74,7 @@ function QueueList(props: Props) {
           : undefined
 
       const onDeleteClick = () => {
+        // dispatch(removeFromQueue(index))
         const copiedQueue = localQueue.slice(0)
         _.remove(copiedQueue, element => element.id === trackModel.id)
 

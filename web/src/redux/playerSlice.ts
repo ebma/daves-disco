@@ -40,7 +40,7 @@ const playerSlice = createSlice({
     setCurrentTrackID(state, action: PayloadAction<TrackModelID>) {
       state.currentTrackID = action.payload
     },
-    setError(state, action: PayloadAction<string>) {
+    setError(state, action: PayloadAction<string | null>) {
       state.error = action.payload
     },
     setPaused(state, action: PayloadAction<boolean>) {

@@ -18,7 +18,7 @@ const playlistsSlice = createSlice({
   name: "playlists",
   initialState,
   reducers: {
-    setError(state, action: PayloadAction<string>) {
+    setError(state, action: PayloadAction<string | null>) {
       state.error = action.payload
     },
     setPlaylist(state, action: PayloadAction<PlaylistModel>) {

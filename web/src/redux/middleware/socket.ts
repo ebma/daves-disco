@@ -4,7 +4,7 @@ import { RootState } from "../../app/rootReducer"
 import {
   initAuthenticationAction,
   setConnectionState,
-  socketError,
+  setError,
   sendMessageAction,
   subscribeToMessagesAction,
   unsubscribeFromMessagesAction
@@ -33,7 +33,7 @@ const socketMiddleware: Middleware<{}, RootState> = store => {
   let messageID = 1
 
   socket.on("disconnect", () => store.dispatch(setConnectionState("disconnected")))
-  socket.on("error", (error: Error) => store.dispatch(socketError(error?.message)))
+  socket.on("error", (error: Error) => store.dispatch(setError(error?.message)))
   socket.on("reconnecting", () => store.dispatch(setConnectionState("reconnecting")))
   socket.on("reconnect", () => store.dispatch(setConnectionState("connected")))
   socket.on("reconnect_failed", () => store.dispatch(setConnectionState("disconnected")))
@@ -48,8 +48,8 @@ const socketMiddleware: Middleware<{}, RootState> = store => {
         .on("authenticated", () => {
           store.dispatch(setConnectionState("authenticated"))
         })
-        .on("unauthorized", (msg: any) => store.dispatch(socketError(`unauthorized: ${JSON.stringify(msg.data)}`)))
-        .on("error", (error: any) => store.dispatch(socketError(error)))
+        .on("unauthorized", (msg: any) => store.dispatch(setError(`unauthorized: ${JSON.stringify(msg.data)}`)))
+        .on("error", (error: any) => store.dispatch(setError(error)))
     } else if (sendMessageAction.match(action)) {
       const { successCallback, errorCallback, messageType, ...args } = action.payload
 

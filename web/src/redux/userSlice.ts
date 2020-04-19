@@ -33,10 +33,13 @@ const userSlice = createSlice({
       const user = action.payload
       state.user = user
       saveUserToLocalStorage(user)
+    },
+    setError(state, action: PayloadAction<string | null>) {
+      state.error = action.payload
     }
   }
 })
 
-export const { setUser } = userSlice.actions
+export const { setError, setUser } = userSlice.actions
 
 export default userSlice.reducer

@@ -28,11 +28,14 @@ const guildsSlice = createSlice({
     },
     getGuildsFailed(state, action: PayloadAction<string>) {
       state.error = action.payload
+    },
+    setError(state, action: PayloadAction<string | null>) {
+      state.error = action.payload
     }
   }
 })
 
-export const { getGuildsSuccess, getGuildsFailed } = guildsSlice.actions
+export const { getGuildsSuccess, getGuildsFailed, setError } = guildsSlice.actions
 
 export default guildsSlice.reducer
 
