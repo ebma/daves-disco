@@ -1,4 +1,4 @@
-import Playlist, { IPlaylist } from "./playlist"
+import Playlist from "./playlist"
 import Track from "./track"
 import WebSocketHandler from "../../socket/WebSocketHandler"
 import { Messages } from "../../shared/ipc"
@@ -35,7 +35,12 @@ export async function repopulatePlaylistTracks(playlistModel: PlaylistModel): Pr
 
   const populatedTrackModels = await createTrackModels(populatedTracks, playlistModel.guild)
 
-  return populatedTrackModels
+  // remove duplicates
+  const populatedTrackModelsDedup = populatedTrackModels.filter((elem, pos, array) => {
+    return array.findIndex(e => e.id === elem.id) == pos
+  })
+
+  return populatedTrackModelsDedup
 }
 
 export async function createAndSavePlaylistModel(playlist: Playlist, guildID: GuildID) {
