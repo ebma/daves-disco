@@ -73,12 +73,12 @@ export async function createAndSaveTrackModel(track: Track, guildID: GuildID) {
   trackModel.lastTouchedAt = Date.now().toString()
   trackModel.touchedByUser = true
 
-  return Track.findOneAndUpdate({ title: track.title, guild: guildID }, trackModel, { upsert: true }).then(
-    updatedTrack => {
+  return Track.findOneAndUpdate({ title: track.title, guild: guildID }, trackModel, { new: true, upsert: true })
+    .exec()
+    .then(updatedTrack => {
       WebSocketHandler.sendMessage(Messages.TracksChange, guildID)
       return updatedTrack
-    }
-  )
+    })
 }
 
 export async function updateTrackModel(updatedModel: TrackModel) {
