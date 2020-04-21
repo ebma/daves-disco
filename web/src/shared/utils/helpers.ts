@@ -26,7 +26,7 @@ function isSpotifyPlaylistUri(term: string) {
 }
 
 function isSpotifyPlaylistUrl(term: string) {
-  const regex = /^https:\/\/open\.spotify\.com\/playlist\/[\d\w]+$/g
+  const regex = /^https:\/\/open\.spotify\.com\/playlist\/[\d\w]+\??[\d\w=&]+$/g
   return term.match(regex)
 }
 
