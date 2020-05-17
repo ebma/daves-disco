@@ -38,11 +38,11 @@
     "watch-debug": "concurrently -k -p \"[{name}]\" -n \"Sass,TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run serve-debug\""
   },
   "dependencies": {
-    "@discordjs/opus": "^0.1.0",
+    "@discordjs/opus": "^0.3.2",
     "async": "^3.1.0",
     "cors": "^2.8.5",
     "discord-akairo": "^8.0.0",
-    "discord.js": "^12.0.2",
+    "discord.js": "^12.2.0",
     "dotenv": "^8.1.0",
     "express": "^4.17.1",
     "express-async-errors": "^3.1.1",
@@ -60,8 +60,8 @@
     "spotify-web-api-node": "^4.0.0",
     "winston": "^3.2.1",
     "youtube-search": "^1.1.4",
-    "ytdl-core": "^2.0.1",
-    "ytdl-core-discord": "^1.1.0",
+    "ytdl-core": "^2.1.2",
+    "ytdl-core-discord": "^1.2.0",
     "ytpl": "^0.1.19"
   },
   "devDependencies": {
