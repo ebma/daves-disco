@@ -36,13 +36,13 @@ async function initLogin(user: GuildMember) {
   const dmChannel = await user.createDM()
   dmChannel.send("Are you currently trying to login with the web interface? (y/n)")
 
-  const filter = (response: any) => {
-    return response.content.startsWith("y") || response.content.startsWith("n")
+  const filter = (response: { content: string }) => {
+    return response.content.toLowerCase().startsWith("y") || response.content.toLowerCase().startsWith("n")
   }
 
   const collected = await dmChannel.awaitMessages(filter, { max: 1, time: 60000, errors: ["time"] })
   const answer = collected.first().content
-  if (answer.startsWith("y")) {
+  if (answer.toLowerCase().startsWith("y")) {
     try {
       const token = jwt.sign({ guildID: user.guild.id, userID: user.id }, config.SECRET, {
         expiresIn: "30d"
@@ -77,6 +77,7 @@ export function createLoginRouter(client: MyClient) {
 
     try {
       const token = await initLogin(user)
+      console.log("sending token", token)
       response.status(200).send({ token })
     } catch (error) {
       return response.status(401).json({

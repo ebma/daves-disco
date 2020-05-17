@@ -7,7 +7,8 @@ import {
   setError,
   sendMessageAction,
   subscribeToMessagesAction,
-  unsubscribeFromMessagesAction
+  unsubscribeFromMessagesAction,
+  setAuthError
 } from "../socketSlice"
 
 const path = process.env.BOT_SERVER_PATH ? process.env.BOT_SERVER_PATH : "http://localhost:1234"
@@ -48,7 +49,17 @@ const socketMiddleware: Middleware<{}, RootState> = store => {
         .on("authenticated", () => {
           store.dispatch(setConnectionState("authenticated"))
         })
-        .on("unauthorized", (msg: any) => store.dispatch(setError(`unauthorized: ${JSON.stringify(msg.data)}`)))
+        .on("unauthorized", (msg: any) => {
+          try {
+            const message = msg.data.message as String
+            if (message.includes("jwt expired")) {
+              store.dispatch(setAuthError("jwt-expired"))
+              store.dispatch(setError("Your Login Token expired. Please login again."))
+            }
+          } catch (error) {
+            store.dispatch(setError(`unauthorized: ${JSON.stringify(msg.data)}`))
+          }
+        })
         .on("error", (error: any) => store.dispatch(setError(error)))
     } else if (sendMessageAction.match(action)) {
       const { successCallback, errorCallback, messageType, ...args } = action.payload

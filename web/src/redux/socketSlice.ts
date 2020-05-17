@@ -1,12 +1,16 @@
 import { createSlice, PayloadAction, createAction } from "@reduxjs/toolkit"
 import { AppThunk } from "../app/store"
 
+type AuthError = "jwt-expired"
+
 export interface SocketState {
   connectionState: ConnectionState
+  authError: AuthError | null
   error: string | null
 }
 
 const initialState: SocketState = {
+  authError: null,
   connectionState: "disconnected",
   error: null
 }
@@ -15,6 +19,9 @@ const socketSlice = createSlice({
   name: "socket",
   initialState,
   reducers: {
+    setAuthError(state, action: PayloadAction<AuthError | null>) {
+      state.authError = action.payload
+    },
     setConnectionState(state, action: PayloadAction<ConnectionState>) {
       state.connectionState = action.payload
     },
@@ -24,7 +31,7 @@ const socketSlice = createSlice({
   }
 })
 
-export const { setConnectionState, setError } = socketSlice.actions
+export const { setAuthError, setConnectionState, setError } = socketSlice.actions
 
 export default socketSlice.reducer
 

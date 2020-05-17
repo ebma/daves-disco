@@ -129,13 +129,29 @@ function GuildSelectionArea(props: Props) {
   const classes = useStyles()
 
   const dispatch: AppDispatch = useDispatch()
-  const { connectionState, error } = useSelector((state: RootState) => state.socket)
+  const { authError, connectionState } = useSelector((state: RootState) => state.socket)
   const { guilds } = useSelector((state: RootState) => state.guilds)
   const { user } = useSelector((state: RootState) => state.user)
 
   const [authenticationError, setAuthenticationError] = React.useState<string | null>(null)
   const [authenticationPending, setAuthenticationPending] = React.useState<boolean>(false)
   const [token, setToken] = React.useState<string | null>(getTokenFromStorage)
+
+  const initLogin = React.useCallback(
+    (user: User) => {
+      setAuthenticationPending(true)
+      loginService
+        .login({ guildID: user.guildID, userID: user.id })
+        .then(token => {
+          setToken(token)
+          saveTokenToStorage(token)
+          dispatch(initAuthenticationAction(token))
+        })
+        .catch(setAuthenticationError)
+        .finally(() => setAuthenticationPending(false))
+    },
+    [dispatch]
+  )
 
   React.useEffect(() => {
     const interval = setInterval(() => {
@@ -146,22 +162,16 @@ function GuildSelectionArea(props: Props) {
   }, [dispatch])
 
   React.useEffect(() => {
-    setAuthenticationError(error)
-  }, [error])
+    if (authError === "jwt-expired" && user) {
+      initLogin(user)
+    }
+  }, [authError, initLogin, user])
 
   React.useEffect(() => {
     if (!token && user) {
-      setAuthenticationPending(true)
-      loginService
-        .login({ guildID: user.guildID, userID: user.id })
-        .then(token => {
-          setToken(token)
-          saveTokenToStorage(token)
-        })
-        .catch(setAuthenticationError)
-        .finally(() => setAuthenticationPending(false))
+      initLogin(user)
     }
-  }, [token, user])
+  }, [initLogin, token, user])
 
   React.useEffect(() => {
     if (connectionState === "disconnected" && user && token) {
@@ -184,7 +194,7 @@ function GuildSelectionArea(props: Props) {
 
         <Typography className={classes.info} color="textSecondary" align="center">
           {authenticationError ? (
-            authenticationError
+            String(authenticationError)
           ) : authenticationPending ? (
             "Authentication is pending. Check for a received message on your discord account."
           ) : (
