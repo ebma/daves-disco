@@ -2,7 +2,7 @@ import React from "react"
 import { useSelector } from "react-redux"
 import Typography from "@material-ui/core/Typography"
 import { RootState } from "../../../app/rootReducer"
-import CollectionList from "../List/CollectionList"
+import CollectionList from "../CollectionList"
 
 interface RecentHistoryTabProps {}
 

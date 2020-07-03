@@ -3,10 +3,8 @@ import Paper from "@material-ui/core/Paper"
 import { makeStyles } from "@material-ui/core/styles"
 import clsx from "clsx"
 import React from "react"
-import PlayerArea from "../components/Player/PlayerArea"
 import MusicCollectionArea from "../components/MusicCollection/MusicCollectionArea"
-import SearchArea from "../components/SearchArea/SearchArea"
-import QueueTab from "../components/MusicCollection/Tab/QueueTab"
+import QueueTab from "../components/Queue/QueueArea"
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -16,7 +14,7 @@ const useStyles = makeStyles(theme => ({
   },
   fixedHeight: {
     maxHeight: "90vh",
-    minHeight: "80vh"
+    minHeight: "75vh"
   }
 }))
 

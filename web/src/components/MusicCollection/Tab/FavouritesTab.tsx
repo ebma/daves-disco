@@ -1,7 +1,7 @@
 import React from "react"
 import { useSelector } from "react-redux"
 import Typography from "@material-ui/core/Typography"
-import CollectionList from "../List/CollectionList"
+import CollectionList from "../CollectionList"
 import { RootState } from "../../../app/rootReducer"
 
 interface FavouritesTabProps {}

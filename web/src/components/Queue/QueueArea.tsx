@@ -4,11 +4,11 @@ import Button from "@material-ui/core/Button"
 import Tooltip from "@material-ui/core/Tooltip"
 import ClearIcon from "@material-ui/icons/Clear"
 import ShuffleIcon from "@material-ui/icons/Shuffle"
-import QueueList from "../List/QueueList"
+import QueueList from "./QueueList"
 import { useSelector, useDispatch } from "react-redux"
-import { RootState } from "../../../app/rootReducer"
-import { AppDispatch } from "../../../app/store"
-import { clearTracks, shuffleTracks } from "../../../redux/playerSlice"
+import { RootState } from "../../app/rootReducer"
+import { AppDispatch } from "../../app/store"
+import { clearTracks, shuffleTracks } from "../../redux/playerSlice"
 import Typography from "@material-ui/core/Typography"
 
 interface QueueHeaderProps {
@@ -67,13 +67,15 @@ function QueueTab(props: QueueTabProps) {
   }, [dispatch, user])
 
   return (
-    <div style={{ alignItems: "center", display: "flex", flexDirection: "column" }}>
-      <Typography color="textPrimary" variant="h2" style={{ marginTop: 8 }}>
-        Queue
-      </Typography>
-      {queue.length > 0 && <QueueHeader onClearClick={clear} onShuffleClick={shuffle} />}
+    <>
+      <div style={{ alignItems: "center", display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
+        <Typography color="textPrimary" variant="h3" style={{ marginLeft: 16, marginTop: 16 }}>
+          Queue
+        </Typography>
+        {queue.length > 0 && <QueueHeader onClearClick={clear} onShuffleClick={shuffle} />}
+      </div>
       <QueueList />
-    </div>
+    </>
   )
 }
 

@@ -6,11 +6,11 @@ import List from "@material-ui/core/List"
 import ListItem from "@material-ui/core/ListItem"
 import ListItemText from "@material-ui/core/ListItemText"
 import makeStyles from "@material-ui/styles/makeStyles"
-import { DraggableTrackItem } from "../Item/TrackItem"
+import { DraggableTrackItem } from "../MusicCollection/Item/TrackItem"
 import { useSelector, useDispatch, shallowEqual } from "react-redux"
-import { RootState } from "../../../app/rootReducer"
-import { AppDispatch } from "../../../app/store"
-import { skipTracks, skipPreviousTracks, updateQueue } from "../../../redux/playerSlice"
+import { RootState } from "../../app/rootReducer"
+import { AppDispatch } from "../../app/store"
+import { skipTracks, skipPreviousTracks, updateQueue } from "../../redux/playerSlice"
 
 function reorder<T>(list: Array<T>, startIndex: number, endIndex: number) {
   const result = Array.from(list)
