@@ -23,7 +23,8 @@ function reorder<T>(list: Array<T>, startIndex: number, endIndex: number) {
 const useStyles = makeStyles(theme => ({
   queueList: {
     padding: 16,
-    paddingTop: 8
+    paddingTop: 8,
+    width: "100%"
   }
 }))
 

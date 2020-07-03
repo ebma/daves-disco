@@ -114,7 +114,13 @@ function PlayerArea(props: Props) {
       container
       direction="row"
       alignItems="center"
-      style={{ ...style, backgroundImage: `url("${background}")`, backgroundSize: "100% 100%", height: "100%" }}
+      style={{
+        ...style,
+        backgroundImage: `url("${background}")`,
+        backgroundSize: "100% 100%",
+        borderRadius: 8,
+        height: "100%"
+      }}
     >
       <Grid item xs={12}>
         <div

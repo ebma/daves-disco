@@ -24,6 +24,7 @@ import HomePage from "../../pages/HomePage"
 import LoginPage from "../../pages/LoginPage"
 import Footer from "../Footer"
 import { MainListItems } from "./ListItems"
+import MusicLibraryPage from "../../pages/MusicLibraryPage"
 
 const drawerWidth = 240
 
@@ -168,7 +169,9 @@ export default function Dashboard() {
             <Route path="/home">
               <HomePage />
             </Route>
-            <Route path="/music"></Route>
+            <Route path="/music">
+              <MusicLibraryPage />
+            </Route>
             <Route path="/login">
               <LoginPage />
             </Route>

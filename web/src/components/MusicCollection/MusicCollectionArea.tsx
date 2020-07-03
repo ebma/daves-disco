@@ -10,7 +10,6 @@ import { AppDispatch } from "../../app/store"
 import { fetchPlaylists, subscribePlaylists } from "../../redux/playlistsSlice"
 import { fetchTracks, subscribeTracks } from "../../redux/tracksSlice"
 import FavouritesTab from "./Tab/FavouritesTab"
-import QueueTab from "./Tab/QueueTab"
 import RecentHistoryTab from "./Tab/RecentHistoryTab"
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -56,25 +55,7 @@ interface MusicCollectionAreaProps {}
 function MusicCollectionArea(props: MusicCollectionAreaProps) {
   const classes = useStyles()
 
-  const dispatch: AppDispatch = useDispatch()
   const [tab, setTab] = React.useState(0)
-
-  React.useEffect(() => {
-    const fetchRecents = async () => {
-      dispatch(fetchPlaylists())
-      dispatch(fetchTracks())
-    }
-
-    const unsubscribePlaylists = dispatch(subscribePlaylists())
-    const unsubscribeTracks = dispatch(subscribeTracks())
-
-    fetchRecents()
-
-    return () => {
-      unsubscribePlaylists()
-      unsubscribeTracks()
-    }
-  }, [dispatch])
 
   const handleChange = React.useCallback((event: React.ChangeEvent<{}>, newValue: number) => {
     setTab(newValue)
@@ -91,17 +72,13 @@ function MusicCollectionArea(props: MusicCollectionAreaProps) {
         style={{ paddingLeft: 8, paddingRight: 8 }}
         value={tab}
       >
-        <Tab label="Queue" />
         <Tab label="Recent History" />
         <Tab label="Favourites" />
       </Tabs>
       <TabPanel value={tab} index={0}>
-        <QueueTab />
-      </TabPanel>
-      <TabPanel value={tab} index={1}>
         <RecentHistoryTab />
       </TabPanel>
-      <TabPanel value={tab} index={2}>
+      <TabPanel value={tab} index={1}>
         <FavouritesTab />
       </TabPanel>
     </div>

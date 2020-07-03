@@ -9,6 +9,7 @@ import { useSelector, useDispatch } from "react-redux"
 import { RootState } from "../../../app/rootReducer"
 import { AppDispatch } from "../../../app/store"
 import { clearTracks, shuffleTracks } from "../../../redux/playerSlice"
+import Typography from "@material-ui/core/Typography"
 
 interface QueueHeaderProps {
   onClearClick: () => void
@@ -66,10 +67,13 @@ function QueueTab(props: QueueTabProps) {
   }, [dispatch, user])
 
   return (
-    <>
+    <div style={{ alignItems: "center", display: "flex", flexDirection: "column" }}>
+      <Typography color="textPrimary" variant="h2" style={{ marginTop: 8 }}>
+        Queue
+      </Typography>
       {queue.length > 0 && <QueueHeader onClearClick={clear} onShuffleClick={shuffle} />}
       <QueueList />
-    </>
+    </div>
   )
 }
 
