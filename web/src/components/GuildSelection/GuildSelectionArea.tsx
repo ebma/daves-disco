@@ -84,7 +84,7 @@ function SelectBox(props: { guilds: Guild[]; user?: User }) {
   }, [guilds, selectedGuildID])
 
   return (
-    <Box display="flex">
+    <Box display="flex" style={{ marginTop: 16 }}>
       <TextField
         className={classes.textField}
         helperText={selectedGuildID ? undefined : "Please select your guild/server"}

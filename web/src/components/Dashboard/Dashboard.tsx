@@ -1,13 +1,12 @@
+import { Tooltip } from "@material-ui/core"
 import AppBar from "@material-ui/core/AppBar"
 import Box from "@material-ui/core/Box"
 import Container from "@material-ui/core/Container"
 import CssBaseline from "@material-ui/core/CssBaseline"
 import Divider from "@material-ui/core/Divider"
 import Drawer from "@material-ui/core/Drawer"
-import Grid from "@material-ui/core/Grid"
 import IconButton from "@material-ui/core/IconButton"
 import List from "@material-ui/core/List"
-import Paper from "@material-ui/core/Paper"
 import { makeStyles } from "@material-ui/core/styles"
 import Toolbar from "@material-ui/core/Toolbar"
 import Typography from "@material-ui/core/Typography"
@@ -17,11 +16,14 @@ import ChevronLeftIcon from "@material-ui/icons/ChevronLeft"
 import MenuIcon from "@material-ui/icons/Menu"
 import clsx from "clsx"
 import React from "react"
+import { useSelector } from "react-redux"
+import { Route, Switch, useHistory } from "react-router-dom"
+import { RootState } from "../../app/rootReducer"
 import { ColorSchemeContext } from "../../context/colorScheme"
+import HomePage from "../../pages/HomePage"
+import LoginPage from "../../pages/LoginPage"
 import Footer from "../Footer"
-import GuildSelectionArea from "../GuildSelection/GuildSelectionArea"
-import { mainListItems, secondaryListItems } from "./ListItems"
-import { Tooltip } from "@material-ui/core"
+import { MainListItems } from "./ListItems"
 
 const drawerWidth = 240
 
@@ -92,15 +94,6 @@ const useStyles = makeStyles(theme => ({
   container: {
     paddingTop: theme.spacing(4),
     paddingBottom: theme.spacing(4)
-  },
-  paper: {
-    padding: theme.spacing(2),
-    display: "flex",
-    overflow: "auto",
-    flexDirection: "column"
-  },
-  fixedHeight: {
-    height: 240
   }
 }))
 
@@ -113,9 +106,19 @@ export default function Dashboard() {
   const handleDrawerClose = () => {
     setOpen(false)
   }
-  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight)
 
   const { colorScheme, toggleColorScheme } = React.useContext(ColorSchemeContext)
+
+  const { connectionState } = useSelector((state: RootState) => state.socket)
+  const history = useHistory()
+
+  React.useEffect(() => {
+    if (connectionState === "authenticated") {
+      history.push("/home")
+    } else {
+      history.push("/login")
+    }
+  }, [connectionState, history])
 
   return (
     <div className={classes.root}>
@@ -154,29 +157,22 @@ export default function Dashboard() {
           </IconButton>
         </div>
         <Divider />
-        <List>{mainListItems}</List>
-        <Divider />
-        <List>{secondaryListItems}</List>
+        <List>
+          <MainListItems />
+        </List>
       </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
-        <Container maxWidth="lg" className={classes.container}>
-          <Grid container spacing={3}>
-            {/* Chart */}
-            <Grid item xs={12} md={8} lg={9}>
-              <Paper className={fixedHeightPaper}></Paper>
-            </Grid>
-            {/* Recent Deposits */}
-            <Grid item xs={12} md={4} lg={3}>
-              <Paper className={fixedHeightPaper}>
-                <GuildSelectionArea />
-              </Paper>
-            </Grid>
-            {/* Recent Orders */}
-            <Grid item xs={12}>
-              <Paper className={classes.paper}></Paper>
-            </Grid>
-          </Grid>
+        <Container maxWidth="xl" className={classes.container}>
+          <Switch>
+            <Route path="/home">
+              <HomePage />
+            </Route>
+            <Route path="/music"></Route>
+            <Route path="/login">
+              <LoginPage />
+            </Route>
+          </Switch>
           <Box pt={4}>
             <Footer />
           </Box>

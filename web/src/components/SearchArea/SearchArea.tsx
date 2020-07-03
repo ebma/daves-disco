@@ -1,19 +1,18 @@
-import React from "react"
 import Box from "@material-ui/core/Box"
-import Paper from "@material-ui/core/Paper"
+import { createStyles, Theme } from "@material-ui/core/styles"
 import Tab from "@material-ui/core/Tab"
 import Tabs from "@material-ui/core/Tabs"
 import Typography from "@material-ui/core/Typography"
-import { Theme, createStyles } from "@material-ui/core/styles"
 import makeStyles from "@material-ui/styles/makeStyles"
-import SearchYoutubeTab from "./Tab/SearchYoutubeTab"
-import PlayYoutubeTab from "./Tab/PlayYoutubeTab"
-import PlaySpotifyTab from "./Tab/PlaySpotifyTab"
-import { useSelector, useDispatch } from "react-redux"
+import React from "react"
+import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "../../app/rootReducer"
-import { playSearchTerm } from "../../redux/playerSlice"
 import { AppDispatch } from "../../app/store"
+import { playSearchTerm } from "../../redux/playerSlice"
 import { getTrackFromSearchTerm } from "../../redux/tracksSlice"
+import PlaySpotifyTab from "./Tab/PlaySpotifyTab"
+import PlayYoutubeTab from "./Tab/PlayYoutubeTab"
+import SearchYoutubeTab from "./Tab/SearchYoutubeTab"
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -74,7 +73,7 @@ function SearchArea(props: SearchAreaProps) {
   }, [])
 
   return (
-    <Paper className={classes.root} style={style}>
+    <div className={classes.root} style={style}>
       <Tabs
         indicatorColor="primary"
         onChange={handleChange}
@@ -98,7 +97,7 @@ function SearchArea(props: SearchAreaProps) {
       <TabPanel value={value} index={2}>
         <PlaySpotifyTab onSearchDone={onSearchDone} />
       </TabPanel>
-    </Paper>
+    </div>
   )
 }
 

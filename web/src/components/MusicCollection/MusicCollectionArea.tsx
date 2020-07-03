@@ -1,18 +1,17 @@
-import React from "react"
-import { useDispatch } from "react-redux"
 import Box from "@material-ui/core/Box"
-import Paper from "@material-ui/core/Paper"
-import makeStyles from "@material-ui/styles/makeStyles"
+import { createStyles, Theme } from "@material-ui/core/styles"
 import Tab from "@material-ui/core/Tab"
 import Tabs from "@material-ui/core/Tabs"
-import { Theme, createStyles } from "@material-ui/core/styles"
 import Typography from "@material-ui/core/Typography"
-import RecentHistoryTab from "./Tab/RecentHistoryTab"
-import FavouritesTab from "./Tab/FavouritesTab"
-import QueueTab from "./Tab/QueueTab"
+import makeStyles from "@material-ui/styles/makeStyles"
+import React from "react"
+import { useDispatch } from "react-redux"
 import { AppDispatch } from "../../app/store"
 import { fetchPlaylists, subscribePlaylists } from "../../redux/playlistsSlice"
 import { fetchTracks, subscribeTracks } from "../../redux/tracksSlice"
+import FavouritesTab from "./Tab/FavouritesTab"
+import QueueTab from "./Tab/QueueTab"
+import RecentHistoryTab from "./Tab/RecentHistoryTab"
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -82,7 +81,7 @@ function MusicCollectionArea(props: MusicCollectionAreaProps) {
   }, [])
 
   return (
-    <Paper className={classes.root}>
+    <div className={classes.root}>
       <Tabs
         indicatorColor="primary"
         onChange={handleChange}
@@ -105,7 +104,7 @@ function MusicCollectionArea(props: MusicCollectionAreaProps) {
       <TabPanel value={tab} index={2}>
         <FavouritesTab />
       </TabPanel>
-    </Paper>
+    </div>
   )
 }
 

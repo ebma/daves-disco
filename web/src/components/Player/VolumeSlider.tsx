@@ -21,7 +21,7 @@ function VolumeSlider(props: Props) {
   }
 
   React.useEffect(() => {
-    setValue(volume)
+    setValue(Math.floor(volume))
   }, [volume])
 
   const handleChangeCommitted = (event: any, value: number | number[]) => onChange(value as number)
