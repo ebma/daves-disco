@@ -47,6 +47,12 @@ const createTheme = (darkMode: boolean) =>
               fontSize: "0.7rem"
             }
           }
+        },
+        MuiAppBar: {
+          colorPrimary: { backgroundColor: brandColor.dark }
+        },
+        MuiIconButton: {
+          colorPrimary: { color: darkMode ? textColorDark.primary : textColorLight.primary }
         }
       }
     })

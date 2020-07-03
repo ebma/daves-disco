@@ -5,7 +5,6 @@ import CssBaseline from "@material-ui/core/CssBaseline"
 import Container from "@material-ui/core/Container"
 import Grid from "@material-ui/core/Grid"
 import { makeStyles } from "@material-ui/core/styles"
-import Header from "../components/Header"
 import Footer from "../components/Footer"
 import GuildSelectionArea from "../components/GuildSelection/GuildSelectionArea"
 import SearchArea from "../components/SearchArea/SearchArea"
@@ -14,15 +13,14 @@ import MusicCollectionArea from "../components/MusicCollection/MusicCollectionAr
 import { RootState } from "../app/rootReducer"
 import { fetchPlayerState, subscribePlayerState } from "../redux/playerSlice"
 import { AppDispatch } from "../app/store"
+import Dashboard from "../components/Dashboard/Dashboard"
 
 const useStyles = makeStyles(theme => ({
   root: {
     maxWidth: "95vw",
     minHeight: "100vh"
   },
-  container: {
-    marginTop: 16
-  },
+  container: {},
   item: {
     width: "100%"
   }
@@ -44,31 +42,7 @@ function IndexPage() {
     return unsubscribe
   }, [connectionState, dispatch])
 
-  return (
-    <Container className={classes.root} component="main">
-      <CssBaseline />
-      <Header />
-      <Grid className={classes.container} container spacing={4}>
-        <Grid className={classes.item} item md={12} sm={12}>
-          <GuildSelectionArea />
-        </Grid>
-        {connectionState === "authenticated" && (
-          <>
-            <Grid className={classes.item} item md={6} sm={12}>
-              <Box display="flex" flexDirection="column" height="100%" justifyContent="space-evenly">
-                <SearchArea style={{ marginBottom: 16 }} />
-                <PlayerArea style={{ marginTop: 16 }} />
-              </Box>
-            </Grid>
-            <Grid className={classes.item} item md={6} sm={12}>
-              <MusicCollectionArea />
-            </Grid>
-          </>
-        )}
-      </Grid>
-      <Footer />
-    </Container>
-  )
+  return <Dashboard />
 }
 
 export default IndexPage
