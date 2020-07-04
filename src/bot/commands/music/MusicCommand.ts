@@ -27,7 +27,8 @@ export abstract class MusicCommand extends Command {
         this.musicPlayer.subscribe({
           next: message => {
             if (message.messageType === "info" || message.messageType === "error") {
-              this.sendMessageToChannel(message.message)
+              // Don't send messages to channel to prevent spam
+              // this.sendMessageToChannel(message.message)
             }
           }
         })
