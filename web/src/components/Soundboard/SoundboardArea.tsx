@@ -17,7 +17,7 @@ function SoundboardArea() {
 
   const { items } = useSelector((state: RootState) => state.soundboard)
 
-  const ItemList = items.map(item => <SoundboardItem item={item} />)
+  const ItemList = items.map(item => <SoundboardItem key={item.id} item={item} />)
 
   console.log("items", items)
 

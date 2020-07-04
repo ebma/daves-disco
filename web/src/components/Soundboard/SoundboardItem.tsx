@@ -31,7 +31,7 @@ function SoundboardItem(props: { item: SoundboardItemModel }) {
   }
 
   return (
-    <Grid className={classes.container} key={item.id} item>
+    <Grid className={classes.container} item>
       <Button className={classes.button} variant="outlined" onClick={play}>
         <Typography color="textPrimary" variant="body1">
           {item.name}
