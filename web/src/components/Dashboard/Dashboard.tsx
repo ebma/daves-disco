@@ -25,6 +25,7 @@ import LoginPage from "../../pages/LoginPage"
 import MusicLibraryPage from "../../pages/MusicLibraryPage"
 import Footer from "../Footer"
 import { MainListItems } from "./ListItems"
+import SoundboardPage from "../../pages/SoundboardPage"
 
 const drawerWidth = 240
 
@@ -183,6 +184,13 @@ export default function Dashboard() {
               <Fade in timeout={1000} mountOnEnter unmountOnExit>
                 <div>
                   <MusicLibraryPage />
+                </div>
+              </Fade>
+            </Route>
+            <Route path="/soundboard">
+              <Fade in timeout={1000} mountOnEnter unmountOnExit>
+                <div>
+                  <SoundboardPage />
                 </div>
               </Fade>
             </Route>

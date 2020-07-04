@@ -4,6 +4,7 @@ import ListItemText from "@material-ui/core/ListItemText"
 import AlbumIcon from "@material-ui/icons/Album"
 import DashboardIcon from "@material-ui/icons/Dashboard"
 import LoginIcon from "@material-ui/icons/LockOpen"
+import SoundboardIcon from "@material-ui/icons/MusicNote"
 import React from "react"
 import { useHistory, useLocation } from "react-router"
 import { makeStyles } from "@material-ui/core/styles"
@@ -50,6 +51,18 @@ export function MainListItems() {
           <AlbumIcon />
         </ListItemIcon>
         <ListItemText primary="Music" />
+      </ListItem>
+      <ListItem
+        button
+        className={classes.item}
+        disabled={connectionState !== "authenticated"}
+        selected={location.pathname.includes("/soundboard")}
+        onClick={() => history.push("/soundboard")}
+      >
+        <ListItemIcon>
+          <SoundboardIcon />
+        </ListItemIcon>
+        <ListItemText primary="Soundboard" />
       </ListItem>
       <ListItem
         button

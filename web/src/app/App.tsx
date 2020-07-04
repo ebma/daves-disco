@@ -13,6 +13,7 @@ import createTheme from "../theme"
 import ErrorHandler from "./ErrorHandler"
 import { RootState } from "./rootReducer"
 import { AppDispatch } from "./store"
+import { fetchItems, subscribeItems } from "../redux/soundboardsSlice"
 
 function MaterialThemeProvider(props: { children: React.ReactNode }) {
   const { colorScheme } = React.useContext(ColorSchemeContext)
@@ -42,16 +43,19 @@ function App() {
     const fetchRecents = async () => {
       dispatch(fetchPlaylists())
       dispatch(fetchTracks())
+      dispatch(fetchItems())
     }
 
     const unsubscribePlaylists = dispatch(subscribePlaylists())
     const unsubscribeTracks = dispatch(subscribeTracks())
+    const unsubscribeItems = dispatch(subscribeItems())
 
     fetchRecents()
 
     return () => {
       unsubscribePlaylists()
       unsubscribeTracks()
+      unsubscribeItems()
     }
   }, [dispatch])
 
