@@ -4,19 +4,19 @@ import createBreakpoints from "@material-ui/core/styles/createBreakpoints"
 export const breakpoints = createBreakpoints({})
 
 export const brandColor = {
-  dark: "#b92b27",
+  dark: "#d81b60",
   main: "#039be5",
   light: "#fa669d"
 }
 
 export const textColorDark = {
   primary: "#FFFFFF",
-  secondary: "#d81b60"
+  secondary: "#f42620"
 }
 
 export const textColorLight = {
   primary: "#212121",
-  secondary: "#d81b60"
+  secondary: "#f42620"
 }
 
 export const backgroundColor = {
