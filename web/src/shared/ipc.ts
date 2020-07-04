@@ -3,6 +3,7 @@ export const Messages: IPC.MessageType = {
   Play: "Play",
   Pause: "Pause",
   Resume: "Resume",
+  Loop: "Loop",
   Skip: "Skip",
   Stop: "Stop",
   SkipPrevious: "SkipPrevious",

@@ -5,6 +5,7 @@ declare namespace IPC {
     Play: "Play"
     Pause: "Pause"
     Resume: "Resume"
+    Loop: "Loop"
     Skip: "Skip"
     Stop: "Stop"
     SkipPrevious: "SkipPrevious"
@@ -28,6 +29,7 @@ declare namespace IPC {
     [Messages.Play]: (guildID: GuildID, userID: UserID, query: string) => void
     [Messages.Pause]: (guildID: GuildID) => void
     [Messages.Resume]: (guildID: GuildID) => void
+    [Messages.Loop]: (guildID: GuildID, loopState: LoopState) => void
     [Messages.Skip]: (guildID: GuildID, amount: number) => void
     [Messages.Stop]: (guildID: GuildID) => void
     [Messages.SkipPrevious]: (guildID: GuildID, amount: number) => void

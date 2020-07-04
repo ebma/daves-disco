@@ -75,6 +75,7 @@ type TrackModelID = string
 interface PlayerModel {
   available: boolean
   currentTrackID: TrackModelID | null
+  loopState: LoopState
   paused: boolean
   queueIDs: TrackModelID[]
   volume: number
@@ -85,6 +86,8 @@ interface PlayerModel {
 type MessageID = number
 type GuildID = string
 type UserID = string
+type LoopState = "none" | "repeat-one" | "repeat-all"
+
 type ReducedGuilds = { id: string; name: string }[]
 type ReducedMembers = { id: string; name: string }[]
 

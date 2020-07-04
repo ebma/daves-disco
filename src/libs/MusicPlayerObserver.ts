@@ -72,6 +72,9 @@ class MusicPlayerObserver {
           const newVolume = message.data
           WebSocketHandler.sendMessage(Messages.PlayerChange, this.guildID)
           break
+        case "loop-state-changed":
+          WebSocketHandler.sendMessage(Messages.PlayerChange, this.guildID)
+          break
       }
     } else if (message.messageType === "error") {
       WebSocketHandler.sendMessage(Messages.Error, this.guildID, message.data)

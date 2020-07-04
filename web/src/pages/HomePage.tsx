@@ -3,7 +3,7 @@ import Paper from "@material-ui/core/Paper"
 import { makeStyles } from "@material-ui/core/styles"
 import clsx from "clsx"
 import React from "react"
-import QueueTab from "../components/Queue/QueueArea"
+import QueueArea from "../components/Queue/QueueArea"
 import PlayerArea from "../components/Player/PlayerArea"
 import SearchArea from "../components/SearchArea/SearchArea"
 
@@ -38,7 +38,7 @@ function HomePage() {
       </Grid>
       <Grid item xs={12} lg={6}>
         <Paper className={fixedHeightPaper}>
-          <QueueTab />
+          <QueueArea />
         </Paper>
       </Grid>
     </Grid>

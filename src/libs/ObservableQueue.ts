@@ -6,6 +6,7 @@ class ObservableQueue<T extends object | string> {
   private itemList: T[] = []
   private observers: SubscriptionCallback<T>[] = []
   private currentIndex = 0
+  loopState: LoopState = "none"
 
   constructor() {}
 
@@ -26,17 +27,28 @@ class ObservableQueue<T extends object | string> {
     this.notifyObservers()
   }
 
-  public moveForward(amount: number = 1) {
-    const previousIndex = this.currentIndex
-    _.times(amount, () => {
-      if (this.currentIndex + 1 <= this.itemList.length) {
-        this.currentIndex++
+  public moveForward(amount: number = 1, force: boolean = false) {
+    if (!force && this.loopState !== "none") {
+      if (this.loopState === "repeat-one") {
+        // don't skip
+      } else if (this.loopState === "repeat-all") {
+        this.currentIndex += amount
+        if (this.currentIndex >= this.itemList.length) {
+          this.currentIndex = 0
+        }
       }
-    })
-
-    // if changed notify observers
-    if (this.currentIndex !== previousIndex) {
       this.notifyObservers()
+    } else {
+      const previousIndex = this.currentIndex
+      _.times(amount, () => {
+        if (this.currentIndex + 1 <= this.itemList.length) {
+          this.currentIndex++
+        }
+      })
+      // if changed notify observers
+      if (this.currentIndex !== previousIndex) {
+        this.notifyObservers()
+      }
     }
   }
 

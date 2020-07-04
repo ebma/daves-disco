@@ -4,7 +4,7 @@ import { makeStyles } from "@material-ui/core/styles"
 import clsx from "clsx"
 import React from "react"
 import MusicCollectionArea from "../components/MusicCollection/MusicCollectionArea"
-import QueueTab from "../components/Queue/QueueArea"
+import QueueArea from "../components/Queue/QueueArea"
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -32,7 +32,7 @@ function MusicLibraryPage() {
       </Grid>
       <Grid item xs={12} lg={6}>
         <Paper className={fixedHeightPaper}>
-          <QueueTab />
+          <QueueArea />
         </Paper>
       </Grid>
     </Grid>

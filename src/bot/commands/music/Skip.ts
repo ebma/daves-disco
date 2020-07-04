@@ -31,7 +31,7 @@ class SkipCommand extends MusicCommand {
     const suppliedAmount = (args && args.data) || 1
 
     try {
-      this.musicPlayer.skipForward(suppliedAmount)
+      this.musicPlayer.skipForward(suppliedAmount, true)
       return this.sendMessageToChannel(`Skipped ${suppliedAmount} song${suppliedAmount > 1 ? "s" : ""}!`)
     } catch (error) {
       trackError(error, "SkipCommand.execute")

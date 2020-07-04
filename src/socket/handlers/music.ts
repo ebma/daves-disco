@@ -68,15 +68,21 @@ const createPauseRequestHandler = (musicPlayerManager: MusicPlayerManager) =>
   }
 
 const createResumeRequestHandler = (musicPlayerManager: MusicPlayerManager) =>
-  function handlePauseRequest(guildID: string) {
+  function handleResumeRequest(guildID: string) {
     const player = requirePlayer(guildID, musicPlayerManager)
     return player.resumeStream()
+  }
+
+const createLoopRequestHandler = (musicPlayerManager: MusicPlayerManager) =>
+  function handleLoopRequest(guildID: string, loopState: LoopState) {
+    const player = requirePlayer(guildID, musicPlayerManager)
+    return player.setLoopState(loopState)
   }
 
 const createSkipRequestHandler = (musicPlayerManager: MusicPlayerManager) =>
   function handleSkipRequest(guildID: string, amount: number) {
     const player = requirePlayer(guildID, musicPlayerManager)
-    return player.skipForward(amount)
+    return player.skipForward(amount, true)
   }
 
 const createSkipPreviousRequestHandler = (musicPlayerManager: MusicPlayerManager) =>
@@ -119,6 +125,7 @@ export function initPlayerHandlers(
   handler.addHandler(Messages.PlayPlaylist, createPlayPlaylistRequestHandler(musicPlayerManager, client))
   handler.addHandler(Messages.Pause, createPauseRequestHandler(musicPlayerManager))
   handler.addHandler(Messages.Resume, createResumeRequestHandler(musicPlayerManager))
+  handler.addHandler(Messages.Loop, createLoopRequestHandler(musicPlayerManager))
   handler.addHandler(Messages.Skip, createSkipRequestHandler(musicPlayerManager))
   handler.addHandler(Messages.SkipPrevious, createSkipPreviousRequestHandler(musicPlayerManager))
   handler.addHandler(Messages.Stop, createStopRequestHandler(musicPlayerManager))

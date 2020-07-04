@@ -19,6 +19,7 @@ export function createPlayerRouter(client: MyClient) {
         playerState = {
           available: false,
           currentTrackID: null,
+          loopState: "none",
           paused: false,
           queueIDs: [],
           volume: 50
@@ -27,6 +28,7 @@ export function createPlayerRouter(client: MyClient) {
         playerState = {
           available: true,
           currentTrackID: player.currentTrack,
+          loopState: player.queue.loopState,
           paused: player.paused,
           queueIDs: player.queue.getAll(),
           volume: player.volume

@@ -11,6 +11,7 @@ export interface PlayerState {
   currentTrackID: TrackModelID | null
   error: string | null
   paused: boolean
+  loopState: LoopState
   queueIDs: TrackModelID[]
   queue: TrackModel[]
   volume: number
@@ -21,6 +22,7 @@ const initialState: PlayerState = {
   currentTrack: null,
   currentTrackID: null,
   error: null,
+  loopState: "none",
   paused: false,
   queue: [],
   queueIDs: [],
@@ -46,6 +48,9 @@ const playerSlice = createSlice({
     setPaused(state, action: PayloadAction<boolean>) {
       state.paused = action.payload
     },
+    setLoopState(state, action: PayloadAction<LoopState>) {
+      state.loopState = action.payload
+    },
     setQueue(state, action: PayloadAction<TrackModel[]>) {
       state.queue = action.payload
     },
@@ -64,6 +69,7 @@ const playerSlice = createSlice({
       state.available = playerModel.available
       state.currentTrack = playerModel.currentTrack
       state.currentTrackID = playerModel.currentTrackID
+      state.loopState = playerModel.loopState
       state.paused = playerModel.paused
       state.queue = playerModel.queue
       state.queueIDs = playerModel.queueIDs
@@ -89,6 +95,7 @@ export const {
   setQueueIDs,
   setError,
   setPaused,
+  setLoopState,
   setPlayerState,
   setVolume
 } = playerSlice.actions
@@ -231,6 +238,17 @@ export const playSearchTerm = (searchTerm: string): AppThunk<Promise<void>> => a
   const { user } = getState().user
   if (user) {
     return dispatch(sendMessage(Messages.Play, user.guildID, user.id, searchTerm)).catch(error => {
+      dispatch(setError(error))
+    })
+  } else {
+    dispatch(setError("User not available"))
+  }
+}
+
+export const updateLoopState = (loopState: LoopState): AppThunk<Promise<void>> => async (dispatch, getState) => {
+  const { user } = getState().user
+  if (user) {
+    return dispatch(sendMessage(Messages.Loop, user.guildID, loopState)).catch(error => {
       dispatch(setError(error))
     })
   } else {

@@ -107,7 +107,6 @@ const socketMiddleware: Middleware<{}, RootState> = store => {
 
       const foundListener = listeners.find(listener => listener.callback === callback)
       if (foundListener) {
-        console.log("removing found listener", foundListener)
         socket.removeEventListener("message", foundListener.listener)
       }
     } else {

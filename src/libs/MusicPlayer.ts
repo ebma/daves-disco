@@ -20,7 +20,7 @@ class MusicPlayer {
     this.subject = new Subject<MusicPlayerSubjectMessage>()
 
     this.queue.subscribe(async (currentTrack, currentQueue) => {
-      if (currentTrack !== this.playingTrack?._id.toString()) {
+      if (currentTrack !== this.playingTrack?._id.toString() || this.queue.loopState !== "none") {
         const currentTrackModel = await Track.findById(currentTrack)
         if (currentTrackModel) {
           this.playingTrack = currentTrackModel.toJSON()
@@ -121,12 +121,17 @@ class MusicPlayer {
     this.queue.replace(shuffledItemList, 0)
   }
 
-  skipForward(amount: number = 1) {
-    this.queue.moveForward(amount)
+  skipForward(amount: number = 1, force: boolean = false) {
+    this.queue.moveForward(amount, force)
   }
 
   skipPrevious(amount: number = 1) {
     this.queue.moveBack(amount)
+  }
+
+  setLoopState(state: LoopState) {
+    this.queue.loopState = state
+    this.subject.next({ messageType: "status", message: "loop-state-changed" })
   }
 
   updateQueue(newItems: TrackModelID[]) {
@@ -181,7 +186,7 @@ class MusicPlayer {
         if (_.isNil(this.queue.getCurrent())) {
           this.subject.next({ messageType: "status", message: "idle" })
         } else if (track?._id.toString() === this.playingTrack?._id.toString()) {
-          this.skipForward()
+          this.skipForward(1, false)
         }
 
         break
