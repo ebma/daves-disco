@@ -161,10 +161,11 @@ export class Youtube {
         reject(`Track has an invalid url '${track.url}'`)
       } else {
         const stream = ytdlDiscordWrapper(track.url, {
-          seek: seek,
+          encoderArgs: ["-af", "bass=g=5,dynaudnorm=f=200"],
           filter: "audioonly",
+          highWaterMark: 1 << 25,
           opusEncoded: true,
-          highWaterMark: 1 << 25
+          seek
         })
         resolve(stream)
       }
