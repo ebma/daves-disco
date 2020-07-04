@@ -1,16 +1,15 @@
-import React from "react"
-import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd"
-import _ from "lodash"
+import { Typography } from "@material-ui/core"
 import Divider from "@material-ui/core/Divider"
 import List from "@material-ui/core/List"
-import ListItem from "@material-ui/core/ListItem"
-import ListItemText from "@material-ui/core/ListItemText"
 import makeStyles from "@material-ui/styles/makeStyles"
-import { DraggableTrackItem } from "../MusicCollection/Item/TrackItem"
-import { useSelector, useDispatch, shallowEqual } from "react-redux"
+import _ from "lodash"
+import React from "react"
+import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd"
+import { shallowEqual, useDispatch, useSelector } from "react-redux"
 import { RootState } from "../../app/rootReducer"
 import { AppDispatch } from "../../app/store"
-import { skipTracks, skipPreviousTracks, updateQueue } from "../../redux/playerSlice"
+import { skipPreviousTracks, skipTracks, updateQueue } from "../../redux/playerSlice"
+import { DraggableTrackItem } from "../MusicCollection/Item/TrackItem"
 
 function reorder<T>(list: Array<T>, startIndex: number, endIndex: number) {
   const result = Array.from(list)
@@ -75,9 +74,7 @@ function QueueList(props: Props) {
           : undefined
 
       const onDeleteClick = () => {
-        // dispatch(removeFromQueue(index))
-        const copiedQueue = localQueue.slice(0)
-        _.remove(copiedQueue, element => element.id === trackModel.id)
+        const copiedQueue = localQueue.slice(0).filter((_, i) => i !== index)
 
         dispatch(updateQueue(copiedQueue.map(track => track._id)))
       }
@@ -102,9 +99,9 @@ function QueueList(props: Props) {
 
   const EmptyQueueItem = React.useMemo(
     () => (
-      <ListItem onClick={() => undefined} key={0}>
-        <ListItemText primary="No songs in queue..." />
-      </ListItem>
+      <Typography align="center" variant="h5">
+        -
+      </Typography>
     ),
     []
   )
