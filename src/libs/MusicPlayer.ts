@@ -23,6 +23,7 @@ class MusicPlayer {
       if (currentTrack !== this.playingTrack?._id.toString()) {
         streamManager.endCurrent()
         const currentTrackModel = await Track.findById(currentTrack)
+        console.log("currentTrackModel", currentTrackModel)
         if (currentTrackModel) {
           this.startStreaming(currentTrackModel.toJSON())
           this.playingTrack = currentTrackModel.toJSON()
@@ -30,6 +31,7 @@ class MusicPlayer {
           this.playingTrack = null
         }
       }
+      console.log("currentTrack", currentTrack)
       this.subject.next({ messageType: "status", message: "current-track", data: currentTrack })
       this.subject.next({ messageType: "status", message: "current-queue", data: currentQueue })
     })

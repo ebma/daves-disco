@@ -8,10 +8,16 @@ import Youtube from "../../libs/Youtube"
 export async function createTrackModels(tracks: Track[], guildID: GuildID) {
   const trackModels = await Promise.all(
     tracks.map(async track => {
-      let trackModel = await Track.findOne({ title: track.title, guild: guildID })
+      let trackModel = null
+      if (track.id) {
+        trackModel = await Track.findOne({ id: track.id, guild: guildID })
+      } else {
+        trackModel = await Track.findOne({ title: track.title, guild: guildID })
+      }
       if (!trackModel) {
         trackModel = new Track({ guild: guildID, touchedByUser: false, ...track })
         await trackModel.save()
+        WebSocketHandler.sendMessage(Messages.TracksChange, guildID)
       }
       return trackModel
     })
@@ -60,7 +66,11 @@ export async function createAndSavePlaylistModel(playlist: Playlist, guildID: Gu
   return Playlist.findOneAndUpdate({ name: playlist.name, guild: guildID }, playlistModel, { upsert: true }).then(
     updatedPlaylist => {
       WebSocketHandler.sendMessage(Messages.PlaylistsChange, guildID)
-      return updatedPlaylist
+      if (updatedPlaylist) {
+        return updatedPlaylist.populate("tracks")
+      } else {
+        return playlistModel
+      }
     }
   )
 }
