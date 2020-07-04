@@ -21,17 +21,17 @@ class MusicPlayer {
 
     this.queue.subscribe(async (currentTrack, currentQueue) => {
       if (currentTrack !== this.playingTrack?._id.toString()) {
-        streamManager.endCurrent()
         const currentTrackModel = await Track.findById(currentTrack)
-        console.log("currentTrackModel", currentTrackModel)
         if (currentTrackModel) {
-          this.startStreaming(currentTrackModel.toJSON())
           this.playingTrack = currentTrackModel.toJSON()
+          // it's important to change playingTrack before ending the current song
+          streamManager.endCurrent()
+          this.startStreaming(currentTrackModel.toJSON())
         } else {
           this.playingTrack = null
+          streamManager.endCurrent()
         }
       }
-      console.log("currentTrack", currentTrack)
       this.subject.next({ messageType: "status", message: "current-track", data: currentTrack })
       this.subject.next({ messageType: "status", message: "current-queue", data: currentQueue })
     })
