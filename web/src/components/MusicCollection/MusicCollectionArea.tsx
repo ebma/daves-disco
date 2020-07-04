@@ -59,18 +59,23 @@ function MusicCollectionArea(props: MusicCollectionAreaProps) {
 
   return (
     <div className={classes.root}>
-      <Tabs
-        indicatorColor="primary"
-        onChange={handleChange}
-        textColor="primary"
-        variant="fullWidth"
-        scrollButtons="auto"
-        style={{ paddingLeft: 8, paddingRight: 8 }}
-        value={tab}
-      >
-        <Tab label="Recent History" />
-        <Tab label="Favourites" />
-      </Tabs>
+      <div style={{ alignItems: "center", display: "flex", flexDirection: "row" }}>
+        <Typography variant="h3" style={{ margin: 16, marginBottom: 0 }}>
+          Collection
+        </Typography>
+        <Tabs
+          indicatorColor="primary"
+          onChange={handleChange}
+          textColor="primary"
+          scrollButtons="auto"
+          variant="fullWidth"
+          style={{ flexGrow: 1, height: "fit-content", paddingLeft: 8, paddingRight: 8 }}
+          value={tab}
+        >
+          <Tab label="Recent History" />
+          <Tab label="Favourites" />
+        </Tabs>
+      </div>
       <TabPanel value={tab} index={0}>
         <RecentHistoryTab />
       </TabPanel>
