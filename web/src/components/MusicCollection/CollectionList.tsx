@@ -27,7 +27,8 @@ function isPlaylist(item: MusicItem): item is PlaylistModel {
 const useStyles = makeStyles({
   root: {
     padding: 16,
-    paddingTop: 8
+    paddingTop: 8,
+    overflow: "auto"
   }
 })
 
@@ -162,14 +163,14 @@ function CollectionList(props: Props) {
   }, [dispatch, selectedPlaylist, showNotification])
 
   return (
-    <>
+    <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
       {PlaylistHeaderMemo}
       <MusicItemList
         items={selectedPlaylist ? selectedPlaylist.tracks : collection}
         onTrackSelect={onTrackSelect}
         onPlaylistSelect={onPlaylistSelect}
       />
-    </>
+    </div>
   )
 }
 

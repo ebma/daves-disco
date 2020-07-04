@@ -17,8 +17,10 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     tabPanel: {
       height: "60vh",
-      flexGrow: 1,
-      overflow: "auto"
+      flexGrow: 1
+    },
+    box: {
+      height: "100%"
     }
   })
 )
@@ -41,7 +43,7 @@ function TabPanel(props: TabPanelProps) {
       hidden={value !== index}
       id={`scrollable-auto-tabpanel-${index}`}
     >
-      {value === index && <Box>{children}</Box>}
+      {value === index && <Box className={classes.box}>{children}</Box>}
     </Typography>
   )
 }
