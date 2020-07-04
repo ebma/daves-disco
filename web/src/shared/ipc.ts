@@ -12,10 +12,12 @@ export const Messages: IPC.MessageType = {
 
   PlayTrack: "PlayTrack",
   PlayPlaylist: "PlayPlaylist",
+  PlaySound: "PlaySound",
 
   Error: "Error",
 
   TracksChange: "TracksChange",
   PlaylistsChange: "PlaylistsChange",
+  SoundboardItemsChange: "SoundboardItemsChange",
   PlayerChange: "PlayerChange"
 } as const

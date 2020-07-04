@@ -88,3 +88,7 @@ export async function playTrack(track: Track, guildID: GuildID, musicPlayer: Mus
   const trackModel = await createAndSaveTrackModel(track, guildID)
   musicPlayer.enqueue(trackModel)
 }
+
+export async function playSound(source: string, musicPlayer: MusicPlayer) {
+  musicPlayer.playSound(source)
+}

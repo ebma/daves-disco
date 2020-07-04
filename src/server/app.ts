@@ -11,6 +11,7 @@ import { createPlayerRouter } from "./controllers/player"
 import playlistsRouter from "./controllers/playlists"
 import tracksRouter from "./controllers/tracks"
 import youtubeRouter from "./controllers/youtube"
+import soundboardRouter from "./controllers/soundboards"
 
 connect(config.MONGODB_URI)
 
@@ -31,6 +32,7 @@ export function initApp(client: MyClient) {
   app.use("/api/guilds", guildRouter)
   app.use("/api/player", playerRouter)
   app.use("/api/youtube", youtubeRouter)
+  app.use("/api/soundboards", soundboardRouter)
 
   app.use(middleware.unknownEndpoint)
   app.use(middleware.errorHandler)

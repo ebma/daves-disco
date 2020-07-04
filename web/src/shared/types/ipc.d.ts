@@ -14,12 +14,14 @@ declare namespace IPC {
 
     PlayTrack: "PlayTrack"
     PlayPlaylist: "PlayPlaylist"
+    PlaySound: "PlaySound"
 
     // Subscribable Info Messages
     Error: "Error"
     TracksChange: "TracksChange"
     PlaylistsChange: "PlaylistsChange"
     PlayerChange: "PlayerChange"
+    SoundboardItemsChange: "SoundboardItemsChange"
   }
 
   export type MessageType = typeof Messages
@@ -38,6 +40,7 @@ declare namespace IPC {
 
     [Messages.PlayTrack]: (guildID: GuildID, userID: UserID, track: Track) => void
     [Messages.PlayPlaylist]: (guildID: GuildID, userID: UserID, playlist: Playlist) => void
+    [Messages.PlaySound]: (guildID: GuildID, userID: UserID, source: string) => void
 
     [Messages.CurrentTrack]: () => Track
     [Messages.CurrentQueue]: () => Track[]
@@ -48,6 +51,7 @@ declare namespace IPC {
     [Messages.TracksChange]: () => void
     [Messages.PlaylistsChange]: () => void
     [Messages.PlayerChange]: () => void
+    [Messages.SoundboardItemsChange]: () => void
   }
 
   export type MessageArgs<Message extends keyof MessageType> = MessageSignatures[Message] extends () => any

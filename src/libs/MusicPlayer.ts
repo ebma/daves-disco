@@ -11,6 +11,7 @@ class MusicPlayer {
   destroyed = false
   queue: ObservableQueue<TrackModelID>
   private streamManager: StreamManager
+  private streamSubscription: Subscription
   private subject: Subject<MusicPlayerSubjectMessage>
   private playingTrack: TrackModel
 
@@ -78,6 +79,10 @@ class MusicPlayer {
     // clear everything except current track to not stop the current track
     const currentTrack = this.currentTrack
     this.updateQueue([currentTrack])
+  }
+
+  playSound(source: string) {
+    this.streamManager.playSound(source)
   }
 
   pauseStream() {
@@ -152,8 +157,9 @@ class MusicPlayer {
           throw new Error(`Could not get complete information about track ${track.title}!`)
         }
       }
-      const streamObservable = await this.streamManager.playTrack(track)
-      streamObservable.subscribe({
+      this.streamManager.playTrack(track)
+      this.streamSubscription?.unsubscribe()
+      this.streamSubscription = this.streamManager.subscribe({
         next: message => this.observeStream(message, track)
       })
     } catch (error) {

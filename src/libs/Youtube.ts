@@ -4,6 +4,7 @@ import { Readable } from "stream"
 import search from "youtube-search"
 import ytdl from "ytdl-core"
 import ytdlDiscord from "ytdl-core-discord"
+import ytdlDiscordWrapper from "discord-ytdl-core"
 import ytpl from "ytpl"
 import { trackError } from "../utils/trackError"
 import { SpotifyHelper } from "../shared/utils/helpers"
@@ -101,7 +102,6 @@ export class Youtube {
     return new Promise<Track>(async (resolve, reject) => {
       try {
         const info = await this.getTrackInfo(url)
-
         if (info) {
           const track: Track = {
             id: info.video_id,
@@ -153,16 +153,20 @@ export class Youtube {
     })
   }
 
-  createReadableStreamFor(track: Track): Promise<Readable> {
+  createReadableStreamFor(track: Track, seek?: number): Promise<Readable> {
     return new Promise<Readable>(async (resolve, reject) => {
       if (!track.url) {
         reject(`Track ${track.title} doesn't have an url`)
       } else if (!this.isYoutubeVideo(track.url)) {
         reject(`Track has an invalid url '${track.url}'`)
       } else {
-        ytdlDiscord(track.url, { quality: "highestaudio", filter: "audioonly", highWaterMark: 1 << 25 }) // fuck this shit (https://github.com/fent/node-ytdl-core/issues/402#issuecomment-538070017)
-          .then(resolve)
-          .catch(reject)
+        const stream = ytdlDiscordWrapper(track.url, {
+          seek: seek,
+          filter: "audioonly",
+          opusEncoded: true,
+          highWaterMark: 1 << 25
+        })
+        resolve(stream)
       }
     })
   }

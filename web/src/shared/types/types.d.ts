@@ -81,6 +81,19 @@ interface PlayerModel {
   volume: number
 }
 
+// --- SOUNDBOARD ---
+
+interface SoundboardItem {
+  id: string
+  source: string
+  name: string
+  guild: string
+}
+
+interface SoundboardItemModel extends SoundboardItem {
+  _id: string
+}
+
 // --- DISCORD ---
 
 type MessageID = number
