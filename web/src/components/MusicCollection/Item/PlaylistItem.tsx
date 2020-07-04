@@ -1,20 +1,15 @@
-import React from "react"
 import Avatar from "@material-ui/core/Avatar"
-import IconButton from "@material-ui/core/IconButton"
 import Link from "@material-ui/core/Link"
 import ListItem from "@material-ui/core/ListItem"
 import ListItemAvatar from "@material-ui/core/ListItemAvatar"
-import ListItemIcon from "@material-ui/core/ListItemIcon"
 import ListItemText from "@material-ui/core/ListItemText"
 import makeStyles from "@material-ui/styles/makeStyles"
-import Tooltip from "@material-ui/core/Tooltip"
-import ListIcon from "@material-ui/icons/List"
-import FavoriteIcon from "@material-ui/icons/Favorite"
-import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder"
-import { SpotifyHelper } from "../../../shared/utils/helpers"
-import { updatePlaylist } from "../../../redux/playlistsSlice"
-import { AppDispatch } from "../../../app/store"
+import React from "react"
 import { useDispatch } from "react-redux"
+import { AppDispatch } from "../../../app/store"
+import { updatePlaylist } from "../../../redux/playlistsSlice"
+import { SpotifyHelper } from "../../../shared/utils/helpers"
+import { FavorButton, ShowListButton } from "./Buttons"
 
 const useStyles = makeStyles(theme => ({
   queueItem: {
@@ -44,56 +39,9 @@ function PlaylistItem(props: Props) {
 
   const dispatch: AppDispatch = useDispatch()
 
-  const ShowListButton = React.useMemo(
-    () => (
-      <ListItemIcon
-        onClick={(event: React.MouseEvent) => {
-          event.preventDefault()
-          event.stopPropagation()
-          onClick && onClick()
-        }}
-      >
-        <Tooltip placement="bottom" title="View Playlist">
-          <IconButton>
-            <ListIcon />
-          </IconButton>
-        </Tooltip>
-      </ListItemIcon>
-    ),
-    [onClick]
-  )
-
   const toggleFavourite = React.useCallback(() => {
     dispatch(updatePlaylist({ ...playlist, favourite: !playlist.favourite }))
   }, [dispatch, playlist])
-
-  const FavorPlaylistButton = React.useMemo(() => {
-    return showFavourite ? (
-      <ListItemIcon
-        onClick={(event: React.MouseEvent) => {
-          event.preventDefault()
-          event.stopPropagation()
-          toggleFavourite()
-        }}
-      >
-        {playlist.favourite ? (
-          <Tooltip placement="bottom" title="Remove from favourites">
-            <IconButton>
-              <FavoriteIcon />
-            </IconButton>
-          </Tooltip>
-        ) : (
-          <Tooltip placement="bottom" title="Add to favourites">
-            <IconButton>
-              <FavoriteBorderIcon />
-            </IconButton>
-          </Tooltip>
-        )}
-      </ListItemIcon>
-    ) : (
-      undefined
-    )
-  }, [showFavourite, playlist.favourite, toggleFavourite])
 
   const secondaryText = React.useMemo(
     () =>
@@ -145,8 +93,8 @@ function PlaylistItem(props: Props) {
         }}
         secondary={secondaryText}
       />
-      {ShowListButton}
-      {FavorPlaylistButton}
+      {onClick ? <ShowListButton onClick={onClick} /> : undefined}
+      {showFavourite ? <FavorButton onClick={toggleFavourite} favourite={playlist.favourite || false} /> : undefined}
     </ListItem>
   )
 }

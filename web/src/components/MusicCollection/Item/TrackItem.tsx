@@ -1,21 +1,16 @@
-import React, { useRef } from "react"
-import { Draggable } from "react-beautiful-dnd"
 import Avatar from "@material-ui/core/Avatar"
-import IconButton from "@material-ui/core/IconButton"
 import Link from "@material-ui/core/Link"
 import ListItem from "@material-ui/core/ListItem"
 import ListItemAvatar from "@material-ui/core/ListItemAvatar"
-import ListItemIcon from "@material-ui/core/ListItemIcon"
 import ListItemText from "@material-ui/core/ListItemText"
 import makeStyles from "@material-ui/styles/makeStyles"
-import Tooltip from "@material-ui/core/Tooltip"
-import DeleteIcon from "@material-ui/icons/Delete"
-import FavoriteIcon from "@material-ui/icons/Favorite"
-import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder"
-import { SpotifyHelper } from "../../../shared/utils/helpers"
-import { updateTrack } from "../../../redux/tracksSlice"
-import { AppDispatch } from "../../../app/store"
+import React, { useRef } from "react"
+import { Draggable } from "react-beautiful-dnd"
 import { useDispatch } from "react-redux"
+import { AppDispatch } from "../../../app/store"
+import { updateTrack } from "../../../redux/tracksSlice"
+import { SpotifyHelper } from "../../../shared/utils/helpers"
+import { DeleteButton, FavorButton } from "./Buttons"
 
 const useStyles = makeStyles(theme => ({
   queueItem: {
@@ -46,57 +41,9 @@ export const TrackItem = React.forwardRef(function TrackItem(props: TrackItemPro
 
   const dispatch: AppDispatch = useDispatch()
 
-  const DeleteTrackButton = React.useMemo(() => {
-    return onDeleteClick ? (
-      <ListItemIcon
-        onClick={(event: React.MouseEvent) => {
-          event.preventDefault()
-          event.stopPropagation()
-          onDeleteClick()
-        }}
-      >
-        <Tooltip placement="left" title="Remove">
-          <IconButton>
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
-      </ListItemIcon>
-    ) : (
-      undefined
-    )
-  }, [onDeleteClick])
-
   const toggleFavourite = React.useCallback(() => {
     dispatch(updateTrack({ ...track, favourite: !track.favourite }))
   }, [dispatch, track])
-
-  const FavorTrackButton = React.useMemo(() => {
-    return showFavourite ? (
-      <ListItemIcon
-        onClick={(event: React.MouseEvent) => {
-          event.preventDefault()
-          event.stopPropagation()
-          toggleFavourite()
-        }}
-      >
-        {track.favourite ? (
-          <Tooltip placement="bottom" title="Remove from favourites">
-            <IconButton>
-              <FavoriteIcon />
-            </IconButton>
-          </Tooltip>
-        ) : (
-          <Tooltip placement="bottom" title="Add to favourites">
-            <IconButton>
-              <FavoriteBorderIcon />
-            </IconButton>
-          </Tooltip>
-        )}
-      </ListItemIcon>
-    ) : (
-      undefined
-    )
-  }, [showFavourite, track.favourite, toggleFavourite])
 
   const primaryText = SpotifyHelper.isSpotifyTrack(track) ? `${track.title} - ${track.artists}` : track.title
 
@@ -135,8 +82,8 @@ export const TrackItem = React.forwardRef(function TrackItem(props: TrackItemPro
           )
         }
       />
-      {DeleteTrackButton}
-      {FavorTrackButton}
+      {onDeleteClick ? <DeleteButton onClick={onDeleteClick} /> : undefined}
+      {showFavourite ? <FavorButton onClick={toggleFavourite} favourite={track.favourite || false} /> : undefined}
     </ListItem>
   )
 })
