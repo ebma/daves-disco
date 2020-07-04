@@ -5,7 +5,7 @@ import AlbumIcon from "@material-ui/icons/Album"
 import DashboardIcon from "@material-ui/icons/Dashboard"
 import LoginIcon from "@material-ui/icons/LockOpen"
 import React from "react"
-import { useHistory } from "react-router"
+import { useHistory, useLocation } from "react-router"
 import { makeStyles } from "@material-ui/core/styles"
 import { useSelector } from "react-redux"
 import { RootState } from "../../app/rootReducer"
@@ -19,6 +19,7 @@ const useStyles = makeStyles(theme => ({
 
 export function MainListItems() {
   const history = useHistory()
+  const location = useLocation()
 
   const classes = useStyles()
 
@@ -30,6 +31,7 @@ export function MainListItems() {
         button
         className={classes.item}
         disabled={connectionState !== "authenticated"}
+        selected={location.pathname.includes("/home")}
         onClick={() => history.push("/home")}
       >
         <ListItemIcon>
@@ -41,6 +43,7 @@ export function MainListItems() {
         button
         className={classes.item}
         disabled={connectionState !== "authenticated"}
+        selected={location.pathname.includes("/music")}
         onClick={() => history.push("/music")}
       >
         <ListItemIcon>
@@ -48,7 +51,12 @@ export function MainListItems() {
         </ListItemIcon>
         <ListItemText primary="Music" />
       </ListItem>
-      <ListItem button className={classes.item} onClick={() => history.push("/login")}>
+      <ListItem
+        button
+        className={classes.item}
+        selected={location.pathname.includes("/login")}
+        onClick={() => history.push("/login")}
+      >
         <ListItemIcon>
           <LoginIcon />
         </ListItemIcon>
