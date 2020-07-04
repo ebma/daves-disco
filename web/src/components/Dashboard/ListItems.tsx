@@ -12,6 +12,9 @@ import { useSelector } from "react-redux"
 import { RootState } from "../../app/rootReducer"
 
 const useStyles = makeStyles(theme => ({
+  icon: {
+    fontSize: "2rem"
+  },
   item: {
     marginTop: theme.spacing(1),
     marginBottom: theme.spacing(1)
@@ -36,7 +39,7 @@ export function MainListItems() {
         onClick={() => history.push("/home")}
       >
         <ListItemIcon>
-          <DashboardIcon />
+          <DashboardIcon className={classes.icon} />
         </ListItemIcon>
         <ListItemText primary="Dashboard" />
       </ListItem>
@@ -48,7 +51,7 @@ export function MainListItems() {
         onClick={() => history.push("/music")}
       >
         <ListItemIcon>
-          <AlbumIcon />
+          <AlbumIcon className={classes.icon} />
         </ListItemIcon>
         <ListItemText primary="Music" />
       </ListItem>
@@ -60,7 +63,7 @@ export function MainListItems() {
         onClick={() => history.push("/soundboard")}
       >
         <ListItemIcon>
-          <SoundboardIcon />
+          <SoundboardIcon className={classes.icon} />
         </ListItemIcon>
         <ListItemText primary="Soundboard" />
       </ListItem>
@@ -71,7 +74,7 @@ export function MainListItems() {
         onClick={() => history.push("/login")}
       >
         <ListItemIcon>
-          <LoginIcon />
+          <LoginIcon className={classes.icon} />
         </ListItemIcon>
         <ListItemText primary="Login" />
       </ListItem>
