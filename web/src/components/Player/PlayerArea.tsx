@@ -1,3 +1,4 @@
+import { makeStyles } from "@material-ui/core"
 import Button from "@material-ui/core/Button"
 import Grid from "@material-ui/core/Grid"
 import Typography from "@material-ui/core/Typography"
@@ -76,6 +77,23 @@ function StopPlayerButton(props: ControlItemProps) {
   )
 }
 
+const useStyles = makeStyles(theme => ({
+  trackInfoContainer: {
+    alignItems: "center",
+    display: "flex",
+    flexDirection: "column",
+    margin: 8
+  },
+  trackInfoWrapper: {
+    alignItems: "center",
+    borderRadius: 18,
+    display: "flex",
+    flexDirection: "column",
+    padding: 16,
+    width: "fit-content"
+  }
+}))
+
 interface Props {
   style?: React.CSSProperties
 }
@@ -86,10 +104,7 @@ function PlayerArea(props: Props) {
   const dispatch: AppDispatch = useDispatch()
   const { available, currentTrack, paused, queue: queueIDs, volume } = useSelector((state: RootState) => state.player)
 
-  console.log(
-    "currentTrack.thumbnail?.large || currentTrack.thumbnail?.medium || currentTrack.thumbnail?.small",
-    currentTrack && (currentTrack.thumbnail?.large || currentTrack.thumbnail?.medium || currentTrack.thumbnail?.small)
-  )
+  const classes = useStyles()
 
   const background = React.useMemo(() => {
     if (currentTrack && currentTrack.thumbnail) {
@@ -123,24 +138,8 @@ function PlayerArea(props: Props) {
       }}
     >
       <Grid item xs={12}>
-        <div
-          style={{
-            alignItems: "center",
-            display: "flex",
-            flexDirection: "column"
-          }}
-        >
-          <div
-            style={{
-              alignItems: "center",
-              borderRadius: 18,
-              background: currentTrack ? "#060404d4" : undefined,
-              display: "flex",
-              flexDirection: "column",
-              padding: 16,
-              width: "fit-content"
-            }}
-          >
+        <div className={classes.trackInfoContainer}>
+          <div className={classes.trackInfoWrapper} style={{ background: currentTrack ? "#060404d4" : undefined }}>
             {currentTrack ? (
               <>
                 <Typography gutterBottom variant="h5" component="h2" color="textSecondary">
