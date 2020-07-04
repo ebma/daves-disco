@@ -23,7 +23,9 @@ const useStyles = makeStyles(theme => ({
   queueList: {
     padding: 16,
     paddingTop: 8,
-    width: "100%"
+    width: "100%",
+    height: "100%",
+    overflow: "auto"
   }
 }))
 

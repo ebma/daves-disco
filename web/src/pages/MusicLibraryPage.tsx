@@ -13,8 +13,8 @@ const useStyles = makeStyles(theme => ({
     height: "100%"
   },
   fixedHeight: {
-    maxHeight: "90vh",
-    minHeight: "75vh"
+    maxHeight: "75vh",
+    height: "75vh"
   }
 }))
 
@@ -31,7 +31,7 @@ function MusicLibraryPage() {
         </Paper>
       </Grid>
       <Grid item xs={12} lg={6}>
-        <Paper className={classes.paper}>
+        <Paper className={fixedHeightPaper}>
           <QueueTab />
         </Paper>
       </Grid>
