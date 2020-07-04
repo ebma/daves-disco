@@ -53,6 +53,7 @@
     "lodash": "^4.17.15",
     "moment": "^2.24.0",
     "mongoose": "^5.9.7",
+    "react-router-transition": "^2.0.0",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
     "rxjs": "^6.5.3",

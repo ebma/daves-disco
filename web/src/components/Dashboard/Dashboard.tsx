@@ -17,14 +17,15 @@ import MenuIcon from "@material-ui/icons/Menu"
 import clsx from "clsx"
 import React from "react"
 import { useSelector } from "react-redux"
-import { Route, Switch, useHistory } from "react-router-dom"
+import { Route, useHistory } from "react-router-dom"
+import { AnimatedSwitch } from "react-router-transition"
 import { RootState } from "../../app/rootReducer"
 import { ColorSchemeContext } from "../../context/colorScheme"
 import HomePage from "../../pages/HomePage"
 import LoginPage from "../../pages/LoginPage"
+import MusicLibraryPage from "../../pages/MusicLibraryPage"
 import Footer from "../Footer"
 import { MainListItems } from "./ListItems"
-import MusicLibraryPage from "../../pages/MusicLibraryPage"
 
 const drawerWidth = 240
 
@@ -95,6 +96,12 @@ const useStyles = makeStyles(theme => ({
   container: {
     paddingTop: theme.spacing(4),
     paddingBottom: theme.spacing(4)
+  },
+  switchWrapper: {
+    position: "relative",
+    "& div": {
+      position: "relative"
+    }
   }
 }))
 
@@ -115,7 +122,7 @@ export default function Dashboard() {
 
   React.useEffect(() => {
     if (connectionState === "authenticated") {
-      history.push("/home")
+      // history.push("/home")
     } else {
       history.push("/login")
     }
@@ -165,7 +172,12 @@ export default function Dashboard() {
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         <Container maxWidth="xl" className={classes.container}>
-          <Switch>
+          <AnimatedSwitch
+            atEnter={{ opacity: 0 }}
+            atLeave={{ opacity: 0 }}
+            atActive={{ opacity: 1 }}
+            className={classes.switchWrapper}
+          >
             <Route path="/home">
               <HomePage />
             </Route>
@@ -175,7 +187,7 @@ export default function Dashboard() {
             <Route path="/login">
               <LoginPage />
             </Route>
-          </Switch>
+          </AnimatedSwitch>
           <Box pt={4}>
             <Footer />
           </Box>
