@@ -1,15 +1,15 @@
 import { StreamDispatcher, VoiceConnection } from "discord.js"
-import { Subject, PartialObserver } from "rxjs"
-import { trackError } from "../utils/trackError"
-import Youtube from "../libs/Youtube"
 import { get as httpGet } from "http"
 import { get as httpsGet } from "https"
+import { PartialObserver, Subject } from "rxjs"
+import { Readable } from "stream"
+import Youtube from "../libs/Youtube"
+import { trackError } from "../utils/trackError"
 
 class StreamManager {
   private voiceConnection: VoiceConnection
   private dispatcher?: StreamDispatcher
-  private track?: Track
-  private trackStreamTime: number = 0
+  private stream?: Readable
   private volume: number = 0.1
   private subject: Subject<StreamManagerObservableMessage>
 
@@ -61,50 +61,32 @@ class StreamManager {
   }
 
   async playSound(source: string) {
+    const resourceGetter = source.startsWith("https:") ? httpsGet : httpGet
     try {
-      const currentTime = this.trackStreamTime + (this.dispatcher ? Math.ceil(this.dispatcher.streamTime / 1000) : 0.0)
-      this.trackStreamTime = currentTime
-
-      if (source.startsWith("https:")) {
-        httpsGet(source, res => {
-          this.dispatcher = null
-          const soundDispatcher = this.voiceConnection.play(res, { highWaterMark: 512, volume: this.volume })
-          this.dispatcher = soundDispatcher
-          soundDispatcher
-            .on("finish", () => {
-              if (this.track) {
-                this.playTrack(this.track, currentTime)
-              }
-            })
-            .on("error", (error: any) => {
-              trackError(error, "StreamManager.playSound error")
-            })
-        })
-      } else if (source.startsWith("http:")) {
-        httpGet(source, res => {
-          this.dispatcher = null
-          const soundDispatcher = this.voiceConnection.play(res, { highWaterMark: 512, volume: this.volume })
-          this.dispatcher = soundDispatcher
-          soundDispatcher
-            .on("finish", () => {
-              if (this.track) {
-                this.playTrack(this.track, currentTime)
-              }
-            })
-            .on("error", (error: any) => {
-              trackError(error, "StreamManager.playSound error")
-            })
-        })
-      }
+      resourceGetter(source, result => {
+        this.dispatcher = null
+        this.stream?.unpipe() // unpipe because otherwise the stream will not work with the next voice connection
+        const soundDispatcher = this.voiceConnection.play(result, { highWaterMark: 512, volume: this.volume })
+        this.dispatcher = soundDispatcher
+        soundDispatcher
+          .on("finish", () => {
+            if (this.stream) {
+              this.playTrack(this.stream)
+            }
+          })
+          .on("error", (error: any) => {
+            trackError(error, "StreamManager.playSound error")
+          })
+      })
     } catch (error) {
       trackError(error)
     }
   }
 
-  async playTrack(track: Track, seek?: number) {
+  async playTrack(input: Track | Readable) {
     try {
-      const stream = await Youtube.createReadableStreamFor(track, seek)
-      this.track = track
+      const stream = input instanceof Readable ? input : await Youtube.createReadableStreamFor(input)
+      this.stream = stream
       const dispatcher = this.voiceConnection.play(stream, {
         volume: this.volume,
         highWaterMark: 512,
@@ -117,18 +99,16 @@ class StreamManager {
         .on("finish", () => {
           // check if this is still the current/only one
           if (this.dispatcher === dispatcher) {
-            this.trackStreamTime = 0
-            this.track = null
             stream.destroy()
+            this.stream = null
             this.dispatcher = null
             this.subject.next({ type: "finish" })
           }
         })
         .on("error", (error: any) => {
           if (this.dispatcher === dispatcher) {
-            this.trackStreamTime = 0
-            this.track = null
             stream.destroy()
+            this.stream = null
             this.dispatcher = null
             this.subject.next({ type: "error", data: error && error.message ? error.message : error })
           }
