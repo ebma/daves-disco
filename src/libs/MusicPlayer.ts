@@ -20,7 +20,7 @@ class MusicPlayer {
     this.queue = new ObservableQueue<TrackModelID>()
     this.subject = new Subject<MusicPlayerSubjectMessage>()
 
-    this.queue.subscribe(async (currentTrack, currentQueue) => {
+    this.queue.subscribeCurrentElement(async currentTrack => {
       if (currentTrack !== this.playingTrack?._id.toString() || this.queue.loopState !== "none") {
         const currentTrackModel = await Track.findById(currentTrack)
         if (currentTrackModel) {
@@ -34,6 +34,9 @@ class MusicPlayer {
         }
       }
       this.subject.next({ messageType: "status", message: "current-track", data: currentTrack })
+    })
+
+    this.queue.subscribeQueue(currentQueue => {
       this.subject.next({ messageType: "status", message: "current-queue", data: currentQueue })
     })
   }

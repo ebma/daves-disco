@@ -1,10 +1,12 @@
 import _ from "lodash"
 
-export type SubscriptionCallback<T> = (currentElement: T, currentQueue: T[]) => void
+export type CurrentElementCallback<T> = (currentElement: T) => void
+export type QueueCallback<T> = (currentQueue: T[]) => void
 
 class ObservableQueue<T extends object | string> {
   private itemList: T[] = []
-  private observers: SubscriptionCallback<T>[] = []
+  private elementObservers: CurrentElementCallback<T>[] = []
+  private queueObservers: QueueCallback<T>[] = []
   private currentIndex = 0
   loopState: LoopState = "none"
 
@@ -12,19 +14,22 @@ class ObservableQueue<T extends object | string> {
 
   public addElement(element: T) {
     this.itemList.push(element)
-    this.notifyObservers()
+    if (this.itemList.length - 1 === this.currentIndex) {
+      this.notifyElementObservers()
+    }
+    this.notifyQueueObservers()
   }
 
   public addAll(elements: T[]) {
     _.forEach(elements, element => {
       this.itemList.push(element)
     })
-    this.notifyObservers()
+    this.notifyQueueObservers()
   }
 
   public removeElement(element: T) {
     _.remove(this.itemList, value => value === element)
-    this.notifyObservers()
+    this.notifyQueueObservers()
   }
 
   public moveForward(amount: number = 1, force: boolean = false) {
@@ -37,7 +42,7 @@ class ObservableQueue<T extends object | string> {
           this.currentIndex = 0
         }
       }
-      this.notifyObservers()
+      this.notifyElementObservers()
     } else {
       const previousIndex = this.currentIndex
       _.times(amount, () => {
@@ -47,7 +52,7 @@ class ObservableQueue<T extends object | string> {
       })
       // if changed notify observers
       if (this.currentIndex !== previousIndex) {
-        this.notifyObservers()
+        this.notifyElementObservers()
       }
     }
   }
@@ -61,7 +66,7 @@ class ObservableQueue<T extends object | string> {
       }
     })
 
-    this.notifyObservers()
+    this.notifyElementObservers()
   }
 
   public getAll() {
@@ -96,26 +101,37 @@ class ObservableQueue<T extends object | string> {
 
   public clear() {
     this.itemList = []
-    this.notifyObservers()
+    this.notifyElementObservers()
+    this.notifyQueueObservers()
   }
 
   public size() {
     return this.itemList.length
   }
 
-  public subscribe(callback: SubscriptionCallback<T>) {
-    this.observers.push(callback)
+  public subscribeCurrentElement(callback: CurrentElementCallback<T>) {
+    this.elementObservers.push(callback)
+  }
+
+  public subscribeQueue(callback: QueueCallback<T>) {
+    this.queueObservers.push(callback)
   }
 
   public replace(newItems: Array<T>, newCurrentIndex: number) {
     this.itemList = newItems
     this.currentIndex = newCurrentIndex
-    this.notifyObservers()
+    this.notifyQueueObservers()
   }
 
-  notifyObservers() {
-    this.observers.forEach(callback => {
-      callback(this.getCurrent(), this.getAll())
+  notifyElementObservers() {
+    this.elementObservers.forEach(callback => {
+      callback(this.getCurrent())
+    })
+  }
+
+  notifyQueueObservers() {
+    this.queueObservers.forEach(callback => {
+      callback(this.getAll())
     })
   }
 }
