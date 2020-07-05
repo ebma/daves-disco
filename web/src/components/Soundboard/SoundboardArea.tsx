@@ -26,16 +26,17 @@ function SoundboardArea() {
   const dispatch: AppDispatch = useDispatch()
   const { items } = useSelector((state: RootState) => state.soundboard)
 
-  const [volume, setVolume] = React.useState(50)
+  const [volume, setVolume] = React.useState(20)
 
   const play = React.useCallback((item: SoundboardItemModel) => () => dispatch(playSound(item.source, volume)), [
     dispatch,
     volume
   ])
-  
-  const ItemList = items.map(item => <SoundboardItem key={item.id} item={item} onClick={play(item)} />)
 
-  console.log("items", items)
+  const ItemList = React.useMemo(
+    () => items.map(item => <SoundboardItem key={item.id} item={item} onClick={play(item)} />),
+    [items, play]
+  )
 
   return (
     <div className={classes.root}>
