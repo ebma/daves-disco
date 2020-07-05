@@ -118,8 +118,13 @@ class ObservableQueue<T extends object | string> {
   }
 
   public replace(newItems: Array<T>, newCurrentIndex: number) {
+    const oldCurrent = this.getCurrent()
     this.itemList = newItems
     this.currentIndex = newCurrentIndex
+    const newCurrent = this.getCurrent()
+    if (oldCurrent !== newCurrent) {
+      this.notifyElementObservers()
+    }
     this.notifyQueueObservers()
   }
 
