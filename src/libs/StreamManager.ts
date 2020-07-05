@@ -60,13 +60,14 @@ class StreamManager {
     }
   }
 
-  async playSound(source: string) {
+  async playSound(source: string, volume: number) {
+    const vol = volume / 100 // need's to be between 0 and 100
     const resourceGetter = source.startsWith("https:") ? httpsGet : httpGet
     try {
       resourceGetter(source, result => {
         this.dispatcher = null
         this.stream?.unpipe() // unpipe because otherwise the stream will not work with the next voice connection
-        const soundDispatcher = this.voiceConnection.play(result, { highWaterMark: 512, volume: this.volume })
+        const soundDispatcher = this.voiceConnection.play(result, { highWaterMark: 512, volume: vol })
         this.dispatcher = soundDispatcher
         soundDispatcher
           .on("finish", () => {

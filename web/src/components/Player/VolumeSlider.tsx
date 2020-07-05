@@ -5,14 +5,45 @@ import Typography from "@material-ui/core/Typography"
 import VolumeDown from "@material-ui/icons/VolumeDown"
 import VolumeUp from "@material-ui/icons/VolumeUp"
 
-interface Props {
-  disabled?: boolean
+interface VolumeSliderProps {
   volume: number
   onChange: (newVolume: number) => void
+  style?: React.CSSProperties
 }
 
-function VolumeSlider(props: Props) {
-  const { disabled, volume, onChange } = props
+export function VolumeSlider(props: VolumeSliderProps) {
+  const { volume, onChange, style } = props
+
+  const handleChange = (event: any, newValue: number | number[]) => {
+    onChange(newValue as number)
+  }
+
+  return (
+    <div style={{ ...style }}>
+      <Typography id="continuous-slider" align="center" color="primary" gutterBottom>
+        Volume
+      </Typography>
+      <Grid container spacing={2}>
+        <Grid item>
+          <VolumeDown />
+        </Grid>
+        <Grid item xs>
+          <Slider aria-labelledby="continuous-slider" onChange={handleChange} value={volume} valueLabelDisplay="auto" />
+        </Grid>
+        <Grid item>
+          <VolumeUp />
+        </Grid>
+      </Grid>
+    </div>
+  )
+}
+
+interface ControlledVolumeSliderProps extends VolumeSliderProps {
+  disabled?: boolean
+}
+
+function ControlledVolumeSlider(props: ControlledVolumeSliderProps) {
+  const { disabled, volume, onChange, style } = props
 
   const [privateValue, setValue] = React.useState<number>(50)
 
@@ -27,7 +58,7 @@ function VolumeSlider(props: Props) {
   const handleChangeCommitted = (event: any, value: number | number[]) => onChange(value as number)
 
   return (
-    <div style={{ marginTop: 32, flexGrow: 1 }}>
+    <div style={{ ...style }}>
       <Typography id="continuous-slider" align="center" color="primary" gutterBottom>
         Volume
       </Typography>
@@ -53,4 +84,4 @@ function VolumeSlider(props: Props) {
   )
 }
 
-export default React.memo(VolumeSlider)
+export default React.memo(ControlledVolumeSlider)

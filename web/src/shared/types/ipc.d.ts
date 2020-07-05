@@ -40,7 +40,7 @@ declare namespace IPC {
 
     [Messages.PlayTrack]: (guildID: GuildID, userID: UserID, track: Track) => void
     [Messages.PlayPlaylist]: (guildID: GuildID, userID: UserID, playlist: Playlist) => void
-    [Messages.PlaySound]: (guildID: GuildID, userID: UserID, source: string) => void
+    [Messages.PlaySound]: (guildID: GuildID, userID: UserID, source: string, volume: number) => void
 
     [Messages.CurrentTrack]: () => Track
     [Messages.CurrentQueue]: () => Track[]

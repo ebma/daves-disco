@@ -30,7 +30,7 @@ const createPlayRequestHandler = (musicPlayerManager: MusicPlayerManager, client
   }
 
 const createPlaySoundRequestHandler = (musicPlayerManager: MusicPlayerManager, client: MyClient) =>
-  async function handlePlaySoundRequest(guildID: string, userID: string, source: string) {
+  async function handlePlaySoundRequest(guildID: string, userID: string, source: string, volume: number) {
     let player = musicPlayerManager.getPlayerFor(guildID)
     if (!player) {
       const userGuild = client.guilds.cache.find(guild => guild.id === guildID)
@@ -42,7 +42,7 @@ const createPlaySoundRequestHandler = (musicPlayerManager: MusicPlayerManager, c
         throw Error("User is not connected to voice channel!")
       }
     }
-    await playSound(source, player)
+    await playSound(source, volume, player)
   }
 
 const createPlayTrackRequestHandler = (musicPlayerManager: MusicPlayerManager, client: MyClient) =>

@@ -89,6 +89,6 @@ export async function playTrack(track: Track, guildID: GuildID, musicPlayer: Mus
   musicPlayer.enqueue(trackModel)
 }
 
-export async function playSound(source: string, musicPlayer: MusicPlayer) {
-  musicPlayer.playSound(source)
+export async function playSound(source: string, volume: number, musicPlayer: MusicPlayer) {
+  musicPlayer.playSound(source, volume)
 }

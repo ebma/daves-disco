@@ -184,6 +184,7 @@ function PlayerArea(props: Props) {
           onChange={(newVolume: number) => {
             dispatch(setPlayerVolume(newVolume))
           }}
+          style={{ marginTop: 16 }}
         />
         <StopPlayerButton disabled={disabled} onClick={() => dispatch(stopPlayer())} />
       </Grid>

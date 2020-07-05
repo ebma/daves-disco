@@ -81,8 +81,8 @@ class MusicPlayer {
     this.updateQueue([currentTrack])
   }
 
-  playSound(source: string) {
-    this.streamManager.playSound(source)
+  playSound(source: string, volume: number) {
+    this.streamManager.playSound(source, volume)
   }
 
   pauseStream() {
