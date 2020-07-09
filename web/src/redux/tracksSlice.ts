@@ -1,9 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
-import TrackService from "../services/tracks"
+import _ from "lodash"
 import { AppThunk } from "../app/store"
-import { Messages } from "../shared/ipc"
-import { subscribeToMessages, sendMessage } from "./socketSlice"
+import TrackService from "../services/tracks"
 import youtubeService from "../services/youtube"
+import { Messages } from "../shared/ipc"
+import { sendMessage, subscribeToMessages } from "./socketSlice"
 
 export interface TracksState {
   error: string | null
@@ -44,8 +45,11 @@ export default tracksSlice.reducer
 export const fetchTracks = (): AppThunk<Promise<TrackModel[]>> => async (dispatch, getState) => {
   const { user } = getState().user
   try {
-    const tracks = await TrackService.getAll(user?.guildID)
-    dispatch(setTracks(tracks))
+    const recents = await TrackService.getAll(user?.guildID, 20, "desc")
+    const favourites = await TrackService.getFavourites(user?.guildID)
+    const tracks = recents.concat(favourites)
+    const dedup = _.uniqBy(tracks, trackModel => trackModel._id)
+    dispatch(setTracks(dedup))
     return tracks
   } catch (error) {
     dispatch(setError(error))

@@ -16,16 +16,12 @@ function RecentHistoryTab(props: RecentHistoryTabProps) {
     const newItems = []
     newItems.push(...playlists)
     newItems.push(...tracks)
-    const touchedByUser = newItems.filter(item => {
-      if ((item as TrackModel).touchedByUser === false) return false
-      else return true
-    })
 
-    touchedByUser.sort((a: MusicItem, b: MusicItem) => {
+    newItems.sort((a: MusicItem, b: MusicItem) => {
       return new Date(b.lastTouchedAt).getTime() - new Date(a.lastTouchedAt).getTime()
     })
 
-    const last20Items = touchedByUser.slice(0, 20)
+    const last20Items = newItems.slice(0, 20)
 
     setItems(last20Items)
   }, [playlists, tracks])

@@ -21,6 +21,8 @@ const getTokenFrom = (request: Request) => {
 
 router.get("/", async (request: TrackRequest, response) => {
   const guild = request.query.guild || undefined
+  const limit = request.query.limit || undefined
+  const order = request.query.order || undefined
   const favourite = Boolean(request.query.favourite) || undefined
 
   const query = Track.find()
@@ -29,6 +31,13 @@ router.get("/", async (request: TrackRequest, response) => {
   }
   if (guild) {
     query.where("guild").equals(guild)
+  }
+  if (limit) {
+    query.limit(Number(limit))
+  }
+  if (order) {
+    const sortNumber = order === "desc" ? -1 : 1
+    query.sort({ lastTouchedAt: sortNumber })
   }
 
   const tracks = await query.exec()

@@ -2,10 +2,12 @@ import axios from "./axios-client"
 
 const baseUrl = "/api/tracks"
 
-const getAll = async (guildID?: GuildID): Promise<TrackModel[]> => {
+const getAll = async (guildID?: GuildID, limit: number = 20, order: string = "desc"): Promise<TrackModel[]> => {
   const response = await axios.get(baseUrl, {
     params: {
-      guild: guildID
+      guild: guildID,
+      limit,
+      order
     }
   })
   return response.data
