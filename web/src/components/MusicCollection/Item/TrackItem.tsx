@@ -3,6 +3,7 @@ import Link from "@material-ui/core/Link"
 import ListItem from "@material-ui/core/ListItem"
 import ListItemAvatar from "@material-ui/core/ListItemAvatar"
 import ListItemText from "@material-ui/core/ListItemText"
+import RadioIcon from "@material-ui/icons/Radio"
 import makeStyles from "@material-ui/styles/makeStyles"
 import React, { useRef } from "react"
 import { Draggable } from "react-beautiful-dnd"
@@ -50,12 +51,16 @@ export const TrackItem = React.forwardRef(function TrackItem(props: TrackItemPro
   return (
     <ListItem button className={classes.queueItem} onClick={onClick} ref={ref} selected={current}>
       <ListItemAvatar>
-        <Avatar
-          alt="thumbnail"
-          className={classes.avatar}
-          src={track.thumbnail?.small ?? track.thumbnail?.medium ?? track.thumbnail?.large}
-          variant="square"
-        />
+        {track.source === "radio" ? (
+          <RadioIcon className={classes.avatar} style={{ padding: 8 }} />
+        ) : (
+          <Avatar
+            alt="thumbnail"
+            className={classes.avatar}
+            src={track.thumbnail?.small ?? track.thumbnail?.medium ?? track.thumbnail?.large}
+            variant="square"
+          />
+        )}
       </ListItemAvatar>
       <ListItemText
         className={classes.text}

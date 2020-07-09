@@ -107,15 +107,19 @@ function PlayerArea(props: Props) {
   const classes = useStyles()
 
   const background = React.useMemo(() => {
-    if (currentTrack && currentTrack.thumbnail) {
-      if (currentTrack.thumbnail.large) {
-        return currentTrack.thumbnail.large
-      } else if (currentTrack.thumbnail.medium) {
-        return currentTrack.thumbnail.medium
-      } else if (currentTrack.thumbnail.small) {
-        return currentTrack.thumbnail.small
-      } else {
-        return "unset"
+    if (currentTrack) {
+      if (currentTrack.source === "radio") {
+        return "https://images.unsplash.com/photo-1521127574-28faf1a160f9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=80"
+      } else if (currentTrack.thumbnail) {
+        if (currentTrack.thumbnail.large) {
+          return currentTrack.thumbnail.large
+        } else if (currentTrack.thumbnail.medium) {
+          return currentTrack.thumbnail.medium
+        } else if (currentTrack.thumbnail.small) {
+          return currentTrack.thumbnail.small
+        } else {
+          return "unset"
+        }
       }
     } else {
       return "unset"

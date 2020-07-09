@@ -21,7 +21,7 @@ interface Track {
   thumbnail?: Thumbnail
   description?: string
   publishedAt?: string
-  source: "spotify" | "youtube" | "unknown"
+  source: "spotify" | "youtube" | "radio"
 }
 
 interface TrackModel extends Track {

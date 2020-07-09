@@ -90,7 +90,7 @@ class StreamManager {
       if (input instanceof Readable) {
         dispatcher = await this.playReadable(input)
       } else {
-        if (input.source === "unknown") {
+        if (input.source === "radio") {
           this.musicDispatcher = null // set to null before because of weird behaviour of 'dispatcher.end/finish'
           dispatcher = await this.playUnknown(input)
         } else {
