@@ -21,7 +21,7 @@ interface Track {
   thumbnail?: Thumbnail
   description?: string
   publishedAt?: string
-  source: "spotify" | "youtube"
+  source: "spotify" | "youtube" | "unknown"
 }
 
 interface TrackModel extends Track {
@@ -79,6 +79,11 @@ interface PlayerModel {
   paused: boolean
   queueIDs: TrackModelID[]
   volume: number
+}
+
+interface Radio {
+  name: string
+  source: string
 }
 
 // --- SOUNDBOARD ---

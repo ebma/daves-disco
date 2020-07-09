@@ -13,6 +13,7 @@ declare namespace IPC {
     Volume: "Volume"
 
     PlayTrack: "PlayTrack"
+    PlayRadio: "PlayRadio"
     PlayPlaylist: "PlayPlaylist"
     PlaySound: "PlaySound"
 
@@ -39,6 +40,7 @@ declare namespace IPC {
     [Messages.Volume]: (guildID: GuildID, newVolume: number) => void
 
     [Messages.PlayTrack]: (guildID: GuildID, userID: UserID, track: Track) => void
+    [Messages.PlayRadio]: (guildID: GuildID, userID: UserID, radio: Radio) => void
     [Messages.PlayPlaylist]: (guildID: GuildID, userID: UserID, playlist: Playlist) => void
     [Messages.PlaySound]: (guildID: GuildID, userID: UserID, source: string, volume: number) => void
 

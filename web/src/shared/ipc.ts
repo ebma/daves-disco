@@ -11,6 +11,7 @@ export const Messages: IPC.MessageType = {
   Volume: "Volume",
 
   PlayTrack: "PlayTrack",
+  PlayRadio: "PlayRadio",
   PlayPlaylist: "PlayPlaylist",
   PlaySound: "PlaySound",
 

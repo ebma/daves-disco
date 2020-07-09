@@ -245,6 +245,17 @@ export const playSearchTerm = (searchTerm: string): AppThunk<Promise<void>> => a
   }
 }
 
+export const playRadio = (radio: Radio): AppThunk<Promise<void>> => async (dispatch, getState) => {
+  const { user } = getState().user
+  if (user) {
+    return dispatch(sendMessage(Messages.PlayRadio, user.guildID, user.id, radio)).catch(error => {
+      dispatch(setError(error))
+    })
+  } else {
+    dispatch(setError("User not available"))
+  }
+}
+
 export const updateLoopState = (loopState: LoopState): AppThunk<Promise<void>> => async (dispatch, getState) => {
   const { user } = getState().user
   if (user) {

@@ -92,3 +92,9 @@ export async function playTrack(track: Track, guildID: GuildID, musicPlayer: Mus
 export async function playSound(source: string, volume: number, musicPlayer: MusicPlayer) {
   musicPlayer.playSound(source, volume)
 }
+
+export async function playRadio(radio: Radio, guildID: GuildID, musicPlayer: MusicPlayer) {
+  const track: Track = { source: "unknown", title: radio.name, url: radio.source, id: radio.source }
+  const trackModel = await createAndSaveTrackModel(track, guildID)
+  musicPlayer.enqueue(trackModel)
+}

@@ -23,9 +23,9 @@ import { ColorSchemeContext } from "../../context/colorScheme"
 import HomePage from "../../pages/HomePage"
 import LoginPage from "../../pages/LoginPage"
 import MusicLibraryPage from "../../pages/MusicLibraryPage"
+import SoundboardPage from "../../pages/SoundboardPage"
 import Footer from "../Footer"
 import { MainListItems } from "./ListItems"
-import SoundboardPage from "../../pages/SoundboardPage"
 
 const drawerWidth = 240
 

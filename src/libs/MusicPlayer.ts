@@ -33,6 +33,7 @@ class MusicPlayer {
           streamManager.endCurrent()
         }
       }
+      console.log("currentTrack", currentTrack)
       this.subject.next({ messageType: "status", message: "current-track", data: currentTrack })
     })
 
@@ -160,7 +161,7 @@ class MusicPlayer {
           throw new Error(`Could not get complete information about track ${track.title}!`)
         }
       }
-      this.streamManager.playTrack(track)
+      this.streamManager.play(track)
       this.streamSubscription?.unsubscribe()
       this.streamSubscription = this.streamManager.subscribe({
         next: message => this.observeStream(message, track)

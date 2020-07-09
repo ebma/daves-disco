@@ -8,8 +8,9 @@ import React from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "../../app/rootReducer"
 import { AppDispatch } from "../../app/store"
-import { playSearchTerm } from "../../redux/playerSlice"
+import { playSearchTerm, playRadio } from "../../redux/playerSlice"
 import { getTrackFromSearchTerm } from "../../redux/tracksSlice"
+import PlayRadioTab from "./Tab/PlayRadioTab"
 import PlaySpotifyTab from "./Tab/PlaySpotifyTab"
 import PlayYoutubeTab from "./Tab/PlayYoutubeTab"
 import SearchYoutubeTab from "./Tab/SearchYoutubeTab"
@@ -68,6 +69,15 @@ function SearchArea(props: SearchAreaProps) {
     [dispatch, user]
   )
 
+  const onPlayRadio = React.useCallback(
+    (radio: Radio) => {
+      if (user) {
+        dispatch(playRadio(radio))
+      }
+    },
+    [dispatch, user]
+  )
+
   const getTracks = React.useCallback((searchTerm: string) => {
     return getTrackFromSearchTerm(searchTerm)
   }, [])
@@ -87,6 +97,7 @@ function SearchArea(props: SearchAreaProps) {
         <Tab label="Search Youtube Song" />
         <Tab label="Play Youtube Video/Playlist" />
         <Tab label="Play Spotify Playlist" />
+        <Tab label="Play Radio" />
       </Tabs>
       <TabPanel value={value} index={0}>
         <SearchYoutubeTab onSearchDone={onSearchDone} getTracks={getTracks} />
@@ -96,6 +107,9 @@ function SearchArea(props: SearchAreaProps) {
       </TabPanel>
       <TabPanel value={value} index={2}>
         <PlaySpotifyTab onSearchDone={onSearchDone} />
+      </TabPanel>
+      <TabPanel value={value} index={3}>
+        <PlayRadioTab onSearchDone={onPlayRadio} />
       </TabPanel>
     </div>
   )
