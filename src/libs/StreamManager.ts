@@ -62,6 +62,7 @@ class StreamManager {
 
   async playSound(source: string, volume: number) {
     const vol = volume / 100 // need's to be between 0 and 100
+    const trackPaused = this.paused
     const resourceGetter = source.startsWith("https:") ? httpsGet : httpGet
     try {
       resourceGetter(source, result => {
@@ -72,7 +73,7 @@ class StreamManager {
         soundDispatcher
           .on("finish", () => {
             if (this.stream) {
-              this.playTrack(this.stream)
+              this.playTrack(this.stream, trackPaused)
             }
           })
           .on("error", (error: any) => {
@@ -84,7 +85,7 @@ class StreamManager {
     }
   }
 
-  async playTrack(input: Track | Readable) {
+  async playTrack(input: Track | Readable, trackPaused: boolean = false) {
     try {
       const stream = input instanceof Readable ? input : await Youtube.createReadableStreamFor(input)
       this.stream = stream
@@ -93,6 +94,7 @@ class StreamManager {
         highWaterMark: 512,
         type: "opus"
       })
+      if (trackPaused) dispatcher.pause()
       this.dispatcher = dispatcher
       dispatcher
         .on("debug", info => this.subject.next({ type: "debug", data: info }))
