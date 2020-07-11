@@ -1,30 +1,13 @@
-import React from "react"
-import { useSelector } from "react-redux"
 import Typography from "@material-ui/core/Typography"
-import { RootState } from "../../../app/rootReducer"
+import React from "react"
 import CollectionList from "../CollectionList"
 
-interface RecentHistoryTabProps {}
+interface RecentHistoryTabProps {
+  items: MusicItem[]
+}
 
 function RecentHistoryTab(props: RecentHistoryTabProps) {
-  const { playlists } = useSelector((state: RootState) => state.playlists)
-  const { tracks } = useSelector((state: RootState) => state.tracks)
-
-  const [items, setItems] = React.useState<MusicItem[]>([])
-
-  React.useEffect(() => {
-    const newItems = []
-    newItems.push(...playlists)
-    newItems.push(...tracks)
-
-    newItems.sort((a: MusicItem, b: MusicItem) => {
-      return new Date(b.lastTouchedAt).getTime() - new Date(a.lastTouchedAt).getTime()
-    })
-
-    const last20Items = newItems.slice(0, 20)
-
-    setItems(last20Items)
-  }, [playlists, tracks])
+  const { items } = props
 
   const NoItemsInfo = React.useMemo(
     () => (

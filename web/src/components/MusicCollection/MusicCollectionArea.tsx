@@ -5,6 +5,8 @@ import Tabs from "@material-ui/core/Tabs"
 import Typography from "@material-ui/core/Typography"
 import makeStyles from "@material-ui/styles/makeStyles"
 import React from "react"
+import { useSelector } from "react-redux"
+import { RootState } from "../../app/rootReducer"
 import FavouritesTab from "./Tab/FavouritesTab"
 import RecentHistoryTab from "./Tab/RecentHistoryTab"
 
@@ -59,6 +61,38 @@ function MusicCollectionArea(props: MusicCollectionAreaProps) {
     setTab(newValue)
   }, [])
 
+  const { playlists } = useSelector((state: RootState) => state.playlists)
+  const { tracks } = useSelector((state: RootState) => state.tracks)
+
+  const [recentItems, setRecentItems] = React.useState<MusicItem[]>([])
+  const [favouriteItems, setFavouriteItems] = React.useState<MusicItem[]>([])
+
+  React.useEffect(() => {
+    const newItems = []
+    newItems.push(...playlists)
+    newItems.push(...tracks)
+
+    newItems.sort((a: MusicItem, b: MusicItem) => {
+      return new Date(b.lastTouchedAt).getTime() - new Date(a.lastTouchedAt).getTime()
+    })
+
+    const last20Items = newItems.slice(0, 20)
+    setRecentItems(last20Items)
+
+    const favItems = newItems.filter(item => item.favourite)
+
+    favItems.sort((a: MusicItem, b: MusicItem) => {
+      if ((a as Track).title !== undefined && (b as Track).title !== undefined) {
+        return (a as Track).title.localeCompare((b as Track).title)
+      } else if ((a as Playlist).name !== undefined && (b as Playlist).name !== undefined) {
+        return (a as Playlist).name.localeCompare((b as Playlist).name)
+      } else {
+        return 0
+      }
+    })
+    setFavouriteItems(favItems)
+  }, [playlists, tracks])
+
   return (
     <div className={classes.root}>
       <div style={{ alignItems: "center", display: "flex", flexDirection: "row" }}>
@@ -79,10 +113,10 @@ function MusicCollectionArea(props: MusicCollectionAreaProps) {
         </Tabs>
       </div>
       <TabPanel value={tab} index={0}>
-        <RecentHistoryTab />
+        <RecentHistoryTab items={recentItems} />
       </TabPanel>
       <TabPanel value={tab} index={1}>
-        <FavouritesTab />
+        <FavouritesTab items={favouriteItems} />
       </TabPanel>
     </div>
   )
