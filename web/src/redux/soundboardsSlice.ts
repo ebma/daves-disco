@@ -32,11 +32,15 @@ const soundboardSlice = createSlice({
     },
     setItems(state, action: PayloadAction<SoundboardItemModel[]>) {
       state.items = action.payload
+    },
+    removeItem(state, action: PayloadAction<SoundboardItemModel>) {
+      const filtered = state.items.filter(item => item._id !== action.payload._id)
+      state.items = filtered
     }
   }
 })
 
-export const { setError, setItem, setItems } = soundboardSlice.actions
+export const { setError, setItem, setItems, removeItem } = soundboardSlice.actions
 
 export default soundboardSlice.reducer
 
@@ -78,8 +82,13 @@ export const playSound = (source: string, volume: number): AppThunk<Promise<void
 }
 
 export const updateItem = (item: SoundboardItemModel): AppThunk<Promise<void>> => async (dispatch, getState) => {
-  const updatedItem = await soundboardService.update(item._id, item)
+  const updatedItem = await soundboardService.updateItem(item._id, item)
   dispatch(setItem(updatedItem))
+}
+
+export const deleteItem = (item: SoundboardItemModel): AppThunk<Promise<void>> => async (dispatch, getState) => {
+  await soundboardService.deleteItem(item._id)
+  dispatch(removeItem(item))
 }
 
 export const createItem = (item: { name: string; source: string }): AppThunk<Promise<void>> => async (
@@ -90,7 +99,7 @@ export const createItem = (item: { name: string; source: string }): AppThunk<Pro
   const { items } = getState().soundboard
   const id = String(items.length)
   if (user) {
-    const createdItem = await soundboardService.create({ ...item, guild: user.guildID, id })
+    const createdItem = await soundboardService.createItem({ ...item, guild: user.guildID, id })
     dispatch(setItem(createdItem))
   }
 }

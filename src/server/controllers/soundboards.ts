@@ -65,12 +65,11 @@ router.get("/:id", async (request: SoundboardRequest, response) => {
 router.put("/:id", (request: SoundboardRequest, response, next) => {
   const body = request.body
 
-  const item = new SoundboardItem({
-    id: body.id,
+  const item = {
     guild: body.guild,
     name: body.name,
     source: body.source
-  })
+  }
 
   SoundboardItem.findByIdAndUpdate(request.params.id, item, { upsert: true })
     .then(updatedItem => {

@@ -1,15 +1,13 @@
 import Grid from "@material-ui/core/Grid"
 import { makeStyles } from "@material-ui/core/styles"
 import React from "react"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "../../app/rootReducer"
-import AddNewItem from "./AddNewItem"
-import SoundboardItem from "./SoundboardItem"
-import { VolumeSlider } from "../Player/VolumeSlider"
-
-import { useDispatch } from "react-redux"
 import { AppDispatch } from "../../app/store"
 import { playSound } from "../../redux/soundboardsSlice"
+import { VolumeSlider } from "../Player/VolumeSlider"
+import SoundboardItemFields from "./SoundboardItemFields"
+import SoundboardItem from "./SoundboardItem"
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -27,6 +25,7 @@ function SoundboardArea() {
   const { items } = useSelector((state: RootState) => state.soundboard)
 
   const [volume, setVolume] = React.useState(20)
+  const [editableItemId, setEditableItemId] = React.useState<string | undefined>(undefined)
 
   const play = React.useCallback((item: SoundboardItemModel) => () => dispatch(playSound(item.source, volume)), [
     dispatch,
@@ -34,8 +33,20 @@ function SoundboardArea() {
   ])
 
   const ItemList = React.useMemo(
-    () => items.map(item => <SoundboardItem key={item.id} item={item} onClick={play(item)} />),
-    [items, play]
+    () =>
+      items.map(item => {
+        return item._id === editableItemId ? (
+          <SoundboardItemFields editing item={item} onActionDone={() => setEditableItemId(undefined)} />
+        ) : (
+          <SoundboardItem
+            key={item.id}
+            item={item}
+            onClick={play(item)}
+            onEditClick={() => setEditableItemId(item._id)}
+          />
+        )
+      }),
+    [editableItemId, items, play]
   )
 
   return (
@@ -44,7 +55,7 @@ function SoundboardArea() {
       <Grid container spacing={3}>
         {ItemList}
       </Grid>
-      <AddNewItem />
+      <SoundboardItemFields />
     </div>
   )
 }

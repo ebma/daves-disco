@@ -11,22 +11,29 @@ const getAll = async (guildID?: GuildID): Promise<SoundboardItemModel[]> => {
   return response.data
 }
 
-const create = async (newObject: SoundboardItem) => {
+const createItem = async (newObject: SoundboardItem) => {
   const request = axios.post(`${baseUrl}`, newObject)
   const response = await request
   return response.data
 }
 
-const update = async (id: string, newObject: SoundboardItemModel) => {
+const updateItem = async (id: string, newObject: SoundboardItemModel) => {
   const request = axios.put(`${baseUrl}/${id}`, newObject)
   const response = await request
   return response.data
 }
 
+const deleteItem = async (id: string) => {
+  const request = axios.delete(`${baseUrl}/${id}`)
+  const response = await request
+  return response.data
+}
+
 const soundboardService = {
-  create,
+  createItem,
+  deleteItem,
   getAll,
-  update
+  updateItem
 }
 
 export default soundboardService
