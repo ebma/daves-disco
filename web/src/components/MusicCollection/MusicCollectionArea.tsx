@@ -81,15 +81,13 @@ function MusicCollectionArea(props: MusicCollectionAreaProps) {
 
     const favItems = newItems.filter(item => item.favourite)
 
-    favItems.sort((a: MusicItem, b: MusicItem) => {
-      if ((a as Track).title !== undefined && (b as Track).title !== undefined) {
-        return (a as Track).title.localeCompare((b as Track).title)
-      } else if ((a as Playlist).name !== undefined && (b as Playlist).name !== undefined) {
-        return (a as Playlist).name.localeCompare((b as Playlist).name)
-      } else {
-        return 0
-      }
+    favItems.sort((a: any, b: any) => {
+      const aIdentifier = a.title ? a.title : a.name
+      const bIdentifier = b.title ? b.title : b.name
+
+      return aIdentifier.localeCompare(bIdentifier)
     })
+    
     setFavouriteItems(favItems)
   }, [playlists, tracks])
 
