@@ -120,4 +120,4 @@ function MusicCollectionArea(props: MusicCollectionAreaProps) {
   )
 }
 
-export default React.memo(MusicCollectionArea)
+export default React.memo(MusicCollectionArea) 

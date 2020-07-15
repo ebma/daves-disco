@@ -32,21 +32,25 @@ function SoundboardArea() {
     volume
   ])
 
+  const sortedItems = React.useMemo(() => {
+    return items.slice().sort((a, b) => a.name.localeCompare(b.name))
+  }, [items])
+
   const ItemList = React.useMemo(
     () =>
-      items.map(item => {
+      sortedItems.map(item => {
         return item._id === editableItemId ? (
           <SoundboardItemFields editing item={item} onActionDone={() => setEditableItemId(undefined)} />
         ) : (
           <SoundboardItem
-            key={item.id}
+            key={item.name}
             item={item}
             onClick={play(item)}
             onEditClick={() => setEditableItemId(item._id)}
           />
         )
       }),
-    [editableItemId, items, play]
+    [editableItemId, sortedItems, play]
   )
 
   return (

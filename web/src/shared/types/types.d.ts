@@ -89,7 +89,6 @@ interface Radio {
 // --- SOUNDBOARD ---
 
 interface SoundboardItem {
-  id: string
   source: string
   name: string
   guild: string

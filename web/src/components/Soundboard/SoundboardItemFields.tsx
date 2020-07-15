@@ -7,6 +7,7 @@ import React from "react"
 import { useDispatch } from "react-redux"
 import { AppDispatch } from "../../app/store"
 import { createItem, deleteItem, updateItem } from "../../redux/soundboardsSlice"
+import { trackError } from "../../context/notifications"
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -44,7 +45,7 @@ function SoundboardItemFields(props: SoundboardItemFieldsProps) {
   const dispatch: AppDispatch = useDispatch()
 
   const onCreate = React.useCallback(() => {
-    dispatch(createItem({ name, source }))
+    dispatch(createItem({ name, source })).catch(trackError)
   }, [dispatch, name, source])
 
   const onUpdate = React.useCallback(() => {

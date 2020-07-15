@@ -42,15 +42,17 @@ router.post("/", async (request: SoundboardRequest, response) => {
   }
 
   const item = new SoundboardItem({
-    id: body.id,
     guild: body.guild,
     name: body.name,
     source: body.source
   })
 
-  const savedItem = await item.save()
-
-  response.json(savedItem.toJSON())
+  try {
+    const savedItem = await item.save()
+    response.json(savedItem.toJSON())
+  } catch (error) {
+    response.status(400).json({ error: "Could not save item" })
+  }
 })
 
 router.get("/:id", async (request: SoundboardRequest, response) => {

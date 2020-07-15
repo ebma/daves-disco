@@ -23,7 +23,7 @@ const soundboardSlice = createSlice({
     },
     setItem(state, action: PayloadAction<SoundboardItemModel>) {
       const newItem = action.payload
-      const foundIndex = state.items.findIndex(item => item.id === newItem.id)
+      const foundIndex = state.items.findIndex(item => item._id === newItem._id)
       if (foundIndex !== -1) {
         state.items[foundIndex] = newItem
       } else {
@@ -96,10 +96,8 @@ export const createItem = (item: { name: string; source: string }): AppThunk<Pro
   getState
 ) => {
   const { user } = getState().user
-  const { items } = getState().soundboard
-  const id = String(items.length)
   if (user) {
-    const createdItem = await soundboardService.createItem({ ...item, guild: user.guildID, id })
+    const createdItem = await soundboardService.createItem({ ...item, guild: user.guildID })
     dispatch(setItem(createdItem))
   }
 }
