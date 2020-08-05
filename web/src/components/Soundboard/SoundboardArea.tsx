@@ -13,6 +13,14 @@ import { VolumeSlider } from "../Player/VolumeSlider"
 import SoundboardItem from "./SoundboardItem"
 import SoundboardItemFields from "./SoundboardItemFields"
 
+function getVolumeFromLocalStorage() {
+  return localStorage.getItem("volume") ? Number(localStorage.getItem("volume")) : 20
+}
+
+function saveVolumeToLocalStorage(volume: number) {
+  localStorage.setItem("volume", String(volume))
+}
+
 const useStyles = makeStyles(theme => ({
   root: {
     alignItems: "center",
@@ -30,7 +38,7 @@ function SoundboardArea() {
 
   const [editableItemId, setEditableItemId] = React.useState<string | undefined>(undefined)
   const [searchTerm, setSearchTerm] = React.useState("")
-  const [volume, setVolume] = React.useState(20)
+  const [volume, setVolume] = React.useState(getVolumeFromLocalStorage)
 
   const play = React.useCallback((item: SoundboardItemModel) => () => dispatch(playSound(item.source, volume)), [
     dispatch,
@@ -86,7 +94,14 @@ function SoundboardArea() {
           value={searchTerm}
           style={{ margin: 16, minWidth: 400 }}
         />
-        <VolumeSlider volume={volume} onChange={setVolume} style={{ maxWidth: 500, minWidth: 400, margin: 16 }} />
+        <VolumeSlider
+          volume={volume}
+          onChange={value => {
+            saveVolumeToLocalStorage(value)
+            setVolume(value)
+          }}
+          style={{ maxWidth: 500, minWidth: 400, margin: 16 }}
+        />
       </div>
       <Grid container spacing={3}>
         {ItemList}
