@@ -1,13 +1,17 @@
 import Grid from "@material-ui/core/Grid"
+import IconButton from "@material-ui/core/IconButton"
+import InputAdornment from "@material-ui/core/InputAdornment"
 import { makeStyles } from "@material-ui/core/styles"
+import TextField from "@material-ui/core/TextField"
+import CancelIcon from "@material-ui/icons/Cancel"
 import React from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "../../app/rootReducer"
 import { AppDispatch } from "../../app/store"
 import { playSound } from "../../redux/soundboardsSlice"
 import { VolumeSlider } from "../Player/VolumeSlider"
-import SoundboardItemFields from "./SoundboardItemFields"
 import SoundboardItem from "./SoundboardItem"
+import SoundboardItemFields from "./SoundboardItemFields"
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -24,8 +28,9 @@ function SoundboardArea() {
   const dispatch: AppDispatch = useDispatch()
   const { items } = useSelector((state: RootState) => state.soundboard)
 
-  const [volume, setVolume] = React.useState(20)
   const [editableItemId, setEditableItemId] = React.useState<string | undefined>(undefined)
+  const [searchTerm, setSearchTerm] = React.useState("")
+  const [volume, setVolume] = React.useState(20)
 
   const play = React.useCallback((item: SoundboardItemModel) => () => dispatch(playSound(item.source, volume)), [
     dispatch,
@@ -33,8 +38,9 @@ function SoundboardArea() {
   ])
 
   const sortedItems = React.useMemo(() => {
-    return items.slice().sort((a, b) => a.name.localeCompare(b.name))
-  }, [items])
+    const matchingItems = items.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
+    return matchingItems.slice().sort((a, b) => a.name.localeCompare(b.name))
+  }, [items, searchTerm])
 
   const ItemList = React.useMemo(
     () =>
@@ -55,7 +61,33 @@ function SoundboardArea() {
 
   return (
     <div className={classes.root}>
-      <VolumeSlider volume={volume} onChange={setVolume} style={{ maxWidth: 500, minWidth: 400, marginBottom: 16 }} />
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          flexWrap: "wrap",
+          width: "100%",
+          justifyContent: "space-evenly"
+        }}
+      >
+        <TextField
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton onClick={() => setSearchTerm("")}>
+                  {searchTerm ? <CancelIcon fontSize="small" /> : undefined}
+                </IconButton>
+              </InputAdornment>
+            )
+          }}
+          label="Search"
+          placeholder="..."
+          onChange={e => setSearchTerm(e.target.value)}
+          value={searchTerm}
+          style={{ margin: 16, minWidth: 400 }}
+        />
+        <VolumeSlider volume={volume} onChange={setVolume} style={{ maxWidth: 500, minWidth: 400, margin: 16 }} />
+      </div>
       <Grid container spacing={3}>
         {ItemList}
       </Grid>
