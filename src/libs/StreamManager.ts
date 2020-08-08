@@ -5,7 +5,6 @@ import { PartialObserver, Subject } from "rxjs"
 import { Readable } from "stream"
 import Youtube from "../libs/Youtube"
 import { trackError } from "../utils/trackError"
-import { StreamType } from "discord.js"
 
 class StreamManager {
   private voiceConnection: VoiceConnection

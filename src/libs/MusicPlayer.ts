@@ -1,11 +1,12 @@
 import _ from "lodash"
 import { PartialObserver, Subject, Subscription } from "rxjs"
+import { updateTrackModel } from "../db/models/helper"
+import Track from "../db/models/track"
 import { trackError } from "../utils/trackError"
 import ObservableQueue from "./ObservableQueue"
 import StreamManager from "./StreamManager"
+import VoiceModerator from "./VoiceModerator"
 import Youtube from "./Youtube"
-import { updateTrackModel } from "../db/models/helper"
-import Track from "../db/models/track"
 
 class MusicPlayer {
   destroyed = false
@@ -14,11 +15,14 @@ class MusicPlayer {
   private streamSubscription: Subscription
   private subject: Subject<MusicPlayerSubjectMessage>
   private playingTrack: TrackModel
+  private voiceModerator: VoiceModerator
 
   constructor(streamManager: StreamManager) {
     this.streamManager = streamManager
     this.queue = new ObservableQueue<TrackModelID>()
     this.subject = new Subject<MusicPlayerSubjectMessage>()
+    this.voiceModerator = new VoiceModerator(this)
+    this.voiceModerator.init()
 
     this.queue.subscribeCurrentElement(async currentTrack => {
       if (currentTrack !== this.playingTrack?._id.toString() || this.queue.loopState !== "none") {
@@ -77,6 +81,14 @@ class MusicPlayer {
 
   enqueueAll(tracks: TrackModel[]) {
     this.queue.addAll(tracks.map(track => track._id.toString()))
+  }
+
+  muteModerator() {
+    this.voiceModerator.kill()
+  }
+
+  unmuteModerator() {
+    this.voiceModerator.init()
   }
 
   clear() {

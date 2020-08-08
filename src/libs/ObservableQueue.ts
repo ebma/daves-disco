@@ -111,10 +111,16 @@ class ObservableQueue<T extends object | string> {
 
   public subscribeCurrentElement(callback: CurrentElementCallback<T>) {
     this.elementObservers.push(callback)
+    return () => {
+      this.elementObservers = this.elementObservers.filter(cb => cb !== callback)
+    }
   }
 
   public subscribeQueue(callback: QueueCallback<T>) {
     this.queueObservers.push(callback)
+    return () => {
+      this.queueObservers = this.queueObservers.filter(cb => cb !== callback)
+    }
   }
 
   public replace(newItems: Array<T>, newCurrentIndex: number) {
