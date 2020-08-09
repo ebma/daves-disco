@@ -143,7 +143,7 @@ export default function Dashboard() {
             <MenuIcon />
           </IconButton>
           <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-            Discord Music Bot
+            Daves Disco Control Panel
           </Typography>
           <Tooltip title="Toggle theme">
             <IconButton color="inherit" onClick={toggleColorScheme}>
