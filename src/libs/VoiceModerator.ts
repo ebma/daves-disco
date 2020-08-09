@@ -59,19 +59,17 @@ class VoiceModerator {
   private musicPlayer: MusicPlayer
   private commentTimer: NodeJS.Timeout
   private unsubscribe: () => void
-  private defaultVolume = 30
+  private defaultVolume = 50
 
   constructor(musicPlayer: MusicPlayer) {
     this.musicPlayer = musicPlayer
   }
 
   init() {
+    this.initCommentTimer()
+
     const unsubscribe = this.musicPlayer.queue.subscribeCurrentElement(element => {
-      if (this.commentTimer) {
-        clearInterval(this.commentTimer)
-      }
-      this.commentTimer = this.initCommentTimer()
-      const playRandomSound = _.random(0, 4, false) === 0
+      const playRandomSound = _.random(0, 3, false) === 0
       if (!playRandomSound) return
 
       if (element && !this.musicPlayer.paused) {
@@ -86,7 +84,7 @@ class VoiceModerator {
 
   kill() {
     if (this.commentTimer) {
-      clearInterval(this.commentTimer)
+      clearTimeout(this.commentTimer)
       this.commentTimer = null
     }
     if (this.unsubscribe) {
@@ -95,11 +93,16 @@ class VoiceModerator {
   }
 
   private initCommentTimer() {
-    const delay = _.random(60, 300, false) * 1000
-    const timer = setInterval(() => {
+    this.commentTimer = this.createRecurringTimer()
+  }
+
+  private createRecurringTimer() {
+    const delay = _.random(60 * 5, 60 * 30, false) * 1000
+    const timer = setTimeout(() => {
       if (this.musicPlayer.playing && !this.musicPlayer.paused) {
         this.musicPlayer.playSound(getRandomSongPlayingComment(), this.defaultVolume)
       }
+      this.commentTimer = this.createRecurringTimer()
     }, delay)
 
     return timer
