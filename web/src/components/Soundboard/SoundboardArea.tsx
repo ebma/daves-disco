@@ -27,6 +27,34 @@ const useStyles = makeStyles(theme => ({
     flexGrow: 1,
     display: "flex",
     flexDirection: "column"
+  },
+  header: {
+    display: "flex",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    width: "100%",
+    justifyContent: "space-evenly"
+  },
+  searchField: {
+    margin: 16,
+    minWidth: 400,
+
+    [theme.breakpoints.down("sm")]: {
+      minWidth: 200,
+      marginTop: 8,
+      marginBottom: 8
+    }
+  },
+  volumeSlider: {
+    maxWidth: 500,
+    minWidth: 400,
+    margin: 16,
+
+    [theme.breakpoints.down("sm")]: {
+      minWidth: 200,
+      marginTop: 8,
+      marginBottom: 8
+    }
   }
 }))
 
@@ -69,16 +97,9 @@ function SoundboardArea() {
 
   return (
     <div className={classes.root}>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          flexWrap: "wrap",
-          width: "100%",
-          justifyContent: "space-evenly"
-        }}
-      >
+      <div className={classes.header}>
         <TextField
+          className={classes.searchField}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
@@ -92,18 +113,17 @@ function SoundboardArea() {
           placeholder="..."
           onChange={e => setSearchTerm(e.target.value)}
           value={searchTerm}
-          style={{ margin: 16, minWidth: 400 }}
         />
         <VolumeSlider
+          className={classes.volumeSlider}
           volume={volume}
           onChange={value => {
             saveVolumeToLocalStorage(value)
             setVolume(value)
           }}
-          style={{ maxWidth: 500, minWidth: 400, margin: 16 }}
         />
       </div>
-      <Grid container spacing={3}>
+      <Grid container spacing={3} justify="center">
         {ItemList}
       </Grid>
       <SoundboardItemFields />

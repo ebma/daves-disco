@@ -6,20 +6,21 @@ import VolumeDown from "@material-ui/icons/VolumeDown"
 import VolumeUp from "@material-ui/icons/VolumeUp"
 
 interface VolumeSliderProps {
+  className?: string
   volume: number
   onChange: (newVolume: number) => void
   style?: React.CSSProperties
 }
 
 export function VolumeSlider(props: VolumeSliderProps) {
-  const { volume, onChange, style } = props
+  const { className, volume, onChange, style } = props
 
   const handleChange = (event: any, newValue: number | number[]) => {
     onChange(newValue as number)
   }
 
   return (
-    <div style={{ ...style }}>
+    <div className={className} style={{ ...style }}>
       <Typography id="continuous-slider" align="center" color="primary" gutterBottom>
         Volume
       </Typography>
@@ -43,7 +44,7 @@ interface ControlledVolumeSliderProps extends VolumeSliderProps {
 }
 
 function ControlledVolumeSlider(props: ControlledVolumeSliderProps) {
-  const { disabled, volume, onChange, style } = props
+  const { className, disabled, volume, onChange, style } = props
 
   const [privateValue, setValue] = React.useState<number>(50)
 
@@ -58,7 +59,7 @@ function ControlledVolumeSlider(props: ControlledVolumeSliderProps) {
   const handleChangeCommitted = (event: any, value: number | number[]) => onChange(value as number)
 
   return (
-    <div style={{ ...style }}>
+    <div className={className} style={{ ...style }}>
       <Typography id="continuous-slider" align="center" color="primary" gutterBottom>
         Volume
       </Typography>
