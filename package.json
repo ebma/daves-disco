@@ -1,10 +1,10 @@
 {
-  "name": "discord-music-bot",
-  "description": "Discord Bot with focus on music streaming",
+  "name": "daves-disco",
+  "description": "Discord Bot focused on music streaming",
   "version": "0.0.1",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Marcel-Ebert/discord-music-bot"
+    "url": "https://github.com/ebma/daves-disco"
   },
   "keywords": [
     "discord",
@@ -15,9 +15,9 @@
   "author": "Marcel Ebert",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Marcel-Ebert/discord-music-bot/issues"
+    "url": "https://github.com/ebma/daves-disco/issues"
   },
-  "homepage": "https://github.com/Marcel-Ebert/discord-music-bot#readme",
+  "homepage": "https://github.com/ebma/daves-disco#readme",
   "main": "src/index.js",
   "scripts": {
     "clear-cache": "rm -rf ./dist",

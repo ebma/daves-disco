@@ -1,5 +1,5 @@
 {
-  "name": "discord-bot-react-gui",
+  "name": "daves-disco-control-panel",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -46,7 +46,7 @@
     "precommit": "lint-staged",
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
-    "deploy": "npm run build && surge ./build --domain discord-bot.marcel-ebert.de",
+    "deploy": "npm run build && surge ./build --domain daves-disco.marcel-ebert.de",
     "test": "react-app-rewired test"
   },
   "eslintConfig": {
