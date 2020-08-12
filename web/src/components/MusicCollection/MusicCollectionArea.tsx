@@ -23,6 +23,22 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     box: {
       height: "100%"
+    },
+    headerContainer: {
+      alignItems: "center",
+      display: "flex",
+      flexDirection: "column"
+    },
+    headerTitle: {
+      margin: 16,
+      marginBottom: 0
+    },
+    tabs: {
+      flexGrow: 1,
+      height: "fit-content",
+      paddingLeft: 8,
+      paddingRight: 8,
+      width:"100%",
     }
   })
 )
@@ -87,23 +103,23 @@ function MusicCollectionArea(props: MusicCollectionAreaProps) {
 
       return aIdentifier.localeCompare(bIdentifier)
     })
-    
+
     setFavouriteItems(favItems)
   }, [playlists, tracks])
 
   return (
     <div className={classes.root}>
-      <div style={{ alignItems: "center", display: "flex", flexDirection: "row" }}>
-        <Typography variant="h3" style={{ margin: 16, marginBottom: 0 }}>
+      <div className={classes.headerContainer}>
+        <Typography variant="h3" className={classes.headerTitle}>
           Collection
         </Typography>
         <Tabs
+          className={classes.tabs}
           indicatorColor="primary"
           onChange={handleChange}
           textColor="primary"
           scrollButtons="auto"
           variant="fullWidth"
-          style={{ flexGrow: 1, height: "fit-content", paddingLeft: 8, paddingRight: 8 }}
           value={tab}
         >
           <Tab label="Recent History" />
@@ -120,4 +136,4 @@ function MusicCollectionArea(props: MusicCollectionAreaProps) {
   )
 }
 
-export default React.memo(MusicCollectionArea) 
+export default React.memo(MusicCollectionArea)
