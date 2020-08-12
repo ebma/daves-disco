@@ -3,6 +3,7 @@ import PlaylistService from "../services/playlists"
 import { AppThunk } from "../app/store"
 import { Messages } from "../shared/ipc"
 import { subscribeToMessages, sendMessage } from "./socketSlice"
+import { addTracks } from "./tracksSlice"
 
 export interface PlaylistsState {
   error: string | null
@@ -55,6 +56,7 @@ export const fetchPlaylistByID = (playlistID: string, useCached?: boolean): AppT
   try {
     const playlist = await PlaylistService.get(playlistID, useCached)
     dispatch(setPlaylist(playlist))
+    dispatch(addTracks(playlist.tracks))
     return playlist
   } catch (error) {
     dispatch(setError(error))
@@ -66,6 +68,8 @@ export const fetchPlaylists = (): AppThunk<Promise<PlaylistModel[]>> => async (d
   try {
     const playlists = await PlaylistService.getAll(user?.guildID)
     dispatch(setPlaylists(playlists))
+    const tracks = playlists.reduce<TrackModel[]>((prev, current) => prev.concat(current.tracks), [])
+    dispatch(addTracks(tracks))
     return playlists
   } catch (error) {
     dispatch(setError(error))

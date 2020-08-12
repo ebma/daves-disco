@@ -57,6 +57,17 @@ export const fetchTracks = (): AppThunk<Promise<TrackModel[]>> => async (dispatc
   }
 }
 
+export const addTracks = (newTracks: TrackModel[]): AppThunk<void> => async (dispatch, getState) => {
+  const { tracks } = getState().tracks
+  try {
+    const combinedTracks = tracks.concat(newTracks)
+    const dedup = _.uniqBy(combinedTracks, trackModel => trackModel._id)
+    dispatch(setTracks(dedup))
+  } catch (error) {
+    dispatch(setError(error))
+  }
+}
+
 export const subscribeTracks = (): AppThunk<UnsubscribeFn> => (dispatch, getState) => {
   const { user } = getState().user
   if (user) {
