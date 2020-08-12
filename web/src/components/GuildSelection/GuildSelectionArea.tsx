@@ -24,7 +24,20 @@ const useStyles = makeStyles(theme => ({
   },
   textField: {
     marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1)
+    marginRight: theme.spacing(1),
+
+    [theme.breakpoints.down("sm")]: {
+      marginTop: 8,
+      marginBottom: 8
+    }
+  },
+  textFieldBox: {
+    display: "flex",
+    marginTop: 16,
+
+    [theme.breakpoints.down("sm")]: {
+      flexWrap: "wrap"
+    }
   },
   selectEmpty: {
     marginTop: theme.spacing(2)
@@ -84,7 +97,7 @@ function SelectBox(props: { guilds: Guild[]; user?: User }) {
   }, [guilds, selectedGuildID])
 
   return (
-    <Box display="flex" style={{ marginTop: 16 }}>
+    <Box className={classes.textFieldBox}>
       <TextField
         className={classes.textField}
         helperText={selectedGuildID ? undefined : "Please select your guild/server"}
