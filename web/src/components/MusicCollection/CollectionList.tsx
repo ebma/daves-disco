@@ -24,13 +24,30 @@ function isPlaylist(item: MusicItem): item is PlaylistModel {
   return (item as PlaylistModel).name !== undefined
 }
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   root: {
     padding: 16,
     paddingTop: 8,
     overflow: "auto"
+  },
+  headerContainer: {
+    justifyContent: "left",
+    display: "flex",
+    flexWrap: "wrap",
+
+    [theme.breakpoints.down("xs")]: {
+      justifyContent: "center"
+    }
+  },
+  headerButton: {
+    margin: 16,
+
+    [theme.breakpoints.down("xs")]: {
+      margin: 8,
+      width: "70%"
+    }
   }
-})
+}))
 
 interface PlaylistHeaderProps {
   onBack?: () => void
@@ -40,38 +57,39 @@ interface PlaylistHeaderProps {
 
 function PlaylistHeader(props: PlaylistHeaderProps) {
   const { onBack, onEnqueueAll, onRefresh } = props
+  const classes = useStyles()
 
   return (
-    <Box display="flex">
+    <Box className={classes.headerContainer}>
       {onBack && (
         <Button
+          className={classes.headerButton}
           variant="contained"
           color="secondary"
           onClick={onBack}
           startIcon={<ArrowBackIcon />}
-          style={{ margin: 16 }}
         >
           Go Back
         </Button>
       )}
       {onEnqueueAll && (
         <Button
-          variant="contained"
+          className={classes.headerButton}
           color="secondary"
           onClick={onEnqueueAll}
           startIcon={<PlayIcon />}
-          style={{ margin: 16 }}
+          variant="contained"
         >
           Enqueue All
         </Button>
       )}
       {onRefresh && (
         <Button
-          variant="contained"
+          className={classes.headerButton}
           color="secondary"
           onClick={onRefresh}
           startIcon={<RefreshIcon />}
-          style={{ margin: 16 }}
+          variant="contained"
         >
           Refresh
         </Button>

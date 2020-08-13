@@ -25,7 +25,11 @@ const useStyles = makeStyles(theme => ({
     justifyContent: "center"
   },
   textfield: {
-    minWidth: 300
+    minWidth: 300,
+    
+    [theme.breakpoints.down("sm")]: {
+      minWidth: 200
+    }
   }
 }))
 
