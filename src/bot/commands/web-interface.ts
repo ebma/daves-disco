@@ -10,7 +10,7 @@ class GuiCommand extends Command {
   }
 
   exec(message: Message, args: any) {
-    return message.reply("you can find the web interface at https://discord-bot.marcel-ebert.de .")
+    return message.reply("you can find the control panel at https://daves-disco.marcel-ebert.de .")
   }
 }
 
