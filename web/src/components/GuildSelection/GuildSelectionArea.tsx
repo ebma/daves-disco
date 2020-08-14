@@ -1,23 +1,21 @@
-import React from "react"
-import { makeStyles } from "@material-ui/core/styles"
 import Box from "@material-ui/core/Box"
-import Link from "@material-ui/core/Link"
 import MenuItem from "@material-ui/core/MenuItem"
+import Paper from "@material-ui/core/Paper"
+import { makeStyles } from "@material-ui/core/styles"
 import TextField from "@material-ui/core/TextField"
 import Typography from "@material-ui/core/Typography"
-import Paper from "@material-ui/core/Paper"
-import loginService from "../../services/login"
-import { useSelector, useDispatch } from "react-redux"
+import React from "react"
+import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "../../app/rootReducer"
-import { initAuthenticationAction } from "../../redux/socketSlice"
 import { AppDispatch } from "../../app/store"
 import { fetchGuilds, Guild } from "../../redux/guildsSlice"
+import { initAuthenticationAction } from "../../redux/socketSlice"
 import { setUser, User } from "../../redux/userSlice"
+import loginService from "../../services/login"
 
 const useStyles = makeStyles(theme => ({
   container: {
-    padding: 16,
-    margin: theme.spacing(1)
+    padding: 16
   },
   info: {
     paddingTop: 16
@@ -206,19 +204,11 @@ function GuildSelectionArea(props: Props) {
         )}
 
         <Typography className={classes.info} color="textSecondary" align="center">
-          {authenticationError ? (
-            String(authenticationError)
-          ) : authenticationPending ? (
-            "Authentication is pending. Check for a received message on your discord account."
-          ) : (
-            <>
-              Not yet a member of the Server?
-              <br />
-              <Link href="https://discord.gg/Q2t6yFT" target="_blak">
-                Join here!
-              </Link>
-            </>
-          )}
+          {authenticationError
+            ? String(authenticationError)
+            : authenticationPending
+            ? "Authentication is pending. Check for a received message on your discord account."
+            : undefined}
         </Typography>
       </form>
     </Paper>
