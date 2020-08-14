@@ -12,6 +12,7 @@ import { fetchGuilds, Guild } from "../../redux/guildsSlice"
 import { initAuthenticationAction } from "../../redux/socketSlice"
 import { setUser, User } from "../../redux/userSlice"
 import loginService from "../../services/login"
+import { useTokenStorage, Token } from "../../hooks/tokenStorage"
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -56,6 +57,9 @@ function SelectBox(props: { guilds: Guild[]; user?: User }) {
 
     if (name === "guildID") {
       setSelectedGuild(value)
+      if (selectedGuildID !== value) {
+        setSelectedMember("")
+      }
     } else if (name === "userID") {
       setSelectedMember(value)
 
@@ -128,16 +132,10 @@ interface Props {
   onClick?: () => void
 }
 
-function getTokenFromStorage() {
-  return localStorage.getItem("auth-token")
-}
-
-function saveTokenToStorage(token: string) {
-  localStorage.setItem("auth-token", token)
-}
-
 function GuildSelectionArea(props: Props) {
   const classes = useStyles()
+
+  const tokenStorage = useTokenStorage()
 
   const dispatch: AppDispatch = useDispatch()
   const { authError, connectionState } = useSelector((state: RootState) => state.socket)
@@ -146,22 +144,25 @@ function GuildSelectionArea(props: Props) {
 
   const [authenticationError, setAuthenticationError] = React.useState<string | null>(null)
   const [authenticationPending, setAuthenticationPending] = React.useState<boolean>(false)
-  const [token, setToken] = React.useState<string | null>(getTokenFromStorage)
+  const [token, setToken] = React.useState<Token | null>(
+    tokenStorage.getTokenForUser(user?.guildID ?? "", user?.id ?? "")
+  )
 
   const initLogin = React.useCallback(
     (user: User) => {
       setAuthenticationPending(true)
       loginService
         .login({ guildID: user.guildID, userID: user.id })
-        .then(token => {
+        .then(jwt => {
+          const token = { user: user.id, guild: user.guildID, jwt }
           setToken(token)
-          saveTokenToStorage(token)
-          dispatch(initAuthenticationAction(token))
+          tokenStorage.saveToken(token)
+          dispatch(initAuthenticationAction(jwt))
         })
         .catch(setAuthenticationError)
         .finally(() => setAuthenticationPending(false))
     },
-    [dispatch]
+    [dispatch, tokenStorage]
   )
 
   React.useEffect(() => {
@@ -186,7 +187,7 @@ function GuildSelectionArea(props: Props) {
 
   React.useEffect(() => {
     if (connectionState === "disconnected" && user && token) {
-      dispatch(initAuthenticationAction(token))
+      dispatch(initAuthenticationAction(token.jwt))
     }
   }, [connectionState, dispatch, user, token])
 
