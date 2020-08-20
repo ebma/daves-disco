@@ -55,6 +55,10 @@ function getRandomSongPlayingComment() {
   return path
 }
 
+const RANDOM_START_COMMENT_PROBABILITY = 1 / 5
+const MIN_COMMENT_DELAY_MS = 15 * 60 * 1000
+const MAX_COMMENT_DELAY_MS = 45 * 60 * 1000
+
 class VoiceModerator {
   private musicPlayer: MusicPlayer
   private commentTimer: NodeJS.Timeout
@@ -69,7 +73,7 @@ class VoiceModerator {
     this.initCommentTimer()
 
     const unsubscribe = this.musicPlayer.queue.subscribeCurrentElement(element => {
-      const playRandomSound = _.random(0, 3, false) === 0
+      const playRandomSound = _.random(0, 100, false) < RANDOM_START_COMMENT_PROBABILITY * 100
       if (!playRandomSound) return
 
       if (element && !this.musicPlayer.paused) {
@@ -97,7 +101,7 @@ class VoiceModerator {
   }
 
   private createRecurringTimer() {
-    const delay = _.random(60 * 5, 60 * 30, false) * 1000
+    const delay = _.random(MIN_COMMENT_DELAY_MS, MAX_COMMENT_DELAY_MS)
     const timer = setTimeout(() => {
       if (this.musicPlayer.playing && !this.musicPlayer.paused) {
         this.musicPlayer.playSound(getRandomSongPlayingComment(), this.defaultVolume)
