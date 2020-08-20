@@ -51,7 +51,6 @@ router.post("/", async (request: PlaylistRequest, response) => {
   const playlist = new Playlist({
     id: body.id,
     favourite: body.favourite,
-    guild: body.guild,
     lastTouchedAt: body.lastTouchedAt,
     name: body.name,
     owner: body.owner,
@@ -78,7 +77,7 @@ router.get("/:id", async (request: PlaylistRequest, response) => {
         .populate("tracks")
         .then(updatedPlaylist => {
           response.json(updatedPlaylist.toJSON())
-          WebSocketHandler.sendMessage(Messages.PlaylistsChange, playlistModel.guild)
+          WebSocketHandler.sendMessage(Messages.PlaylistsChange)
         })
     } else {
       response.json(playlistModel.toJSON())
@@ -94,7 +93,6 @@ router.put("/:id", (request: PlaylistRequest, response, next) => {
   const playlist = {
     id: body.id,
     favourite: body.favourite,
-    guild: body.guild,
     lastTouchedAt: body.lastTouchedAt,
     name: body.name,
     owner: body.owner,
@@ -109,7 +107,7 @@ router.put("/:id", (request: PlaylistRequest, response, next) => {
     .populate("tracks")
     .then(updatedPlaylist => {
       response.json(updatedPlaylist.toJSON())
-      WebSocketHandler.sendMessage(Messages.PlaylistsChange, playlist.guild)
+      WebSocketHandler.sendMessage(Messages.PlaylistsChange)
     })
     .catch(error => next(error))
 })

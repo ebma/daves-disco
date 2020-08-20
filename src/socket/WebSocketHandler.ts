@@ -63,12 +63,8 @@ class MessageSender {
     this.emitMessage(response)
   }
 
-  sendMessage<Message extends keyof IPC.MessageType>(
-    messageType: Message,
-    guildID: GuildID,
-    data: IPC.MessageReturnType<Message>
-  ): void {
-    this.emitMessage({ messageType, guildID, data })
+  sendMessage<Message extends keyof IPC.MessageType>(messageType: Message, data: IPC.MessageReturnType<Message>): void {
+    this.emitMessage({ messageType, data })
   }
 
   private emitMessage(message: any) {
@@ -104,11 +100,10 @@ export class WebSocketHandler {
 
   sendMessage<Message extends keyof IPC.MessageType>(
     messageType: Message,
-    guildID: GuildID,
     data?: IPC.MessageReturnType<Message>
   ): void {
     for (const sender of this.senders) {
-      sender.sendMessage(messageType, guildID, data)
+      sender.sendMessage(messageType, data)
     }
   }
 }

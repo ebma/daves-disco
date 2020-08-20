@@ -15,7 +15,6 @@ interface TrackSearchResult {
 
 interface Track {
   artists?: string
-  id: string
   title: string
   url?: string
   thumbnail?: Thumbnail
@@ -26,10 +25,9 @@ interface Track {
 
 interface TrackModel extends Track {
   _id: string
-  favourite?: boolean
-  guild: string
-  lastTouchedAt: string
-  touchedByUser: boolean
+  favourite: { guild: GuildID; favourite: boolean }[]
+  lastTouchedAt: { guild: GuildID; date: string }[]
+  touchedByUser: { guild: GuildID; touched: boolean }[]
 }
 
 interface SpotifyTrack extends Track {
@@ -54,9 +52,8 @@ interface Playlist {
 
 interface PlaylistModel extends Playlist {
   _id: string
-  favourite?: boolean
-  guild: string
-  lastTouchedAt: string
+  favourite: { guild: GuildID; favourite: boolean }[]
+  lastTouchedAt: { guild: GuildID; date: string }[]
   tracks: TrackModel[]
 }
 

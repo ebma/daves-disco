@@ -27,12 +27,12 @@ router.get("/", async (request: TrackRequest, response) => {
   const favourite = Boolean(request.query.favourite) || undefined
 
   const query = Track.find()
-  if (favourite) {
-    query.where("favourite").equals(favourite)
-  }
-  if (guild) {
-    query.where("guild").equals(guild)
-  }
+  // if (favourite) {
+  //   query.where(`favourite.${guild}`).equals(favourite)
+  // }
+  // if (guild) {
+  //   query.where(`lastTouchedAt.${guild}`).exists()
+  // }
   if (limit) {
     query.limit(Number(limit))
   }
@@ -91,9 +91,7 @@ router.post("/", async (request: TrackRequest, response) => {
 
   const track = new Track({
     artists: body.artists,
-    id: body.id,
     favourite: body.favourite,
-    guild: body.guild,
     lastTouchedAt: body.lastTouchedAt,
     source: body.source,
     title: body.title,
@@ -120,9 +118,7 @@ router.put("/:id", (request: TrackRequest, response, next) => {
 
   const track = {
     artists: body.artists,
-    id: body.id,
     favourite: body.favourite,
-    guild: body.guild,
     lastTouchedAt: body.lastTouchedAt,
     source: body.source,
     title: body.title,
@@ -134,7 +130,7 @@ router.put("/:id", (request: TrackRequest, response, next) => {
   Track.findByIdAndUpdate(request.params.id, track, { upsert: true })
     .then(updatedTrack => {
       response.json(updatedTrack.toJSON())
-      WebSocketHandler.sendMessage(Messages.TracksChange, track.guild)
+      WebSocketHandler.sendMessage(Messages.TracksChange)
     })
     .catch(error => next(error))
 })

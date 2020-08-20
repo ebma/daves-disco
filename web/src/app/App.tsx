@@ -29,9 +29,10 @@ function App() {
   const dispatch: AppDispatch = useDispatch()
 
   const { connectionState } = useSelector((state: RootState) => state.socket)
+  const { user } = useSelector((state: RootState) => state.user)
 
   React.useEffect(() => {
-    if (connectionState === "connected") {
+    if (connectionState === "authenticated") {
       dispatch(fetchPlayerState())
     }
 
@@ -58,7 +59,7 @@ function App() {
       unsubscribeTracks()
       unsubscribeItems()
     }
-  }, [dispatch])
+  }, [dispatch, user])
 
   React.useEffect(() => {
     const interval = setInterval(() => {

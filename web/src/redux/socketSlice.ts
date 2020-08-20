@@ -69,7 +69,7 @@ export const sendMessageAction = createAction("socket/sendMessage", function pre
 
 export const subscribeToMessagesAction = createAction("socket/subscribe", function prepare<
   Message extends keyof IPC.MessageType
->(payload: { guildID: GuildID; messageType: Message; callback: (message: IPC.MessageReturnType<Message>) => void }) {
+>(payload: { messageType: Message; callback: (message: IPC.MessageReturnType<Message>) => void }) {
   return {
     payload
   }
@@ -84,11 +84,10 @@ export const unsubscribeFromMessagesAction = createAction("socket/unsubscribe", 
 })
 
 export const subscribeToMessages = <Message extends keyof IPC.MessageType>(
-  guildID: GuildID,
   messageType: Message,
   callback: (message: IPC.MessageReturnType<Message>) => void
 ): AppThunk<UnsubscribeFn> => (dispatch, getState) => {
-  dispatch(subscribeToMessagesAction({ guildID, messageType, callback }))
+  dispatch(subscribeToMessagesAction({ messageType, callback }))
 
   return () => dispatch(unsubscribeFromMessagesAction({ callback }))
 }

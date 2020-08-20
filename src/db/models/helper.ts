@@ -5,19 +5,14 @@ import { Messages } from "../../shared/ipc"
 import Spotify from "../../libs/Spotify"
 import Youtube from "../../libs/Youtube"
 
-export async function createTrackModels(tracks: Track[], guildID: GuildID) {
+export async function createTrackModels(tracks: Track[]) {
   const trackModels = await Promise.all(
     tracks.map(async track => {
-      let trackModel = null
-      if (track.id) {
-        trackModel = await Track.findOne({ id: track.id, guild: guildID })
-      } else {
-        trackModel = await Track.findOne({ title: track.title, guild: guildID })
-      }
+      let trackModel = await Track.findOne({ title: track.title })
       if (!trackModel) {
-        trackModel = new Track({ guild: guildID, touchedByUser: false, ...track })
+        trackModel = new Track({ ...track })
         await trackModel.save()
-        WebSocketHandler.sendMessage(Messages.TracksChange, guildID)
+        WebSocketHandler.sendMessage(Messages.TracksChange)
       }
       return trackModel
     })
@@ -34,12 +29,12 @@ export async function repopulatePlaylistTracks(playlistModel: PlaylistModel): Pr
 
   const populatedTracks = await Promise.all(
     populatedPlaylist.tracks.map(async track => {
-      const savedTrack = await Track.findOne({ id: track.id })
+      const savedTrack = await Track.findOne({ title: track.title })
       return savedTrack || track
     })
   )
 
-  const populatedTrackModels = await createTrackModels(populatedTracks, playlistModel.guild)
+  const populatedTrackModels = await createTrackModels(populatedTracks)
 
   // remove duplicates
   const populatedTrackModelsDedup = populatedTrackModels.filter((elem, pos, array) => {
@@ -50,47 +45,73 @@ export async function repopulatePlaylistTracks(playlistModel: PlaylistModel): Pr
 }
 
 export async function createAndSavePlaylistModel(playlist: Playlist, guildID: GuildID) {
-  let playlistModel = await Playlist.findOne({ guild: guildID, name: playlist.name })
+  let playlistModel = await Playlist.findOne({ name: playlist.name })
   if (!playlistModel) {
-    playlistModel = new Playlist({ guild: guildID, ...playlist })
+    playlistModel = new Playlist({ ...playlist })
   }
-  playlistModel.lastTouchedAt = Date.now().toString()
 
-  const trackModels = await createTrackModels(playlist.tracks, guildID)
+  const newLastTouchedItem = { guild: guildID, date: Date.now().toString() }
+  const lastTouchedItemIndex = playlistModel.lastTouchedAt.findIndex(value => value.guild === guildID)
+  if (lastTouchedItemIndex !== -1) {
+    playlistModel.lastTouchedAt[lastTouchedItemIndex] = newLastTouchedItem
+  } else {
+    playlistModel.lastTouchedAt.push(newLastTouchedItem)
+  }
+
+  const defaultFavouriteItem = { guild: guildID, favourite: false }
+  const favouriteItemIndex = playlistModel.favourite.findIndex(value => value.guild === guildID)
+  if (favouriteItemIndex === -1) {
+    playlistModel.favourite.push(defaultFavouriteItem)
+  }
+
+  const trackModels = await createTrackModels(playlist.tracks)
 
   playlistModel.tracks = []
   for (const trackModel of trackModels) {
     playlistModel.tracks.push(trackModel)
   }
 
-  return Playlist.findOneAndUpdate({ name: playlist.name, guild: guildID }, playlistModel, { upsert: true }).then(
-    updatedPlaylist => {
-      WebSocketHandler.sendMessage(Messages.PlaylistsChange, guildID)
-      if (updatedPlaylist) {
-        return updatedPlaylist.populate("tracks")
-      } else {
-        return playlistModel
-      }
+  return Playlist.findOneAndUpdate({ name: playlist.name }, playlistModel, { upsert: true }).then(updatedPlaylist => {
+    WebSocketHandler.sendMessage(Messages.PlaylistsChange)
+    if (updatedPlaylist) {
+      return updatedPlaylist.populate("tracks")
+    } else {
+      return playlistModel
     }
-  )
+  })
 }
 
 export async function createAndSaveTrackModel(track: Track, guildID: GuildID) {
-  let trackModel = await Track.findOne({ guild: guildID, title: track.title })
+  let trackModel = await Track.findOne({ title: track.title })
   if (!trackModel) {
-    trackModel = new Track({ guild: guildID, ...track })
+    trackModel = new Track({ ...track })
   }
-  trackModel.lastTouchedAt = Date.now().toString()
-  trackModel.touchedByUser = true
+  const newLastTouchedItem = { guild: guildID, date: Date.now().toString() }
+  const lastTouchedItemIndex = trackModel.lastTouchedAt.findIndex(value => value.guild === guildID)
+  if (lastTouchedItemIndex !== -1) {
+    trackModel.lastTouchedAt[lastTouchedItemIndex] = newLastTouchedItem
+  } else {
+    trackModel.lastTouchedAt.push(newLastTouchedItem)
+  }
+  const defaultTouchedItem = { guild: guildID, touched: true }
+  const touchedItemIndex = trackModel.touchedByUser.findIndex(value => value.guild === guildID)
+  if (touchedItemIndex === -1) {
+    trackModel.touchedByUser.push(defaultTouchedItem)
+  }
 
-  return Track.findOneAndUpdate({ title: track.title, guild: guildID }, trackModel, { new: true, upsert: true })
+  const defaultFavouriteItem = { guild: guildID, favourite: false }
+  const favouriteItemIndex = trackModel.favourite.findIndex(value => value.guild === guildID)
+  if (favouriteItemIndex === -1) {
+    trackModel.favourite.push(defaultFavouriteItem)
+  }
+  return Track.findOneAndUpdate({ title: track.title }, trackModel, { new: true, upsert: true })
     .exec()
     .then(updatedTrack => {
-      WebSocketHandler.sendMessage(Messages.TracksChange, guildID)
+      WebSocketHandler.sendMessage(Messages.TracksChange)
       return updatedTrack
     })
 }
 
 export async function updateTrackModel(updatedModel: TrackModel) {
-  return Track.findOneAndUpdate({ title: updatedModel.title, guild: updatedModel.guild }, updatedModel)
+  return Track.findOneAndUpdate({ title: updatedModel.title }, updatedModel)
 }

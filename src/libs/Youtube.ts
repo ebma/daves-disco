@@ -104,7 +104,6 @@ export class Youtube {
         const info = await this.getTrackInfo(url)
         if (info) {
           const track: Track = {
-            id: info.video_id,
             description: info.description,
             url: info.video_url,
             source: "youtube",
@@ -131,7 +130,6 @@ export class Youtube {
           let tracks: Track[] = []
           _.forEach(result.items, item => {
             const newTrack: Track = {
-              id: item.id,
               thumbnail: { medium: item.thumbnail },
               source: "youtube",
               title: item.title,

@@ -36,6 +36,7 @@ function QueueList(props: Props) {
 
   const dispatch: AppDispatch = useDispatch()
   const { currentTrack, queue } = useSelector((state: RootState) => state.player, shallowEqual)
+  const { user } = useSelector((state: RootState) => state.user)
 
   const [localQueue, setLocalQueue] = React.useState<TrackModel[]>(queue)
 
@@ -86,7 +87,8 @@ function QueueList(props: Props) {
           {index > 0 ? <Divider variant="inset" component="li" /> : undefined}
           <DraggableTrackItem
             current={index === indexOfCurrentSong}
-            id={trackModel.id}
+            id={trackModel._id}
+            guildID={user?.guildID || ""}
             index={index}
             old={index < indexOfCurrentSong}
             onClick={onClick}
@@ -97,7 +99,7 @@ function QueueList(props: Props) {
         </div>
       )
     })
-  }, [currentTrack, dispatch, localQueue])
+  }, [currentTrack, dispatch, localQueue, user])
 
   const EmptyQueueItem = React.useMemo(
     () => (

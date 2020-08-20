@@ -3,7 +3,7 @@ import axios from "./axios-client"
 const baseUrl = "/api/tracks"
 
 const getAll = async (guildID?: GuildID, limit: number = 20, order: string = "desc"): Promise<TrackModel[]> => {
-  const response = await axios.get(baseUrl, {
+  const response = await axios.get<TrackModel[]>(baseUrl, {
     params: {
       guild: guildID,
       limit,
@@ -14,7 +14,7 @@ const getAll = async (guildID?: GuildID, limit: number = 20, order: string = "de
 }
 
 const getFavourites = async (guildID?: GuildID): Promise<TrackModel[]> => {
-  const response = await axios.get(baseUrl, {
+  const response = await axios.get<TrackModel[]>(baseUrl, {
     params: {
       guild: guildID,
       favourite: true
@@ -24,7 +24,7 @@ const getFavourites = async (guildID?: GuildID): Promise<TrackModel[]> => {
 }
 
 const getList = async (trackIDs: Array<string>): Promise<TrackModel[]> => {
-  const response = await axios.get(baseUrl + "/list", {
+  const response = await axios.get<TrackModel[]>(baseUrl + "/list", {
     params: {
       tracks: trackIDs
     }
@@ -33,7 +33,7 @@ const getList = async (trackIDs: Array<string>): Promise<TrackModel[]> => {
 }
 
 const getTrack = async (trackID: string): Promise<TrackModel> => {
-  const response = await axios.get(baseUrl + "/track", {
+  const response = await axios.get<TrackModel>(baseUrl + "/track", {
     params: {
       track: trackID
     }

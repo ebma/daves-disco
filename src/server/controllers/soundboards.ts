@@ -76,7 +76,7 @@ router.put("/:id", (request: SoundboardRequest, response, next) => {
   SoundboardItem.findByIdAndUpdate(request.params.id, item, { upsert: true })
     .then(updatedItem => {
       response.json(updatedItem.toJSON())
-      WebSocketHandler.sendMessage(Messages.SoundboardItemsChange, item.guild)
+      WebSocketHandler.sendMessage(Messages.SoundboardItemsChange)
     })
     .catch(error => next(error))
 })

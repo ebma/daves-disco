@@ -60,7 +60,7 @@ export const subscribeItems = (): AppThunk<UnsubscribeFn> => (dispatch, getState
   const { user } = getState().user
   if (user) {
     const unsubscribeItemsChange = dispatch(
-      subscribeToMessages(user.guildID, Messages.SoundboardItemsChange, () => dispatch(fetchItems()))
+      subscribeToMessages(Messages.SoundboardItemsChange, () => dispatch(fetchItems()))
     )
 
     return () => unsubscribeItemsChange

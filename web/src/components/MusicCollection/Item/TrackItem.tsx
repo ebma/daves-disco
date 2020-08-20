@@ -30,6 +30,7 @@ const useStyles = makeStyles(theme => ({
 
 interface TrackItemProps {
   current?: boolean
+  guildID: GuildID
   track: TrackModel
   onClick?: () => void
   onDeleteClick?: () => void
@@ -37,14 +38,22 @@ interface TrackItemProps {
 }
 
 export const TrackItem = React.forwardRef(function TrackItem(props: TrackItemProps, ref: React.Ref<HTMLDivElement>) {
-  const { current, track, onClick, onDeleteClick, showFavourite } = props
+  const { current, guildID, track, onClick, onDeleteClick, showFavourite } = props
   const classes = useStyles()
 
   const dispatch: AppDispatch = useDispatch()
 
   const toggleFavourite = React.useCallback(() => {
-    dispatch(updateTrack({ ...track, favourite: !track.favourite }))
-  }, [dispatch, track])
+    const favouriteCopy = track.favourite.slice()
+    const toggledFavouriteCopy = favouriteCopy.map(value => {
+      if (value.guild === guildID) {
+        return { ...value, favourite: !value.favourite }
+      } else {
+        return value
+      }
+    })
+    dispatch(updateTrack({ ...track, favourite: toggledFavouriteCopy }))
+  }, [dispatch, guildID, track])
 
   const primaryText = SpotifyHelper.isSpotifyTrack(track) ? `${track.title} - ${track.artists}` : track.title
 
@@ -88,7 +97,14 @@ export const TrackItem = React.forwardRef(function TrackItem(props: TrackItemPro
         }
       />
       {onDeleteClick ? <DeleteButton onClick={onDeleteClick} /> : undefined}
-      {showFavourite ? <FavorButton onClick={toggleFavourite} favourite={track.favourite || false} /> : undefined}
+      {showFavourite ? (
+        <FavorButton
+          onClick={toggleFavourite}
+          favourite={track.favourite.find(value => value.guild === guildID)?.favourite || false}
+        />
+      ) : (
+        undefined
+      )}
     </ListItem>
   )
 })

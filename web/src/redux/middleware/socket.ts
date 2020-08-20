@@ -96,10 +96,10 @@ const socketMiddleware: Middleware<{}, RootState> = store => {
 
       socket.emit("message", { messageType, messageID: currentID, ...args })
     } else if (subscribeToMessagesAction.match(action)) {
-      const { callback, guildID, messageType } = action.payload
+      const { callback, messageType } = action.payload
 
       const eventListener = <Message extends keyof IPC.MessageType>(message: IPC.ServerMessage<Message>) => {
-        if (message.messageType === messageType && message.guildID === guildID) {
+        if (message.messageType === messageType) {
           callback(message.data)
         }
       }

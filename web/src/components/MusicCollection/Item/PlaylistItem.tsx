@@ -29,19 +29,28 @@ const useStyles = makeStyles(theme => ({
 
 interface Props {
   playlist: PlaylistModel
+  guildID: GuildID
   onClick?: () => void
   showFavourite?: boolean
 }
 
 function PlaylistItem(props: Props) {
-  const { playlist, onClick, showFavourite } = props
+  const { guildID, playlist, onClick, showFavourite } = props
   const classes = useStyles()
 
   const dispatch: AppDispatch = useDispatch()
 
   const toggleFavourite = React.useCallback(() => {
-    dispatch(updatePlaylist({ ...playlist, favourite: !playlist.favourite }))
-  }, [dispatch, playlist])
+    const favouriteCopy = playlist.favourite.slice()
+    const toggledFavouriteCopy = favouriteCopy.map(value => {
+      if (value.guild === guildID) {
+        return { ...value, favourite: !value.favourite }
+      } else {
+        return value
+      }
+    })
+    dispatch(updatePlaylist({ ...playlist, favourite: toggledFavouriteCopy }))
+  }, [dispatch, guildID, playlist])
 
   const secondaryText = React.useMemo(
     () =>
@@ -94,7 +103,14 @@ function PlaylistItem(props: Props) {
         secondary={secondaryText}
       />
       {onClick ? <ShowListButton onClick={onClick} /> : undefined}
-      {showFavourite ? <FavorButton onClick={toggleFavourite} favourite={playlist.favourite || false} /> : undefined}
+      {showFavourite ? (
+        <FavorButton
+          onClick={toggleFavourite}
+          favourite={playlist.favourite.find(value => value.guild === guildID)?.favourite || false}
+        />
+      ) : (
+        undefined
+      )}
     </ListItem>
   )
 }

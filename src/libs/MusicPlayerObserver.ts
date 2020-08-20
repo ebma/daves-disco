@@ -55,29 +55,29 @@ class MusicPlayerObserver {
           this.clearDestructionTimeout()
           break
         case "current-track":
-          WebSocketHandler.sendMessage(Messages.PlayerChange, this.guildID)
+          WebSocketHandler.sendMessage(Messages.PlayerChange)
           break
         case "current-queue":
-          WebSocketHandler.sendMessage(Messages.PlayerChange, this.guildID)
+          WebSocketHandler.sendMessage(Messages.PlayerChange)
           break
         case "paused":
-          WebSocketHandler.sendMessage(Messages.PlayerChange, this.guildID)
+          WebSocketHandler.sendMessage(Messages.PlayerChange)
           this.setupDestructionTimeout()
           break
         case "resumed":
-          WebSocketHandler.sendMessage(Messages.PlayerChange, this.guildID)
+          WebSocketHandler.sendMessage(Messages.PlayerChange)
           this.clearDestructionTimeout()
           break
         case "volume":
           const newVolume = message.data
-          WebSocketHandler.sendMessage(Messages.PlayerChange, this.guildID)
+          WebSocketHandler.sendMessage(Messages.PlayerChange)
           break
         case "loop-state-changed":
-          WebSocketHandler.sendMessage(Messages.PlayerChange, this.guildID)
+          WebSocketHandler.sendMessage(Messages.PlayerChange)
           break
       }
     } else if (message.messageType === "error") {
-      WebSocketHandler.sendMessage(Messages.Error, this.guildID, message.data)
+      WebSocketHandler.sendMessage(Messages.Error, message.data)
     }
   }
 }

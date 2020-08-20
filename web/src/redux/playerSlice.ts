@@ -133,13 +133,11 @@ export const subscribePlayerState = (): AppThunk<UnsubscribeFn> => (dispatch, ge
   const { user } = getState().user
   if (user) {
     const unsubscribePlayerChange = dispatch(
-      subscribeToMessages(user.guildID, Messages.PlayerChange, () => dispatch(fetchPlayerState()))
+      subscribeToMessages(Messages.PlayerChange, () => dispatch(fetchPlayerState()))
     )
 
     const unsubscribeErrors = dispatch(
-      subscribeToMessages(user.guildID, Messages.Error, error =>
-        dispatch(setError(error?.message ? error.message : error))
-      )
+      subscribeToMessages(Messages.Error, error => dispatch(setError(error?.message ? error.message : error)))
     )
     return () => {
       unsubscribePlayerChange()

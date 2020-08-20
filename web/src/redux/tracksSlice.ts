@@ -25,7 +25,7 @@ const tracksSlice = createSlice({
     },
     setTrack(state, action: PayloadAction<TrackModel>) {
       const newTrack = action.payload
-      const foundIndex = state.tracks.findIndex(track => track.id === newTrack.id)
+      const foundIndex = state.tracks.findIndex(track => track._id === newTrack._id)
       if (foundIndex !== -1) {
         state.tracks[foundIndex] = newTrack
       } else {
@@ -71,9 +71,7 @@ export const addTracks = (newTracks: TrackModel[]): AppThunk<void> => async (dis
 export const subscribeTracks = (): AppThunk<UnsubscribeFn> => (dispatch, getState) => {
   const { user } = getState().user
   if (user) {
-    const unsubscribeTracksChange = dispatch(
-      subscribeToMessages(user.guildID, Messages.TracksChange, () => dispatch(fetchTracks()))
-    )
+    const unsubscribeTracksChange = dispatch(subscribeToMessages(Messages.TracksChange, () => dispatch(fetchTracks())))
 
     return () => unsubscribeTracksChange
   } else {

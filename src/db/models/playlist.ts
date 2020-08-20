@@ -3,10 +3,9 @@ import mongoose, { Schema, Document } from "mongoose"
 export type IPlaylist = Document & PlaylistModel
 
 const PlaylistSchema: Schema<PlaylistModel> = new Schema({
-  id: { type: String, required: true },
-  favourite: { type: Boolean, default: false, required: false },
-  guild: { type: String, required: true },
-  lastTouchedAt: { type: Date, default: Date.now, required: false },
+  id: { type: String, required: true, unique: true },
+  favourite: [{ guild: String, favourite: Boolean }],
+  lastTouchedAt: [{ guild: String, date: String }],
   name: { type: String, required: true },
   owner: { type: String, required: false },
   source: { type: String, required: true },
@@ -25,7 +24,7 @@ const PlaylistSchema: Schema<PlaylistModel> = new Schema({
   },
   uri: { type: String, required: false },
   url: { type: String, required: false }
-}).index({ id: 1, guild: 1 }, { unique: true })
+})
 
 PlaylistSchema.set("toJSON", {
   transform: (document, returnedObject) => {

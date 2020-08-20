@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme: Theme) =>
       height: "fit-content",
       paddingLeft: 8,
       paddingRight: 8,
-      width:"100%",
+      width: "100%"
     }
   })
 )
@@ -79,6 +79,8 @@ function MusicCollectionArea(props: MusicCollectionAreaProps) {
 
   const { playlists } = useSelector((state: RootState) => state.playlists)
   const { tracks } = useSelector((state: RootState) => state.tracks)
+  const { user } = useSelector((state: RootState) => state.user)
+  const guildID = user?.guildID || ""
 
   const [recentItems, setRecentItems] = React.useState<MusicItem[]>([])
   const [favouriteItems, setFavouriteItems] = React.useState<MusicItem[]>([])
@@ -88,14 +90,20 @@ function MusicCollectionArea(props: MusicCollectionAreaProps) {
     newItems.push(...playlists)
     newItems.push(...tracks)
 
-    newItems.sort((a: MusicItem, b: MusicItem) => {
-      return new Date(b.lastTouchedAt).getTime() - new Date(a.lastTouchedAt).getTime()
+    const guildItems = newItems.filter(item => item.lastTouchedAt.find(value => value.guild === guildID && value.date))
+    guildItems.sort((a: MusicItem, b: MusicItem) => {
+      return (
+        new Date(b.lastTouchedAt.find(value => value.guild === guildID)?.date || 0).getTime() -
+        new Date(a.lastTouchedAt.find(value => value.guild === guildID)?.date || 0).getTime()
+      )
     })
 
-    const last20Items = newItems.slice(0, 20)
+    const last20Items = guildItems.slice(0, 20)
     setRecentItems(last20Items)
 
-    const favItems = newItems.filter(item => item.favourite)
+    const favItems = newItems.filter(item => {
+      return item.favourite.find(value => value.guild === guildID && value.favourite === true)
+    })
 
     favItems.sort((a: any, b: any) => {
       const aIdentifier = a.title ? a.title : a.name
@@ -105,7 +113,7 @@ function MusicCollectionArea(props: MusicCollectionAreaProps) {
     })
 
     setFavouriteItems(favItems)
-  }, [playlists, tracks])
+  }, [guildID, playlists, tracks])
 
   return (
     <div className={classes.root}>

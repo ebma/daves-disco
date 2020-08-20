@@ -99,13 +99,14 @@ function PlaylistHeader(props: PlaylistHeaderProps) {
 }
 
 interface MusicItemListProps {
+  guildID: GuildID
   items: MusicItem[]
   onTrackSelect: (track: TrackModel) => void
   onPlaylistSelect: (playlist: PlaylistModel) => void
 }
 
 const MusicItemList = React.memo(function MusicItemList(props: MusicItemListProps) {
-  const { items, onPlaylistSelect, onTrackSelect } = props
+  const { items, guildID, onPlaylistSelect, onTrackSelect } = props
   const classes = useStyles()
 
   const collectionItems = React.useMemo(
@@ -115,21 +116,21 @@ const MusicItemList = React.memo(function MusicItemList(props: MusicItemListProp
           return (
             <div key={item._id}>
               {index > 0 && <Divider variant="inset" component="li" />}
-              <TrackItem track={item} onClick={() => onTrackSelect(item)} showFavourite />
+              <TrackItem guildID={guildID} track={item} onClick={() => onTrackSelect(item)} showFavourite />
             </div>
           )
         } else if (isPlaylist(item)) {
           return (
             <div key={item._id}>
               {index > 0 && <Divider variant="inset" component="li" />}
-              <PlaylistItem onClick={() => onPlaylistSelect(item)} playlist={item} showFavourite />
+              <PlaylistItem guildID={guildID} onClick={() => onPlaylistSelect(item)} playlist={item} showFavourite />
             </div>
           )
         } else {
           throw Error(`Unknown item ${JSON.stringify(item)}`)
         }
       }),
-    [items, onPlaylistSelect, onTrackSelect]
+    [items, guildID, onPlaylistSelect, onTrackSelect]
   )
 
   return <List className={classes.root}>{collectionItems}</List>
@@ -144,6 +145,7 @@ function CollectionList(props: Props) {
 
   const dispatch: AppDispatch = useDispatch()
   const { playlists } = useSelector((state: RootState) => state.playlists)
+  const { user } = useSelector((state: RootState) => state.user)
   const [selectedPlaylistID, setSelectedPlaylistID] = React.useState<string | undefined>(undefined)
   const { showNotification } = React.useContext(NotificationsContext)
 
@@ -184,6 +186,7 @@ function CollectionList(props: Props) {
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
       {PlaylistHeaderMemo}
       <MusicItemList
+        guildID={user?.guildID || ""}
         items={selectedPlaylist ? selectedPlaylist.tracks : collection}
         onTrackSelect={onTrackSelect}
         onPlaylistSelect={onPlaylistSelect}

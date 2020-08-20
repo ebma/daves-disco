@@ -77,7 +77,7 @@ export const subscribePlaylists = (): AppThunk<UnsubscribeFn> => (dispatch, getS
   const { user } = getState().user
   if (user) {
     const unsubscribePlaylistsChange = dispatch(
-      subscribeToMessages(user.guildID, Messages.PlaylistsChange, () => dispatch(fetchPlaylists()))
+      subscribeToMessages(Messages.PlaylistsChange, () => dispatch(fetchPlaylists()))
     )
 
     return () => unsubscribePlaylistsChange
