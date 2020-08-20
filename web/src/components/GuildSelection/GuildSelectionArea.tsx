@@ -1,4 +1,5 @@
 import Box from "@material-ui/core/Box"
+import Button from "@material-ui/core/Button"
 import MenuItem from "@material-ui/core/MenuItem"
 import Paper from "@material-ui/core/Paper"
 import { makeStyles } from "@material-ui/core/styles"
@@ -8,15 +9,22 @@ import React from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "../../app/rootReducer"
 import { AppDispatch } from "../../app/store"
-import { fetchGuilds, Guild } from "../../redux/guildsSlice"
-import { initAuthenticationAction } from "../../redux/socketSlice"
+import { trackError } from "../../context/notifications"
+import { useTokenStorage } from "../../hooks/tokenStorage"
+import { Guild } from "../../redux/guildsSlice"
+import { disconnectSocketAction, initAuthenticationAction } from "../../redux/socketSlice"
 import { setUser, User } from "../../redux/userSlice"
 import loginService from "../../services/login"
-import { useTokenStorage, Token } from "../../hooks/tokenStorage"
 
 const useStyles = makeStyles(theme => ({
+  button: {
+    alignSelf: "center",
+    marginTop: 24
+  },
   container: {
-    padding: 16
+    padding: 16,
+    display: "flex",
+    flexDirection: "column"
   },
   info: {
     paddingTop: 16
@@ -59,6 +67,7 @@ function SelectBox(props: { guilds: Guild[]; user?: User }) {
       setSelectedGuild(value)
       if (selectedGuildID !== value) {
         setSelectedMember("")
+        dispatch(disconnectSocketAction())
       }
     } else if (name === "userID") {
       setSelectedMember(value)
@@ -142,11 +151,7 @@ function GuildSelectionArea(props: Props) {
   const { guilds } = useSelector((state: RootState) => state.guilds)
   const { user } = useSelector((state: RootState) => state.user)
 
-  const [authenticationError, setAuthenticationError] = React.useState<string | null>(null)
   const [authenticationPending, setAuthenticationPending] = React.useState<boolean>(false)
-  const [token, setToken] = React.useState<Token | null>(
-    tokenStorage.getTokenForUser(user?.guildID ?? "", user?.id ?? "")
-  )
 
   const initLogin = React.useCallback(
     (user: User) => {
@@ -155,41 +160,54 @@ function GuildSelectionArea(props: Props) {
         .login({ guildID: user.guildID, userID: user.id })
         .then(jwt => {
           const token = { user: user.id, guild: user.guildID, jwt }
-          setToken(token)
           tokenStorage.saveToken(token)
-          dispatch(initAuthenticationAction(jwt))
+          dispatch(initAuthenticationAction(token.jwt))
         })
-        .catch(setAuthenticationError)
+        .catch(trackError)
         .finally(() => setAuthenticationPending(false))
     },
     [dispatch, tokenStorage]
   )
 
-  React.useEffect(() => {
-    const interval = setInterval(() => {
-      dispatch(fetchGuilds())
-    }, 20000)
-    dispatch(fetchGuilds())
-    return () => clearInterval(interval)
-  }, [dispatch])
+  const ActionButton = React.useMemo(() => {
+    const onButtonClick = () => {
+      if (!user) return
 
-  React.useEffect(() => {
-    if (authError === "jwt-expired" && user) {
-      initLogin(user)
+      if (authError === "jwt-expired") {
+        initLogin(user)
+      } else if (connectionState === "connected") {
+        const token = tokenStorage.getTokenForUser(user.guildID, user.id)
+        if (token) {
+          dispatch(initAuthenticationAction(token.jwt))
+        } else {
+          initLogin(user)
+        }
+      }
     }
-  }, [authError, initLogin, user])
 
-  React.useEffect(() => {
-    if (!token && user) {
-      initLogin(user)
-    }
-  }, [initLogin, token, user])
+    const token = user ? tokenStorage.getTokenForUser(user.guildID, user.id) : null
 
-  React.useEffect(() => {
-    if (connectionState === "disconnected" && user && token) {
-      dispatch(initAuthenticationAction(token.jwt))
-    }
-  }, [connectionState, dispatch, user, token])
+    const text =
+      connectionState === "authenticated"
+        ? "Connected"
+        : authError === "jwt-expired"
+        ? "Reauthenticate"
+        : token
+        ? "Login"
+        : "Authenticate"
+
+    return (
+      <Button
+        className={classes.button}
+        color="secondary"
+        disabled={!user || connectionState === "authenticated" || authenticationPending}
+        onClick={onButtonClick}
+        variant="contained"
+      >
+        {text}
+      </Button>
+    )
+  }, [authError, authenticationPending, classes.button, connectionState, dispatch, initLogin, tokenStorage, user])
 
   return (
     <Paper>
@@ -204,11 +222,13 @@ function GuildSelectionArea(props: Props) {
           <Typography align="center">No guilds online...</Typography>
         )}
 
+        {ActionButton}
+
         <Typography className={classes.info} color="textSecondary" align="center">
-          {authenticationError
-            ? String(authenticationError)
-            : authenticationPending
+          {authenticationPending
             ? "Authentication is pending. Check for a received message on your discord account."
+            : authError === "jwt-expired"
+            ? "Your login token expired. Please authenticate again."
             : undefined}
         </Typography>
       </form>

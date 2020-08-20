@@ -1,5 +1,3 @@
-import React from "react"
-
 export interface Token {
   jwt: string
   guild: GuildID
@@ -17,17 +15,16 @@ function getTokensFromStorage() {
 }
 
 export function useTokenStorage() {
-  const [tokens, setTokens] = React.useState<Token[]>(getTokensFromStorage)
-
   function getTokenForUser(guild: GuildID, user: UserID) {
+    const tokens = getTokensFromStorage()
     const tokenForUser = tokens.find(token => token.guild === guild && token.user === user)
     return tokenForUser || null
   }
 
   function saveToken(token: Token) {
-    let tokensWithoutUser = tokens.filter(t => t.guild !== token.guild && t.user !== token.user)
+    const tokens = getTokensFromStorage()
+    let tokensWithoutUser = tokens.filter(t => t.guild !== token.guild || t.user !== token.user)
     tokensWithoutUser.push(token)
-    setTokens(tokensWithoutUser)
     localStorage.setItem("auth-tokens", JSON.stringify(tokensWithoutUser))
   }
 

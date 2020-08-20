@@ -8,7 +8,8 @@ import {
   sendMessageAction,
   subscribeToMessagesAction,
   unsubscribeFromMessagesAction,
-  setAuthError
+  setAuthError,
+  disconnectSocketAction
 } from "../socketSlice"
 
 const path = process.env.BOT_SERVER_PATH ? process.env.BOT_SERVER_PATH : "http://localhost:1234"
@@ -24,11 +25,16 @@ interface SocketListener {
   listener: (...args: any[]) => void
 }
 
-const socketMiddleware: Middleware<{}, RootState> = store => {
+function createSocket() {
   const socket = io.connect(path, {
     forceNew: true,
     reconnectionAttempts: 10
   })
+  return socket
+}
+
+const socketMiddleware: Middleware<{}, RootState> = store => {
+  const socket = createSocket()
 
   let listeners: SocketListener[] = []
   let messageID = 1
@@ -39,28 +45,28 @@ const socketMiddleware: Middleware<{}, RootState> = store => {
   socket.on("reconnect", () => store.dispatch(setConnectionState("connected")))
   socket.on("reconnect_failed", () => store.dispatch(setConnectionState("disconnected")))
   socket.on("connect", () => store.dispatch(setConnectionState("connected")))
+  socket.on("authenticated", () => {
+    store.dispatch(setConnectionState("authenticated"))
+    store.dispatch(setAuthError(null))
+  })
+  socket.on("unauthorized", (error: Error) => {
+    try {
+      const message = error.message
+      if (message.includes("jwt expired")) {
+        store.dispatch(setAuthError("jwt-expired"))
+      }
+    } catch (error) {
+      store.dispatch(setError(`unauthorized: ${JSON.stringify(error.data)}`))
+    }
+  })
 
   return next => action => {
     if (initAuthenticationAction.match(action)) {
       const { token } = action.payload
-
-      socket
-        .emit("authenticate", { token })
-        .on("authenticated", () => {
-          store.dispatch(setConnectionState("authenticated"))
-        })
-        .on("unauthorized", (msg: any) => {
-          try {
-            const message = msg.data.message as String
-            if (message.includes("jwt expired")) {
-              store.dispatch(setAuthError("jwt-expired"))
-              store.dispatch(setError("Your Login Token expired. Please login again."))
-            }
-          } catch (error) {
-            store.dispatch(setError(`unauthorized: ${JSON.stringify(msg.data)}`))
-          }
-        })
-        .on("error", (error: any) => store.dispatch(setError(error)))
+      socket.emit("authenticate", { token })
+    } else if (disconnectSocketAction.match(action)) {
+      socket.disconnect()
+      socket.connect() // automatically reconnect
     } else if (sendMessageAction.match(action)) {
       const { successCallback, errorCallback, messageType, ...args } = action.payload
 

@@ -84,7 +84,7 @@ export const subscribeTracks = (): AppThunk<UnsubscribeFn> => (dispatch, getStat
 export const playTrack = (track: Track): AppThunk<Promise<void>> => async (dispatch, getState) => {
   const { user } = getState().user
   if (user) {
-    return dispatch(sendMessage(Messages.PlayTrack, user.guildID, user.id, track)).catch(error => {
+    return dispatch(sendMessage(Messages.PlayTrack, track)).catch(error => {
       dispatch(setError(error))
       throw error
     })

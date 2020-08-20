@@ -150,7 +150,7 @@ export const subscribePlayerState = (): AppThunk<UnsubscribeFn> => (dispatch, ge
 export const skipTracks = (amount: number): AppThunk<Promise<void>> => async (dispatch, getState) => {
   const { user } = getState().user
   if (user) {
-    return dispatch(sendMessage(Messages.Skip, user.guildID, amount)).catch(error => {
+    return dispatch(sendMessage(Messages.Skip, amount)).catch(error => {
       dispatch(setError(error))
     })
   } else {
@@ -161,7 +161,7 @@ export const skipTracks = (amount: number): AppThunk<Promise<void>> => async (di
 export const pausePlayer = (): AppThunk<Promise<void>> => async (dispatch, getState) => {
   const { user } = getState().user
   if (user) {
-    return dispatch(sendMessage(Messages.Pause, user.guildID)).catch(error => {
+    return dispatch(sendMessage(Messages.Pause)).catch(error => {
       dispatch(setError(error))
     })
   } else {
@@ -172,7 +172,7 @@ export const pausePlayer = (): AppThunk<Promise<void>> => async (dispatch, getSt
 export const resumePlayer = (): AppThunk<Promise<void>> => async (dispatch, getState) => {
   const { user } = getState().user
   if (user) {
-    return dispatch(sendMessage(Messages.Resume, user.guildID)).catch(error => {
+    return dispatch(sendMessage(Messages.Resume)).catch(error => {
       dispatch(setError(error))
     })
   } else {
@@ -183,7 +183,7 @@ export const resumePlayer = (): AppThunk<Promise<void>> => async (dispatch, getS
 export const skipPreviousTracks = (amount: number): AppThunk<Promise<void>> => async (dispatch, getState) => {
   const { user } = getState().user
   if (user) {
-    return dispatch(sendMessage(Messages.SkipPrevious, user.guildID, amount)).catch(error => {
+    return dispatch(sendMessage(Messages.SkipPrevious, amount)).catch(error => {
       dispatch(setError(error))
     })
   } else {
@@ -194,7 +194,7 @@ export const skipPreviousTracks = (amount: number): AppThunk<Promise<void>> => a
 export const setPlayerVolume = (volume: number): AppThunk<Promise<void>> => async (dispatch, getState) => {
   const { user } = getState().user
   if (user) {
-    return dispatch(sendMessage(Messages.Volume, user.guildID, volume)).catch(error => {
+    return dispatch(sendMessage(Messages.Volume, volume)).catch(error => {
       dispatch(setError(error))
     })
   } else {
@@ -205,7 +205,7 @@ export const setPlayerVolume = (volume: number): AppThunk<Promise<void>> => asyn
 export const stopPlayer = (): AppThunk<Promise<void>> => async (dispatch, getState) => {
   const { user } = getState().user
   if (user) {
-    return dispatch(sendMessage(Messages.Stop, user.guildID)).catch(error => {
+    return dispatch(sendMessage(Messages.Stop)).catch(error => {
       dispatch(setError(error))
     })
   } else {
@@ -216,7 +216,7 @@ export const stopPlayer = (): AppThunk<Promise<void>> => async (dispatch, getSta
 export const shuffleTracks = (): AppThunk<Promise<void>> => async (dispatch, getState) => {
   const { user } = getState().user
   if (user) {
-    return dispatch(sendMessage(Messages.Shuffle, user.guildID)).catch(error => {
+    return dispatch(sendMessage(Messages.Shuffle)).catch(error => {
       dispatch(setError(error))
     })
   } else {
@@ -226,7 +226,7 @@ export const shuffleTracks = (): AppThunk<Promise<void>> => async (dispatch, get
 export const clearTracks = (): AppThunk<Promise<void>> => async (dispatch, getState) => {
   const { user } = getState().user
   if (user) {
-    return dispatch(sendMessage(Messages.Clear, user.guildID)).catch(error => {
+    return dispatch(sendMessage(Messages.Clear)).catch(error => {
       dispatch(setError(error))
     })
   } else {
@@ -237,7 +237,7 @@ export const clearTracks = (): AppThunk<Promise<void>> => async (dispatch, getSt
 export const playSearchTerm = (searchTerm: string): AppThunk<Promise<void>> => async (dispatch, getState) => {
   const { user } = getState().user
   if (user) {
-    return dispatch(sendMessage(Messages.Play, user.guildID, user.id, searchTerm)).catch(error => {
+    return dispatch(sendMessage(Messages.Play, searchTerm)).catch(error => {
       dispatch(setError(error))
     })
   } else {
@@ -248,7 +248,7 @@ export const playSearchTerm = (searchTerm: string): AppThunk<Promise<void>> => a
 export const playRadio = (radio: Radio): AppThunk<Promise<void>> => async (dispatch, getState) => {
   const { user } = getState().user
   if (user) {
-    return dispatch(sendMessage(Messages.PlayRadio, user.guildID, user.id, radio)).catch(error => {
+    return dispatch(sendMessage(Messages.PlayRadio, radio)).catch(error => {
       dispatch(setError(error))
     })
   } else {
@@ -259,7 +259,7 @@ export const playRadio = (radio: Radio): AppThunk<Promise<void>> => async (dispa
 export const updateLoopState = (loopState: LoopState): AppThunk<Promise<void>> => async (dispatch, getState) => {
   const { user } = getState().user
   if (user) {
-    return dispatch(sendMessage(Messages.Loop, user.guildID, loopState)).catch(error => {
+    return dispatch(sendMessage(Messages.Loop, loopState)).catch(error => {
       dispatch(setError(error))
     })
   } else {

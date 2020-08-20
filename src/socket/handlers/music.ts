@@ -94,55 +94,55 @@ const createPlayPlaylistRequestHandler = (musicPlayerManager: MusicPlayerManager
   }
 
 const createPauseRequestHandler = (musicPlayerManager: MusicPlayerManager) =>
-  function handlePauseRequest(guildID: string) {
+  function handlePauseRequest(guildID: GuildID, userID: UserID) {
     const player = requirePlayer(guildID, musicPlayerManager)
     return player.pauseStream()
   }
 
 const createResumeRequestHandler = (musicPlayerManager: MusicPlayerManager) =>
-  function handleResumeRequest(guildID: string) {
+  function handleResumeRequest(guildID: GuildID, userID: UserID) {
     const player = requirePlayer(guildID, musicPlayerManager)
     return player.resumeStream()
   }
 
 const createLoopRequestHandler = (musicPlayerManager: MusicPlayerManager) =>
-  function handleLoopRequest(guildID: string, loopState: LoopState) {
+  function handleLoopRequest(guildID: GuildID, userID: UserID, loopState: LoopState) {
     const player = requirePlayer(guildID, musicPlayerManager)
     return player.setLoopState(loopState)
   }
 
 const createSkipRequestHandler = (musicPlayerManager: MusicPlayerManager) =>
-  function handleSkipRequest(guildID: string, amount: number) {
+  function handleSkipRequest(guildID: GuildID, userID: UserID, amount: number) {
     const player = requirePlayer(guildID, musicPlayerManager)
     return player.skipForward(amount, true)
   }
 
 const createSkipPreviousRequestHandler = (musicPlayerManager: MusicPlayerManager) =>
-  function handleSkipPreviousRequest(guildID: string, amount: number) {
+  function handleSkipPreviousRequest(guildID: GuildID, userID: UserID, amount: number) {
     const player = requirePlayer(guildID, musicPlayerManager)
     return player.skipPrevious(amount)
   }
 
 const createStopRequestHandler = (musicPlayerManager: MusicPlayerManager) =>
-  function handleStopRequest(guildID: string) {
+  function handleStopRequest(guildID: GuildID, userID: UserID) {
     const player = requirePlayer(guildID, musicPlayerManager)
     return player.destroy()
   }
 
 const createClearRequestHandler = (musicPlayerManager: MusicPlayerManager) =>
-  function handleClearRequest(guildID: string) {
+  function handleClearRequest(guildID: GuildID, userID: UserID) {
     const player = requirePlayer(guildID, musicPlayerManager)
     return player.clear()
   }
 
 const createShuffleRequestHandler = (musicPlayerManager: MusicPlayerManager) =>
-  function handleShuffleRequest(guildID: string) {
+  function handleShuffleRequest(guildID: GuildID, userID: UserID) {
     const player = requirePlayer(guildID, musicPlayerManager)
     return player.shuffle()
   }
 
 const createVolumeRequestHandler = (musicPlayerManager: MusicPlayerManager) =>
-  function handleVolumeRequest(guildID: string, volume: number) {
+  function handleVolumeRequest(guildID: GuildID, userID: UserID, volume: number) {
     const player = requirePlayer(guildID, musicPlayerManager)
     return player.setVolume(volume)
   }

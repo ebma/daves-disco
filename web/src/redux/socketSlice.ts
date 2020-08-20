@@ -43,6 +43,8 @@ export const initAuthenticationAction = createAction("socket/init", function pre
   }
 })
 
+export const disconnectSocketAction = createAction("socket/disconnect")
+
 export const sendMessage = <Message extends keyof IPC.MessageType>(
   messageType: Message,
   ...args: IPC.MessageArgs<Message>

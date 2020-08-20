@@ -28,21 +28,21 @@ declare namespace IPC {
   export type MessageType = typeof Messages
 
   export interface MessageSignatures {
-    [Messages.Clear]: (guildID: GuildID) => void
-    [Messages.Play]: (guildID: GuildID, userID: UserID, query: string) => void
-    [Messages.Pause]: (guildID: GuildID) => void
-    [Messages.Resume]: (guildID: GuildID) => void
-    [Messages.Loop]: (guildID: GuildID, loopState: LoopState) => void
-    [Messages.Skip]: (guildID: GuildID, amount: number) => void
-    [Messages.Stop]: (guildID: GuildID) => void
-    [Messages.SkipPrevious]: (guildID: GuildID, amount: number) => void
-    [Messages.Shuffle]: (guildID: GuildID) => void
-    [Messages.Volume]: (guildID: GuildID, newVolume: number) => void
+    [Messages.Clear]: () => void
+    [Messages.Play]: (query: string) => void
+    [Messages.Pause]: () => void
+    [Messages.Resume]: () => void
+    [Messages.Loop]: (loopState: LoopState) => void
+    [Messages.Skip]: (amount: number) => void
+    [Messages.Stop]: () => void
+    [Messages.SkipPrevious]: (amount: number) => void
+    [Messages.Shuffle]: () => void
+    [Messages.Volume]: (newVolume: number) => void
 
-    [Messages.PlayTrack]: (guildID: GuildID, userID: UserID, track: Track) => void
-    [Messages.PlayRadio]: (guildID: GuildID, userID: UserID, radio: Radio) => void
-    [Messages.PlayPlaylist]: (guildID: GuildID, userID: UserID, playlist: Playlist) => void
-    [Messages.PlaySound]: (guildID: GuildID, userID: UserID, source: string, volume: number) => void
+    [Messages.PlayTrack]: (track: Track) => void
+    [Messages.PlayRadio]: (radio: Radio) => void
+    [Messages.PlayPlaylist]: (playlist: Playlist) => void
+    [Messages.PlaySound]: (source: string, volume: number) => void
 
     [Messages.CurrentTrack]: () => Track
     [Messages.CurrentQueue]: () => Track[]

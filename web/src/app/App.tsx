@@ -2,18 +2,19 @@ import { ThemeProvider } from "@material-ui/core/styles"
 import React from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { HashRouter as Router } from "react-router-dom"
+import { fetchGuilds } from "../redux/guildsSlice"
 import Dashboard from "../components/Dashboard/Dashboard"
 import NotificationContainer from "../components/Notification/NotificationContainer"
 import { ColorSchemeContext, ColorSchemeProvider } from "../context/colorScheme"
 import { NotificationsProvider } from "../context/notifications"
 import { fetchPlayerState, subscribePlayerState } from "../redux/playerSlice"
 import { fetchPlaylists, subscribePlaylists } from "../redux/playlistsSlice"
+import { fetchItems, subscribeItems } from "../redux/soundboardsSlice"
 import { fetchTracks, subscribeTracks } from "../redux/tracksSlice"
 import createTheme from "../theme"
 import ErrorHandler from "./ErrorHandler"
 import { RootState } from "./rootReducer"
 import { AppDispatch } from "./store"
-import { fetchItems, subscribeItems } from "../redux/soundboardsSlice"
 
 function MaterialThemeProvider(props: { children: React.ReactNode }) {
   const { colorScheme } = React.useContext(ColorSchemeContext)
@@ -57,6 +58,14 @@ function App() {
       unsubscribeTracks()
       unsubscribeItems()
     }
+  }, [dispatch])
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      dispatch(fetchGuilds())
+    }, 20000)
+    dispatch(fetchGuilds())
+    return () => clearInterval(interval)
   }, [dispatch])
 
   return (

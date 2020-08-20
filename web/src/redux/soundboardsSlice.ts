@@ -72,7 +72,7 @@ export const subscribeItems = (): AppThunk<UnsubscribeFn> => (dispatch, getState
 export const playSound = (source: string, volume: number): AppThunk<Promise<void>> => async (dispatch, getState) => {
   const { user } = getState().user
   if (user) {
-    return dispatch(sendMessage(Messages.PlaySound, user.guildID, user.id, source, volume)).catch(error => {
+    return dispatch(sendMessage(Messages.PlaySound, source, volume)).catch(error => {
       dispatch(setError(error))
       throw error
     })

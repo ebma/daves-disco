@@ -2,6 +2,8 @@ import { Socket } from "socket.io"
 import { trackError } from "../utils/trackError"
 
 type MessageHandler<Message extends keyof IPC.MessageType> = (
+  guildID: GuildID,
+  userID: UserID,
   ...args: any
 ) => IPC.MessageReturnType<Message> | Promise<IPC.MessageReturnType<Message>>
 
@@ -13,9 +15,13 @@ let messageHandlers: MessageHandlers = {}
 
 class MessageSender {
   socket: Socket
+  guildID: GuildID
+  userID: UserID
 
-  constructor(socket: Socket) {
+  constructor(socket: Socket, guildID: GuildID, userID: UserID) {
     this.socket = socket
+    this.guildID = guildID
+    this.userID = userID
   }
 
   async handleMessageEvent<Message extends keyof IPC.MessageType>(
@@ -27,7 +33,7 @@ class MessageSender {
 
     if (messageHandler) {
       try {
-        const result = await messageHandler(...payload)
+        const result = await messageHandler(this.guildID, this.userID, ...payload)
         this.sendSuccessResponse(messageType, messageID, result)
       } catch (error) {
         trackError(error, "handleMessageEvent")
@@ -77,8 +83,8 @@ class MessageSender {
 export class WebSocketHandler {
   senders: MessageSender[] = []
 
-  addSocket(socket: Socket) {
-    const messageSender = new MessageSender(socket)
+  addSocket(socket: Socket, guildID: GuildID, userID: UserID) {
+    const messageSender = new MessageSender(socket, guildID, userID)
     this.senders.push(messageSender)
 
     const messageHandler = (message: IPC.SocketMessage) =>
@@ -89,12 +95,7 @@ export class WebSocketHandler {
     socket.on("disconnect", () => (this.senders = this.senders.filter(sender => sender !== messageSender)))
   }
 
-  addHandler<Message extends keyof IPC.MessageType>(
-    messageType: Message,
-    handler: (
-      ...args: IPC.MessageArgs<Message>
-    ) => IPC.MessageReturnType<Message> | Promise<IPC.MessageReturnType<Message>>
-  ) {
+  addHandler<Message extends keyof IPC.MessageType>(messageType: Message, handler: MessageHandler<Message>) {
     messageHandlers = {
       ...messageHandlers,
       [messageType]: handler

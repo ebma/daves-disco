@@ -93,7 +93,7 @@ export const subscribePlaylists = (): AppThunk<UnsubscribeFn> => (dispatch, getS
 export const playPlaylist = (playlist: Playlist): AppThunk<Promise<void>> => async (dispatch, getState) => {
   const { user } = getState().user
   if (user) {
-    return dispatch(sendMessage(Messages.PlayPlaylist, user.guildID, user.id, playlist)).catch(error => {
+    return dispatch(sendMessage(Messages.PlayPlaylist, playlist)).catch(error => {
       dispatch(setError(error))
       throw error
     })

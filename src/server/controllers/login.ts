@@ -30,7 +30,7 @@ async function initLogin(user: GuildMember) {
         : `Too many login attempts. Try again ${moment(getTimeout(user).until).fromNow()}!`
     throw Error(errorMessage)
   } else {
-    addTimeout(user, "default")
+    // addTimeout(user, "default")
   }
 
   const dmChannel = await user.createDM()
@@ -45,7 +45,7 @@ async function initLogin(user: GuildMember) {
   if (answer.toLowerCase().startsWith("y")) {
     try {
       const token = jwt.sign({ guildID: user.guild.id, userID: user.id }, config.SECRET, {
-        expiresIn: "30d"
+        expiresIn: "60d"
       })
       dmChannel.send("Login successful. You can head back to your browser.")
       return token
