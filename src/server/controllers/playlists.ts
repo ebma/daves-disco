@@ -26,10 +26,11 @@ router.get("/", async (request: PlaylistRequest, response) => {
 
   const query = Playlist.find()
   if (guild) {
-    query.where("guild").equals(guild)
+    query.where("lastTouchedAt.guild").equals(guild)
   }
   if (favourite) {
-    query.where("favourite").equals(favourite)
+    query.where("favourite.guild").equals(guild)
+    query.where("favourite.favourite").equals(favourite)
   }
 
   query.populate("tracks")

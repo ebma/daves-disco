@@ -27,12 +27,13 @@ router.get("/", async (request: TrackRequest, response) => {
   const favourite = Boolean(request.query.favourite) || undefined
 
   const query = Track.find()
-  // if (favourite) {
-  //   query.where(`favourite.${guild}`).equals(favourite)
-  // }
-  // if (guild) {
-  //   query.where(`lastTouchedAt.${guild}`).exists()
-  // }
+  if (guild) {
+    query.where("lastTouchedAt.guild").equals(guild)
+  }
+  if (favourite) {
+    query.where("favourite.guild").equals(guild)
+    query.where("favourite.favourite").equals(favourite)
+  }
   if (limit) {
     query.limit(Number(limit))
   }
