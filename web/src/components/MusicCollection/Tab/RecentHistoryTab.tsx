@@ -12,7 +12,7 @@ function RecentHistoryTab(props: RecentHistoryTabProps) {
   const NoItemsInfo = React.useMemo(
     () => (
       <Typography color="textPrimary" style={{ padding: 16 }}>
-        No favourites yet...
+        No recent items yet...
       </Typography>
     ),
     []
