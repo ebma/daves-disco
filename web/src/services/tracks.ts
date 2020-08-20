@@ -23,6 +23,24 @@ const getFavourites = async (guildID?: GuildID): Promise<TrackModel[]> => {
   return response.data
 }
 
+const getList = async (trackIDs: Array<string>): Promise<TrackModel[]> => {
+  const response = await axios.get(baseUrl + "/list", {
+    params: {
+      tracks: trackIDs
+    }
+  })
+  return response.data
+}
+
+const getTrack = async (trackID: string): Promise<TrackModel> => {
+  const response = await axios.get(baseUrl + "/track", {
+    params: {
+      track: trackID
+    }
+  })
+  return response.data
+}
+
 const update = async (id: string, newObject: TrackModel) => {
   const request = axios.put(`${baseUrl}/${id}`, newObject)
   const response = await request
@@ -32,6 +50,8 @@ const update = async (id: string, newObject: TrackModel) => {
 const trackService = {
   getAll,
   getFavourites,
+  getTrack,
+  getList,
   update
 }
 

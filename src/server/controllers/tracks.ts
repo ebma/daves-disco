@@ -4,6 +4,7 @@ import Track from "../../db/models/track"
 import config from "../../utils/config"
 import WebSocketHandler from "../../socket/WebSocketHandler"
 import { Messages } from "../../shared/ipc"
+import { mongo } from "mongoose"
 
 const router = Router()
 
@@ -43,6 +44,40 @@ router.get("/", async (request: TrackRequest, response) => {
   const tracks = await query.exec()
 
   response.json(tracks.map(track => track.toJSON()))
+})
+
+router.get("/track/", async (request: TrackRequest, response) => {
+  const trackID: string = request.query.track || undefined
+  if (!trackID) {
+    response.status(400).end()
+  } else {
+    const query = Track.find({ _id: new mongo.ObjectId(trackID) })
+
+    const tracks = await query.exec()
+    if (tracks.length > 0) {
+      response.json(tracks[0].toJSON())
+    } else {
+      response.status(404).end()
+    }
+  }
+})
+
+router.get("/list/", async (request: TrackRequest, response) => {
+  const trackIDs: Array<string> = request.query.tracks || undefined
+  if (!trackIDs) {
+    response.json([])
+  } else {
+    const objectIDs = trackIDs.map(trackID => new mongo.ObjectId(trackID))
+    const query = Track.find({ _id: { $in: objectIDs } })
+
+    const tracks = await query.exec()
+
+    const orderedTracks = trackIDs
+      .map(trackID => tracks.find(track => track._id.toString() === trackID))
+      .filter(track => track)
+
+    response.json(orderedTracks.map(track => track.toJSON()))
+  }
 })
 
 router.post("/", async (request: TrackRequest, response) => {

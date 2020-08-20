@@ -4,6 +4,7 @@ import { AppThunk } from "../app/store"
 import { sendMessage, subscribeToMessages } from "./socketSlice"
 import playerService from "../services/player"
 import { setTracks } from "./tracksSlice"
+import trackService from "../services/tracks"
 
 export interface PlayerState {
   available: boolean
@@ -102,15 +103,17 @@ export const {
 
 export default playerSlice.reducer
 
-const getPopulatedTrack = (trackID: TrackModelID): AppThunk<TrackModel | undefined> => (dispatch, getState) => {
-  const { tracks } = getState().tracks
-  return tracks.find(track => track._id === trackID)
+const getPopulatedTrack = (trackID: TrackModelID): AppThunk<Promise<TrackModel> | undefined> => async (
+  dispatch,
+  getState
+) => {
+  const track = await trackService.getTrack(trackID)
+  return track
 }
 
-const getPopulatedTracks = (trackIDs: string[]): AppThunk<TrackModel[]> => (dispatch, getState) => {
-  const { tracks } = getState().tracks
-
-  return trackIDs.map(trackID => tracks.find(track => track._id === trackID)).filter(track => track) as TrackModel[]
+const getPopulatedTracks = (trackIDs: string[]): AppThunk<Promise<TrackModel[]>> => async (dispatch, getState) => {
+  const tracks = await trackService.getList(trackIDs)
+  return tracks
 }
 
 export const fetchPlayerState = (): AppThunk => async (dispatch, getState) => {
@@ -118,9 +121,9 @@ export const fetchPlayerState = (): AppThunk => async (dispatch, getState) => {
   if (user) {
     const playerState = await playerService.getPlayer(user.guildID)
     const currentTrack = playerState.currentTrackID
-      ? dispatch(getPopulatedTrack(playerState.currentTrackID)) ?? null
+      ? (await dispatch(getPopulatedTrack(playerState.currentTrackID))) ?? null
       : null
-    const queue = dispatch(getPopulatedTracks(playerState.queueIDs))
+    const queue = await dispatch(getPopulatedTracks(playerState.queueIDs))
 
     return dispatch(setPlayerState({ ...playerState, currentTrack, queue }))
   }
@@ -271,8 +274,9 @@ export const updateQueue = (newQueueIDs: TrackModelID[]): AppThunk<Promise<void>
   const { user } = getState().user
   if (user) {
     const updatedQueueIDs = await playerService.updateQueue(user.guildID, newQueueIDs)
+    const updatedQueue = await dispatch(getPopulatedTracks(updatedQueueIDs))
     dispatch(setQueueIDs(updatedQueueIDs))
-    dispatch(setQueue(dispatch(getPopulatedTracks(updatedQueueIDs))))
+    dispatch(setQueue(updatedQueue))
   } else {
     dispatch(setError("User not available"))
   }
