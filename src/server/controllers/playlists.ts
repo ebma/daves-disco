@@ -1,10 +1,9 @@
-import { Request, Router } from "express"
-import jwt from "jsonwebtoken"
-import Playlist from "../../db/models/playlist"
-import config from "../../utils/config"
-import WebSocketHandler from "../../socket/WebSocketHandler"
-import { Messages } from "../../shared/ipc"
+import { Request, Router, Response, NextFunction } from "express"
 import { repopulatePlaylistTracks } from "../../db/models/helper"
+import Playlist from "../../db/models/playlist"
+import { Messages } from "../../shared/ipc"
+import WebSocketHandler from "../../socket/WebSocketHandler"
+import middleware from "../middleware"
 
 const router = Router()
 
@@ -12,15 +11,7 @@ interface PlaylistRequest extends Request {
   body: PlaylistModel
 }
 
-const getTokenFrom = (request: Request) => {
-  const authorization = request.get("authorization")
-  if (authorization && authorization.toLowerCase().startsWith("bearer ")) {
-    return authorization.substring(7)
-  }
-  return null
-}
-
-router.get("/", async (request: PlaylistRequest, response) => {
+router.get("/", middleware.authHandler, async (request: PlaylistRequest, response: Response) => {
   const guild = request.query.guild || null
   const favourite = Boolean(request.query.favourite) || undefined
 
@@ -40,14 +31,8 @@ router.get("/", async (request: PlaylistRequest, response) => {
   response.json(playlists)
 })
 
-router.post("/", async (request: PlaylistRequest, response) => {
+router.post("/", middleware.authHandler, async (request: PlaylistRequest, response: Response) => {
   const body = request.body
-  const token = getTokenFrom(request)
-
-  const decodedToken = jwt.verify(token, config.SECRET) as DecodedToken
-  if (!token || !decodedToken.userID) {
-    return response.status(401).json({ error: "token missing or invalid" })
-  }
 
   const playlist = new Playlist({
     id: body.id,
@@ -66,7 +51,7 @@ router.post("/", async (request: PlaylistRequest, response) => {
   response.json(savedPlaylist.toJSON())
 })
 
-router.get("/:id", async (request: PlaylistRequest, response) => {
+router.get("/:id", middleware.authHandler, async (request: PlaylistRequest, response: Response) => {
   const useCached = request.params.cached
   const playlistModel = await Playlist.findById(request.params.id).populate("tracks")
   if (playlistModel) {
@@ -88,7 +73,7 @@ router.get("/:id", async (request: PlaylistRequest, response) => {
   }
 })
 
-router.put("/:id", (request: PlaylistRequest, response, next) => {
+router.put("/:id", middleware.authHandler, (request: PlaylistRequest, response: Response, next: NextFunction) => {
   const body = request.body
 
   const playlist = {
@@ -113,7 +98,7 @@ router.put("/:id", (request: PlaylistRequest, response, next) => {
     .catch(error => next(error))
 })
 
-router.delete("/:id", async (request: PlaylistRequest, response) => {
+router.delete("/:id", middleware.authHandler, async (request: PlaylistRequest, response: Response) => {
   await Playlist.findByIdAndRemove(request.params.id)
   response.status(204).end()
 })

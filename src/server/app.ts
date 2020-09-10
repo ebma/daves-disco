@@ -26,9 +26,9 @@ export function initApp(client: MyClient) {
   app.use(express.json())
   app.use(middleware.requestLogger)
 
+  app.use("/api/login", loginRouter)
   app.use("/api/playlists", playlistsRouter)
   app.use("/api/tracks", tracksRouter)
-  app.use("/api/login", loginRouter)
   app.use("/api/guilds", guildRouter)
   app.use("/api/player", playerRouter)
   app.use("/api/youtube", youtubeRouter)

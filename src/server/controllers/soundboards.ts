@@ -1,9 +1,8 @@
-import { Request, Router } from "express"
-import jwt from "jsonwebtoken"
-import config from "../../utils/config"
+import { Request, Router, Response, NextFunction } from "express"
 import WebSocketHandler from "../../socket/WebSocketHandler"
 import { Messages } from "../../shared/ipc"
 import SoundboardItem from "../../db/models/soundboard-item"
+import middleware from "../middleware"
 
 const router = Router()
 
@@ -11,15 +10,7 @@ interface SoundboardRequest extends Request {
   body: SoundboardItemModel
 }
 
-const getTokenFrom = (request: Request) => {
-  const authorization = request.get("Authorization")
-  if (authorization && authorization.toLowerCase().startsWith("bearer ")) {
-    return authorization.substring(7)
-  }
-  return null
-}
-
-router.get("/", async (request: SoundboardRequest, response) => {
+router.get("/", middleware.authHandler, async (request: SoundboardRequest, response: Response) => {
   const guild = request.query.guild || undefined
 
   const query = SoundboardItem.find()
@@ -32,14 +23,8 @@ router.get("/", async (request: SoundboardRequest, response) => {
   response.json(soundboardItems.map(item => item.toJSON()))
 })
 
-router.post("/", async (request: SoundboardRequest, response) => {
+router.post("/", middleware.authHandler, async (request: SoundboardRequest, response: Response) => {
   const body = request.body
-  const token = getTokenFrom(request)
-
-  const decodedToken = jwt.verify(token, config.SECRET) as DecodedToken
-  if (!token || !decodedToken.userID) {
-    return response.status(401).json({ error: "token missing or invalid" })
-  }
 
   const item = new SoundboardItem({
     guild: body.guild,
@@ -55,7 +40,7 @@ router.post("/", async (request: SoundboardRequest, response) => {
   }
 })
 
-router.get("/:id", async (request: SoundboardRequest, response) => {
+router.get("/:id", middleware.authHandler, async (request: SoundboardRequest, response: Response) => {
   const soundboardItem = await SoundboardItem.findById(request.params.id)
   if (soundboardItem) {
     response.json(soundboardItem.toJSON())
@@ -64,7 +49,7 @@ router.get("/:id", async (request: SoundboardRequest, response) => {
   }
 })
 
-router.put("/:id", (request: SoundboardRequest, response, next) => {
+router.put("/:id", middleware.authHandler, (request: SoundboardRequest, response: Response, next: NextFunction) => {
   const body = request.body
 
   const item = {
@@ -81,7 +66,7 @@ router.put("/:id", (request: SoundboardRequest, response, next) => {
     .catch(error => next(error))
 })
 
-router.delete("/:id", async (request: SoundboardRequest, response) => {
+router.delete("/:id", middleware.authHandler, async (request: SoundboardRequest, response: Response) => {
   await SoundboardItem.findByIdAndRemove(request.params.id)
   response.status(204).end()
 })

@@ -1,4 +1,4 @@
-import { Request, Router } from "express"
+import { Router } from "express"
 import { MyClient } from "../../bot/MyClient"
 
 export function createGuildRouter(client: MyClient) {

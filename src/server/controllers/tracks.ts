@@ -1,10 +1,9 @@
-import { Request, Router } from "express"
-import jwt from "jsonwebtoken"
-import Track from "../../db/models/track"
-import config from "../../utils/config"
-import WebSocketHandler from "../../socket/WebSocketHandler"
-import { Messages } from "../../shared/ipc"
+import { Request, Router, Response, NextFunction } from "express"
 import { mongo } from "mongoose"
+import Track from "../../db/models/track"
+import { Messages } from "../../shared/ipc"
+import WebSocketHandler from "../../socket/WebSocketHandler"
+import middleware from "../middleware"
 
 const router = Router()
 
@@ -12,15 +11,7 @@ interface TrackRequest extends Request {
   body: TrackModel
 }
 
-const getTokenFrom = (request: Request) => {
-  const authorization = request.get("authorization")
-  if (authorization && authorization.toLowerCase().startsWith("bearer ")) {
-    return authorization.substring(7)
-  }
-  return null
-}
-
-router.get("/", async (request: TrackRequest, response) => {
+router.get("/", middleware.authHandler, async (request: TrackRequest, response: Response) => {
   const guild = request.query.guild || undefined
   const limit = request.query.limit || undefined
   const order = request.query.order || undefined
@@ -47,7 +38,7 @@ router.get("/", async (request: TrackRequest, response) => {
   response.json(tracks.map(track => track.toJSON()))
 })
 
-router.get("/track/", async (request: TrackRequest, response) => {
+router.get("/track/", middleware.authHandler, async (request: TrackRequest, response: Response) => {
   const trackID: string = request.query.track || undefined
   if (!trackID) {
     response.status(400).end()
@@ -63,7 +54,7 @@ router.get("/track/", async (request: TrackRequest, response) => {
   }
 })
 
-router.get("/list/", async (request: TrackRequest, response) => {
+router.get("/list/", middleware.authHandler, async (request: TrackRequest, response: Response) => {
   const trackIDs: Array<string> = request.query.tracks || undefined
   if (!trackIDs) {
     response.json([])
@@ -81,14 +72,8 @@ router.get("/list/", async (request: TrackRequest, response) => {
   }
 })
 
-router.post("/", async (request: TrackRequest, response) => {
+router.post("/", middleware.authHandler, async (request: TrackRequest, response: Response) => {
   const body = request.body
-  const token = getTokenFrom(request)
-
-  const decodedToken = jwt.verify(token, config.SECRET) as DecodedToken
-  if (!token || !decodedToken.userID) {
-    return response.status(401).json({ error: "token missing or invalid" })
-  }
 
   const track = new Track({
     artists: body.artists,
@@ -105,7 +90,7 @@ router.post("/", async (request: TrackRequest, response) => {
   response.json(savedTrack.toJSON())
 })
 
-router.get("/:id", async (request: TrackRequest, response) => {
+router.get("/:id", middleware.authHandler, async (request: TrackRequest, response: Response) => {
   const track = await Track.findById(request.params.id)
   if (track) {
     response.json(track.toJSON())
@@ -114,7 +99,7 @@ router.get("/:id", async (request: TrackRequest, response) => {
   }
 })
 
-router.put("/:id", (request: TrackRequest, response, next) => {
+router.put("/:id", middleware.authHandler, (request: TrackRequest, response: Response, next: NextFunction) => {
   const body = request.body
 
   const track = {
@@ -136,7 +121,7 @@ router.put("/:id", (request: TrackRequest, response, next) => {
     .catch(error => next(error))
 })
 
-router.delete("/:id", async (request: TrackRequest, response) => {
+router.delete("/:id", middleware.authHandler, async (request: TrackRequest, response: Response) => {
   await Track.findByIdAndRemove(request.params.id)
   response.status(204).end()
 })

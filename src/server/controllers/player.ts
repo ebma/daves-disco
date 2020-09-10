@@ -1,6 +1,7 @@
-import { Request, Router } from "express"
+import { Request, Router, Response } from "express"
 import { MyClient } from "../../bot/MyClient"
 import MusicPlayerManager from "../../libs/MusicPlayerManager"
+import middleware from "../middleware"
 
 interface QueuePostRequest extends Request {
   body: { queue: TrackModelID[] }
@@ -9,7 +10,7 @@ interface QueuePostRequest extends Request {
 export function createPlayerRouter(client: MyClient) {
   const playerRouter = Router()
 
-  playerRouter.get("/:id", async (request, response) => {
+  playerRouter.get("/:id", middleware.authHandler, async (request: Request, response: Response) => {
     const guild = client.guilds.cache.find(guild => guild.id == request.params.id)
     if (guild) {
       const player = MusicPlayerManager.getPlayerFor(guild.id)
@@ -41,7 +42,7 @@ export function createPlayerRouter(client: MyClient) {
     }
   })
 
-  playerRouter.post("/queue/:id", (request: QueuePostRequest, response) => {
+  playerRouter.post("/queue/:id", middleware.authHandler, (request: QueuePostRequest, response: Response) => {
     const guild = client.guilds.cache.find(guild => guild.id == request.params.id)
 
     if (guild) {

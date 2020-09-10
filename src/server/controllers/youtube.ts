@@ -1,9 +1,10 @@
-import { Router } from "express"
+import { Request, Response, Router } from "express"
 import Youtube from "../../libs/Youtube"
+import middleware from "../middleware"
 
 const youtubeRouter = Router()
 
-youtubeRouter.get("/", async (request, response) => {
+youtubeRouter.get("/", middleware.authHandler, async (request: Request, response: Response) => {
   const query = request.query.q
   if (!query) {
     response.status(400).json({ error: "Query parameter missing" })
