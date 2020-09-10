@@ -57,7 +57,7 @@ export const fetchPlaylistByID = (playlistID: string, useCached?: boolean): AppT
     dispatch(setPlaylist(playlist))
     return playlist
   } catch (error) {
-    dispatch(setError(error))
+    dispatch(setError(error.message))
     return Promise.reject(error)
   }
 }
@@ -68,7 +68,7 @@ export const fetchPlaylists = (): AppThunk<Promise<PlaylistModel[]>> => async (d
     dispatch(setPlaylists(playlists))
     return playlists
   } catch (error) {
-    dispatch(setError(error))
+    dispatch(setError(error.message))
     return Promise.reject(error)
   }
 }

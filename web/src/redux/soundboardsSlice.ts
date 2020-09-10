@@ -51,7 +51,7 @@ export const fetchItems = (): AppThunk<Promise<SoundboardItemModel[]>> => async 
     dispatch(setItems(items))
     return items
   } catch (error) {
-    dispatch(setError(error))
+    dispatch(setError(error.message))
     return Promise.reject(error)
   }
 }
@@ -73,7 +73,7 @@ export const playSound = (source: string, volume: number): AppThunk<Promise<void
   const { user } = getState().user
   if (user) {
     return dispatch(sendMessage(Messages.PlaySound, source, volume)).catch(error => {
-      dispatch(setError(error))
+      dispatch(setError(error.message))
       throw error
     })
   } else {

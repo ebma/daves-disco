@@ -11,6 +11,7 @@ import {
   setAuthError,
   disconnectSocketAction
 } from "../socketSlice"
+import { setAuthToken } from "../../services/axios-client"
 
 const path = process.env.BOT_SERVER_PATH ? process.env.BOT_SERVER_PATH : "http://localhost:1234"
 
@@ -64,6 +65,7 @@ const socketMiddleware: Middleware<{}, RootState> = store => {
     if (initAuthenticationAction.match(action)) {
       const { token } = action.payload
       socket.emit("authenticate", { token })
+      setAuthToken(token)
     } else if (disconnectSocketAction.match(action)) {
       socket.disconnect()
       socket.connect() // automatically reconnect

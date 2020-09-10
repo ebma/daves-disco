@@ -42,10 +42,12 @@ function App() {
   }, [connectionState, dispatch])
 
   React.useEffect(() => {
+    if (connectionState !== "authenticated") return
+
     const fetchRecents = async () => {
-      dispatch(fetchPlaylists())
-      dispatch(fetchTracks())
-      dispatch(fetchItems())
+      dispatch(fetchPlaylists()).catch(console.error)
+      dispatch(fetchTracks()).catch(console.error)
+      dispatch(fetchItems()).catch(console.error)
     }
 
     const unsubscribePlaylists = dispatch(subscribePlaylists())
@@ -59,7 +61,7 @@ function App() {
       unsubscribeTracks()
       unsubscribeItems()
     }
-  }, [dispatch, user])
+  }, [connectionState, dispatch, user])
 
   React.useEffect(() => {
     const interval = setInterval(() => {

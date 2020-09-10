@@ -52,7 +52,7 @@ export const fetchTracks = (): AppThunk<Promise<TrackModel[]>> => async (dispatc
     dispatch(setTracks(dedup))
     return tracks
   } catch (error) {
-    dispatch(setError(error))
+    dispatch(setError(error.message))
     return Promise.reject(error)
   }
 }
@@ -64,7 +64,7 @@ export const addTracks = (newTracks: TrackModel[]): AppThunk<void> => async (dis
     const dedup = _.uniqBy(combinedTracks, trackModel => trackModel._id)
     dispatch(setTracks(dedup))
   } catch (error) {
-    dispatch(setError(error))
+    dispatch(setError(error.message))
   }
 }
 
@@ -83,7 +83,7 @@ export const playTrack = (track: Track): AppThunk<Promise<void>> => async (dispa
   const { user } = getState().user
   if (user) {
     return dispatch(sendMessage(Messages.PlayTrack, track)).catch(error => {
-      dispatch(setError(error))
+      dispatch(setError(error.message))
       throw error
     })
   } else {
