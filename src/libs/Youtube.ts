@@ -3,11 +3,10 @@ import config from "../utils/config"
 import { Readable } from "stream"
 import search from "youtube-search"
 import ytdl from "ytdl-core"
-import ytdlDiscord from "ytdl-core-discord"
-import ytdlDiscordWrapper from "discord-ytdl-core"
 import ytpl from "ytpl"
 import { trackError } from "../utils/trackError"
 import { SpotifyHelper } from "../shared/utils/helpers"
+import { downloadVideoWithProxy } from "./video-download"
 
 export class Youtube {
   private key: string
@@ -158,14 +157,12 @@ export class Youtube {
       } else if (!this.isYoutubeVideo(track.url)) {
         reject(`Track has an invalid url '${track.url}'`)
       } else {
-        const stream = ytdlDiscordWrapper(track.url, {
-          // encoderArgs: ["-af", "bass=g=5,dynaudnorm=f=200"],
-          filter: "audioonly",
-          highWaterMark: 1 << 25,
-          opusEncoded: true,
-          seek
-        })
-        resolve(stream)
+        const stream = downloadVideoWithProxy(track.url)
+        if (stream) {
+          resolve(stream)
+        } else {
+          reject(`Could not create stream for track ${track.url}`)
+        }
       }
     })
   }
