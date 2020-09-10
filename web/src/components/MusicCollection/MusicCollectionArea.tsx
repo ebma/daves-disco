@@ -92,10 +92,9 @@ function MusicCollectionArea(props: MusicCollectionAreaProps) {
 
     const guildItems = newItems.filter(item => item.lastTouchedAt.find(value => value.guild === guildID && value.date))
     guildItems.sort((a: MusicItem, b: MusicItem) => {
-      return (
-        new Date(b.lastTouchedAt.find(value => value.guild === guildID)?.date || 0).getTime() -
-        new Date(a.lastTouchedAt.find(value => value.guild === guildID)?.date || 0).getTime()
-      )
+      const dateA = new Date(Number(a.lastTouchedAt.find(value => value.guild === guildID)?.date || 0))
+      const dateB = new Date(Number(b.lastTouchedAt.find(value => value.guild === guildID)?.date || 0))
+      return dateB.getTime() - dateA.getTime()
     })
 
     const last20Items = guildItems.slice(0, 20)
