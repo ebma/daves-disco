@@ -12,7 +12,7 @@ const proxies: string[] = [
 
 function selectRandomProxy(blacklist: string[] = []) {
   const filteredProxies = proxies.filter(proxy => !blacklist.includes(proxy))
-  const proxyAddress = filteredProxies[_.random(filteredProxies.length)]
+  const proxyAddress = filteredProxies[_.random(filteredProxies.length - 1)]
 
   return proxyAddress
 }

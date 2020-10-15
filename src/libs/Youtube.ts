@@ -21,9 +21,7 @@ export class Youtube {
   }
 
   describesYoutubePlaylist(term: string): boolean {
-    const regex = /(^|\s)(https?:\/\/)?(www\.)?youtube\.com\/(playlist)\?(list)=([^\s&]+)[^\s]*($|\s)/g
-    const valid = term.match(regex)
-    return valid ? true : false
+    return ytpl.validateID(term)
   }
 
   isYoutubePlaylist(playlist: Playlist): playlist is YoutubePlaylist {
@@ -120,33 +118,32 @@ export class Youtube {
   }
 
   createPlaylistFrom(urlOrPlaylistID: string): Promise<Playlist> {
-    return new Promise<Playlist>((resolve, reject) => {
-      ytpl(urlOrPlaylistID, (error, result) => {
-        if (error) {
-          trackError(error, "Youtube.createPlaylistFrom")
-          reject(error)
-        } else {
-          let tracks: Track[] = []
-          _.forEach(result.items, item => {
-            const newTrack: Track = {
-              thumbnail: { medium: item.thumbnail },
-              source: "youtube",
-              title: item.title,
-              url: item.url
-            }
-            tracks.push(newTrack)
-          })
-
-          resolve({
-            id: result.id,
-            name: result.title,
-            owner: result.author.name,
+    return new Promise<Playlist>(async (resolve, reject) => {
+      try {
+        const playlist = await ytpl(urlOrPlaylistID)
+        let tracks: Track[] = []
+        _.forEach(playlist.items, item => {
+          const newTrack: Track = {
+            thumbnail: { medium: item.thumbnail },
             source: "youtube",
-            tracks,
-            url: result.url
-          })
-        }
-      })
+            title: item.title,
+            url: item.url
+          }
+          tracks.push(newTrack)
+        })
+
+        resolve({
+          id: playlist.id,
+          name: playlist.title,
+          owner: playlist.author.name,
+          source: "youtube",
+          tracks,
+          url: playlist.url
+        })
+      } catch (error) {
+        trackError(error, "Youtube.createPlaylistFrom")
+        reject(error)
+      }
     })
   }
 
