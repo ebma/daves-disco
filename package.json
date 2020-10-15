@@ -64,9 +64,9 @@
     "spotify-web-api-node": "^4.0.0",
     "winston": "^3.2.1",
     "youtube-search": "^1.1.4",
-    "ytdl-core": "^2.1.2",
-    "ytdl-core-discord": "^1.2.0",
-    "ytpl": "^0.1.19"
+    "ytdl-core": "^3.4.0",
+    "ytdl-core-discord": "^1.2.3",
+    "ytpl": "^1.0.1"
   },
   "devDependencies": {
     "@types/async": "^3.0.1",
