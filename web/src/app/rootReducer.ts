@@ -1,13 +1,15 @@
 import { combineReducers } from "@reduxjs/toolkit"
-import playlistsReducer, { PlaylistsState } from "../redux/playlistsSlice"
+import cacheReducer, { CacheState } from "../redux/cacheSlice"
 import guildsReducer, { GuildsState } from "../redux/guildsSlice"
-import socketReducer, { SocketState } from "../redux/socketSlice"
 import playerReducer, { PlayerState } from "../redux/playerSlice"
-import userReducer, { UserState } from "../redux/userSlice"
+import playlistsReducer, { PlaylistsState } from "../redux/playlistsSlice"
+import socketReducer, { SocketState } from "../redux/socketSlice"
 import soundboardReducer, { SoundboardState } from "../redux/soundboardsSlice"
 import tracksReducer, { TracksState } from "../redux/tracksSlice"
+import userReducer, { UserState } from "../redux/userSlice"
 
 const rootReducer = combineReducers({
+  cache: cacheReducer,
   guilds: guildsReducer,
   playlists: playlistsReducer,
   player: playerReducer,
@@ -18,6 +20,7 @@ const rootReducer = combineReducers({
 })
 
 export type RootState = {
+  cache: CacheState
   guilds: GuildsState
   playlists: PlaylistsState
   player: PlayerState
@@ -26,4 +29,5 @@ export type RootState = {
   user: UserState
   tracks: TracksState
 }
+
 export default rootReducer

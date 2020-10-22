@@ -77,42 +77,7 @@ function MusicCollectionArea(props: MusicCollectionAreaProps) {
     setTab(newValue)
   }, [])
 
-  const { playlists } = useSelector((state: RootState) => state.playlists)
-  const { tracks } = useSelector((state: RootState) => state.tracks)
-  const { user } = useSelector((state: RootState) => state.user)
-  const guildID = user?.guildID || ""
-
-  const [recentItems, setRecentItems] = React.useState<MusicItem[]>([])
-  const [favouriteItems, setFavouriteItems] = React.useState<MusicItem[]>([])
-
-  React.useEffect(() => {
-    const newItems = []
-    newItems.push(...playlists)
-    newItems.push(...tracks)
-
-    const guildItems = newItems.filter(item => item.lastTouchedAt.find(value => value.guild === guildID && value.date))
-    guildItems.sort((a: MusicItem, b: MusicItem) => {
-      const dateA = new Date(Number(a.lastTouchedAt.find(value => value.guild === guildID)?.date || 0))
-      const dateB = new Date(Number(b.lastTouchedAt.find(value => value.guild === guildID)?.date || 0))
-      return dateB.getTime() - dateA.getTime()
-    })
-
-    const last20Items = guildItems.slice(0, 20)
-    setRecentItems(last20Items)
-
-    const favItems = newItems.filter(item => {
-      return item.favourite.find(value => value.guild === guildID && value.favourite === true)
-    })
-
-    favItems.sort((a: any, b: any) => {
-      const aIdentifier = a.title ? a.title : a.name
-      const bIdentifier = b.title ? b.title : b.name
-
-      return aIdentifier.localeCompare(bIdentifier)
-    })
-
-    setFavouriteItems(favItems)
-  }, [guildID, playlists, tracks])
+  const { favItems, recentItems } = useSelector((state: RootState) => state.cache)
 
   return (
     <div className={classes.root}>
@@ -137,7 +102,7 @@ function MusicCollectionArea(props: MusicCollectionAreaProps) {
         <RecentHistoryTab items={recentItems} />
       </TabPanel>
       <TabPanel value={tab} index={1}>
-        <FavouritesTab items={favouriteItems} />
+        <FavouritesTab items={favItems} />
       </TabPanel>
     </div>
   )
