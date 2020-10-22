@@ -149,7 +149,7 @@ function CollectionList(props: Props) {
   const [selectedPlaylistID, setSelectedPlaylistID] = React.useState<string | undefined>(undefined)
   const { showNotification } = React.useContext(NotificationsContext)
 
-  const selectedPlaylist = playlists.find(playlist => playlist.id === selectedPlaylistID)
+  const selectedPlaylist = playlists.find(playlist => playlist._id === selectedPlaylistID)
 
   const onTrackSelect = React.useCallback(
     (track: TrackModel) => {
@@ -159,7 +159,7 @@ function CollectionList(props: Props) {
   )
 
   const onPlaylistSelect = React.useCallback((playlist: PlaylistModel) => {
-    setSelectedPlaylistID(playlist.id)
+    setSelectedPlaylistID(playlist._id)
   }, [])
 
   const PlaylistHeaderMemo = React.useMemo(() => {

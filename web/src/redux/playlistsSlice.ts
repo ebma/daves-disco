@@ -23,7 +23,7 @@ const playlistsSlice = createSlice({
     },
     setPlaylist(state, action: PayloadAction<PlaylistModel>) {
       const newPlaylist = action.payload
-      const foundIndex = state.playlists.findIndex(playlist => playlist.id === newPlaylist.id)
+      const foundIndex = state.playlists.findIndex(playlist => playlist._id === newPlaylist._id)
       if (foundIndex !== -1) {
         state.playlists[foundIndex] = newPlaylist
       } else {
@@ -34,7 +34,7 @@ const playlistsSlice = createSlice({
       const newPlaylists = action.payload
       // carry over previously fetched tracks
       for (const existingPlaylist of state.playlists) {
-        const newPlaylist = newPlaylists.find(p => (p.id = existingPlaylist.id))
+        const newPlaylist = newPlaylists.find(p => p.id === existingPlaylist.id)
         if (newPlaylist) {
           newPlaylist.tracks = existingPlaylist.tracks
         }

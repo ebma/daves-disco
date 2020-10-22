@@ -67,7 +67,6 @@ const cacheSlice = createSlice({
     builder.addCase(setTracks, (state, action) => {
       const tracks = action.payload
       const items = _.uniqBy(state.favItems.concat(state.recentItems).concat(tracks), "_id")
-      console.log("in setTracks", items)
       if (state.guildID) {
         const [recentItems, favItems] = deriveItems(items, state.guildID)
         state.favItems = favItems
@@ -77,7 +76,6 @@ const cacheSlice = createSlice({
     builder.addCase(setPlaylists, (state, action) => {
       const playlists = action.payload
       const items = _.uniqBy(state.favItems.concat(state.recentItems).concat(playlists), "_id")
-      console.log("in setTracks", items)
       if (state.guildID) {
         const [recentItems, favItems] = deriveItems(items, state.guildID)
         state.favItems = favItems
@@ -87,7 +85,6 @@ const cacheSlice = createSlice({
     builder.addCase(setUser, (state, action) => {
       const user = action.payload
       state.guildID = user.guildID
-      console.log("in setUser", state.guildID)
     })
   }
 })
