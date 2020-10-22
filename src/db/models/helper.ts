@@ -45,7 +45,7 @@ export async function repopulatePlaylistTracks(playlistModel: PlaylistModel): Pr
 }
 
 export async function createAndSavePlaylistModel(playlist: Playlist, guildID: GuildID) {
-  let playlistModel = await Playlist.findOne({ name: playlist.name })
+  let playlistModel = await Playlist.findOne({ id: playlist.id })
   if (!playlistModel) {
     playlistModel = new Playlist({ ...playlist })
   }
@@ -71,14 +71,10 @@ export async function createAndSavePlaylistModel(playlist: Playlist, guildID: Gu
     playlistModel.tracks.push(trackModel)
   }
 
-  return Playlist.findOneAndUpdate({ name: playlist.name }, playlistModel, { upsert: true }).then(updatedPlaylist => {
+  playlistModel.save().then(() => {
     WebSocketHandler.sendMessage(Messages.PlaylistsChange)
-    if (updatedPlaylist) {
-      return updatedPlaylist.populate("tracks")
-    } else {
-      return playlistModel
-    }
   })
+  return playlistModel
 }
 
 export async function createAndSaveTrackModel(track: Track, guildID: GuildID) {
