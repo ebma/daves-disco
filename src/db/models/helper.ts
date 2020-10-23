@@ -21,7 +21,9 @@ export async function createTrackModels(tracks: Track[]) {
   return trackModels
 }
 
-export async function repopulatePlaylistTracks(playlistModel: PlaylistModel): Promise<TrackModel[]> {
+export async function repopulatePlaylistTracks(
+  playlistModel: PlaylistModel
+): Promise<{ name: string; tracks: TrackModel[] }> {
   const populatedPlaylist =
     playlistModel.source === "spotify"
       ? await Spotify.getSpotifyPlaylist(playlistModel.id)
@@ -41,7 +43,7 @@ export async function repopulatePlaylistTracks(playlistModel: PlaylistModel): Pr
     return array.findIndex(e => e.id === elem.id) == pos
   })
 
-  return populatedTrackModelsDedup
+  return { name: populatedPlaylist.name, tracks: populatedTrackModelsDedup }
 }
 
 export async function createAndSavePlaylistModel(playlist: Playlist, guildID: GuildID) {

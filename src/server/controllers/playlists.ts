@@ -56,15 +56,13 @@ router.get("/:id", middleware.authHandler, async (request: PlaylistRequest, resp
   const playlistModel = await Playlist.findById(request.params.id).populate("tracks")
   if (playlistModel) {
     if (!useCached) {
-      const latestTrackModels = await repopulatePlaylistTracks(playlistModel)
-      playlistModel.tracks = latestTrackModels
-
-      Playlist.findByIdAndUpdate(request.params.id, playlistModel, { new: true })
-        .populate("tracks")
-        .then(updatedPlaylist => {
-          response.json(updatedPlaylist.toJSON())
-          WebSocketHandler.sendMessage(Messages.PlaylistsChange)
-        })
+      const playlistObject = await repopulatePlaylistTracks(playlistModel)
+      playlistModel.tracks = playlistObject.tracks
+      playlistModel.name = playlistObject.name
+      playlistModel.save().then(() => {
+        response.json(playlistModel.toJSON())
+        WebSocketHandler.sendMessage(Messages.PlaylistsChange)
+      })
     } else {
       response.json(playlistModel.toJSON())
     }
