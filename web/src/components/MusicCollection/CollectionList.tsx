@@ -15,6 +15,7 @@ import { fetchPlaylistByID, playPlaylist } from "../../redux/playlistsSlice"
 import { playTrack } from "../../redux/tracksSlice"
 import PlaylistItem from "./Item/PlaylistItem"
 import { TrackItem } from "./Item/TrackItem"
+import { Typography } from "@material-ui/core"
 
 function isTrack(item: MusicItem): item is TrackModel {
   return (item as TrackModel).title !== undefined
@@ -46,6 +47,11 @@ const useStyles = makeStyles(theme => ({
       margin: 8,
       width: "70%"
     }
+  },
+  title: {
+    alignSelf: "center",
+    flexGrow: 1,
+    textAlign: "center"
   }
 }))
 
@@ -53,48 +59,56 @@ interface PlaylistHeaderProps {
   onBack?: () => void
   onEnqueueAll?: () => void
   onRefresh?: () => void
+  title?: string
 }
 
 function PlaylistHeader(props: PlaylistHeaderProps) {
-  const { onBack, onEnqueueAll, onRefresh } = props
+  const { onBack, onEnqueueAll, onRefresh, title } = props
   const classes = useStyles()
 
   return (
-    <Box className={classes.headerContainer}>
-      {onBack && (
-        <Button
-          className={classes.headerButton}
-          variant="contained"
-          color="secondary"
-          onClick={onBack}
-          startIcon={<ArrowBackIcon />}
-        >
-          Go Back
-        </Button>
-      )}
-      {onEnqueueAll && (
-        <Button
-          className={classes.headerButton}
-          color="secondary"
-          onClick={onEnqueueAll}
-          startIcon={<PlayIcon />}
-          variant="contained"
-        >
-          Enqueue All
-        </Button>
-      )}
-      {onRefresh && (
-        <Button
-          className={classes.headerButton}
-          color="secondary"
-          onClick={onRefresh}
-          startIcon={<RefreshIcon />}
-          variant="contained"
-        >
-          Refresh
-        </Button>
-      )}
-    </Box>
+    <>
+      <Box className={classes.headerContainer}>
+        {onBack && (
+          <Button
+            className={classes.headerButton}
+            variant="contained"
+            color="secondary"
+            onClick={onBack}
+            startIcon={<ArrowBackIcon />}
+          >
+            Go Back
+          </Button>
+        )}
+        {onEnqueueAll && (
+          <Button
+            className={classes.headerButton}
+            color="secondary"
+            onClick={onEnqueueAll}
+            startIcon={<PlayIcon />}
+            variant="contained"
+          >
+            Enqueue All
+          </Button>
+        )}
+        {onRefresh && (
+          <Button
+            className={classes.headerButton}
+            color="secondary"
+            onClick={onRefresh}
+            startIcon={<RefreshIcon />}
+            variant="contained"
+          >
+            Refresh
+          </Button>
+        )}
+        <Typography className={classes.title} variant="h5">
+          {title}
+        </Typography>
+      </Box>
+
+      <Divider variant="middle" />
+    </>
   )
 }
 
@@ -176,6 +190,7 @@ function CollectionList(props: Props) {
             showNotification("success", `Refreshed '${selectedPlaylist.name}'`)
           )
         }
+        title={selectedPlaylist.name}
       />
     ) : (
       undefined
