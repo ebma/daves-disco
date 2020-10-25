@@ -1,6 +1,7 @@
-import { Typography } from "@material-ui/core"
+import Button from "@material-ui/core/Button"
 import Divider from "@material-ui/core/Divider"
 import List from "@material-ui/core/List"
+import Typography from "@material-ui/core/Typography"
 import makeStyles from "@material-ui/styles/makeStyles"
 import _ from "lodash"
 import React from "react"
@@ -19,13 +20,41 @@ function reorder<T>(list: Array<T>, startIndex: number, endIndex: number) {
   return result
 }
 
+interface QueueListItemProps {
+  index: number
+  current: boolean
+  id: any
+  guildID: GuildID
+  old: boolean
+  onClick: () => void
+  onDeleteClick: () => void
+  track: TrackModel
+}
+
+function QueueListItem(props: QueueListItemProps) {
+  const { index } = props
+
+  return (
+    <>
+      {index > 0 ? <Divider variant="inset" component="li" /> : undefined}
+      <DraggableTrackItem showFavourite {...props} />
+    </>
+  )
+}
+
 const useStyles = makeStyles(theme => ({
   queueList: {
     padding: 16,
     paddingTop: 8,
     width: "100%",
     height: "100%",
-    overflow: "auto"
+    overflow: "auto",
+
+    display: "flex",
+    flexDirection: "column"
+  },
+  loadMoreButton: {
+    alignSelf: "center"
   }
 }))
 
@@ -39,10 +68,7 @@ function QueueList(props: Props) {
   const { user } = useSelector((state: RootState) => state.user)
 
   const [localQueue, setLocalQueue] = React.useState<TrackModel[]>(queue)
-
-  React.useEffect(() => {
-    setLocalQueue(queue)
-  }, [queue])
+  const [itemLimit, setItemLimit] = React.useState(20)
 
   const onDragStart = React.useCallback(() => {
     if (window.navigator.vibrate) {
@@ -68,13 +94,13 @@ function QueueList(props: Props) {
       ? localQueue.findIndex(track => _.isEqual(track, currentTrack))
       : localQueue.length
 
-    return localQueue.map((trackModel, index) => {
+    return localQueue.slice(0, itemLimit).map((trackModel, index) => {
       const onClick =
         index < indexOfCurrentSong
           ? () => dispatch(skipPreviousTracks(indexOfCurrentSong - index))
           : index > indexOfCurrentSong
           ? () => dispatch(skipTracks(index - indexOfCurrentSong))
-          : undefined
+          : () => undefined
 
       const onDeleteClick = () => {
         const copiedQueue = localQueue.slice(0).filter((_, i) => i !== index)
@@ -83,23 +109,20 @@ function QueueList(props: Props) {
       }
 
       return (
-        <div key={index}>
-          {index > 0 ? <Divider variant="inset" component="li" /> : undefined}
-          <DraggableTrackItem
-            current={index === indexOfCurrentSong}
-            id={trackModel._id}
-            guildID={user?.guildID || ""}
-            index={index}
-            old={index < indexOfCurrentSong}
-            onClick={onClick}
-            onDeleteClick={onDeleteClick}
-            showFavourite
-            track={trackModel}
-          />
-        </div>
+        <QueueListItem
+          current={index === indexOfCurrentSong}
+          id={trackModel._id}
+          key={index}
+          guildID={user?.guildID || ""}
+          index={index}
+          old={index < indexOfCurrentSong}
+          onClick={onClick}
+          onDeleteClick={onDeleteClick}
+          track={trackModel}
+        />
       )
     })
-  }, [currentTrack, dispatch, localQueue, user])
+  }, [currentTrack, dispatch, itemLimit, localQueue, user])
 
   const EmptyQueueItem = React.useMemo(
     () => (
@@ -117,6 +140,13 @@ function QueueList(props: Props) {
           <div ref={provided.innerRef} {...provided.droppableProps} className={classes.queueList}>
             <List>{queue.length > 0 ? QueueItems : EmptyQueueItem}</List>
             {provided.placeholder}
+            {queue.length > itemLimit ? (
+              <Button className={classes.loadMoreButton} onClick={() => setItemLimit(prev => prev + 20)}>
+                Load more
+              </Button>
+            ) : (
+              undefined
+            )}
           </div>
         )}
       </Droppable>
