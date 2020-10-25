@@ -28,7 +28,7 @@ class Spotify {
       const name = playlistData.body.name
 
       const total = playlistData.body.tracks.total
-      let items = playlistData.body.tracks.items
+      let items = playlistData.body.tracks.items.filter(item => item.track)
       while (items.length < total) {
         await this.checkAccessToken()
         const playlistTracksData = await this.spotifyWebAPI.getPlaylistTracks(playlistID, {
@@ -48,18 +48,20 @@ class Spotify {
           medium: playlistData.body.images.length >= 2 ? playlistData.body.images[1].url : undefined,
           large: playlistData.body.images.length >= 1 ? playlistData.body.images[0].url : undefined
         },
-        tracks: items.map(item => ({
-          artists: item.track.artists.map(x => x.name).join(", "),
-          id: item.track.id,
-          source: "spotify",
-          title: item.track.name,
-          thumbnail: {
-            small: item.track.album.images.length >= 3 ? item.track.album.images[2].url : undefined,
-            medium: item.track.album.images.length >= 2 ? item.track.album.images[1].url : undefined,
-            large: item.track.album.images.length >= 1 ? item.track.album.images[0].url : undefined
-          },
-          trackID: item.track.uri
-        })),
+        tracks: items.map(item => {
+          return {
+            artists: item.track.artists.map(x => x.name).join(", "),
+            id: item.track.id,
+            source: "spotify",
+            title: item.track.name,
+            thumbnail: {
+              small: item.track.album.images.length >= 3 ? item.track.album.images[2].url : undefined,
+              medium: item.track.album.images.length >= 2 ? item.track.album.images[1].url : undefined,
+              large: item.track.album.images.length >= 1 ? item.track.album.images[0].url : undefined
+            },
+            trackID: item.track.uri
+          }
+        }),
         uri: playlistData.body.uri
       }
     } catch (error) {
