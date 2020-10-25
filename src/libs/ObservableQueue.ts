@@ -24,6 +24,7 @@ class ObservableQueue<T extends object | string> {
     _.forEach(elements, element => {
       this.itemList.push(element)
     })
+    this.notifyElementObservers()
     this.notifyQueueObservers()
   }
 
