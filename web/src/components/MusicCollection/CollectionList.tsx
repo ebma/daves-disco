@@ -1,8 +1,8 @@
 import Box from "@material-ui/core/Box"
 import Button from "@material-ui/core/Button"
 import Divider from "@material-ui/core/Divider"
-import List from "@material-ui/core/List"
 import { makeStyles } from "@material-ui/core/styles"
+import Typography from "@material-ui/core/Typography"
 import ArrowBackIcon from "@material-ui/icons/ArrowBack"
 import RefreshIcon from "@material-ui/icons/Cached"
 import PlayIcon from "@material-ui/icons/PlayArrow"
@@ -13,24 +13,9 @@ import { AppDispatch } from "../../app/store"
 import { NotificationsContext } from "../../context/notifications"
 import { fetchPlaylistByID, playPlaylist } from "../../redux/playlistsSlice"
 import { playTrack } from "../../redux/tracksSlice"
-import PlaylistItem from "./Item/PlaylistItem"
-import { TrackItem } from "./Item/TrackItem"
-import { Typography } from "@material-ui/core"
-
-function isTrack(item: MusicItem): item is TrackModel {
-  return (item as TrackModel).title !== undefined
-}
-
-function isPlaylist(item: MusicItem): item is PlaylistModel {
-  return (item as PlaylistModel).name !== undefined
-}
+import MusicItemList from "./MusicItemList"
 
 const useStyles = makeStyles(theme => ({
-  root: {
-    padding: 16,
-    paddingTop: 8,
-    overflow: "auto"
-  },
   headerContainer: {
     justifyContent: "left",
     display: "flex",
@@ -111,44 +96,6 @@ function PlaylistHeader(props: PlaylistHeaderProps) {
     </>
   )
 }
-
-interface MusicItemListProps {
-  guildID: GuildID
-  items: MusicItem[]
-  onTrackSelect: (track: TrackModel) => void
-  onPlaylistSelect: (playlist: PlaylistModel) => void
-}
-
-const MusicItemList = React.memo(function MusicItemList(props: MusicItemListProps) {
-  const { items, guildID, onPlaylistSelect, onTrackSelect } = props
-  const classes = useStyles()
-
-  const collectionItems = React.useMemo(
-    () =>
-      items.map((item, index) => {
-        if (isTrack(item)) {
-          return (
-            <div key={item._id}>
-              {index > 0 && <Divider variant="inset" component="li" />}
-              <TrackItem guildID={guildID} track={item} onClick={() => onTrackSelect(item)} showFavourite />
-            </div>
-          )
-        } else if (isPlaylist(item)) {
-          return (
-            <div key={item._id}>
-              {index > 0 && <Divider variant="inset" component="li" />}
-              <PlaylistItem guildID={guildID} onClick={() => onPlaylistSelect(item)} playlist={item} showFavourite />
-            </div>
-          )
-        } else {
-          throw Error(`Unknown item ${JSON.stringify(item)}`)
-        }
-      }),
-    [items, guildID, onPlaylistSelect, onTrackSelect]
-  )
-
-  return <List className={classes.root}>{collectionItems}</List>
-})
 
 interface Props {
   collection: MusicItem[]
