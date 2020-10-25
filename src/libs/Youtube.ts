@@ -101,10 +101,10 @@ export class Youtube {
         const info = await this.getTrackInfo(url)
         if (info) {
           const track: Track = {
-            description: info.description,
-            url: info.video_url,
+            description: info.videoDetails.shortDescription,
+            url: info.videoDetails.video_url,
             source: "youtube",
-            title: info.title,
+            title: info.videoDetails.title,
             thumbnail: this.getThumbnailFromInfo(info)
           }
           resolve(track)
