@@ -3,12 +3,6 @@
 Dave is a Discord bot focused on music playback.
 The project consists of two different parts: a Node.js backend and a React-based web frontend.
 
-## Frontend application
-
-You can find the source code in the <a href="/web">web</a> sub-directory.
-
-### Technologies / Frameworks
-
 <p align="center">
     <p>
     <a href="https://nodejs.org/">
@@ -44,7 +38,21 @@ You can find the source code in the <a href="/web">web</a> sub-directory.
     </p> 
 </p>
 
-Global state is handled by `redux`. This project uses the <a href="https://redux-toolkit.js.org/">redux-toolkit</a> package to simplify the setup process.
+## Frontend application
+
+You can find the source code in the <a href="/web">web</a> sub-directory.
+
+### Technologies
+
+- `Material-UI` is used as component library.
+- Global state is handled by `redux`.
+- This project uses the <a href="https://redux-toolkit.js.org/">redux-toolkit</a> package to simplify the setup process.
+
+### Preview
+
+![Login](/docs/images/login.png "Login")
+![Dashboard](/docs/images/dashboard.png "Dashboard")
+![Collection](/docs/images/collection.png "Collection")
 
 ## Backend application
 
@@ -52,11 +60,10 @@ The node server runs the discord bot and offers a RESTful API for communication.
 
 ### Technologies
 
-The RESTful API is realised with the <a href="https://expressjs.com/">Express</a> framework.
+- The RESTful API is realised with the <a href="https://expressjs.com/">Express</a> framework.
+- <a href="https://github.com/discord-akairo/discord-akairo">discord-akairo</a> offers easier setup and some convenience methods regarding the discord bot programming.
 
-<a href="https://github.com/discord-akairo/discord-akairo">discord-akairo</a> offers easier setup and some convenience methods regarding the discord bot programming.
-
-## Communication between frontend / backend application
+## Communication between frontend & backend application
 
 The applications communicate on two different channels: a <a href="https://socket.io/">Socket.IO</a> connection and `http` requests.
 
