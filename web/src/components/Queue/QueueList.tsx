@@ -42,6 +42,21 @@ function QueueListItem(props: QueueListItemProps) {
   )
 }
 
+const useLoadMoreButtonStyles = makeStyles(theme => ({
+  loadMoreButton: {
+    alignSelf: "center"
+  }
+}))
+
+function LoadMoreButton(props: { onClick: () => void }) {
+  const classes = useLoadMoreButtonStyles()
+  return (
+    <Button className={classes.loadMoreButton} onClick={props.onClick}>
+      Show more
+    </Button>
+  )
+}
+
 const useStyles = makeStyles(theme => ({
   queueList: {
     padding: 16,
@@ -58,6 +73,12 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
+function getInitialQueueItemRange(indexOfCurrentSong: number) {
+  const lower = Math.floor(indexOfCurrentSong / 20) * 20
+  const upper = (Math.floor(indexOfCurrentSong / 20) + 1) * 20
+  return { lower, upper }
+}
+
 interface Props {}
 
 function QueueList(props: Props) {
@@ -68,11 +89,71 @@ function QueueList(props: Props) {
   const { user } = useSelector((state: RootState) => state.user)
 
   const [localQueue, setLocalQueue] = React.useState<TrackModel[]>(queue)
-  const [itemLimit, setItemLimit] = React.useState(20)
+  const [userInteractionWithLoadMore, setUserInteractionWithLoadMore] = React.useState(false)
+  const indexOfCurrentSong = React.useMemo(
+    () => (currentTrack ? localQueue.findIndex(track => _.isEqual(track, currentTrack)) : localQueue.length),
+    [currentTrack, localQueue]
+  )
+  const [queueItemRange, setQueueItemRange] = React.useState<{ upper: number; lower: number }>(
+    getInitialQueueItemRange(indexOfCurrentSong)
+  )
 
   React.useEffect(() => {
     setLocalQueue(queue)
   }, [queue])
+
+  React.useEffect(() => {
+    // don't change range if user modified it via buttons
+    if (userInteractionWithLoadMore) return
+
+    if (
+      indexOfCurrentSong > queueItemRange.upper ||
+      (indexOfCurrentSong < queueItemRange.lower && queueItemRange.lower > 0)
+    ) {
+      setQueueItemRange(getInitialQueueItemRange(indexOfCurrentSong))
+    }
+  }, [indexOfCurrentSong, userInteractionWithLoadMore, queueItemRange])
+
+  const QueueItems = React.useMemo(() => {
+    return localQueue.slice(queueItemRange.lower, queueItemRange.upper).map((trackModel, index) => {
+      const adjustedIndex = index + queueItemRange.lower
+      const onClick =
+        index < indexOfCurrentSong
+          ? () => dispatch(skipPreviousTracks(indexOfCurrentSong - index))
+          : index > indexOfCurrentSong
+          ? () => dispatch(skipTracks(index - indexOfCurrentSong))
+          : () => undefined
+
+      const onDeleteClick = () => {
+        const copiedQueue = localQueue.slice(0).filter((_, i) => i !== index)
+
+        dispatch(updateQueue(copiedQueue.map(track => track._id)))
+      }
+
+      return (
+        <QueueListItem
+          current={adjustedIndex === indexOfCurrentSong}
+          id={trackModel._id}
+          key={adjustedIndex}
+          guildID={user?.guildID || ""}
+          index={adjustedIndex}
+          old={adjustedIndex < indexOfCurrentSong}
+          onClick={onClick}
+          onDeleteClick={onDeleteClick}
+          track={trackModel}
+        />
+      )
+    })
+  }, [dispatch, indexOfCurrentSong, queueItemRange, localQueue, user])
+
+  const EmptyQueueItem = React.useMemo(
+    () => (
+      <Typography align="center" variant="h5">
+        -
+      </Typography>
+    ),
+    []
+  )
 
   const onDragStart = React.useCallback(() => {
     if (window.navigator.vibrate) {
@@ -93,63 +174,31 @@ function QueueList(props: Props) {
     [dispatch, localQueue]
   )
 
-  const QueueItems = React.useMemo(() => {
-    const indexOfCurrentSong = currentTrack
-      ? localQueue.findIndex(track => _.isEqual(track, currentTrack))
-      : localQueue.length
-
-    return localQueue.slice(0, itemLimit).map((trackModel, index) => {
-      const onClick =
-        index < indexOfCurrentSong
-          ? () => dispatch(skipPreviousTracks(indexOfCurrentSong - index))
-          : index > indexOfCurrentSong
-          ? () => dispatch(skipTracks(index - indexOfCurrentSong))
-          : () => undefined
-
-      const onDeleteClick = () => {
-        const copiedQueue = localQueue.slice(0).filter((_, i) => i !== index)
-
-        dispatch(updateQueue(copiedQueue.map(track => track._id)))
-      }
-
-      return (
-        <QueueListItem
-          current={index === indexOfCurrentSong}
-          id={trackModel._id}
-          key={index}
-          guildID={user?.guildID || ""}
-          index={index}
-          old={index < indexOfCurrentSong}
-          onClick={onClick}
-          onDeleteClick={onDeleteClick}
-          track={trackModel}
-        />
-      )
-    })
-  }, [currentTrack, dispatch, itemLimit, localQueue, user])
-
-  const EmptyQueueItem = React.useMemo(
-    () => (
-      <Typography align="center" variant="h5">
-        -
-      </Typography>
-    ),
-    []
-  )
-
   return (
     <DragDropContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
       <Droppable droppableId="queue-list">
         {provided => (
           <div ref={provided.innerRef} {...provided.droppableProps} className={classes.queueList}>
+            {queueItemRange.lower > 0 && (
+              <LoadMoreButton
+                onClick={() => {
+                  setQueueItemRange(prev => ({ lower: prev.lower - 20, upper: prev.upper }))
+                  setUserInteractionWithLoadMore(true)
+                }}
+              />
+            )}
             <List>{queue.length > 0 ? QueueItems : EmptyQueueItem}</List>
             {provided.placeholder}
-            {queue.length > itemLimit ? (
-              <Button className={classes.loadMoreButton} onClick={() => setItemLimit(prev => prev + 20)}>
-                Load more
-              </Button>
-            ) : (
-              undefined
+            {queueItemRange.upper < queue.length && (
+              <>
+                <Divider style={{ marginBottom: 8 }} />
+                <LoadMoreButton
+                  onClick={() => {
+                    setQueueItemRange(prev => ({ lower: prev.lower, upper: prev.upper + 20 }))
+                    setUserInteractionWithLoadMore(true)
+                  }}
+                />
+              </>
             )}
           </div>
         )}
