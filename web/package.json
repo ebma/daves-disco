@@ -10,7 +10,7 @@
     "@sentry/browser": "^5.15.5",
     "axios": "^0.19.2",
     "jsonwebtoken": "^8.5.1",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.20",
     "react": "^16.9.0",
     "react-beautiful-dnd": "^13.0.0",
     "react-dom": "^16.9.0",
@@ -22,7 +22,7 @@
     "request": "^2.88.0",
     "socket.io": "^2.3.0",
     "socket.io-client": "^2.3.0",
-    "surge": "^0.21.3",
+    "surge": "^0.21.6",
     "youtube-search": "^1.1.4",
     "ytdl-core": "^1.0.9"
   },
