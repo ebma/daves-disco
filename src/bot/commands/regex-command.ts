@@ -28,7 +28,7 @@ class RegexCommand extends Command {
   regex = new RegExp(Object.keys(expressions).join("|"), "i")
 
   exec(message: Message, match: any) {
-    const matchingExpression = expressions[match[0].toLowerCase()]
+    const matchingExpression = match.length > 0 && expressions[match[0].toLowerCase()]
     if (matchingExpression) {
       const reply = matchingExpression.replace("#", match)
       return message.reply(reply)
