@@ -54,7 +54,7 @@
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.20",
     "moment": "^2.24.0",
-    "mongoose": "^5.9.7",
+    "mongoose": "^5.11.4",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
     "rxjs": "^6.5.3",
@@ -64,7 +64,7 @@
     "spotify-web-api-node": "^5.0.0",
     "winston": "^3.2.1",
     "youtube-search": "^1.1.4",
-    "ytdl-core": "^4.1.0",
+    "ytdl-core": "^4.1.2",
     "ytdl-core-discord": "^1.2.4",
     "ytpl": "^1.0.1"
   },
