@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from "mongoose"
 
 export type IPlaylist = Document & PlaylistModel
 
-const PlaylistSchema: Schema<PlaylistModel> = new Schema({
+const PlaylistSchema = new Schema({
   id: { type: String, required: true, unique: true },
   favourite: [{ guild: String, favourite: Boolean }],
   lastTouchedAt: [{ guild: String, date: String }],
@@ -27,7 +27,7 @@ const PlaylistSchema: Schema<PlaylistModel> = new Schema({
 })
 
 PlaylistSchema.set("toJSON", {
-  transform: (document, returnedObject) => {
+  transform: (_: any, returnedObject: any) => {
     delete returnedObject.__v
   }
 })

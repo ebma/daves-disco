@@ -39,7 +39,7 @@ router.get("/", middleware.authHandler, async (request: TrackRequest, response: 
 })
 
 router.get("/track/", middleware.authHandler, async (request: TrackRequest, response: Response) => {
-  const trackID: string = request.query.track || undefined
+  const trackID: string = (request.query.track as string) || undefined
   if (!trackID) {
     response.status(400).end()
   } else {
@@ -55,7 +55,7 @@ router.get("/track/", middleware.authHandler, async (request: TrackRequest, resp
 })
 
 router.get("/list/", middleware.authHandler, async (request: TrackRequest, response: Response) => {
-  const trackIDs: Array<string> = request.query.tracks || undefined
+  const trackIDs: Array<string> = (request.query.tracks as string[]) || undefined
   if (!trackIDs) {
     response.json([])
   } else {

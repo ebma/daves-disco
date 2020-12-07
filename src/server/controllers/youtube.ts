@@ -5,7 +5,7 @@ import middleware from "../middleware"
 const youtubeRouter = Router()
 
 youtubeRouter.get("/", middleware.authHandler, async (request: Request, response: Response) => {
-  const query = request.query.q
+  const query = request.query.q as string
   if (!query) {
     response.status(400).json({ error: "Query parameter missing" })
   } else {

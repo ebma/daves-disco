@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from "mongoose"
 
 export type ITrack = Document & TrackModel
 
-const TrackSchema: Schema = new Schema<TrackModel>({
+const TrackSchema = new Schema({
   artists: { type: String, required: false },
   favourite: [{ guild: String, favourite: Boolean }],
   lastTouchedAt: [{ guild: String, date: String }],
@@ -18,7 +18,7 @@ const TrackSchema: Schema = new Schema<TrackModel>({
 })
 
 TrackSchema.set("toJSON", {
-  transform: (document, returnedObject) => {
+  transform: (document: any, returnedObject: any) => {
     delete returnedObject.__v
     returnedObject.id = document._id
   }
