@@ -1,97 +1,40 @@
-import { makeStyles } from "@material-ui/core"
-import Button from "@material-ui/core/Button"
+import { makeStyles, Paper } from "@material-ui/core"
 import Grid from "@material-ui/core/Grid"
 import Typography from "@material-ui/core/Typography"
-import ClearIcon from "@material-ui/icons/Clear"
-import PauseIcon from "@material-ui/icons/Pause"
-import PlayIcon from "@material-ui/icons/PlayArrow"
-import SkipNextIcon from "@material-ui/icons/SkipNext"
-import SkipPreviousIcon from "@material-ui/icons/SkipPrevious"
 import React from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "../../app/rootReducer"
 import { AppDispatch } from "../../app/store"
-import { useDebounce } from "../../hooks/util"
 import {
   pausePlayer,
   resumePlayer,
   setPlayerVolume,
+  shuffleTracks,
   skipPreviousTracks,
   skipTracks,
-  stopPlayer
+  updateLoopState
 } from "../../redux/playerSlice"
-import { SpotifyHelper } from "../../shared/utils/helpers"
-import StyledButton from "../StyledButton"
+import {
+  LoopButton,
+  PauseButton,
+  PlayButton,
+  ShuffleButton,
+  SkipNextButton,
+  SkipPreviousButton
+} from "./ControlButtons"
+import TrackCard from "./TrackCard"
 import VolumeSlider from "./VolumeSlider"
 
-interface DebouncedButtonProps {
-  alignIconBefore?: boolean
-  disabled?: boolean
-  fullWidth?: boolean
-  icon: JSX.Element
-  style?: React.CSSProperties
-  text: string
-  onClick?: () => void
-}
-
-function DebouncedButton(props: DebouncedButtonProps) {
-  const onButtonClick = useDebounce(() => props.onClick && props.onClick(), 300, {
-    leading: true,
-    trailing: false
-  })
-
-  return <StyledButton {...props} text={undefined} onClick={onButtonClick} />
-}
-
-interface ControlItemProps {
-  disabled?: boolean
-  onClick?: () => void
-}
-
-function PlayButton(props: ControlItemProps) {
-  return <DebouncedButton {...props} icon={<PlayIcon />} text="Play" />
-}
-
-function PauseButton(props: ControlItemProps) {
-  return <DebouncedButton {...props} icon={<PauseIcon />} text="Pause" />
-}
-
-function SkipPreviousButton(props: ControlItemProps) {
-  return <DebouncedButton {...props} alignIconBefore icon={<SkipPreviousIcon />} text="Skip previous" />
-}
-
-function SkipNextButton(props: ControlItemProps) {
-  return <DebouncedButton {...props} icon={<SkipNextIcon />} text="Skip next" />
-}
-
-function StopPlayerButton(props: ControlItemProps) {
-  return (
-    <DebouncedButton
-      {...props}
-      alignIconBefore
-      fullWidth
-      icon={<ClearIcon />}
-      style={{ padding: 16, margin: 0, marginTop: 16 }}
-      text="Stop Player"
-    />
-  )
-}
-
 const useStyles = makeStyles(theme => ({
-  trackInfoContainer: {
-    alignItems: "center",
+  paper: {
     display: "flex",
+    alignItems: "center",
     flexDirection: "column",
-    margin: 8
+    borderRadius: 16,
+    paddingBottom: 16,
+    marginTop: 16
   },
-  trackInfoWrapper: {
-    alignItems: "center",
-    borderRadius: 18,
-    display: "flex",
-    flexDirection: "column",
-    padding: 16,
-    width: "fit-content"
-  }
+  trackCardContainer: { justifyContent: "center", display: "flex", padding: 16, width: "80%" }
 }))
 
 interface Props {
@@ -103,96 +46,61 @@ function PlayerArea(props: Props) {
 
   const dispatch: AppDispatch = useDispatch()
   const { available, currentTrack, paused, queue: queueIDs, volume } = useSelector((state: RootState) => state.player)
+  const { loopState } = useSelector((state: RootState) => state.player)
 
   const classes = useStyles()
 
-  const background = React.useMemo(() => {
-    if (currentTrack) {
-      if (currentTrack.source === "radio") {
-        return "https://images.unsplash.com/photo-1521127574-28faf1a160f9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=80"
-      } else if (currentTrack.thumbnail) {
-        if (currentTrack.thumbnail.large) {
-          return currentTrack.thumbnail.large
-        } else if (currentTrack.thumbnail.medium) {
-          return currentTrack.thumbnail.medium
-        } else if (currentTrack.thumbnail.small) {
-          return currentTrack.thumbnail.small
-        } else {
-          return "unset"
-        }
-      }
-    } else {
-      return "unset"
-    }
-  }, [currentTrack])
-
   const disabled = !available || queueIDs.length === 0
 
+  const switchLoopState = React.useCallback(() => {
+    const newLoopState: LoopState =
+      loopState === "none" ? "repeat-all" : loopState === "repeat-all" ? "repeat-one" : "none"
+    dispatch(updateLoopState(newLoopState))
+  }, [dispatch, loopState])
+
   return (
-    <Grid
-      container
-      direction="row"
-      alignItems="center"
-      style={{
-        ...style,
-        backgroundImage: `url("${background}")`,
-        backgroundSize: "100% 100%",
-        borderRadius: 8,
-        height: "100%"
-      }}
-    >
-      <Grid item xs={12}>
-        <div className={classes.trackInfoContainer}>
-          <div className={classes.trackInfoWrapper} style={{ background: currentTrack ? "#060404d4" : undefined }}>
-            {currentTrack ? (
-              <>
-                <Typography gutterBottom variant="h5" component="h2" color="textSecondary">
-                  {SpotifyHelper.isSpotifyTrack(currentTrack)
-                    ? `${currentTrack.title} - ${currentTrack.artists}`
-                    : currentTrack.title}
-                </Typography>
-                <Button color="primary" onClick={() => window.open(currentTrack.url, "_blank")}>
-                  Watch on Youtube
-                </Button>
-              </>
-            ) : (
-              <>
-                <Typography gutterBottom variant="h5" component="h2">
-                  No song playing right now...
-                </Typography>
-                <Typography variant="body2" color="textSecondary" component="p">
-                  You can add one above.
-                </Typography>
-              </>
-            )}
-          </div>
-        </div>
-      </Grid>
-      <Grid item xs={12} style={{ padding: 16 }}>
-        <Grid container direction="row" justify="center">
-          <Grid item>
-            <SkipPreviousButton disabled={disabled} onClick={() => dispatch(skipPreviousTracks(1))} />
-          </Grid>
-          <Grid item>
-            {paused ? (
-              <PlayButton disabled={disabled || !currentTrack} onClick={() => dispatch(resumePlayer())} />
-            ) : (
-              <PauseButton disabled={disabled || !currentTrack} onClick={() => dispatch(pausePlayer())} />
-            )}
-          </Grid>
-          <Grid item>{<SkipNextButton disabled={disabled} onClick={() => dispatch(skipTracks(1))} />}</Grid>
+    <>
+      <Typography variant="h4" style={{ fontWeight: 500 }}>
+        Now Playing
+      </Typography>
+      <Typography variant="body1">{queueIDs.length} items in queue</Typography>
+      <Paper className={classes.paper} elevation={2} style={style}>
+        <Grid className={classes.trackCardContainer} item xs={12}>
+          <TrackCard />
         </Grid>
-        <VolumeSlider
-          disabled={disabled}
-          volume={volume}
-          onChange={(newVolume: number) => {
-            dispatch(setPlayerVolume(newVolume))
-          }}
-          style={{ marginTop: 16 }}
-        />
-        <StopPlayerButton disabled={disabled} onClick={() => dispatch(stopPlayer())} />
-      </Grid>
-    </Grid>
+        <Grid item xs={12} style={{ padding: 16 }}>
+          <Grid alignItems="center" container direction="row" justify="center">
+            <Grid item>
+              <ShuffleButton disabled={disabled} onClick={() => dispatch(shuffleTracks())} />
+            </Grid>
+            <Grid item>
+              <SkipPreviousButton disabled={disabled} onClick={() => dispatch(skipPreviousTracks(1))} />
+            </Grid>
+            <Grid item>
+              {paused ? (
+                <PlayButton disabled={disabled || !currentTrack} onClick={() => dispatch(resumePlayer())} />
+              ) : (
+                <PauseButton disabled={disabled || !currentTrack} onClick={() => dispatch(pausePlayer())} />
+              )}
+            </Grid>
+            <Grid item>
+              <SkipNextButton disabled={disabled} onClick={() => dispatch(skipTracks(1))} />
+            </Grid>
+            <Grid item>
+              <LoopButton disabled={disabled} onClick={switchLoopState} />
+            </Grid>
+          </Grid>
+          <VolumeSlider
+            disabled={disabled}
+            volume={volume}
+            onChange={(newVolume: number) => {
+              dispatch(setPlayerVolume(newVolume))
+            }}
+            style={{ marginTop: 16 }}
+          />
+        </Grid>
+      </Paper>
+    </>
   )
 }
 

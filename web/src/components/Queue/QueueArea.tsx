@@ -4,14 +4,11 @@ import { makeStyles } from "@material-ui/core/styles"
 import Tooltip from "@material-ui/core/Tooltip"
 import Typography from "@material-ui/core/Typography"
 import ClearIcon from "@material-ui/icons/Clear"
-import RepeatIcon from "@material-ui/icons/Repeat"
-import RepeatOneIcon from "@material-ui/icons/RepeatOne"
-import ShuffleIcon from "@material-ui/icons/Shuffle"
 import React from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "../../app/rootReducer"
 import { AppDispatch } from "../../app/store"
-import { clearTracks, shuffleTracks, updateLoopState } from "../../redux/playerSlice"
+import { clearTracks } from "../../redux/playerSlice"
 import QueueList from "./QueueList"
 
 const useStyles = makeStyles(theme => ({
@@ -49,27 +46,12 @@ const useStyles = makeStyles(theme => ({
 
 interface QueueHeaderProps {
   onClearClick: () => void
-  onShuffleClick: () => void
-  onLoopClick: () => void
   showButtons: boolean
-  loopState: LoopState
 }
 
 function QueueHeader(props: QueueHeaderProps) {
-  const { onClearClick, onShuffleClick, onLoopClick, loopState, showButtons } = props
+  const { onClearClick, showButtons } = props
   const classes = useStyles()
-
-  const loopTooltipTitle =
-    loopState === "none" ? "Don't repeat" : loopState === "repeat-one" ? "Repeat Track" : "Repeat"
-
-  const loopIcon =
-    loopState === "none" ? (
-      <RepeatIcon color="disabled" />
-    ) : loopState === "repeat-one" ? (
-      <RepeatOneIcon />
-    ) : (
-      <RepeatIcon />
-    )
 
   return (
     <div className={classes.container}>
@@ -89,28 +71,6 @@ function QueueHeader(props: QueueHeaderProps) {
               Clear
             </Button>
           </Tooltip>
-          <Tooltip arrow placement="top" title="Shuffle">
-            <Button
-              className={classes.button}
-              color="secondary"
-              onClick={onShuffleClick}
-              startIcon={<ShuffleIcon />}
-              variant="contained"
-            >
-              Shuffle
-            </Button>
-          </Tooltip>
-          <Tooltip arrow placement="top" title={loopTooltipTitle}>
-            <Button
-              className={classes.button}
-              color="secondary"
-              onClick={onLoopClick}
-              startIcon={loopIcon}
-              variant="contained"
-            >
-              Repeat
-            </Button>
-          </Tooltip>
         </Box>
       )}
     </div>
@@ -120,13 +80,7 @@ function QueueHeader(props: QueueHeaderProps) {
 function QueueArea() {
   const dispatch: AppDispatch = useDispatch()
   const { user } = useSelector((state: RootState) => state.user)
-  const { loopState, queue } = useSelector((state: RootState) => state.player)
-
-  const shuffle = React.useCallback(() => {
-    if (user) {
-      dispatch(shuffleTracks())
-    }
-  }, [dispatch, user])
+  const { queue } = useSelector((state: RootState) => state.player)
 
   const clear = React.useCallback(() => {
     if (user) {
@@ -134,23 +88,9 @@ function QueueArea() {
     }
   }, [dispatch, user])
 
-  const switchLoopState = React.useCallback(() => {
-    if (user) {
-      const newLoopState: LoopState =
-        loopState === "none" ? "repeat-all" : loopState === "repeat-all" ? "repeat-one" : "none"
-      dispatch(updateLoopState(newLoopState))
-    }
-  }, [dispatch, loopState, user])
-
   return (
     <>
-      <QueueHeader
-        onClearClick={clear}
-        onShuffleClick={shuffle}
-        onLoopClick={switchLoopState}
-        loopState={loopState}
-        showButtons={queue.length > 0}
-      />
+      <QueueHeader onClearClick={clear} showButtons={queue.length > 0} />
       <QueueList />
     </>
   )

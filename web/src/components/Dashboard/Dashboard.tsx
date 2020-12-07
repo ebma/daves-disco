@@ -11,12 +11,13 @@ import { makeStyles } from "@material-ui/core/styles"
 import Toolbar from "@material-ui/core/Toolbar"
 import Typography from "@material-ui/core/Typography"
 import BrightnessLowIcon from "@material-ui/icons/Brightness5"
+import PowerIcon from "@material-ui/icons/PowerSettingsNew"
 import BrightnessHighIcon from "@material-ui/icons/Brightness7"
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft"
 import MenuIcon from "@material-ui/icons/Menu"
 import clsx from "clsx"
 import React from "react"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { Route, Switch, useHistory } from "react-router-dom"
 import { RootState } from "../../app/rootReducer"
 import { ColorSchemeContext } from "../../context/colorScheme"
@@ -24,8 +25,10 @@ import HomePage from "../../pages/HomePage"
 import LoginPage from "../../pages/LoginPage"
 import MusicLibraryPage from "../../pages/MusicLibraryPage"
 import SoundboardPage from "../../pages/SoundboardPage"
+import { stopPlayer } from "../../redux/playerSlice"
 import Footer from "../Footer"
 import { MainListItems } from "./ListItems"
+import { darkShades, lightShades } from "../../theme"
 
 const drawerWidth = 240
 
@@ -117,7 +120,9 @@ export default function Dashboard() {
 
   const { colorScheme, toggleColorScheme } = React.useContext(ColorSchemeContext)
 
+  const dispatch = useDispatch()
   const { connectionState } = useSelector((state: RootState) => state.socket)
+  const { available } = useSelector((state: RootState) => state.player)
   const history = useHistory()
 
   React.useEffect(() => {
@@ -150,6 +155,11 @@ export default function Dashboard() {
               {colorScheme === "dark" ? <BrightnessLowIcon /> : <BrightnessHighIcon />}
             </IconButton>
           </Tooltip>
+          <Tooltip title="Stop Player">
+            <IconButton color="inherit" disabled={!available} onClick={() => dispatch(stopPlayer())}>
+              <PowerIcon />
+            </IconButton>
+          </Tooltip>
         </Toolbar>
       </AppBar>
       <Drawer
@@ -169,7 +179,10 @@ export default function Dashboard() {
           <MainListItems />
         </List>
       </Drawer>
-      <main className={classes.content}>
+      <main
+        className={classes.content}
+        style={{ background: colorScheme === "dark" ? darkShades.dim : lightShades.dim }}
+      >
         <div className={classes.appBarSpacer} />
         <Container maxWidth="xl" className={classes.container}>
           <Switch>

@@ -1,10 +1,10 @@
+import Box from "@material-ui/core/Box"
 import Grid from "@material-ui/core/Grid"
-import Paper from "@material-ui/core/Paper"
 import { makeStyles } from "@material-ui/core/styles"
 import clsx from "clsx"
 import React from "react"
-import QueueArea from "../components/Queue/QueueArea"
 import PlayerArea from "../components/Player/PlayerArea"
+import QueueArea from "../components/Queue/QueueArea"
 import SearchArea from "../components/SearchArea/SearchArea"
 
 const useStyles = makeStyles(theme => ({
@@ -27,19 +27,19 @@ function HomePage() {
   return (
     <Grid container spacing={3}>
       <Grid item xs={12}>
-        <Paper className={classes.paper}>
+        <Box className={classes.paper}>
           <SearchArea style={{ marginBottom: 16 }} />
-        </Paper>
+        </Box>
       </Grid>
-      <Grid item xs={12} lg={6}>
-        <Paper className={classes.paper}>
-          <PlayerArea />
-        </Paper>
-      </Grid>
-      <Grid item xs={12} lg={6}>
-        <Paper className={fixedHeightPaper}>
+      <Grid item xs={12} lg={7}>
+        <Box className={fixedHeightPaper}>
           <QueueArea />
-        </Paper>
+        </Box>
+      </Grid>
+      <Grid item xs={12} lg={5}>
+        <Box className={classes.paper}>
+          <PlayerArea />
+        </Box>
       </Grid>
     </Grid>
   )
