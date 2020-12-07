@@ -3,25 +3,37 @@ import createBreakpoints from "@material-ui/core/styles/createBreakpoints"
 
 export const breakpoints = createBreakpoints({})
 
-export const brandColor = {
-  dark: "#d81b60",
-  main: "#039be5",
-  light: "#fa669d"
+export const lightShades = {
+  dim: "#F0F0F0",
+  bright: "#F4F4F4",
+  brightest: "#FFFFFF"
 }
 
+export const darkShades = {
+  dim: "#303030",
+  bright: "#3d3d3d",
+  brightest: "#484848"
+}
+
+export const primaryColor = {
+  main: "#c62828",
+  light: "#ff5f52",
+  dark: "#8e0000"
+}
+
+export const secondaryColor = {
+  main: "#dd2c00",
+  light: "#ff6434",
+  dark: "#a30000"
+}
 export const textColorDark = {
   primary: "#FFFFFF",
-  secondary: "#f42620"
+  secondary: secondaryColor.main
 }
 
 export const textColorLight = {
   primary: "#212121",
-  secondary: "#f42620"
-}
-
-export const backgroundColor = {
-  dark: "#212121",
-  light: "#E0E0E0"
+  secondary: secondaryColor.main
 }
 
 const createTheme = (darkMode: boolean) =>
@@ -29,30 +41,21 @@ const createTheme = (darkMode: boolean) =>
     createMuiTheme({
       palette: {
         type: darkMode ? "dark" : "light",
-        primary: {
-          dark: brandColor.dark,
-          main: brandColor.main,
-          light: brandColor.light
-        },
-        text: {
-          primary: darkMode ? textColorDark.primary : textColorLight.primary,
-          secondary: darkMode ? textColorDark.secondary : textColorLight.secondary
-        }
+        primary: primaryColor,
+        text: {}
       },
       overrides: {
-        MuiPaper: {},
+        MuiPaper: {
+          root: {
+            background: darkMode ? darkShades.bright : lightShades.bright
+          }
+        },
         MuiTab: {
           root: {
             [breakpoints.down("sm")]: {
               fontSize: "0.7rem"
             }
           }
-        },
-        MuiAppBar: {
-          colorPrimary: { backgroundColor: brandColor.dark }
-        },
-        MuiIconButton: {
-          colorPrimary: { color: darkMode ? textColorDark.primary : textColorLight.primary }
         }
       }
     })
