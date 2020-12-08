@@ -21,7 +21,7 @@ export function VolumeSlider(props: VolumeSliderProps) {
 
   return (
     <div className={className} style={{ ...style }}>
-      <Typography id="continuous-slider" align="center" color="primary" gutterBottom>
+      <Typography id="continuous-slider" align="center" gutterBottom>
         Volume
       </Typography>
       <Grid container spacing={2}>
@@ -60,7 +60,7 @@ function ControlledVolumeSlider(props: ControlledVolumeSliderProps) {
 
   return (
     <div className={className} style={{ ...style }}>
-      <Typography id="continuous-slider" align="center" color="primary" gutterBottom>
+      <Typography id="continuous-slider" align="center" gutterBottom>
         Volume
       </Typography>
       <Grid container spacing={2}>
@@ -69,6 +69,7 @@ function ControlledVolumeSlider(props: ControlledVolumeSliderProps) {
         </Grid>
         <Grid item xs>
           <Slider
+            color="secondary"
             aria-labelledby="continuous-slider"
             disabled={disabled}
             onChange={handleChange}

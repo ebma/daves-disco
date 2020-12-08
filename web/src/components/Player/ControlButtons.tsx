@@ -34,7 +34,7 @@ function StyledControlButton(props: StyledButtonProps) {
   const { alignIconBefore, style, ...reducedProps } = props
 
   return (
-    <Button {...reducedProps} color="primary" className={classes.button} style={{ borderRadius: 50, padding: 16, ...style }}>
+    <Button {...reducedProps} color="secondary" className={classes.button} style={{ borderRadius: 50, padding: 16, ...style }}>
       {alignIconBefore ? props.icon : undefined}
       {props.text}
       {alignIconBefore ? undefined : props.icon}

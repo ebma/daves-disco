@@ -83,7 +83,7 @@ function PlayerArea(props: Props) {
     () => (
       <Tooltip title="Clear All" aria-label="clear">
         <span>
-          <IconButton color="primary" disabled={disabled} onClick={() => dispatch(clearTracks())}>
+          <IconButton color="secondary" disabled={disabled} onClick={() => dispatch(clearTracks())}>
             <ClearAllIcon style={{ fontSize: "150%" }} />
           </IconButton>
         </span>
@@ -95,7 +95,7 @@ function PlayerArea(props: Props) {
   const ToggleQueueButton = React.useMemo(
     () => (
       <Tooltip title="Show Queue" aria-label="show queue">
-        <IconButton color="primary" onClick={() => setShowQueue(!showQueue)}>
+        <IconButton color="secondary" onClick={() => setShowQueue(!showQueue)}>
           <QueueIcon style={{ fontSize: "150%" }} />
         </IconButton>
       </Tooltip>
