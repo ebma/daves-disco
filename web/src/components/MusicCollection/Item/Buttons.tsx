@@ -4,6 +4,7 @@ import Tooltip from "@material-ui/core/Tooltip"
 import DeleteIcon from "@material-ui/icons/Delete"
 import FavoriteIcon from "@material-ui/icons/Favorite"
 import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder"
+import PlayIcon from "@material-ui/icons/PlayArrow"
 import ListIcon from "@material-ui/icons/List"
 
 import React from "react"
@@ -20,8 +21,29 @@ export function DeleteButton(props: { onClick: () => void }) {
       }}
     >
       <Tooltip placement="left" title="Remove">
-        <IconButton>
+        <IconButton color="secondary">
           <DeleteIcon />
+        </IconButton>
+      </Tooltip>
+    </ListItemIcon>
+  )
+}
+
+export function PlayButton(props: { onClick: () => void; style?: React.CSSProperties }) {
+  const { onClick, style } = props
+
+  return (
+    <ListItemIcon
+      onClick={(event: React.MouseEvent) => {
+        event.preventDefault()
+        event.stopPropagation()
+        onClick()
+      }}
+      style={style}
+    >
+      <Tooltip placement="bottom" title="Play">
+        <IconButton color="secondary">
+          <PlayIcon />
         </IconButton>
       </Tooltip>
     </ListItemIcon>
@@ -41,13 +63,13 @@ export function FavorButton(props: { onClick: () => void; favourite: boolean }) 
     >
       {favourite ? (
         <Tooltip placement="bottom" title="Remove from favourites">
-          <IconButton>
+          <IconButton color="secondary">
             <FavoriteIcon />
           </IconButton>
         </Tooltip>
       ) : (
         <Tooltip placement="bottom" title="Add to favourites">
-          <IconButton>
+          <IconButton color="secondary">
             <FavoriteBorderIcon />
           </IconButton>
         </Tooltip>
@@ -56,8 +78,8 @@ export function FavorButton(props: { onClick: () => void; favourite: boolean }) 
   )
 }
 
-export function ShowListButton(props: { onClick: () => void }) {
-  const { onClick } = props
+export function ShowListButton(props: { onClick: () => void; style?: React.CSSProperties }) {
+  const { onClick, style } = props
 
   return (
     <ListItemIcon
@@ -66,9 +88,10 @@ export function ShowListButton(props: { onClick: () => void }) {
         event.stopPropagation()
         onClick()
       }}
+      style={style}
     >
       <Tooltip placement="bottom" title="View Playlist">
-        <IconButton>
+        <IconButton color="secondary">
           <ListIcon />
         </IconButton>
       </Tooltip>

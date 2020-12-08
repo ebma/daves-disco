@@ -3,8 +3,8 @@ import Grid from "@material-ui/core/Grid"
 import { makeStyles } from "@material-ui/core/styles"
 import clsx from "clsx"
 import React from "react"
+import MusicCollectionArea from "../components/MusicCollection/MusicCollectionArea"
 import PlayerArea from "../components/Player/PlayerArea"
-import QueueArea from "../components/Queue/QueueArea"
 import SearchArea from "../components/SearchArea/SearchArea"
 
 const useStyles = makeStyles(theme => ({
@@ -33,11 +33,11 @@ function HomePage() {
       </Grid>
       <Grid item xs={12} lg={7}>
         <Box className={fixedHeightPaper}>
-          <QueueArea />
+          <MusicCollectionArea />
         </Box>
       </Grid>
       <Grid item xs={12} lg={5}>
-        <Box className={classes.paper}>
+        <Box className={fixedHeightPaper}>
           <PlayerArea />
         </Box>
       </Grid>

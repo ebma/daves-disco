@@ -1,4 +1,3 @@
-import Divider from "@material-ui/core/Divider"
 import List from "@material-ui/core/List"
 import makeStyles from "@material-ui/core/styles/makeStyles"
 import React from "react"
@@ -34,18 +33,16 @@ const MusicItemList = React.memo(function MusicItemList(props: MusicItemListProp
 
   const collectionItems = React.useMemo(
     () =>
-      items.slice(0, 50).map((item, index) => {
+      items.map((item, index) => {
         if (isTrack(item)) {
           return (
             <div key={item._id}>
-              {index > 0 && <Divider variant="inset" component="li" />}
               <TrackItem guildID={guildID} track={item} onClick={() => onTrackSelect(item)} showFavourite />
             </div>
           )
         } else if (isPlaylist(item)) {
           return (
             <div key={item._id}>
-              {index > 0 && <Divider variant="inset" component="li" />}
               <PlaylistItem guildID={guildID} onClick={() => onPlaylistSelect(item)} playlist={item} showFavourite />
             </div>
           )

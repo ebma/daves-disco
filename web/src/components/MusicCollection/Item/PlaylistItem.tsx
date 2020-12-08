@@ -3,6 +3,7 @@ import Link from "@material-ui/core/Link"
 import ListItem from "@material-ui/core/ListItem"
 import ListItemAvatar from "@material-ui/core/ListItemAvatar"
 import ListItemText from "@material-ui/core/ListItemText"
+import Paper from "@material-ui/core/Paper"
 import makeStyles from "@material-ui/styles/makeStyles"
 import React from "react"
 import { useDispatch } from "react-redux"
@@ -12,18 +13,23 @@ import { SpotifyHelper } from "../../../shared/utils/helpers"
 import { FavorButton, ShowListButton } from "./Buttons"
 
 const useStyles = makeStyles(theme => ({
-  queueItem: {
+  item: {
     boxShadow: "1",
     position: "relative",
     padding: 0
   },
   avatar: {
+    borderRadius: 8,
     minHeight: "64px",
     height: "100%",
     minWidth: "64px"
   },
-  text: {
-    padding: "0px 24px"
+  paper: {
+    alignItems: "center",
+    display: "flex",
+    marginTop: 8,
+    marginBottom: 8,
+    width: "100%"
   }
 }))
 
@@ -32,10 +38,11 @@ interface Props {
   guildID: GuildID
   onClick?: () => void
   showFavourite?: boolean
+  thumbnailSize?: number
 }
 
 function PlaylistItem(props: Props) {
-  const { guildID, playlist, onClick, showFavourite } = props
+  const { guildID, playlist, onClick, showFavourite, thumbnailSize = 78 } = props
   const classes = useStyles()
 
   const dispatch: AppDispatch = useDispatch()
@@ -74,44 +81,44 @@ function PlaylistItem(props: Props) {
   )
 
   return (
-    <ListItem button className={classes.queueItem} onClick={onClick}>
-      <ListItemAvatar>
-        <Avatar
-          alt="thumbnail"
-          className={classes.avatar}
-          src={playlist.thumbnail?.small || playlist.thumbnail?.medium || playlist.thumbnail?.large}
-          variant="square"
+    <Paper className={classes.paper} elevation={0}>
+      <ListItem className={classes.item}>
+        <ListItemAvatar>
+          <Avatar
+            alt="thumbnail"
+            className={classes.avatar}
+            src={playlist.thumbnail?.small || playlist.thumbnail?.medium || playlist.thumbnail?.large}
+            variant="square"
+            style={{ minWidth: thumbnailSize, minHeight: thumbnailSize }}
+          />
+        </ListItemAvatar>
+        {onClick && <ShowListButton onClick={onClick} style={{ marginLeft: 8 }} />}
+        <ListItemText
+          primary={playlist.name}
+          primaryTypographyProps={{
+            style: {
+              overflow: "hidden",
+              whiteSpace: "nowrap",
+              textOverflow: "ellipsis"
+            }
+          }}
+          secondaryTypographyProps={{
+            style: {
+              overflow: "hidden",
+              whiteSpace: "nowrap",
+              textOverflow: "ellipsis"
+            }
+          }}
+          secondary={secondaryText}
         />
-      </ListItemAvatar>
-      <ListItemText
-        className={classes.text}
-        primary={playlist.name}
-        primaryTypographyProps={{
-          style: {
-            overflow: "hidden",
-            whiteSpace: "nowrap",
-            textOverflow: "ellipsis"
-          }
-        }}
-        secondaryTypographyProps={{
-          style: {
-            overflow: "hidden",
-            whiteSpace: "nowrap",
-            textOverflow: "ellipsis"
-          }
-        }}
-        secondary={secondaryText}
-      />
-      {onClick ? <ShowListButton onClick={onClick} /> : undefined}
-      {showFavourite ? (
-        <FavorButton
-          onClick={toggleFavourite}
-          favourite={playlist.favourite.find(value => value.guild === guildID)?.favourite || false}
-        />
-      ) : (
-        undefined
-      )}
-    </ListItem>
+        {showFavourite && (
+          <FavorButton
+            onClick={toggleFavourite}
+            favourite={playlist.favourite.find(value => value.guild === guildID)?.favourite || false}
+          />
+        )}
+      </ListItem>
+    </Paper>
   )
 }
 

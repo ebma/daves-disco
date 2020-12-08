@@ -37,7 +37,7 @@ function QueueListItem(props: QueueListItemProps) {
   return (
     <>
       {index > 0 ? <Divider variant="inset" component="li" /> : undefined}
-      <DraggableTrackItem showFavourite {...props} />
+      <DraggableTrackItem showFavourite {...props} thumbnailSize={62} />
     </>
   )
 }
@@ -59,8 +59,6 @@ function LoadMoreButton(props: { onClick: () => void }) {
 
 const useStyles = makeStyles(theme => ({
   queueList: {
-    padding: 16,
-    paddingTop: 8,
     width: "100%",
     height: "100%",
     overflow: "auto",

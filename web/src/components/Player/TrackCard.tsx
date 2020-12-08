@@ -2,11 +2,9 @@ import { Avatar, makeStyles } from "@material-ui/core"
 import Button from "@material-ui/core/Button"
 import Paper from "@material-ui/core/Paper"
 import Typography from "@material-ui/core/Typography"
-import NoTrackIcon from "@material-ui/icons/Remove"
 import React from "react"
-import { useSelector } from "react-redux"
-import { RootState } from "../../app/rootReducer"
 import { SpotifyHelper } from "../../shared/utils/helpers"
+import { breakpoints } from "../../theme"
 
 const useStyles = makeStyles({
   avatar: {
@@ -27,14 +25,18 @@ const useStyles = makeStyles({
     flexDirection: "column",
     padding: 32,
     minWidth: "50%",
-    maxWidth: "80%"
+    maxWidth: "80%",
+
+    [breakpoints.down("xs")]: {
+      maxWidth: "95%"
+    }
   }
 })
 
-function TrackCard() {
+function TrackCard(props: { currentTrack: TrackModel }) {
   const classes = useStyles()
 
-  const { currentTrack } = useSelector((state: RootState) => state.player)
+  const { currentTrack } = props
 
   const thumbnail = React.useMemo(() => {
     if (currentTrack) {
@@ -57,26 +59,16 @@ function TrackCard() {
   }, [currentTrack])
 
   return (
-    <Paper className={classes.root} elevation={5}>
-      {thumbnail ? (
-        <Avatar className={classes.avatar} src={thumbnail} />
-      ) : (
-        <NoTrackIcon className={classes.noTrackIcon} />
-      )}
-      {currentTrack ? (
-        <>
-          <Typography align="center" gutterBottom variant="h6" color="textPrimary" style={{ marginTop: 16 }}>
-            {SpotifyHelper.isSpotifyTrack(currentTrack)
-              ? `${currentTrack.title} - ${currentTrack.artists}`
-              : currentTrack.title}
-          </Typography>
-          <Button color="primary" onClick={() => window.open(currentTrack.url, "_blank")}>
-            Watch on Youtube
-          </Button>
-        </>
-      ) : (
-        <Typography variant="h6">...sound of silence...</Typography>
-      )}
+    <Paper className={classes.root} >
+      <Avatar className={classes.avatar} src={thumbnail!} />
+      <Typography align="center" gutterBottom variant="h6" color="textPrimary" style={{ marginTop: 16 }}>
+        {SpotifyHelper.isSpotifyTrack(currentTrack)
+          ? `${currentTrack.title} - ${currentTrack.artists}`
+          : currentTrack.title}
+      </Typography>
+      <Button color="primary" onClick={() => window.open(currentTrack.url, "_blank")}>
+        Watch on Youtube
+      </Button>
     </Paper>
   )
 }

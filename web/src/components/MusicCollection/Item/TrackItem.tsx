@@ -3,6 +3,7 @@ import Link from "@material-ui/core/Link"
 import ListItem from "@material-ui/core/ListItem"
 import ListItemAvatar from "@material-ui/core/ListItemAvatar"
 import ListItemText from "@material-ui/core/ListItemText"
+import Paper from "@material-ui/core/Paper"
 import RadioIcon from "@material-ui/icons/Radio"
 import makeStyles from "@material-ui/styles/makeStyles"
 import React, { useRef } from "react"
@@ -11,21 +12,24 @@ import { useDispatch } from "react-redux"
 import { AppDispatch } from "../../../app/store"
 import { updateTrack } from "../../../redux/tracksSlice"
 import { SpotifyHelper } from "../../../shared/utils/helpers"
-import { DeleteButton, FavorButton } from "./Buttons"
+import { DeleteButton, FavorButton, PlayButton } from "./Buttons"
 
 const useStyles = makeStyles(theme => ({
-  queueItem: {
+  item: {
+    borderRadius: 8,
     boxShadow: "1",
-    position: "relative",
-    padding: 0
+    display: "flex",
+    padding: 0,
+    position: "relative"
   },
-  avatar: {
-    minHeight: "64px",
-    minWidth: "64px"
+  paper: {
+    alignItems: "center",
+    display: "flex",
+    marginBottom: 8,
+    marginTop: 8,
+    width: "100%"
   },
-  text: {
-    padding: "0px 24px"
-  }
+  avatar: {}
 }))
 
 interface TrackItemProps {
@@ -35,10 +39,11 @@ interface TrackItemProps {
   onClick?: () => void
   onDeleteClick?: () => void
   showFavourite?: boolean
+  thumbnailSize?: number
 }
 
-export const TrackItem = React.forwardRef(function TrackItem(props: TrackItemProps, ref: React.Ref<HTMLDivElement>) {
-  const { current, guildID, track, onClick, onDeleteClick, showFavourite } = props
+export const TrackItem = React.forwardRef(function TrackItem(props: TrackItemProps, ref: React.Ref<HTMLLIElement>) {
+  const { current, guildID, track, onClick, onDeleteClick, showFavourite, thumbnailSize = 78 } = props
   const classes = useStyles()
 
   const dispatch: AppDispatch = useDispatch()
@@ -58,54 +63,58 @@ export const TrackItem = React.forwardRef(function TrackItem(props: TrackItemPro
   const primaryText = SpotifyHelper.isSpotifyTrack(track) ? `${track.title} - ${track.artists}` : track.title
 
   return (
-    <ListItem button className={classes.queueItem} onClick={onClick} ref={ref} selected={current}>
-      <ListItemAvatar>
-        {track.source === "radio" ? (
-          <RadioIcon className={classes.avatar} style={{ padding: 8 }} />
-        ) : (
-          <Avatar
-            alt="thumbnail"
-            className={classes.avatar}
-            src={track.thumbnail?.small ?? track.thumbnail?.medium ?? track.thumbnail?.large}
-            variant="square"
+    <Paper className={classes.paper} elevation={0}>
+      <ListItem className={classes.item} ref={ref} selected={current}>
+        <ListItemAvatar>
+          {track.source === "radio" ? (
+            <RadioIcon
+              className={classes.avatar}
+              style={{ padding: 8, minWidth: thumbnailSize, minHeight: thumbnailSize }}
+            />
+          ) : (
+            <Avatar
+              alt="thumbnail"
+              className={classes.avatar}
+              src={track.thumbnail?.small ?? track.thumbnail?.medium ?? track.thumbnail?.large}
+              style={{ minWidth: thumbnailSize, minHeight: thumbnailSize }}
+              variant="rounded"
+            />
+          )}
+        </ListItemAvatar>
+        {onClick && <PlayButton onClick={onClick} style={{ marginLeft: 8 }} />}
+        <ListItemText
+          primaryTypographyProps={{
+            style: {
+              overflow: "hidden",
+              whiteSpace: "nowrap",
+              textOverflow: "ellipsis"
+            }
+          }}
+          secondaryTypographyProps={{
+            style: {
+              overflow: "hidden",
+              whiteSpace: "nowrap",
+              textOverflow: "ellipsis"
+            }
+          }}
+          primary={primaryText}
+          secondary={
+            track.url && (
+              <Link href={track.url} color="inherit" target="_blank" rel="noreferrer">
+                {track.url}
+              </Link>
+            )
+          }
+        />
+        {onDeleteClick && <DeleteButton onClick={onDeleteClick} />}
+        {showFavourite && (
+          <FavorButton
+            onClick={toggleFavourite}
+            favourite={track.favourite.find(value => value.guild === guildID)?.favourite || false}
           />
         )}
-      </ListItemAvatar>
-      <ListItemText
-        className={classes.text}
-        primaryTypographyProps={{
-          style: {
-            overflow: "hidden",
-            whiteSpace: "nowrap",
-            textOverflow: "ellipsis"
-          }
-        }}
-        secondaryTypographyProps={{
-          style: {
-            overflow: "hidden",
-            whiteSpace: "nowrap",
-            textOverflow: "ellipsis"
-          }
-        }}
-        primary={primaryText}
-        secondary={
-          track.url && (
-            <Link href={track.url} color="inherit" target="_blank" rel="noreferrer">
-              {track.url}
-            </Link>
-          )
-        }
-      />
-      {onDeleteClick ? <DeleteButton onClick={onDeleteClick} /> : undefined}
-      {showFavourite ? (
-        <FavorButton
-          onClick={toggleFavourite}
-          favourite={track.favourite.find(value => value.guild === guildID)?.favourite || false}
-        />
-      ) : (
-        undefined
-      )}
-    </ListItem>
+      </ListItem>
+    </Paper>
   )
 })
 
@@ -118,7 +127,7 @@ interface DraggableTrackItemProps extends TrackItemProps {
 export function DraggableTrackItem(props: DraggableTrackItemProps) {
   const { current, id, index } = props
 
-  const myRef = useRef<HTMLDivElement>(null)
+  const myRef = useRef<HTMLLIElement>(null)
   React.useEffect(() => {
     if (current) {
       setTimeout(() => {

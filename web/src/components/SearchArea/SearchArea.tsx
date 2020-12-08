@@ -82,6 +82,8 @@ function SearchArea(props: SearchAreaProps) {
     return getTrackFromSearchTerm(searchTerm)
   }, [])
 
+  // use inputadornment at start of input field to select type of search
+
   return (
     <div className={classes.root} style={style}>
       <Tabs

@@ -1,8 +1,8 @@
-import Box from "@material-ui/core/Box"
-import { createStyles, Theme } from "@material-ui/core/styles"
-import Tab from "@material-ui/core/Tab"
-import Tabs from "@material-ui/core/Tabs"
+import Grid from "@material-ui/core/Grid"
+import Switch from "@material-ui/core/Switch"
 import Typography from "@material-ui/core/Typography"
+import FavouriteIcon from "@material-ui/icons/Favorite"
+import HistoryIcon from "@material-ui/icons/History"
 import makeStyles from "@material-ui/styles/makeStyles"
 import React from "react"
 import { useSelector } from "react-redux"
@@ -10,100 +10,50 @@ import { RootState } from "../../app/rootReducer"
 import FavouritesTab from "./Tab/FavouritesTab"
 import RecentHistoryTab from "./Tab/RecentHistoryTab"
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      display: "flex",
-      flexDirection: "column",
-      height: "100%"
-    },
-    tabPanel: {
-      height: "60vh",
-      flexGrow: 1
-    },
-    box: {
-      height: "100%"
-    },
-    headerContainer: {
-      alignItems: "center",
-      display: "flex",
-      flexDirection: "column"
-    },
-    headerTitle: {
-      margin: 16,
-      marginBottom: 0
-    },
-    tabs: {
-      flexGrow: 1,
-      height: "fit-content",
-      paddingLeft: 8,
-      paddingRight: 8,
-      width: "100%"
-    }
-  })
-)
-
-interface TabPanelProps {
-  children?: React.ReactNode
-  index: any
-  value: any
-}
-
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props
-  const classes = useStyles()
-  return (
-    <Typography
-      {...other}
-      className={classes.tabPanel}
-      component="div"
-      role="tabpanel"
-      hidden={value !== index}
-      id={`scrollable-auto-tabpanel-${index}`}
-    >
-      {value === index && <Box className={classes.box}>{children}</Box>}
-    </Typography>
-  )
-}
+const useStyles = makeStyles({
+  root: {
+    display: "flex",
+    flexDirection: "column",
+    height: "100%"
+  },
+  headerContainer: {
+    display: "flex",
+    marginBottom: 16
+  }
+})
 
 interface MusicCollectionAreaProps {}
 
 function MusicCollectionArea(props: MusicCollectionAreaProps) {
   const classes = useStyles()
 
-  const [tab, setTab] = React.useState(0)
-
-  const handleChange = React.useCallback((event: React.ChangeEvent<{}>, newValue: number) => {
-    setTab(newValue)
-  }, [])
+  const [showFavourites, setShowFavourites] = React.useState(false)
 
   const { favItems, recentItems } = useSelector((state: RootState) => state.cache)
 
   return (
     <div className={classes.root}>
       <div className={classes.headerContainer}>
-        <Typography variant="h3" className={classes.headerTitle}>
-          Collection
+        <Typography variant="h4" style={{ fontWeight: 500 }}>
+          Browse
         </Typography>
-        <Tabs
-          className={classes.tabs}
-          indicatorColor="primary"
-          onChange={handleChange}
-          textColor="primary"
-          scrollButtons="auto"
-          variant="fullWidth"
-          value={tab}
-        >
-          <Tab label="Recent History" />
-          <Tab label="Favourites" />
-        </Tabs>
+        <Grid container alignItems="center" spacing={1} style={{ justifyContent: "flex-end" }}>
+          <Grid item>
+            <HistoryIcon color="primary" style={{ fontSize: "200%" }} />
+          </Grid>
+          <Grid item>
+            <Switch
+              checked={showFavourites}
+              onChange={() => setShowFavourites(!showFavourites)}
+              name="switchFavourites"
+            />
+          </Grid>
+          <Grid item>
+            <FavouriteIcon color="primary" style={{ fontSize: "200%" }} />
+          </Grid>
+        </Grid>
       </div>
-      <TabPanel value={tab} index={0}>
-        <RecentHistoryTab items={recentItems} />
-      </TabPanel>
-      <TabPanel value={tab} index={1}>
-        <FavouritesTab items={favItems} />
-      </TabPanel>
+      {showFavourites ? <FavouritesTab items={favItems} /> : <RecentHistoryTab items={recentItems} />}
     </div>
   )
 }
