@@ -11,10 +11,10 @@ import { makeStyles } from "@material-ui/core/styles"
 import Toolbar from "@material-ui/core/Toolbar"
 import Typography from "@material-ui/core/Typography"
 import BrightnessLowIcon from "@material-ui/icons/Brightness5"
-import PowerIcon from "@material-ui/icons/PowerSettingsNew"
 import BrightnessHighIcon from "@material-ui/icons/Brightness7"
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft"
 import MenuIcon from "@material-ui/icons/Menu"
+import PowerIcon from "@material-ui/icons/PowerSettingsNew"
 import clsx from "clsx"
 import React from "react"
 import { useDispatch, useSelector } from "react-redux"
@@ -23,12 +23,11 @@ import { RootState } from "../../app/rootReducer"
 import { ColorSchemeContext } from "../../context/colorScheme"
 import HomePage from "../../pages/HomePage"
 import LoginPage from "../../pages/LoginPage"
-import MusicLibraryPage from "../../pages/MusicLibraryPage"
 import SoundboardPage from "../../pages/SoundboardPage"
 import { stopPlayer } from "../../redux/playerSlice"
+import { darkShades, lightShades } from "../../theme"
 import Footer from "../Footer"
 import { MainListItems } from "./ListItems"
-import { darkShades, lightShades } from "../../theme"
 
 const drawerWidth = 240
 
@@ -190,13 +189,6 @@ export default function Dashboard() {
               <Fade in timeout={1000} mountOnEnter unmountOnExit>
                 <div>
                   <HomePage />
-                </div>
-              </Fade>
-            </Route>
-            <Route path="/music">
-              <Fade in timeout={1000} mountOnEnter unmountOnExit>
-                <div>
-                  <MusicLibraryPage />
                 </div>
               </Fade>
             </Route>
