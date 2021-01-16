@@ -124,7 +124,7 @@ export class Youtube {
         let tracks: Track[] = []
         _.forEach(playlist.items, item => {
           const newTrack: Track = {
-            thumbnail: { medium: item.thumbnail },
+            thumbnail: { medium: item.bestThumbnail.url },
             source: "youtube",
             title: item.title,
             url: item.url
