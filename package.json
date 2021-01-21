@@ -58,7 +58,7 @@
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
     "rxjs": "^6.5.3",
-    "socket.io": "^2.3.0",
+    "socket.io": "^2.4.0",
     "socketio-jwt": "^4.5.0",
     "sodium": "^3.0.2",
     "spotify-web-api-node": "^5.0.0",
