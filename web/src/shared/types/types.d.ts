@@ -1,7 +1,5 @@
 // --- PLAYER ---
 
-type MusicItem = TrackModel | PlaylistModel
-
 interface Thumbnail {
   small?: string
   medium?: string
@@ -40,7 +38,7 @@ interface YoutubeTrack extends Track {
 }
 
 interface Playlist {
-  id: string
+  identifier: string
   name: string
   owner?: string
   source: "spotify" | "youtube"

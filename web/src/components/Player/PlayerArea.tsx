@@ -1,14 +1,11 @@
 import Grid from "@material-ui/core/Grid"
-import IconButton from "@material-ui/core/IconButton"
 import Paper from "@material-ui/core/Paper"
 import makeStyles from "@material-ui/core/styles/makeStyles"
-import Tooltip from "@material-ui/core/Tooltip"
 import Typography from "@material-ui/core/Typography"
 import ClearAllIcon from "@material-ui/icons/ClearAll"
 import QueueIcon from "@material-ui/icons/QueueMusic"
 import React from "react"
-import { useDispatch, useSelector } from "react-redux"
-import { RootState } from "../../app/rootReducer"
+import { useDispatch } from "react-redux"
 import { AppDispatch } from "../../app/store"
 import {
   clearTracks,
@@ -20,7 +17,10 @@ import {
   skipTracks,
   updateLoopState
 } from "../../redux/playerSlice"
+import { PlayerFieldsFragment, useGetTrackByIdLazyQuery } from "../../services/graphql/graphql"
+import QueryWrapper from "../QueryWrapper/QueryWrapper"
 import QueueList from "../Queue/QueueList"
+import StyledButton from "../StyledButton"
 import {
   LoopButton,
   PauseButton,
@@ -57,18 +57,30 @@ const useStyles = makeStyles(theme => ({
 }))
 
 interface Props {
+  guildID: GuildID
+  player: PlayerFieldsFragment
   style?: React.CSSProperties
 }
 
 function PlayerArea(props: Props) {
-  const { style } = props
+  const { player, guildID, style } = props
 
   const dispatch: AppDispatch = useDispatch()
-  const { available, currentTrack, paused, queue: queueIDs, volume } = useSelector((state: RootState) => state.player)
-  const { loopState } = useSelector((state: RootState) => state.player)
+  const { available, currentTrackID, loopState, paused, queueIDs, volume } = player
   const [showQueue, setShowQueue] = React.useState(false)
 
   const classes = useStyles()
+
+  const [loadTrack, trackQuery] = useGetTrackByIdLazyQuery({
+    fetchPolicy: "cache-and-network",
+    pollInterval: 3000
+  })
+
+  React.useEffect(() => {
+    if (currentTrackID) {
+      loadTrack({ variables: { id: currentTrackID } })
+    }
+  }, [currentTrackID, loadTrack])
 
   const disabled = !available || queueIDs.length === 0
   const containerWidth = showQueue ? "95%" : "80%"
@@ -81,24 +93,24 @@ function PlayerArea(props: Props) {
 
   const ClearQueueButton = React.useMemo(
     () => (
-      <Tooltip title="Clear All" aria-label="clear">
-        <span>
-          <IconButton color="secondary" disabled={disabled} onClick={() => dispatch(clearTracks())}>
-            <ClearAllIcon style={{ fontSize: "150%" }} />
-          </IconButton>
-        </span>
-      </Tooltip>
+      <StyledButton
+        alignIconBefore
+        icon={<ClearAllIcon style={{ fontSize: "150%" }} />}
+        text="Clear All"
+        onClick={() => dispatch(clearTracks())}
+      />
     ),
-    [disabled, dispatch]
+    [dispatch]
   )
 
   const ToggleQueueButton = React.useMemo(
     () => (
-      <Tooltip title="Show Queue" aria-label="show queue">
-        <IconButton color="secondary" onClick={() => setShowQueue(!showQueue)}>
-          <QueueIcon style={{ fontSize: "150%" }} />
-        </IconButton>
-      </Tooltip>
+      <StyledButton
+        alignIconBefore
+        icon={<QueueIcon style={{ fontSize: "160%" }} />}
+        text={showQueue ? "Hide Queue" : "Show Queue"}
+        onClick={() => setShowQueue(!showQueue)}
+      />
     ),
     [showQueue]
   )
@@ -109,7 +121,7 @@ function PlayerArea(props: Props) {
         Now Playing
       </Typography>
       <Typography variant="body1">{queueIDs.length} items in queue</Typography>
-      <Paper className={classes.paper} elevation={0} style={{...style,  height: !showQueue ? "unset" : undefined }}> 
+      <Paper className={classes.paper} elevation={0} style={{ ...style, height: !showQueue ? "unset" : undefined }}>
         <div className={classes.actions}>
           {showQueue && ClearQueueButton}
           {ToggleQueueButton}
@@ -123,7 +135,15 @@ function PlayerArea(props: Props) {
             marginTop: showQueue ? 48 : undefined
           }}
         >
-          {showQueue ? <QueueList /> : currentTrack ? <TrackCard currentTrack={currentTrack} /> : undefined}
+          {showQueue ? (
+            <QueueList currentTrackID={currentTrackID || undefined} guildID={guildID} queueIDs={queueIDs} />
+          ) : (
+            currentTrackID && (
+              <QueryWrapper height={400} loading={trackQuery.loading} error={trackQuery.error}>
+                {trackQuery.data && trackQuery.data.trackById && <TrackCard currentTrack={trackQuery.data.trackById} />}
+              </QueryWrapper>
+            )
+          )}
         </Grid>
         <Grid item xs={12} style={{ padding: 16 }}>
           <Grid alignItems="center" container direction="row" justify="center">
@@ -135,16 +155,16 @@ function PlayerArea(props: Props) {
             </Grid>
             <Grid item>
               {paused ? (
-                <PlayButton disabled={disabled || !currentTrack} onClick={() => dispatch(resumePlayer())} />
+                <PlayButton disabled={disabled || !currentTrackID} onClick={() => dispatch(resumePlayer())} />
               ) : (
-                <PauseButton disabled={disabled || !currentTrack} onClick={() => dispatch(pausePlayer())} />
+                <PauseButton disabled={disabled || !currentTrackID} onClick={() => dispatch(pausePlayer())} />
               )}
             </Grid>
             <Grid item>
               <SkipNextButton disabled={disabled} onClick={() => dispatch(skipTracks(1))} />
             </Grid>
             <Grid item>
-              <LoopButton disabled={disabled} onClick={switchLoopState} />
+              <LoopButton disabled={disabled} loopState={loopState as LoopState} onClick={switchLoopState} />
             </Grid>
           </Grid>
           <VolumeSlider

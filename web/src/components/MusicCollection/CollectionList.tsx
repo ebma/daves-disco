@@ -1,158 +1,87 @@
-import Box from "@material-ui/core/Box"
-import Button from "@material-ui/core/Button"
-import Divider from "@material-ui/core/Divider"
-import { makeStyles } from "@material-ui/core/styles"
-import Typography from "@material-ui/core/Typography"
-import ArrowBackIcon from "@material-ui/icons/ArrowBack"
-import RefreshIcon from "@material-ui/icons/Cached"
-import PlayIcon from "@material-ui/icons/PlayArrow"
 import React from "react"
-import { useDispatch, useSelector } from "react-redux"
-import { RootState } from "../../app/rootReducer"
+import { useDispatch } from "react-redux"
 import { AppDispatch } from "../../app/store"
 import { NotificationsContext } from "../../context/notifications"
-import { fetchPlaylistByID, playPlaylist } from "../../redux/playlistsSlice"
+import { playPlaylist } from "../../redux/playlistsSlice"
 import { playTrack } from "../../redux/tracksSlice"
-import MusicItemList from "./MusicItemList"
-
-const useStyles = makeStyles(theme => ({
-  headerContainer: {
-    justifyContent: "left",
-    display: "flex",
-    flexWrap: "wrap",
-
-    [theme.breakpoints.down("xs")]: {
-      justifyContent: "center"
-    }
-  },
-  headerButton: {
-    margin: 16,
-
-    [theme.breakpoints.down("xs")]: {
-      margin: 8,
-      width: "70%"
-    }
-  },
-  title: {
-    alignSelf: "center",
-    flexGrow: 1,
-    textAlign: "center"
-  }
-}))
-
-interface PlaylistHeaderProps {
-  onBack?: () => void
-  onEnqueueAll?: () => void
-  onRefresh?: () => void
-  title?: string
-}
-
-function PlaylistHeader(props: PlaylistHeaderProps) {
-  const { onBack, onEnqueueAll, onRefresh, title } = props
-  const classes = useStyles()
-
-  return (
-    <>
-      <Box className={classes.headerContainer}>
-        {onBack && (
-          <Button
-            className={classes.headerButton}
-            variant="contained"
-            color="secondary"
-            onClick={onBack}
-            startIcon={<ArrowBackIcon />}
-          >
-            Go Back
-          </Button>
-        )}
-        {onEnqueueAll && (
-          <Button
-            className={classes.headerButton}
-            color="secondary"
-            onClick={onEnqueueAll}
-            startIcon={<PlayIcon />}
-            variant="contained"
-          >
-            Enqueue All
-          </Button>
-        )}
-        {onRefresh && (
-          <Button
-            className={classes.headerButton}
-            color="secondary"
-            onClick={onRefresh}
-            startIcon={<RefreshIcon />}
-            variant="contained"
-          >
-            Refresh
-          </Button>
-        )}
-        <Typography className={classes.title} variant="h5">
-          {title}
-        </Typography>
-      </Box>
-
-      <Divider variant="middle" />
-    </>
-  )
-}
+import {
+  PlaylistFieldsWithoutTracksFragment,
+  TrackFieldsFragment,
+  useGetPlaylistByIdUpdatedLazyQuery
+} from "../../services/graphql/graphql"
+import QueryWrapper from "../QueryWrapper/QueryWrapper"
+import MixedItemList from "./MixedItemList"
+import PlaylistList from "./PlaylistList"
 
 interface Props {
-  collection: MusicItem[]
+  guildID: GuildID
+  tracks: TrackFieldsFragment[]
+  playlists: PlaylistFieldsWithoutTracksFragment[]
+  limit?: number
+  sort?: "date" | "name"
 }
 
 function CollectionList(props: Props) {
-  const { collection } = props
+  const {limit, tracks, playlists } = props
 
-  const dispatch: AppDispatch = useDispatch()
-  const { playlists } = useSelector((state: RootState) => state.playlists)
-  const { user } = useSelector((state: RootState) => state.user)
   const [selectedPlaylistID, setSelectedPlaylistID] = React.useState<string | undefined>(undefined)
   const { showNotification } = React.useContext(NotificationsContext)
 
   const selectedPlaylist = playlists.find(playlist => playlist._id === selectedPlaylistID)
 
+  const [loadPlaylist, playlistByIDQuery] = useGetPlaylistByIdUpdatedLazyQuery({
+    fetchPolicy: "cache-and-network"
+  })
+  const dispatch: AppDispatch = useDispatch()
+
   const onTrackSelect = React.useCallback(
-    (track: TrackModel) => {
+    (track: TrackFieldsFragment) => {
       dispatch(playTrack(track)).then(() => showNotification("success", `Added '${track.title}' to queue`))
     },
     [dispatch, showNotification]
   )
 
-  const onPlaylistSelect = React.useCallback((playlist: PlaylistModel) => {
-    setSelectedPlaylistID(playlist._id)
-  }, [])
+  const onEnqueueAll = React.useCallback(
+    (playlist: PlaylistFieldsWithoutTracksFragment) =>
+      dispatch(playPlaylist(playlist)).then(() =>
+        showNotification("success", `Added all songs of '${playlist.name}' to queue`)
+      ),
+    [dispatch, showNotification]
+  )
 
-  const PlaylistHeaderMemo = React.useMemo(() => {
-    return selectedPlaylist ? (
-      <PlaylistHeader
-        onBack={() => setSelectedPlaylistID(undefined)}
-        onEnqueueAll={() =>
-          dispatch(playPlaylist(selectedPlaylist)).then(() =>
-            showNotification("success", `Added all songs of '${selectedPlaylist.name}' to queue`)
-          )
-        }
-        onRefresh={() =>
-          dispatch(fetchPlaylistByID(selectedPlaylist._id, false)).then(() =>
-            showNotification("success", `Refreshed '${selectedPlaylist.name}'`)
-          )
-        }
-        title={selectedPlaylist.name}
-      />
-    ) : (
-      undefined
-    )
-  }, [dispatch, selectedPlaylist, showNotification])
+  const onPlaylistSelect = React.useCallback(
+    (playlist: PlaylistFieldsWithoutTracksFragment) => {
+      setSelectedPlaylistID(playlist._id)
+      loadPlaylist({ variables: { id: playlist._id } })
+    },
+    [loadPlaylist]
+  )
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      {PlaylistHeaderMemo}
-      <MusicItemList
-        guildID={user?.guildID || ""}
-        items={selectedPlaylist ? selectedPlaylist.tracks : collection}
-        onTrackSelect={onTrackSelect}
-        onPlaylistSelect={onPlaylistSelect}
-      />
+      {selectedPlaylist ? (
+        <QueryWrapper loading={playlistByIDQuery.loading} error={playlistByIDQuery.error}>
+          {playlistByIDQuery.data && playlistByIDQuery.data.playlistByIdUpdated && (
+            <PlaylistList
+              guildID={props.guildID}
+              playlist={playlistByIDQuery.data.playlistByIdUpdated}
+              onBack={() => setSelectedPlaylistID(undefined)}
+              onEnqueueAll={onEnqueueAll}
+              onTrackSelect={onTrackSelect}
+            />
+          )}
+        </QueryWrapper>
+      ) : (
+        <MixedItemList
+          guildID={props.guildID}
+          tracks={tracks}
+          playlists={playlists}
+          onTrackSelect={onTrackSelect}
+          onPlaylistSelect={onPlaylistSelect}
+          limit={limit}
+          sort={props.sort}
+        />
+      )}
     </div>
   )
 }

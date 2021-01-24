@@ -1,20 +1,14 @@
+import { ApolloProvider } from "@apollo/client"
 import { ThemeProvider } from "@material-ui/core/styles"
 import React from "react"
-import { useDispatch, useSelector } from "react-redux"
 import { HashRouter as Router } from "react-router-dom"
-import { fetchGuilds } from "../redux/guildsSlice"
 import Dashboard from "../components/Dashboard/Dashboard"
 import NotificationContainer from "../components/Notification/NotificationContainer"
 import { ColorSchemeContext, ColorSchemeProvider } from "../context/colorScheme"
 import { NotificationsProvider } from "../context/notifications"
-import { fetchPlayerState, subscribePlayerState } from "../redux/playerSlice"
-import { fetchPlaylists, subscribePlaylists } from "../redux/playlistsSlice"
-import { fetchItems, subscribeItems } from "../redux/soundboardsSlice"
-import { fetchTracks, subscribeTracks } from "../redux/tracksSlice"
+import apolloClient from "../services/graphql/apollo-client"
 import createTheme from "../theme"
 import ErrorHandler from "./ErrorHandler"
-import { RootState } from "./rootReducer"
-import { AppDispatch } from "./store"
 
 function MaterialThemeProvider(props: { children: React.ReactNode }) {
   const { colorScheme } = React.useContext(ColorSchemeContext)
@@ -26,61 +20,18 @@ function MaterialThemeProvider(props: { children: React.ReactNode }) {
 }
 
 function App() {
-  const dispatch: AppDispatch = useDispatch()
-
-  const { connectionState } = useSelector((state: RootState) => state.socket)
-  const { user } = useSelector((state: RootState) => state.user)
-
-  React.useEffect(() => {
-    if (connectionState === "authenticated") {
-      dispatch(fetchPlayerState())
-    }
-
-    const unsubscribe = dispatch(subscribePlayerState())
-
-    return unsubscribe
-  }, [connectionState, dispatch])
-
-  React.useEffect(() => {
-    if (connectionState !== "authenticated") return
-
-    const fetchRecents = async () => {
-      dispatch(fetchPlaylists()).catch(console.error)
-      dispatch(fetchTracks()).catch(console.error)
-      dispatch(fetchItems()).catch(console.error)
-    }
-
-    const unsubscribePlaylists = dispatch(subscribePlaylists())
-    const unsubscribeTracks = dispatch(subscribeTracks())
-    const unsubscribeItems = dispatch(subscribeItems())
-
-    fetchRecents()
-
-    return () => {
-      unsubscribePlaylists()
-      unsubscribeTracks()
-      unsubscribeItems()
-    }
-  }, [connectionState, dispatch, user])
-
-  React.useEffect(() => {
-    const interval = setInterval(() => {
-      dispatch(fetchGuilds())
-    }, 20000)
-    dispatch(fetchGuilds())
-    return () => clearInterval(interval)
-  }, [dispatch])
-
   return (
     <ColorSchemeProvider>
       <MaterialThemeProvider>
-        <NotificationsProvider>
-          <Router>
-            <Dashboard />
-          </Router>
-          <ErrorHandler />
-          <NotificationContainer />
-        </NotificationsProvider>
+        <ApolloProvider client={apolloClient}>
+          <NotificationsProvider>
+            <Router>
+              <Dashboard />
+            </Router>
+            <ErrorHandler />
+            <NotificationContainer />
+          </NotificationsProvider>
+        </ApolloProvider>
       </MaterialThemeProvider>
     </ColorSchemeProvider>
   )

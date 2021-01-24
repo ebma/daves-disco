@@ -6,9 +6,7 @@ import ListItemText from "@material-ui/core/ListItemText"
 import Paper from "@material-ui/core/Paper"
 import makeStyles from "@material-ui/styles/makeStyles"
 import React from "react"
-import { useDispatch } from "react-redux"
-import { AppDispatch } from "../../../app/store"
-import { updatePlaylist } from "../../../redux/playlistsSlice"
+import { PlaylistFieldsWithoutTracksFragment } from "../../../services/graphql/graphql"
 import { SpotifyHelper } from "../../../shared/utils/helpers"
 import { FavorButton, ShowListButton } from "./Buttons"
 
@@ -34,30 +32,17 @@ const useStyles = makeStyles(theme => ({
 }))
 
 interface Props {
-  playlist: PlaylistModel
+  playlist: PlaylistFieldsWithoutTracksFragment
   guildID: GuildID
   onClick?: () => void
+  toggleFavourite?: (playlist: PlaylistFieldsWithoutTracksFragment) => void
   showFavourite?: boolean
   thumbnailSize?: number
 }
 
 function PlaylistItem(props: Props) {
-  const { guildID, playlist, onClick, showFavourite, thumbnailSize = 78 } = props
+  const { guildID, playlist, onClick, toggleFavourite, showFavourite, thumbnailSize = 78 } = props
   const classes = useStyles()
-
-  const dispatch: AppDispatch = useDispatch()
-
-  const toggleFavourite = React.useCallback(() => {
-    const favouriteCopy = playlist.favourite.slice()
-    const toggledFavouriteCopy = favouriteCopy.map(value => {
-      if (value.guild === guildID) {
-        return { ...value, favourite: !value.favourite }
-      } else {
-        return value
-      }
-    })
-    dispatch(updatePlaylist({ ...playlist, favourite: toggledFavouriteCopy }))
-  }, [dispatch, guildID, playlist])
 
   const secondaryText = React.useMemo(
     () =>
@@ -87,7 +72,7 @@ function PlaylistItem(props: Props) {
           <Avatar
             alt="thumbnail"
             className={classes.avatar}
-            src={playlist.thumbnail?.small || playlist.thumbnail?.medium || playlist.thumbnail?.large}
+            src={playlist.thumbnail?.small || playlist.thumbnail?.medium || playlist.thumbnail?.large || undefined}
             variant="square"
             style={{ minWidth: thumbnailSize, minHeight: thumbnailSize }}
           />
@@ -113,8 +98,8 @@ function PlaylistItem(props: Props) {
         />
         {showFavourite && (
           <FavorButton
-            onClick={toggleFavourite}
-            favourite={playlist.favourite.find(value => value.guild === guildID)?.favourite || false}
+            onClick={() => toggleFavourite && toggleFavourite(playlist)}
+            favourite={playlist.favourite?.find(value => value && value.guild === guildID)?.favourite || false}
           />
         )}
       </ListItem>

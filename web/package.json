@@ -3,12 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@apollo/client": "^3.3.7",
     "@material-ui/core": "^4.4.2",
     "@material-ui/icons": "^4.4.1",
     "@material-ui/lab": "^4.0.0-alpha.31",
     "@reduxjs/toolkit": "^1.3.4",
     "@sentry/browser": "^5.15.5",
     "axios": "^0.21.1",
+    "graphql": "^15.4.0",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.20",
     "react": "^16.9.0",
@@ -27,6 +29,12 @@
     "ytdl-core": "^1.0.9"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^1.20.0",
+    "@graphql-codegen/introspection": "1.18.1",
+    "@graphql-codegen/typed-document-node": "^1.18.2",
+    "@graphql-codegen/typescript": "^1.20.0",
+    "@graphql-codegen/typescript-operations": "^1.17.13",
+    "@graphql-codegen/typescript-react-apollo": "2.2.1",
     "@types/jest": "24.0.18",
     "@types/lodash": "^4.14.138",
     "@types/node": "12.7.5",
@@ -44,6 +52,8 @@
   },
   "scripts": {
     "precommit": "lint-staged",
+    "generate": "graphql-codegen --config codegen.yml",
+    "prestart": "npm run generate",
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
     "deploy": "npm run build && surge ./build --domain daves-disco.marcel-ebert.de",

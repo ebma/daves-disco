@@ -5,11 +5,12 @@ import { makeStyles } from "@material-ui/core/styles"
 import TextField from "@material-ui/core/TextField"
 import CancelIcon from "@material-ui/icons/Cancel"
 import React from "react"
-import { useDispatch, useSelector } from "react-redux"
-import { RootState } from "../../app/rootReducer"
+import { useDispatch } from "react-redux"
 import { AppDispatch } from "../../app/store"
 import { playSound } from "../../redux/soundboardsSlice"
+import { useGetSoundboardItemsQuery } from "../../services/graphql/graphql"
 import { VolumeSlider } from "../Player/VolumeSlider"
+import QueryWrapper from "../QueryWrapper/QueryWrapper"
 import SoundboardItem from "./SoundboardItem"
 import SoundboardItemFields from "./SoundboardItemFields"
 
@@ -58,11 +59,19 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-function SoundboardArea() {
+interface Props {
+  guildID: GuildID
+}
+
+function SoundboardArea(props: Props) {
   const classes = useStyles()
 
   const dispatch: AppDispatch = useDispatch()
-  const { items } = useSelector((state: RootState) => state.soundboard)
+  const soundboardItemsQuery = useGetSoundboardItemsQuery({
+    fetchPolicy: "cache-and-network",
+    pollInterval: 2000,
+    variables: { guild: props.guildID }
+  })
 
   const [editableItemId, setEditableItemId] = React.useState<string | undefined>(undefined)
   const [searchTerm, setSearchTerm] = React.useState("")
@@ -74,26 +83,10 @@ function SoundboardArea() {
   ])
 
   const sortedItems = React.useMemo(() => {
+    const items = soundboardItemsQuery.data ? soundboardItemsQuery.data.soundboardItemMany : []
     const matchingItems = items.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
     return matchingItems.slice().sort((a, b) => a.name.localeCompare(b.name))
-  }, [items, searchTerm])
-
-  const ItemList = React.useMemo(
-    () =>
-      sortedItems.map(item => {
-        return item._id === editableItemId ? (
-          <SoundboardItemFields editing item={item} onActionDone={() => setEditableItemId(undefined)} />
-        ) : (
-          <SoundboardItem
-            key={item.name}
-            item={item}
-            onClick={play(item)}
-            onEditClick={() => setEditableItemId(item._id)}
-          />
-        )
-      }),
-    [editableItemId, sortedItems, play]
-  )
+  }, [soundboardItemsQuery.data, searchTerm])
 
   return (
     <div className={classes.root}>
@@ -124,9 +117,27 @@ function SoundboardArea() {
         />
       </div>
       <Grid container spacing={3} justify="center">
-        {ItemList}
+        <QueryWrapper loading={soundboardItemsQuery.loading} error={soundboardItemsQuery.error}>
+          {sortedItems.map(item => {
+            return item._id === editableItemId ? (
+              <SoundboardItemFields
+                editing
+                item={item}
+                guildID={props.guildID}
+                onActionDone={() => setEditableItemId(undefined)}
+              />
+            ) : (
+              <SoundboardItem
+                key={item.name}
+                item={item}
+                onClick={play(item)}
+                onEditClick={() => setEditableItemId(item._id)}
+              />
+            )
+          })}
+        </QueryWrapper>
       </Grid>
-      <SoundboardItemFields />
+      <SoundboardItemFields guildID={props.guildID} />
     </div>
   )
 }

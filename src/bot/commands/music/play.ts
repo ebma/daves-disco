@@ -78,7 +78,9 @@ export async function handlePlay(input: string, guildID: GuildID, musicPlayer: M
 
 export async function playPlaylist(playlist: Playlist, guildID: GuildID, musicPlayer: MusicPlayer) {
   const populatedPlaylist =
-    playlist.source === "spotify" ? await handleSpotifyPlaylist(playlist.id) : await getYoutubePlaylist(playlist.id)
+    playlist.source === "spotify"
+      ? await handleSpotifyPlaylist(playlist.identifier)
+      : await getYoutubePlaylist(playlist.identifier)
 
   const playlistModel = await createAndSavePlaylistModel(populatedPlaylist, guildID)
   musicPlayer.enqueueAll(playlistModel.tracks)

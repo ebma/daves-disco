@@ -39,7 +39,7 @@ class Spotify {
       }
 
       return {
-        id: playlistData.body.id,
+        identifier: playlistData.body.id,
         name,
         owner: playlistData.body.owner.display_name,
         source: "spotify",

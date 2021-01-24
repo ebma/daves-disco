@@ -1,13 +1,14 @@
 import Button from "@material-ui/core/Button"
 import IconButton from "@material-ui/core/IconButton"
-import CancelIcon from "@material-ui/icons/Cancel"
 import { makeStyles } from "@material-ui/core/styles"
 import TextField from "@material-ui/core/TextField"
+import CancelIcon from "@material-ui/icons/Cancel"
 import React from "react"
-import { useDispatch } from "react-redux"
-import { AppDispatch } from "../../app/store"
-import { createItem, deleteItem, updateItem } from "../../redux/soundboardsSlice"
-import { trackError } from "../../context/notifications"
+import {
+  useCreateSoundboardItemMutation,
+  useRemoveSoundboardItemByIdMutation,
+  useUpdateSoundboardItemByIdMutation
+} from "../../services/graphql/graphql"
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -26,7 +27,7 @@ const useStyles = makeStyles(theme => ({
   },
   textfield: {
     minWidth: 300,
-    
+
     [theme.breakpoints.down("sm")]: {
       minWidth: 200
     }
@@ -35,6 +36,7 @@ const useStyles = makeStyles(theme => ({
 
 interface SoundboardItemFieldsProps {
   editing?: boolean
+  guildID: GuildID
   item?: SoundboardItemModel
   onActionDone?: () => void
 }
@@ -46,25 +48,27 @@ function SoundboardItemFields(props: SoundboardItemFieldsProps) {
   const [name, setName] = React.useState(props.item?.name || "")
   const [source, setSource] = React.useState(props.item?.source || "")
 
-  const dispatch: AppDispatch = useDispatch()
+  const [createItem] = useCreateSoundboardItemMutation({})
+  const [updateItem] = useUpdateSoundboardItemByIdMutation({})
+  const [removeItem] = useRemoveSoundboardItemByIdMutation({})
 
   const onCreate = React.useCallback(() => {
-    dispatch(createItem({ name, source })).catch(trackError)
-  }, [dispatch, name, source])
+    createItem({ variables: { record: { name, source, guild: props.guildID } } })
+  }, [createItem, name, source, props.guildID])
 
   const onUpdate = React.useCallback(() => {
     if (props.item) {
-      dispatch(updateItem({ ...props.item, name, source }))
+      updateItem({ variables: { id: props.item._id, record: { name, source } } })
       onActionDone && onActionDone()
     }
-  }, [dispatch, props.item, name, source, onActionDone])
+  }, [updateItem, props.item, name, source, onActionDone])
 
   const onDelete = React.useCallback(() => {
     if (props.item) {
-      dispatch(deleteItem(props.item))
+      removeItem({ variables: { id: props.item._id } })
       onActionDone && onActionDone()
     }
-  }, [dispatch, props.item, onActionDone])
+  }, [removeItem, props.item, onActionDone])
 
   const Actions = React.useMemo(() => {
     return props.editing ? (

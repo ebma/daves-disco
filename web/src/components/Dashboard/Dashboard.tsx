@@ -25,8 +25,10 @@ import HomePage from "../../pages/HomePage"
 import LoginPage from "../../pages/LoginPage"
 import SoundboardPage from "../../pages/SoundboardPage"
 import { stopPlayer } from "../../redux/playerSlice"
+import { useGetPlayerLazyQuery} from "../../services/graphql/graphql"
 import { darkShades, lightShades } from "../../theme"
 import Footer from "../Footer"
+import QueryWrapper from "../QueryWrapper/QueryWrapper"
 import { MainListItems } from "./ListItems"
 
 const drawerWidth = 240
@@ -121,7 +123,19 @@ export default function Dashboard() {
 
   const dispatch = useDispatch()
   const { connectionState } = useSelector((state: RootState) => state.socket)
-  const { available } = useSelector((state: RootState) => state.player)
+  const { user } = useSelector((state: RootState) => state.user)
+
+  const [loadPlayer, playerQuery] = useGetPlayerLazyQuery({ pollInterval: 2000 })
+
+  React.useEffect(() => {
+    if (user) {
+      loadPlayer({ variables: { id: user.guildID } })
+    }
+  }, [loadPlayer, user])
+
+  const player = playerQuery.data?.getPlayer || null
+  const available = player?.available || false
+
   const history = useHistory()
 
   React.useEffect(() => {
@@ -188,15 +202,15 @@ export default function Dashboard() {
             <Route path="/home">
               <Fade in timeout={1000} mountOnEnter unmountOnExit>
                 <div>
-                  <HomePage />
+                  <QueryWrapper loading={playerQuery.loading} error={playerQuery.error}>
+                    {user && player && <HomePage guildID={user.guildID} player={player} />}
+                  </QueryWrapper>
                 </div>
               </Fade>
             </Route>
             <Route path="/soundboard">
               <Fade in timeout={1000} mountOnEnter unmountOnExit>
-                <div>
-                  <SoundboardPage />
-                </div>
+                <div>{user && <SoundboardPage guildID={user.guildID} />}</div>
               </Fade>
             </Route>
             <Route path="/login">

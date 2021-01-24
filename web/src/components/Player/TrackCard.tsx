@@ -3,6 +3,7 @@ import Button from "@material-ui/core/Button"
 import Paper from "@material-ui/core/Paper"
 import Typography from "@material-ui/core/Typography"
 import React from "react"
+import { TrackFieldsFragment } from "../../services/graphql/graphql"
 import { SpotifyHelper } from "../../shared/utils/helpers"
 import { breakpoints } from "../../theme"
 
@@ -33,10 +34,9 @@ const useStyles = makeStyles({
   }
 })
 
-function TrackCard(props: { currentTrack: TrackModel }) {
-  const classes = useStyles()
-
+function TrackCard(props: { currentTrack: TrackFieldsFragment }) {
   const { currentTrack } = props
+  const classes = useStyles()
 
   const thumbnail = React.useMemo(() => {
     if (currentTrack) {
@@ -59,16 +59,18 @@ function TrackCard(props: { currentTrack: TrackModel }) {
   }, [currentTrack])
 
   return (
-    <Paper className={classes.root} >
+    <Paper className={classes.root}>
       <Avatar className={classes.avatar} src={thumbnail!} />
       <Typography align="center" gutterBottom variant="h6" color="textPrimary" style={{ marginTop: 16 }}>
-        {SpotifyHelper.isSpotifyTrack(currentTrack)
+        {SpotifyHelper.isSpotifyTrack(currentTrack as Track)
           ? `${currentTrack.title} - ${currentTrack.artists}`
           : currentTrack.title}
       </Typography>
-      <Button color="primary" onClick={() => window.open(currentTrack.url, "_blank")}>
-        Watch on Youtube
-      </Button>
+      {currentTrack.url && (
+        <Button color="primary" onClick={() => window.open(currentTrack.url || undefined, "_blank")}>
+          Watch on Youtube
+        </Button>
+      )}
     </Paper>
   )
 }

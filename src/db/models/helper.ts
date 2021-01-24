@@ -26,8 +26,8 @@ export async function repopulatePlaylistTracks(
 ): Promise<{ name: string; tracks: TrackModel[] }> {
   const populatedPlaylist =
     playlistModel.source === "spotify"
-      ? await Spotify.getSpotifyPlaylist(playlistModel.id)
-      : await Youtube.createPlaylistFrom(playlistModel.id)
+      ? await Spotify.getSpotifyPlaylist(playlistModel.identifier)
+      : await Youtube.createPlaylistFrom(playlistModel.identifier)
 
   const populatedTracks = await Promise.all(
     populatedPlaylist.tracks.map(async track => {
@@ -47,7 +47,7 @@ export async function repopulatePlaylistTracks(
 }
 
 export async function createAndSavePlaylistModel(playlist: Playlist, guildID: GuildID) {
-  let playlistModel = await Playlist.findOne({ id: playlist.id })
+  let playlistModel = await Playlist.findOne({ identifier: playlist.identifier })
   if (!playlistModel) {
     playlistModel = new Playlist({ ...playlist })
   }

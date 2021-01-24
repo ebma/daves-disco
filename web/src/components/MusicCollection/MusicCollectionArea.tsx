@@ -5,10 +5,9 @@ import FavouriteIcon from "@material-ui/icons/Favorite"
 import HistoryIcon from "@material-ui/icons/History"
 import makeStyles from "@material-ui/styles/makeStyles"
 import React from "react"
-import { useSelector } from "react-redux"
-import { RootState } from "../../app/rootReducer"
-import FavouritesTab from "./Tab/FavouritesTab"
-import RecentHistoryTab from "./Tab/RecentHistoryTab"
+import { useGetFavouritesQuery, useGetRecentsQuery } from "../../services/graphql/graphql"
+import QueryWrapper from "../QueryWrapper/QueryWrapper"
+import CollectionList from "./CollectionList"
 
 const useStyles = makeStyles({
   root: {
@@ -22,14 +21,26 @@ const useStyles = makeStyles({
   }
 })
 
-interface MusicCollectionAreaProps {}
+interface MusicCollectionAreaProps {
+  guildID: GuildID
+}
 
 function MusicCollectionArea(props: MusicCollectionAreaProps) {
   const classes = useStyles()
 
   const [showFavourites, setShowFavourites] = React.useState(false)
 
-  const { favItems, recentItems } = useSelector((state: RootState) => state.cache)
+  const favouritesQuery = useGetFavouritesQuery({
+    fetchPolicy: "cache-and-network",
+    pollInterval: 3000,
+    variables: { guild: props.guildID }
+  })
+
+  const recentsQuery = useGetRecentsQuery({
+    fetchPolicy: "cache-and-network",
+    pollInterval: 3000,
+    variables: { guild: props.guildID }
+  })
 
   return (
     <div className={classes.root}>
@@ -39,7 +50,7 @@ function MusicCollectionArea(props: MusicCollectionAreaProps) {
         </Typography>
         <Grid container alignItems="center" spacing={1} style={{ justifyContent: "flex-end" }}>
           <Grid item>
-            <HistoryIcon color="primary" style={{ fontSize: "200%" }} />
+            <HistoryIcon color="action" style={{ fontSize: "200%" }} />
           </Grid>
           <Grid item>
             <Switch
@@ -49,11 +60,38 @@ function MusicCollectionArea(props: MusicCollectionAreaProps) {
             />
           </Grid>
           <Grid item>
-            <FavouriteIcon color="primary" style={{ fontSize: "200%" }} />
+            <FavouriteIcon color="action" style={{ fontSize: "200%" }} />
           </Grid>
         </Grid>
       </div>
-      {showFavourites ? <FavouritesTab items={favItems} /> : <RecentHistoryTab items={recentItems} />}
+      {showFavourites ? (
+        <QueryWrapper loading={favouritesQuery.loading} error={favouritesQuery.error}>
+          {favouritesQuery.data && favouritesQuery.data.playlistMany && favouritesQuery.data.trackMany ? (
+            <CollectionList
+              guildID={props.guildID}
+              tracks={favouritesQuery.data.trackMany}
+              playlists={favouritesQuery.data.playlistMany}
+              sort="name"
+            />
+          ) : (
+            <Typography>No favourites yet...</Typography>
+          )}
+        </QueryWrapper>
+      ) : (
+        <QueryWrapper loading={recentsQuery.loading} error={recentsQuery.error}>
+          {recentsQuery.data && recentsQuery.data.trackRecents && recentsQuery.data.playlistRecents ? (
+            <CollectionList
+              guildID={props.guildID}
+              tracks={recentsQuery.data.trackRecents}
+              playlists={recentsQuery.data.playlistRecents}
+              limit={20}
+              sort="date"
+            />
+          ) : (
+            <Typography>No recents yet...</Typography>
+          )}
+        </QueryWrapper>
+      )}
     </div>
   )
 }

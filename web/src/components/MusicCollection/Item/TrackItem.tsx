@@ -8,9 +8,7 @@ import RadioIcon from "@material-ui/icons/Radio"
 import makeStyles from "@material-ui/styles/makeStyles"
 import React, { useRef } from "react"
 import { Draggable } from "react-beautiful-dnd"
-import { useDispatch } from "react-redux"
-import { AppDispatch } from "../../../app/store"
-import { updateTrack } from "../../../redux/tracksSlice"
+import { TrackFieldsFragment } from "../../../services/graphql/graphql"
 import { SpotifyHelper } from "../../../shared/utils/helpers"
 import { DeleteButton, FavorButton, PlayButton } from "./Buttons"
 
@@ -35,32 +33,19 @@ const useStyles = makeStyles(theme => ({
 interface TrackItemProps {
   current?: boolean
   guildID: GuildID
-  track: TrackModel
+  track: TrackFieldsFragment
   onClick?: () => void
   onDeleteClick?: () => void
+  toggleFavourite?: (track: TrackFieldsFragment) => void
   showFavourite?: boolean
   thumbnailSize?: number
 }
 
 export const TrackItem = React.forwardRef(function TrackItem(props: TrackItemProps, ref: React.Ref<HTMLLIElement>) {
-  const { current, guildID, track, onClick, onDeleteClick, showFavourite, thumbnailSize = 78 } = props
+  const { current, guildID, track, onClick, onDeleteClick, toggleFavourite, showFavourite, thumbnailSize = 78 } = props
   const classes = useStyles()
 
-  const dispatch: AppDispatch = useDispatch()
-
-  const toggleFavourite = React.useCallback(() => {
-    const favouriteCopy = track.favourite.slice()
-    const toggledFavouriteCopy = favouriteCopy.map(value => {
-      if (value.guild === guildID) {
-        return { ...value, favourite: !value.favourite }
-      } else {
-        return value
-      }
-    })
-    dispatch(updateTrack({ ...track, favourite: toggledFavouriteCopy }))
-  }, [dispatch, guildID, track])
-
-  const primaryText = SpotifyHelper.isSpotifyTrack(track) ? `${track.title} - ${track.artists}` : track.title
+  const primaryText = SpotifyHelper.isSpotifyTrack(track as Track) ? `${track.title} - ${track.artists}` : track.title
 
   return (
     <Paper className={classes.paper} elevation={0}>
@@ -75,7 +60,7 @@ export const TrackItem = React.forwardRef(function TrackItem(props: TrackItemPro
             <Avatar
               alt="thumbnail"
               className={classes.avatar}
-              src={track.thumbnail?.small ?? track.thumbnail?.medium ?? track.thumbnail?.large}
+              src={track.thumbnail?.small || track.thumbnail?.medium || track.thumbnail?.large || undefined}
               style={{ minWidth: thumbnailSize, minHeight: thumbnailSize }}
               variant="rounded"
             />
@@ -109,8 +94,8 @@ export const TrackItem = React.forwardRef(function TrackItem(props: TrackItemPro
         {onDeleteClick && <DeleteButton onClick={onDeleteClick} />}
         {showFavourite && (
           <FavorButton
-            onClick={toggleFavourite}
-            favourite={track.favourite.find(value => value.guild === guildID)?.favourite || false}
+            onClick={() => toggleFavourite && toggleFavourite(track)}
+            favourite={track.favourite?.find(value => value && value.guild === guildID)?.favourite || false}
           />
         )}
       </ListItem>

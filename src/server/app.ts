@@ -1,38 +1,33 @@
+import { ApolloServer } from "apollo-server-express"
 import cors from "cors"
 import express from "express"
-require("express-async-errors")
+import { MyClient } from "../bot/MyClient"
 import { connect } from "../db/connection"
 import config from "../utils/config"
-import { MyClient } from "../bot/MyClient"
-import middleware from "./middleware"
-import { createGuildRouter } from "./controllers/guilds"
 import { createLoginRouter } from "./controllers/login"
-import { createPlayerRouter } from "./controllers/player"
-import playlistsRouter from "./controllers/playlists"
-import tracksRouter from "./controllers/tracks"
 import youtubeRouter from "./controllers/youtube"
-import soundboardRouter from "./controllers/soundboards"
+import middleware from "./middleware"
+import { createSchema } from "./schema/schema"
+require("express-async-errors")
 
 connect(config.MONGODB_URI)
 
 export function initApp(client: MyClient) {
   const app = express()
 
-  const guildRouter = createGuildRouter(client)
+  const schema = createSchema(client)
+
+  const apolloServer = new ApolloServer({ schema })
+  apolloServer.applyMiddleware({ app })
+
   const loginRouter = createLoginRouter(client)
-  const playerRouter = createPlayerRouter(client)
 
   app.use(cors())
   app.use(express.json())
   app.use(middleware.requestLogger)
 
   app.use("/api/login", loginRouter)
-  app.use("/api/playlists", playlistsRouter)
-  app.use("/api/tracks", tracksRouter)
-  app.use("/api/guilds", guildRouter)
-  app.use("/api/player", playerRouter)
   app.use("/api/youtube", youtubeRouter)
-  app.use("/api/soundboards", soundboardRouter)
 
   app.use(middleware.unknownEndpoint)
   app.use(middleware.errorHandler)

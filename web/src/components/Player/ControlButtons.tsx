@@ -8,8 +8,6 @@ import ShuffleIcon from "@material-ui/icons/Shuffle"
 import SkipNextIcon from "@material-ui/icons/SkipNext"
 import SkipPreviousIcon from "@material-ui/icons/SkipPrevious"
 import React from "react"
-import { useSelector } from "react-redux"
-import { RootState } from "../../app/rootReducer"
 import { useDebounce } from "../../hooks/util"
 
 const useStyles = makeStyles(theme => ({
@@ -34,7 +32,12 @@ function StyledControlButton(props: StyledButtonProps) {
   const { alignIconBefore, style, ...reducedProps } = props
 
   return (
-    <Button {...reducedProps} color="secondary" className={classes.button} style={{ borderRadius: 50, padding: 16, ...style }}>
+    <Button
+      {...reducedProps}
+      color="secondary"
+      className={classes.button}
+      style={{ borderRadius: 50, padding: 16, ...style }}
+    >
       {alignIconBefore ? props.icon : undefined}
       {props.text}
       {alignIconBefore ? undefined : props.icon}
@@ -70,8 +73,8 @@ export function ShuffleButton(props: ControlItemProps) {
   return <DebouncedButton {...props} icon={<ShuffleIcon style={{ fontSize: "160%" }} />} text="Shuffle" />
 }
 
-export function LoopButton(props: ControlItemProps) {
-  const { loopState } = useSelector((state: RootState) => state.player)
+export function LoopButton(props: ControlItemProps & { loopState: LoopState }) {
+  const { loopState, ...reducedProps } = props
   const loopText = loopState === "none" ? "Don't repeat" : loopState === "repeat-one" ? "Repeat Track" : "Repeat"
 
   const loopIcon =
@@ -83,17 +86,12 @@ export function LoopButton(props: ControlItemProps) {
       <RepeatIcon style={{ fontSize: "160%" }} />
     )
 
-  return <DebouncedButton {...props} icon={loopIcon} text={loopText} />
+  return <DebouncedButton {...reducedProps} icon={loopIcon} text={loopText} />
 }
 
 export function PlayButton(props: ControlItemProps) {
   return (
-    <DebouncedButton
-      {...props}
-      icon={<PlayIcon style={{ fontSize: "200%" }} />}
-      text="Play"
-      style={{ padding: 24 }}
-    />
+    <DebouncedButton {...props} icon={<PlayIcon style={{ fontSize: "200%" }} />} text="Play" style={{ padding: 24 }} />
   )
 }
 
