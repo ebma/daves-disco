@@ -101,7 +101,7 @@ export class Youtube {
         const info = await this.getTrackInfo(url)
         if (info) {
           const track: Track = {
-            description: info.videoDetails.shortDescription,
+            description: info.videoDetails.description,
             url: info.videoDetails.video_url,
             source: "youtube",
             title: info.videoDetails.title,
@@ -133,7 +133,7 @@ export class Youtube {
         })
 
         resolve({
-          id: playlist.id,
+          identifier: playlist.id,
           name: playlist.title,
           owner: playlist.author.name,
           source: "youtube",

@@ -3,7 +3,7 @@ import mongoose, { Schema, Document } from "mongoose"
 export type IPlaylist = Document & PlaylistModel
 
 const PlaylistSchema = new Schema({
-  id: { type: String, required: true, unique: true },
+  identifier: { type: String, required: true, unique: true },
   favourite: [{ guild: String, favourite: Boolean }],
   lastTouchedAt: [{ guild: String, date: String }],
   name: { type: String, required: true },
