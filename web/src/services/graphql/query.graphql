@@ -1,0 +1,199 @@
+query GetFavourites($guild: String!) {
+  playlistMany(filter: { favourite: { guild: $guild, favourite: true } }) {
+    ...playlistFieldsWithoutTracks
+  }
+  trackMany(filter: { favourite: { guild: $guild, favourite: true } }) {
+    ...trackFields
+  }
+}
+
+query GetRecents($guild: String!) {
+  playlistRecents(guild: $guild, limit: 20) {
+    ...playlistFieldsWithoutTracks
+  }
+  trackRecents(guild: $guild, limit: 20) {
+    ...trackFields
+  }
+}
+
+query GetSoundboardItems($guild: String!) {
+  soundboardItemMany(filter: { guild: $guild }) {
+    ...soundboardItemFields
+  }
+}
+
+query GetPlaylistByID($id: MongoID!) {
+  playlistById(_id: $id) {
+    ...playlistFields
+  }
+}
+
+query GetPlaylistByIDUpdated($id: MongoID!) {
+  playlistByIdUpdated(_id: $id) {
+    ...playlistFields
+  }
+}
+
+query GetTracksByIds($ids: [MongoID!]!) {
+  trackByIds(_ids: $ids) {
+    ...trackFields
+  }
+}
+
+query GetTrackById($id: MongoID!) {
+  trackById(_id: $id) {
+    ...trackFields
+  }
+}
+
+query GetGuilds {
+  getGuilds {
+    id
+    name
+    members {
+      id
+      name
+    }
+  }
+}
+
+query GetPlayer($id: String!) {
+  getPlayer(guild: $id) {
+    ...playerFields
+  }
+}
+
+mutation UpdateTrackById($id: MongoID!, $record: UpdateByIdTrackInput!) {
+  trackUpdateById(_id: $id, record: $record) {
+    recordId
+    error {
+      message
+    }
+  }
+}
+
+mutation UpdatePlaylistById($id: MongoID!, $record: UpdateByIdPlaylistInput!) {
+  playlistUpdateById(_id: $id, record: $record) {
+    recordId
+    error {
+      message
+    }
+  }
+}
+
+mutation CreateSoundboardItem($record: CreateOneSoundboardItemInput!) {
+  soundboardItemCreateOne(record: $record) {
+    recordId
+    error {
+      message
+    }
+  }
+}
+
+mutation UpdateSoundboardItemById($id: MongoID!, $record: UpdateByIdSoundboardItemInput!) {
+  soundboardItemUpdateById(_id: $id, record: $record) {
+    recordId
+    error {
+      message
+    }
+  }
+}
+
+mutation RemoveSoundboardItemById($id: MongoID!) {
+  soundboardItemRemoveById(_id: $id) {
+    recordId
+    error {
+      message
+    }
+  }
+}
+
+mutation UpdateQueue($guild: String!, $queueIDs: [String!]!) {
+  updateQueue(guild: $guild, queueIDs: $queueIDs) {
+    queueIDs
+  }
+}
+
+fragment playlistFieldsWithoutTracks on Playlist {
+  _id
+  identifier
+  favourite {
+    guild
+    favourite
+  }
+  lastTouchedAt {
+    guild
+    date
+  }
+  name
+  owner
+  source
+  thumbnail {
+    small
+    medium
+    large
+  }
+  uri
+  url
+}
+
+fragment playlistFields on Playlist {
+  _id
+  identifier
+  favourite {
+    guild
+    favourite
+  }
+  lastTouchedAt {
+    guild
+    date
+  }
+  name
+  owner
+  source
+  tracks
+  thumbnail {
+    small
+    medium
+    large
+  }
+  uri
+  url
+}
+
+fragment trackFields on Track {
+  _id
+  artists
+  favourite {
+    guild
+    favourite
+  }
+  lastTouchedAt {
+    guild
+    date
+  }
+  title
+  source
+  thumbnail {
+    small
+    medium
+    large
+  }
+  url
+}
+
+fragment soundboardItemFields on SoundboardItem {
+  _id
+  guild
+  name
+  source
+}
+
+fragment playerFields on Player {
+  available
+  currentTrackID
+  loopState
+  paused
+  queueIDs
+  volume
+}
