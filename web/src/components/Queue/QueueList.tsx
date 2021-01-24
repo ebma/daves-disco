@@ -1,15 +1,18 @@
-import Button from "@material-ui/core/Button"
 import Divider from "@material-ui/core/Divider"
 import List from "@material-ui/core/List"
 import Typography from "@material-ui/core/Typography"
 import makeStyles from "@material-ui/styles/makeStyles"
-import _ from "lodash"
 import React from "react"
 import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd"
-import { shallowEqual, useDispatch, useSelector } from "react-redux"
-import { RootState } from "../../app/rootReducer"
+import { useDispatch } from "react-redux"
 import { AppDispatch } from "../../app/store"
-import { skipPreviousTracks, skipTracks, updateQueue } from "../../redux/playerSlice"
+import { skipPreviousTracks, skipTracks } from "../../redux/playerSlice"
+import {
+  TrackFieldsFragment,
+  useGetTracksByIdsQuery,
+  useUpdateQueueMutation,
+  useUpdateTrackByIdMutation
+} from "../../services/graphql/graphql"
 import { DraggableTrackItem } from "../MusicCollection/Item/TrackItem"
 
 function reorder<T>(list: Array<T>, startIndex: number, endIndex: number) {
@@ -28,7 +31,8 @@ interface QueueListItemProps {
   old: boolean
   onClick: () => void
   onDeleteClick: () => void
-  track: TrackModel
+  toggleFavourite: (track: TrackFieldsFragment) => void
+  track: TrackFieldsFragment
 }
 
 function QueueListItem(props: QueueListItemProps) {
@@ -39,21 +43,6 @@ function QueueListItem(props: QueueListItemProps) {
       {index > 0 ? <Divider variant="inset" component="li" /> : undefined}
       <DraggableTrackItem showFavourite {...props} thumbnailSize={62} />
     </>
-  )
-}
-
-const useLoadMoreButtonStyles = makeStyles(theme => ({
-  loadMoreButton: {
-    alignSelf: "center"
-  }
-}))
-
-function LoadMoreButton(props: { onClick: () => void }) {
-  const classes = useLoadMoreButtonStyles()
-  return (
-    <Button className={classes.loadMoreButton} onClick={props.onClick}>
-      Show more
-    </Button>
   )
 }
 
@@ -71,50 +60,62 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-function getInitialQueueItemRange(indexOfCurrentSong: number) {
-  const lower = Math.floor(indexOfCurrentSong / 20) * 20
-  const upper = (Math.floor(indexOfCurrentSong / 20) + 1) * 20
-  return { lower, upper }
+interface Props {
+  currentTrackID?: string
+  guildID: GuildID
+  queueIDs: string[]
 }
-
-interface Props {}
 
 function QueueList(props: Props) {
   const classes = useStyles()
 
   const dispatch: AppDispatch = useDispatch()
-  const { currentTrack, queue } = useSelector((state: RootState) => state.player, shallowEqual)
-  const { user } = useSelector((state: RootState) => state.user)
 
-  const [localQueue, setLocalQueue] = React.useState<TrackModel[]>(queue)
-  const [userInteractionWithLoadMore, setUserInteractionWithLoadMore] = React.useState(false)
+  const queueTracksQuery = useGetTracksByIdsQuery({
+    fetchPolicy: "cache-and-network",
+    pollInterval: 2000,
+    variables: { ids: props.queueIDs }
+  })
+
+  const [updateQueueMutation] = useUpdateQueueMutation({})
+
+  const [localQueue, setLocalQueue] = React.useState<TrackFieldsFragment[]>([])
   const indexOfCurrentSong = React.useMemo(
-    () => (currentTrack ? localQueue.findIndex(track => _.isEqual(track, currentTrack)) : localQueue.length),
-    [currentTrack, localQueue]
+    () =>
+      props.currentTrackID ? localQueue.findIndex(track => track._id === props.currentTrackID) : localQueue.length,
+    [props.currentTrackID, localQueue]
   )
-  const [queueItemRange, setQueueItemRange] = React.useState<{ upper: number; lower: number }>(
-    getInitialQueueItemRange(indexOfCurrentSong)
+
+  const [updateTrack] = useUpdateTrackByIdMutation({})
+  const toggleFavourite = React.useCallback(
+    (track: TrackFieldsFragment) => {
+      const toggledFavourite = track.favourite?.map(fav =>
+        fav?.guild === props.guildID ? { guild: fav.guild, favourite: !fav.favourite } : fav
+      )
+      const updatedPartial = { favourite: toggledFavourite }
+      updateTrack({ variables: { id: track._id, record: updatedPartial } })
+    },
+    [props.guildID, updateTrack]
   )
 
   React.useEffect(() => {
-    setLocalQueue(queue)
-  }, [queue])
-
-  React.useEffect(() => {
-    // don't change range if user modified it via buttons
-    if (userInteractionWithLoadMore) return
-
-    if (
-      indexOfCurrentSong > queueItemRange.upper ||
-      (indexOfCurrentSong < queueItemRange.lower && queueItemRange.lower > 0)
-    ) {
-      setQueueItemRange(getInitialQueueItemRange(indexOfCurrentSong))
+    if (queueTracksQuery.data) {
+      const fetchedTracks = queueTracksQuery.data.trackByIds
+      // sort response items to correct order
+      const orderedResponse = props.queueIDs.reduce<TrackFieldsFragment[]>((prev, current) => {
+        const correspondingItem = fetchedTracks.find(track => track._id === current)
+        if (correspondingItem) {
+          return prev.concat(correspondingItem)
+        } else {
+          return prev
+        }
+      }, [])
+      setLocalQueue(orderedResponse)
     }
-  }, [indexOfCurrentSong, userInteractionWithLoadMore, queueItemRange])
+  }, [queueTracksQuery.data, props.queueIDs])
 
   const QueueItems = React.useMemo(() => {
-    return localQueue.slice(queueItemRange.lower, queueItemRange.upper).map((trackModel, index) => {
-      const adjustedIndex = index + queueItemRange.lower
+    return localQueue.slice(0).map((track, index) => {
       const onClick =
         index < indexOfCurrentSong
           ? () => dispatch(skipPreviousTracks(indexOfCurrentSong - index))
@@ -125,24 +126,25 @@ function QueueList(props: Props) {
       const onDeleteClick = () => {
         const copiedQueue = localQueue.slice(0).filter((_, i) => i !== index)
 
-        dispatch(updateQueue(copiedQueue.map(track => track._id)))
+        updateQueueMutation({ variables: { guild: props.guildID, queueIDs: copiedQueue.map(track => track._id) } })
       }
 
       return (
         <QueueListItem
-          current={adjustedIndex === indexOfCurrentSong}
-          id={trackModel._id}
-          key={adjustedIndex}
-          guildID={user?.guildID || ""}
-          index={adjustedIndex}
-          old={adjustedIndex < indexOfCurrentSong}
+          current={index === indexOfCurrentSong}
+          id={track._id}
+          key={index}
+          guildID={props.guildID}
+          index={index}
+          old={index < indexOfCurrentSong}
           onClick={onClick}
           onDeleteClick={onDeleteClick}
-          track={trackModel}
+          toggleFavourite={toggleFavourite}
+          track={track}
         />
       )
     })
-  }, [dispatch, indexOfCurrentSong, queueItemRange, localQueue, user])
+  }, [dispatch, indexOfCurrentSong, localQueue, props.guildID, updateQueueMutation, toggleFavourite])
 
   const EmptyQueueItem = React.useMemo(
     () => (
@@ -167,9 +169,9 @@ function QueueList(props: Props) {
 
       const orderedQueue = reorder(localQueue, result.source.index, result.destination.index)
       setLocalQueue(orderedQueue)
-      dispatch(updateQueue(orderedQueue.map(track => track._id)))
+      updateQueueMutation({ variables: { guild: props.guildID, queueIDs: orderedQueue.map(track => track._id) } })
     },
-    [dispatch, localQueue]
+    [localQueue, updateQueueMutation, props.guildID]
   )
 
   return (
@@ -177,27 +179,8 @@ function QueueList(props: Props) {
       <Droppable droppableId="queue-list">
         {provided => (
           <div ref={provided.innerRef} {...provided.droppableProps} className={classes.queueList}>
-            {queueItemRange.lower > 0 && (
-              <LoadMoreButton
-                onClick={() => {
-                  setQueueItemRange(prev => ({ lower: prev.lower - 20, upper: prev.upper }))
-                  setUserInteractionWithLoadMore(true)
-                }}
-              />
-            )}
-            <List>{queue.length > 0 ? QueueItems : EmptyQueueItem}</List>
+            <List>{localQueue.length > 0 ? QueueItems : EmptyQueueItem}</List>
             {provided.placeholder}
-            {queueItemRange.upper < queue.length && (
-              <>
-                <Divider style={{ marginBottom: 8 }} />
-                <LoadMoreButton
-                  onClick={() => {
-                    setQueueItemRange(prev => ({ lower: prev.lower, upper: prev.upper + 20 }))
-                    setUserInteractionWithLoadMore(true)
-                  }}
-                />
-              </>
-            )}
           </div>
         )}
       </Droppable>

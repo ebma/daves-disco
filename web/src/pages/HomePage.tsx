@@ -6,6 +6,7 @@ import React from "react"
 import MusicCollectionArea from "../components/MusicCollection/MusicCollectionArea"
 import PlayerArea from "../components/Player/PlayerArea"
 import SearchArea from "../components/SearchArea/SearchArea"
+import { PlayerFieldsFragment } from "../services/graphql/graphql"
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -19,7 +20,14 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-function HomePage() {
+interface Props {
+  guildID: GuildID
+  player: PlayerFieldsFragment
+}
+
+function HomePage(props: Props) {
+  const { guildID, player } = props
+
   const classes = useStyles()
 
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight)
@@ -33,12 +41,12 @@ function HomePage() {
       </Grid>
       <Grid item xs={12} lg={7}>
         <Box className={fixedHeightPaper}>
-          <MusicCollectionArea />
+          <MusicCollectionArea guildID={guildID} />
         </Box>
       </Grid>
       <Grid item xs={12} lg={5}>
         <Box className={fixedHeightPaper}>
-          <PlayerArea />
+          <PlayerArea guildID={guildID} player={player} />
         </Box>
       </Grid>
     </Grid>

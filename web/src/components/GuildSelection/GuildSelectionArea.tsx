@@ -11,10 +11,11 @@ import { RootState } from "../../app/rootReducer"
 import { AppDispatch } from "../../app/store"
 import { trackError } from "../../context/notifications"
 import { useTokenStorage } from "../../hooks/tokenStorage"
-import { Guild } from "../../redux/guildsSlice"
 import { disconnectSocketAction, initAuthenticationAction } from "../../redux/socketSlice"
 import { setUser, User } from "../../redux/userSlice"
+import { Guild, useGetGuildsQuery } from "../../services/graphql/graphql"
 import loginService from "../../services/login"
+import QueryWrapper from "../QueryWrapper/QueryWrapper"
 
 const useStyles = makeStyles(theme => ({
   button: {
@@ -51,7 +52,12 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-function SelectBox(props: { guilds: Guild[]; user?: User }) {
+interface SelectBoxProps {
+  guilds: Guild[]
+  user?: User
+}
+
+function SelectBox(props: SelectBoxProps) {
   const { guilds, user } = props
   const classes = useStyles()
   const dispatch: AppDispatch = useDispatch()
@@ -74,7 +80,7 @@ function SelectBox(props: { guilds: Guild[]; user?: User }) {
 
       const guildMember = guilds
         .find(guild => guild.id === selectedGuildID)
-        ?.members.find(member => member.id === value)
+        ?.members?.find(member => member.id === value)
       if (guildMember) {
         dispatch(setUser({ guildID: selectedGuildID, id: guildMember.id, name: guildMember.name }))
       }
@@ -93,7 +99,7 @@ function SelectBox(props: { guilds: Guild[]; user?: User }) {
     if (selectedGuildID && guilds.find(guild => guild.id === selectedGuildID)) {
       return guilds
         .find(guild => guild.id === selectedGuildID)
-        ?.members.map(member => (
+        ?.members?.map(member => (
           <MenuItem key={member.id} value={member.id}>
             {member.name}
           </MenuItem>
@@ -148,7 +154,9 @@ function GuildSelectionArea(props: Props) {
 
   const dispatch: AppDispatch = useDispatch()
   const { authError, connectionState } = useSelector((state: RootState) => state.socket)
-  const { guilds } = useSelector((state: RootState) => state.guilds)
+
+  const guildsQuery = useGetGuildsQuery({ pollInterval: 5000 })
+
   const { user } = useSelector((state: RootState) => state.user)
 
   const [authenticationPending, setAuthenticationPending] = React.useState<boolean>(false)
@@ -216,13 +224,14 @@ function GuildSelectionArea(props: Props) {
           Choose the guild and member that fit.
         </Typography>
 
-        {guilds.length > 0 ? (
-          <SelectBox guilds={guilds} user={user || undefined} />
-        ) : (
-          <Typography align="center">No guilds online...</Typography>
-        )}
-
-        {ActionButton}
+        <QueryWrapper loading={guildsQuery.loading} error={guildsQuery.error}>
+          {guildsQuery.data && guildsQuery.data.getGuilds && guildsQuery.data.getGuilds.length > 0 ? (
+            <SelectBox guilds={guildsQuery.data.getGuilds} user={user || undefined} />
+          ) : (
+            <Typography align="center">No guilds online...</Typography>
+          )}
+          {ActionButton}
+        </QueryWrapper>
 
         <Typography className={classes.info} color="textSecondary" align="center">
           {authenticationPending
