@@ -1,6 +1,6 @@
-import { Server } from "http"
+import { Server as HttpServer } from "http"
 import jwt from "jsonwebtoken"
-import socketio, { Socket } from "socket.io"
+import { Server, Socket } from "socket.io"
 import { MyClient } from "../bot/MyClient"
 import config from "../utils/config"
 import { initHandlers } from "./handlers/init"
@@ -10,13 +10,20 @@ function initializeSocket(socket: Socket, guildID: GuildID, userID: UserID) {
   WebSocketHandler.addSocket(socket, guildID, userID)
 }
 
-export function startSocketConnection(server: Server, client: MyClient) {
-  const io = socketio(server, {})
+const trustedOrigins = ["https://daves-disco.marcel-ebert.de", "http://localhost:3000"]
+
+export function startSocketConnection(httpServer: HttpServer, client: MyClient) {
+  const io = new Server(httpServer, {
+    cors: {
+      origin: trustedOrigins
+    }
+  })
 
   initHandlers(client)
 
-  io.sockets.on("connection", socket => {
-    socket.on("authenticate", ({ token }) => {
+  io.on("connection", socket => {
+    socket.on("authenticate", (data: any) => {
+      const token = data.token
       jwt.verify(token, config.SECRET, (error: any, decodedToken: DecodedToken) => {
         if (error) {
           socket.emit("unauthorized", error)
