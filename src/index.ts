@@ -1,9 +1,12 @@
-import https from "https"
 import * as Sentry from "@sentry/node"
-import { initApp } from "./server/app"
-import config from "./utils/config"
+import fs from "fs"
+import http from "http"
+import https from "https"
+import * as path from "path"
 import { MyClient } from "./bot/MyClient"
+import { initApp } from "./server/app"
 import { startSocketConnection } from "./socket/socket"
+import config from "./utils/config"
 import { trackError } from "./utils/trackError"
 
 if (process.env.NODE_ENV === "production") {
@@ -15,7 +18,18 @@ process.on("unhandledRejection", (error: any) => trackError(error, "Unhandled Pr
 const client = new MyClient()
 
 const app = initApp(client)
-const server = https.createServer(app)
+
+const server =
+  process.env.NODE_ENV == "production"
+    ? https.createServer(
+        {
+          key: fs.readFileSync(path.join(__dirname, config.KEY_PATH)),
+          cert: fs.readFileSync(path.join(__dirname, config.CERT_PATH))
+        },
+        app
+      )
+    : http.createServer(app)
+
 const port = config.PORT || 1234
 
 server.listen(port, () => {
