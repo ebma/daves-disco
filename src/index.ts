@@ -23,8 +23,8 @@ const server =
   process.env.NODE_ENV == "production"
     ? https.createServer(
         {
-          key: fs.readFileSync(path.join(__dirname, config.KEY_PATH)),
-          cert: fs.readFileSync(path.join(__dirname, config.CERT_PATH))
+          key: fs.readFileSync(config.KEY_PATH),
+          cert: fs.readFileSync(config.CERT_PATH)
         },
         app
       )
