@@ -1,4 +1,3 @@
-import http from "http"
 import https from "https"
 import * as Sentry from "@sentry/node"
 import { initApp } from "./server/app"
@@ -16,7 +15,7 @@ process.on("unhandledRejection", (error: any) => trackError(error, "Unhandled Pr
 const client = new MyClient()
 
 const app = initApp(client)
-const server = http.createServer(app)
+const server = https.createServer(app)
 const port = config.PORT || 1234
 
 server.listen(port, () => {
@@ -26,13 +25,3 @@ server.listen(port, () => {
 startSocketConnection(server, client)
 
 client.login(config.BOT_TOKEN)
-
-function preventSleeping() {
-  if (config.DEPLOYED_URL) {
-    setInterval(() => {
-      https.get(config.DEPLOYED_URL)
-    }, 1000 * 60 * 5)
-  }
-}
-
-preventSleeping()
