@@ -29,6 +29,11 @@ export function initApp(client: MyClient) {
   app.use("/api/login", loginRouter)
   app.use("/api/youtube", youtubeRouter)
 
+  app.use("/", (req, res) => {
+    res.setHeader("Content-Type", "text/html; charset=utf-8")
+    res.end("Service up and running.")
+  })
+
   app.use(middleware.unknownEndpoint)
   app.use(middleware.errorHandler)
 
