@@ -19,22 +19,23 @@ const client = new MyClient()
 
 const app = initApp(client)
 
+const port = config.PORT || 1234
 const server =
   process.env.NODE_ENV == "production"
-    ? https.createServer(
-        {
-          key: fs.readFileSync(config.KEY_PATH),
-          cert: fs.readFileSync(config.CERT_PATH)
-        },
-        app
-      )
-    : http.createServer(app)
-
-const port = config.PORT || 1234
-
-server.listen(port, () => {
-  console.log(`listening on port ${port}`)
-})
+    ? https
+        .createServer(
+          {
+            key: fs.readFileSync(config.KEY_PATH),
+            cert: fs.readFileSync(config.CERT_PATH)
+          },
+          app
+        )
+        .listen(port, () => {
+          console.log(`HTTPS server listening on port ${port}`)
+        })
+    : http.createServer(app).listen(port, () => {
+        console.log(`HTTP server listening on port ${port}`)
+      })
 
 startSocketConnection(server, client)
 
