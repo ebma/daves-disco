@@ -79,3 +79,24 @@ For logging in, requesting the player-state, available tracks and playlists or a
 
 During authentication a `JWT` token is created so that the application is able to communicate with the backend.
 Afterwards a `Socket.io` connection authenticated with that token is established (using <a href="https://github.com/auth0-community/auth0-socketio-jwt">socketio-jwt</a>)and `http` requests to the REST API are secured by including the token in the `Authorization` header.
+
+### Troubleshooting
+
+Allow non-root node to use ports 80 and 443
+`sudo setcap 'cap_net_bind_service=+ep' $(which node)`
+
+To create certificates use
+`sudo certbot certonly --manual`
+
+Beware that wildcard certificates need to be requested for every sublevel domain, i.e.
+`*.example.com` and `*.abc.example.com` would be necessary to protect both domains.
+
+Fix permission error of Certbot certificates with
+
+```
+sudo chown $(whoami) /etc/letsencrypt/live/ -R
+sudo chown $(whoami) /etc/letsencrypt/archive/ -R
+```
+
+Issues with SSL mismatch
+If using cloudflare make sure that "SSL/TLS encryption mode" is "full" and not "flexible".
