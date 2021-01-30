@@ -80,13 +80,35 @@ For logging in, requesting the player-state, available tracks and playlists or a
 During authentication a `JWT` token is created so that the application is able to communicate with the backend.
 Afterwards a `Socket.io` connection authenticated with that token is established (using <a href="https://github.com/auth0-community/auth0-socketio-jwt">socketio-jwt</a>)and `http` requests to the REST API are secured by including the token in the `Authorization` header.
 
+### Deployment with AWS and Cloudflare
+
+#### EC2
+
+1. Create a new EC2 instance
+1. Add ports 80 and 443 to the inbound rules of the security group of that instance
+1. Configure a new Elastic IP and assign it to the EC2 instance
+
+#### Cloudflare
+
+1. Go to the DNS management of your target domain on Cloudflare
+1. Add a new 'A' record that points to the Elastic IP address of your EC2 instance
+1. Make sure that SSL/TLS encryption mode is set to "Full" in the "SSL/TLS" tab
+
+#### LetsEncrypt
+
+1. Install the certbot on your EC2 instance
+1. Create a new _WILDCARD_ certificate (\*.example.com) with `sudo certbot certonly --manual` (because a DNS acme challenge is easier)
+1. Follow the instructions of certbot
+1. Run
+   `sudo chown $(whoami) /etc/letsencrypt/live/ -R` and `sudo chown $(whoami) /etc/letsencrypt/archive/ -R`
+   to make the directories accessible for the current user
+
+1. Add CERT_PATH and KEY_PATH to the `.env` file
+
 ### Troubleshooting
 
-Allow non-root node to use ports 80 and 443
+Allow non-root node to use ports 80 and 443 with
 `sudo setcap 'cap_net_bind_service=+ep' $(which node)`
-
-To create certificates use
-`sudo certbot certonly --manual`
 
 Beware that wildcard certificates need to be requested for every sublevel domain, i.e.
 `*.example.com` and `*.abc.example.com` would be necessary to protect both domains.
@@ -94,9 +116,8 @@ Beware that wildcard certificates need to be requested for every sublevel domain
 Fix permission error of Certbot certificates with
 
 ```
-sudo chown $(whoami) /etc/letsencrypt/live/ -R
-sudo chown $(whoami) /etc/letsencrypt/archive/ -R
+$ sudo chown $(whoami) /etc/letsencrypt/live/ -R
+$ sudo chown $(whoami) /etc/letsencrypt/archive/ -R
 ```
 
-Issues with SSL mismatch
-If using cloudflare make sure that "SSL/TLS encryption mode" is "full" and not "flexible".
+If you encounter issues with SSL mismatch when using cloudflare make sure that "SSL/TLS encryption mode" is "full" and not "flexible".
