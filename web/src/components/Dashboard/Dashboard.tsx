@@ -1,14 +1,14 @@
-import { Fade, Tooltip } from "@material-ui/core"
 import AppBar from "@material-ui/core/AppBar"
 import Box from "@material-ui/core/Box"
 import Container from "@material-ui/core/Container"
 import CssBaseline from "@material-ui/core/CssBaseline"
 import Divider from "@material-ui/core/Divider"
 import Drawer from "@material-ui/core/Drawer"
+import Fade from "@material-ui/core/Fade"
 import IconButton from "@material-ui/core/IconButton"
-import List from "@material-ui/core/List"
 import { makeStyles } from "@material-ui/core/styles"
 import Toolbar from "@material-ui/core/Toolbar"
+import Tooltip from "@material-ui/core/Tooltip"
 import Typography from "@material-ui/core/Typography"
 import BrightnessLowIcon from "@material-ui/icons/Brightness5"
 import BrightnessHighIcon from "@material-ui/icons/Brightness7"
@@ -17,15 +17,15 @@ import MenuIcon from "@material-ui/icons/Menu"
 import PowerIcon from "@material-ui/icons/PowerSettingsNew"
 import clsx from "clsx"
 import React from "react"
-import { useDispatch, useSelector } from "react-redux"
+import { useDispatch } from "react-redux"
 import { Route, Switch, useHistory } from "react-router-dom"
-import { RootState } from "../../app/rootReducer"
 import { ColorSchemeContext } from "../../context/colorScheme"
 import HomePage from "../../pages/HomePage"
-import LoginPage from "../../pages/LoginPage"
 import SoundboardPage from "../../pages/SoundboardPage"
 import { stopPlayer } from "../../redux/playerSlice"
-import { useGetPlayerLazyQuery} from "../../services/graphql/graphql"
+import { disconnectSocketAction } from "../../redux/socketSlice"
+import { User } from "../../redux/userSlice"
+import { useGetPlayerQuery } from "../../services/graphql/graphql"
 import { darkShades, lightShades } from "../../theme"
 import Footer from "../Footer"
 import QueryWrapper from "../QueryWrapper/QueryWrapper"
@@ -109,7 +109,12 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-export default function Dashboard() {
+interface Props {
+  user: User
+}
+
+function Dashboard(props: Props) {
+  const { user } = props
   const classes = useStyles()
   const [open, setOpen] = React.useState(false)
   const handleDrawerOpen = () => {
@@ -122,16 +127,12 @@ export default function Dashboard() {
   const { colorScheme, toggleColorScheme } = React.useContext(ColorSchemeContext)
 
   const dispatch = useDispatch()
-  const { connectionState } = useSelector((state: RootState) => state.socket)
-  const { user } = useSelector((state: RootState) => state.user)
 
-  const [loadPlayer, playerQuery] = useGetPlayerLazyQuery({ pollInterval: 2000 })
+  const logout = React.useCallback(() => {
+    dispatch(disconnectSocketAction())
+  }, [dispatch])
 
-  React.useEffect(() => {
-    if (user) {
-      loadPlayer({ variables: { id: user.guildID } })
-    }
-  }, [loadPlayer, user])
+  const playerQuery = useGetPlayerQuery({ pollInterval: 2000, variables: { id: user.guildID } })
 
   const player = playerQuery.data?.getPlayer || null
   const available = player?.available || false
@@ -139,12 +140,10 @@ export default function Dashboard() {
   const history = useHistory()
 
   React.useEffect(() => {
-    if (connectionState === "authenticated") {
-      // history.push("/home")
-    } else {
-      history.push("/login")
+    if (!history.location.hash) {
+      history.push("/home")
     }
-  }, [connectionState, history])
+  }, [history])
 
   return (
     <div className={classes.root}>
@@ -169,9 +168,11 @@ export default function Dashboard() {
             </IconButton>
           </Tooltip>
           <Tooltip title="Stop Player">
-            <IconButton color="inherit" disabled={!available} onClick={() => dispatch(stopPlayer())}>
-              <PowerIcon />
-            </IconButton>
+            <span>
+              <IconButton color="inherit" disabled={!available} onClick={() => dispatch(stopPlayer())}>
+                <PowerIcon />
+              </IconButton>
+            </span>
           </Tooltip>
         </Toolbar>
       </AppBar>
@@ -188,9 +189,7 @@ export default function Dashboard() {
           </IconButton>
         </div>
         <Divider />
-        <List>
-          <MainListItems />
-        </List>
+        <MainListItems onLogoutClick={logout} />
       </Drawer>
       <main
         className={classes.content}
@@ -213,13 +212,6 @@ export default function Dashboard() {
                 <div>{user && <SoundboardPage guildID={user.guildID} />}</div>
               </Fade>
             </Route>
-            <Route path="/login">
-              <Fade in timeout={1000} mountOnEnter unmountOnExit>
-                <div>
-                  <LoginPage />
-                </div>
-              </Fade>
-            </Route>
           </Switch>
           <Box pt={4}>
             <Footer />
@@ -229,3 +221,5 @@ export default function Dashboard() {
     </div>
   )
 }
+
+export default Dashboard

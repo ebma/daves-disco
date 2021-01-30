@@ -1,7 +1,6 @@
 import Box from "@material-ui/core/Box"
 import Button from "@material-ui/core/Button"
 import MenuItem from "@material-ui/core/MenuItem"
-import Paper from "@material-ui/core/Paper"
 import { makeStyles } from "@material-ui/core/styles"
 import TextField from "@material-ui/core/TextField"
 import Typography from "@material-ui/core/Typography"
@@ -218,30 +217,28 @@ function GuildSelectionArea(props: Props) {
   }, [authError, authenticationPending, classes.button, connectionState, dispatch, initLogin, tokenStorage, user])
 
   return (
-    <Paper>
-      <form className={classes.container} noValidate autoComplete="off">
-        <Typography variant="h6" color="textPrimary">
-          Choose the guild and member that fit.
-        </Typography>
+    <form className={classes.container} noValidate autoComplete="off">
+      <Typography variant="h6" color="textPrimary">
+        Choose guild and member for login
+      </Typography>
 
-        <QueryWrapper loading={guildsQuery.loading} error={guildsQuery.error}>
-          {guildsQuery.data && guildsQuery.data.getGuilds && guildsQuery.data.getGuilds.length > 0 ? (
-            <SelectBox guilds={guildsQuery.data.getGuilds} user={user || undefined} />
-          ) : (
-            <Typography align="center">No guilds online...</Typography>
-          )}
-          {ActionButton}
-        </QueryWrapper>
+      <QueryWrapper loading={guildsQuery.loading} error={guildsQuery.error}>
+        {guildsQuery.data && guildsQuery.data.getGuilds && guildsQuery.data.getGuilds.length > 0 ? (
+          <SelectBox guilds={guildsQuery.data.getGuilds} user={user || undefined} />
+        ) : (
+          <Typography align="center">No guilds online...</Typography>
+        )}
+        {ActionButton}
+      </QueryWrapper>
 
-        <Typography className={classes.info} color="textSecondary" align="center">
-          {authenticationPending
-            ? "Authentication is pending. Check for a received message on your discord account."
-            : authError === "jwt-expired"
-            ? "Your login token expired. Please authenticate again."
-            : undefined}
-        </Typography>
-      </form>
-    </Paper>
+      <Typography className={classes.info} color="textSecondary" align="center">
+        {authenticationPending
+          ? "Authentication is pending. Check for a received message on your discord account."
+          : authError === "jwt-expired"
+          ? "Your login token expired. Please authenticate again."
+          : undefined}
+      </Typography>
+    </form>
   )
 }
 

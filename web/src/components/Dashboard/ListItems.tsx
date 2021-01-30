@@ -1,39 +1,50 @@
+import List from "@material-ui/core/List"
 import ListItem from "@material-ui/core/ListItem"
 import ListItemIcon from "@material-ui/core/ListItemIcon"
 import ListItemText from "@material-ui/core/ListItemText"
 import { makeStyles } from "@material-ui/core/styles"
 import DashboardIcon from "@material-ui/icons/Dashboard"
-import LoginIcon from "@material-ui/icons/LockOpen"
+import LogoutIcon from "@material-ui/icons/ExitToApp"
 import SoundboardIcon from "@material-ui/icons/MusicNote"
 import React from "react"
-import { useSelector } from "react-redux"
 import { useHistory, useLocation } from "react-router"
-import { RootState } from "../../app/rootReducer"
 
 const useStyles = makeStyles(theme => ({
+  root: {
+    display: "flex",
+    flexDirection: "column",
+    flexGrow: 1
+  },
   icon: {
     fontSize: "2rem"
   },
   item: {
+    paddingTop: theme.spacing(1),
+    paddingBottom: theme.spacing(1),
     marginTop: theme.spacing(1),
     marginBottom: theme.spacing(1)
+  },
+  logoutItem: {
+    marginTop: "auto",
+    marginBottom: theme.spacing(2)
   }
 }))
 
-export function MainListItems() {
+interface Props {
+  onLogoutClick: () => void
+}
+
+export function MainListItems(props: Props) {
   const history = useHistory()
   const location = useLocation()
 
   const classes = useStyles()
 
-  const { connectionState } = useSelector((state: RootState) => state.socket)
-
   return (
-    <div>
+    <List className={classes.root}>
       <ListItem
         button
         className={classes.item}
-        disabled={connectionState !== "authenticated"}
         selected={location.pathname.includes("/home")}
         onClick={() => history.push("/home")}
       >
@@ -45,7 +56,6 @@ export function MainListItems() {
       <ListItem
         button
         className={classes.item}
-        disabled={connectionState !== "authenticated"}
         selected={location.pathname.includes("/soundboard")}
         onClick={() => history.push("/soundboard")}
       >
@@ -54,17 +64,12 @@ export function MainListItems() {
         </ListItemIcon>
         <ListItemText primary="Soundboard" />
       </ListItem>
-      <ListItem
-        button
-        className={classes.item}
-        selected={location.pathname.includes("/login")}
-        onClick={() => history.push("/login")}
-      >
+      <ListItem button className={classes.logoutItem} onClick={props.onLogoutClick}>
         <ListItemIcon>
-          <LoginIcon className={classes.icon} />
+          <LogoutIcon className={classes.icon} />
         </ListItemIcon>
-        <ListItemText primary="Login" />
+        <ListItemText primary="Log out" />
       </ListItem>
-    </div>
+    </List>
   )
 }
