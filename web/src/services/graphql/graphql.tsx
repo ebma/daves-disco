@@ -2848,6 +2848,7 @@ export type GetPlaylistByIdUpdatedQuery = (
 
 export type GetTracksByIdsQueryVariables = Exact<{
   ids: Array<Scalars['MongoID']> | Scalars['MongoID'];
+  limit?: Maybe<Scalars['Int']>;
 }>;
 
 
@@ -3350,8 +3351,8 @@ export type GetPlaylistByIdUpdatedQueryHookResult = ReturnType<typeof useGetPlay
 export type GetPlaylistByIdUpdatedLazyQueryHookResult = ReturnType<typeof useGetPlaylistByIdUpdatedLazyQuery>;
 export type GetPlaylistByIdUpdatedQueryResult = Apollo.QueryResult<GetPlaylistByIdUpdatedQuery, GetPlaylistByIdUpdatedQueryVariables>;
 export const GetTracksByIdsDocument = gql`
-    query GetTracksByIds($ids: [MongoID!]!) {
-  trackByIds(_ids: $ids) {
+    query GetTracksByIds($ids: [MongoID!]!, $limit: Int) {
+  trackByIds(_ids: $ids, limit: $limit) {
     ...trackFields
   }
 }
@@ -3370,6 +3371,7 @@ export const GetTracksByIdsDocument = gql`
  * const { data, loading, error } = useGetTracksByIdsQuery({
  *   variables: {
  *      ids: // value for 'ids'
+ *      limit: // value for 'limit'
  *   },
  * });
  */

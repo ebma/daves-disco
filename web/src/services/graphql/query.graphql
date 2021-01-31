@@ -34,8 +34,8 @@ query GetPlaylistByIDUpdated($id: MongoID!) {
   }
 }
 
-query GetTracksByIds($ids: [MongoID!]!) {
-  trackByIds(_ids: $ids) {
+query GetTracksByIds($ids: [MongoID!]!, $limit: Int) {
+  trackByIds(_ids: $ids, limit: $limit) {
     ...trackFields
   }
 }

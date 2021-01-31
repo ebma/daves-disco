@@ -106,7 +106,7 @@ function PlaylistList(props: PlaylistListProps) {
 
   const { loading, error, data } = useGetTracksByIdsQuery({
     fetchPolicy: "cache-and-network",
-    variables: { ids: playlist.tracks }
+    variables: { ids: playlist.tracks, limit: 200 }
   })
 
   return (
