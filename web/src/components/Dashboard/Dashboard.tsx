@@ -23,7 +23,7 @@ import { ColorSchemeContext } from "../../context/colorScheme"
 import HomePage from "../../pages/HomePage"
 import SoundboardPage from "../../pages/SoundboardPage"
 import { stopPlayer } from "../../redux/playerSlice"
-import { disconnectSocketAction } from "../../redux/socketSlice"
+import { disconnectSocketAction, setAutoConnect } from "../../redux/socketSlice"
 import { User } from "../../redux/userSlice"
 import { useGetPlayerQuery } from "../../services/graphql/graphql"
 import { darkShades, lightShades } from "../../theme"
@@ -129,6 +129,7 @@ function Dashboard(props: Props) {
   const dispatch = useDispatch()
 
   const logout = React.useCallback(() => {
+    dispatch(setAutoConnect(false))
     dispatch(disconnectSocketAction())
   }, [dispatch])
 

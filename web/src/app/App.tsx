@@ -1,46 +1,59 @@
-import { ApolloProvider } from "@apollo/client"
-import { ThemeProvider } from "@material-ui/core/styles"
 import React from "react"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { HashRouter as Router } from "react-router-dom"
 import Dashboard from "../components/Dashboard/Dashboard"
 import LoginDialog from "../components/Login/LoginDialog"
 import NotificationContainer from "../components/Notification/NotificationContainer"
-import { ColorSchemeContext, ColorSchemeProvider } from "../context/colorScheme"
-import { NotificationsProvider } from "../context/notifications"
-import apolloClient from "../services/graphql/apollo-client"
-import createTheme from "../theme"
+import { useTokenStorage } from "../hooks/tokenStorage"
+import { initAuthenticationAction } from "../redux/socketSlice"
+import { useGetGuildsQuery } from "../services/graphql/graphql"
 import ErrorHandler from "./ErrorHandler"
 import { RootState } from "./rootReducer"
-
-function MaterialThemeProvider(props: { children: React.ReactNode }) {
-  const { colorScheme } = React.useContext(ColorSchemeContext)
-
-  const prefersDarkMode = colorScheme === "dark"
-  const theme = React.useMemo(() => createTheme(prefersDarkMode), [prefersDarkMode])
-
-  return <ThemeProvider theme={theme}>{props.children}</ThemeProvider>
-}
+import { AppDispatch } from "./store"
 
 function App() {
-  const { connectionState } = useSelector((state: RootState) => state.socket)
+  const { authError, autoConnect, connectionState } = useSelector((state: RootState) => state.socket)
   const { user } = useSelector((state: RootState) => state.user)
 
+  const [initialized, setInitialized] = React.useState(false)
+
+  const tokenStorage = useTokenStorage()
+  const dispatch: AppDispatch = useDispatch()
+
+  const { loading, data } = useGetGuildsQuery({ pollInterval: 5000 })
+
+  React.useEffect(() => {
+    // auto-login user
+    if (
+      autoConnect &&
+      authError !== "jwt-expired" &&
+      connectionState === "connected" &&
+      user &&
+      data?.getGuilds?.find(g => g.id === user.guildID && g.members?.find(m => m.id === user.id))
+    ) {
+      const token = tokenStorage.getTokenForUser(user.guildID, user.id)
+      if (token) {
+        dispatch(initAuthenticationAction(token.jwt))
+      }
+    }
+
+    if (!loading) {
+      // add timeout to wait for socket connection
+      setTimeout(() => {
+        setInitialized(true)
+      }, 1000)
+    }
+  }, [autoConnect, authError, connectionState, data, dispatch, loading, tokenStorage, user])
+
   return (
-    <ColorSchemeProvider>
-      <MaterialThemeProvider>
-        <ApolloProvider client={apolloClient}>
-          <NotificationsProvider>
-            <Router>
-              <LoginDialog open={connectionState !== "authenticated"} onClose={() => undefined} />
-              {user && connectionState === "authenticated" && <Dashboard user={user} />}
-            </Router>
-            <ErrorHandler />
-            <NotificationContainer />
-          </NotificationsProvider>
-        </ApolloProvider>
-      </MaterialThemeProvider>
-    </ColorSchemeProvider>
+    <>
+      <Router>
+        <LoginDialog open={initialized && connectionState !== "authenticated"} onClose={() => undefined} />
+        {user && connectionState === "authenticated" && <Dashboard user={user} />}
+      </Router>
+      <ErrorHandler />
+      <NotificationContainer />
+    </>
   )
 }
 

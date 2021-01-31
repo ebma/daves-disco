@@ -4,12 +4,14 @@ import { AppThunk } from "../app/store"
 type AuthError = "jwt-expired"
 
 export interface SocketState {
-  connectionState: ConnectionState
   authError: AuthError | null
+  autoConnect: boolean
+  connectionState: ConnectionState
   error: string | null
 }
 
 const initialState: SocketState = {
+  autoConnect: true,
   authError: null,
   connectionState: "disconnected",
   error: null
@@ -19,6 +21,9 @@ const socketSlice = createSlice({
   name: "socket",
   initialState,
   reducers: {
+    setAutoConnect(state, action: PayloadAction<boolean>) {
+      state.autoConnect = action.payload
+    },
     setAuthError(state, action: PayloadAction<AuthError | null>) {
       state.authError = action.payload
     },
@@ -31,7 +36,7 @@ const socketSlice = createSlice({
   }
 })
 
-export const { setAuthError, setConnectionState, setError } = socketSlice.actions
+export const { setAutoConnect, setAuthError, setConnectionState, setError } = socketSlice.actions
 
 export default socketSlice.reducer
 
