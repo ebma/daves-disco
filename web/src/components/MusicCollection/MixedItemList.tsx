@@ -49,7 +49,7 @@ interface MixedItemListProps {
   onTrackSelect?: (track: TrackFieldsFragment) => void
   onPlaylistSelect?: (playlist: PlaylistFieldsWithoutTracksFragment) => void
   limit?: number
-  sort?: "date" | "name"
+  sort?: "date" | "name" | "none"
 }
 
 const MixedItemList = React.memo(function MusicItemList(props: MixedItemListProps) {
@@ -97,7 +97,8 @@ const MixedItemList = React.memo(function MusicItemList(props: MixedItemListProp
       array = array.concat(playlists)
     }
 
-    const sortedItems = sort === "date" ? sortItemsByDate(array, props.guildID) : sortItemsByName(array)
+    const sortedItems =
+      sort === "date" ? sortItemsByDate(array, props.guildID) : sort === "name" ? sortItemsByName(array) : array
     if (limit) {
       setItems(sortedItems.slice(0, limit))
     } else {
