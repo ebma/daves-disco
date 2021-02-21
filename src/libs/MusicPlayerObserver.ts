@@ -2,6 +2,8 @@ import { Subscription } from "rxjs"
 import MusicPlayer from "./MusicPlayer"
 import WebSocketHandler from "../socket/WebSocketHandler"
 import { Messages } from "../shared/ipc"
+import ActivityManager from "./ActivityManager"
+import Track from "../db/models/track"
 
 const DEFAULT_TIMEOUT_TIME = 1000 * 60 * 30 // 30 minutes
 
@@ -49,12 +51,18 @@ class MusicPlayerObserver {
     if (message.messageType === "status") {
       switch (message.message) {
         case "idle":
+          ActivityManager.setIdle()
           this.setupDestructionTimeout()
           break
         case "playing":
           this.clearDestructionTimeout()
           break
         case "current-track":
+          if (this.musicPlayer.currentTrack) {
+            Track.findById(this.musicPlayer.currentTrack).then(trackModel => {
+              if (trackModel) ActivityManager.setPlaying(trackModel.title, trackModel.url)
+            })
+          }
           WebSocketHandler.sendMessage(Messages.PlayerChange)
           break
         case "current-queue":

@@ -12,7 +12,6 @@ export async function createTrackModels(tracks: Track[]) {
       if (!trackModel) {
         trackModel = new Track({ ...track })
         await trackModel.save()
-        WebSocketHandler.sendMessage(Messages.TracksChange)
       }
       return trackModel
     })
@@ -73,9 +72,6 @@ export async function createAndSavePlaylistModel(playlist: Playlist, guildID: Gu
     playlistModel.tracks.push(trackModel)
   }
 
-  playlistModel.save().then(() => {
-    WebSocketHandler.sendMessage(Messages.PlaylistsChange)
-  })
   return playlistModel
 }
 
@@ -102,12 +98,7 @@ export async function createAndSaveTrackModel(track: Track, guildID: GuildID) {
   if (favouriteItemIndex === -1) {
     trackModel.favourite.push(defaultFavouriteItem)
   }
-  return Track.findOneAndUpdate({ title: track.title }, trackModel, { new: true, upsert: true })
-    .exec()
-    .then(updatedTrack => {
-      WebSocketHandler.sendMessage(Messages.TracksChange)
-      return updatedTrack
-    })
+  return Track.findOneAndUpdate({ title: track.title }, trackModel, { new: true, upsert: true }).exec()
 }
 
 export async function updateTrackModel(updatedModel: TrackModel) {

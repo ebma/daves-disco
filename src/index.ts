@@ -2,8 +2,8 @@ import * as Sentry from "@sentry/node"
 import fs from "fs"
 import http from "http"
 import https from "https"
-import * as path from "path"
 import { MyClient } from "./bot/MyClient"
+import ActivityManager from "./libs/ActivityManager"
 import { initApp } from "./server/app"
 import { startSocketConnection } from "./socket/socket"
 import config from "./utils/config"
@@ -39,4 +39,6 @@ const server =
 
 startSocketConnection(server, client)
 
-client.login(config.BOT_TOKEN)
+client.login(config.BOT_TOKEN).then(() => {
+  ActivityManager.setUser(client.user)
+})

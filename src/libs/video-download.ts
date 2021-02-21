@@ -25,7 +25,6 @@ export function downloadVideoWithProxy(url: string, seek?: number) {
     try {
       console.log("proxyAddress", proxyAddress)
       const agent = Agent(proxyAddress)
-      console.log("agent", agent)
 
       const stream = ytdlDiscordWrapper(url, {
         // encoderArgs: ["-af", "bass=g=5,dynaudnorm=f=200"],

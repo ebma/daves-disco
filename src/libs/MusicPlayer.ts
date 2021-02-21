@@ -37,7 +37,6 @@ class MusicPlayer {
           streamManager.endCurrent()
         }
       }
-      console.log("currentTrack", currentTrack)
       this.subject.next({ messageType: "status", message: "current-track", data: currentTrack })
     })
 
