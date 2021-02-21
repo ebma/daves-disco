@@ -16,10 +16,12 @@ function QueryWrapper(props: Props) {
   return loading ? (
     <ViewLoading height={height} />
   ) : error ? (
-    <Typography align="center" color="error" variant="h6">Error: {error.message}</Typography>
+    <Typography align="center" color="error" variant="h6">
+      Error: {error.message}
+    </Typography>
   ) : (
     <>{children}</>
   )
 }
 
-export default QueryWrapper
+export default React.memo(QueryWrapper)

@@ -106,21 +106,26 @@ function PlaylistList(props: PlaylistListProps) {
 
   const { loading, error, data } = useGetTracksByIdsQuery({
     fetchPolicy: "cache-and-network",
+    nextFetchPolicy: "cache-only",
     variables: { ids: playlist.tracks, limit: 200 }
   })
+
+  const ItemList = React.useMemo(() => {
+    return data ? (
+      <MixedItemList guildID={guildID} tracks={data.trackByIds} onTrackSelect={onTrackSelect} />
+    ) : (
+      <Typography>No tracks found for playlist...</Typography>
+    )
+  }, [data, guildID, onTrackSelect])
 
   return (
     <>
       <PlaylistHeader onBack={onBack} onEnqueueAll={() => onEnqueueAll(playlist)} title={playlist.name} />
       <QueryWrapper loading={loading} error={error}>
-        {data ? (
-          <MixedItemList guildID={guildID} tracks={data.trackByIds} onTrackSelect={onTrackSelect} />
-        ) : (
-          <Typography>No tracks found for playlist...</Typography>
-        )}
+        {ItemList}
       </QueryWrapper>
     </>
   )
 }
 
-export default PlaylistList
+export default React.memo(PlaylistList)

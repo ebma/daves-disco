@@ -22,7 +22,7 @@ interface Props {
 }
 
 function CollectionList(props: Props) {
-  const {limit, tracks, playlists } = props
+  const { limit, tracks, playlists } = props
 
   const [selectedPlaylistID, setSelectedPlaylistID] = React.useState<string | undefined>(undefined)
   const { showNotification } = React.useContext(NotificationsContext)
@@ -86,4 +86,4 @@ function CollectionList(props: Props) {
   )
 }
 
-export default CollectionList
+export default React.memo(CollectionList)
