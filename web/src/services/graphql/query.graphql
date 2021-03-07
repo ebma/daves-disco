@@ -16,8 +16,8 @@ query GetRecents($guild: String!) {
   }
 }
 
-query GetSoundboardItems($guild: String!) {
-  soundboardItemMany(filter: { guild: $guild }) {
+query GetSoundboardItems($guild: String!, $limit: Int) {
+  soundboardItemMany(filter: { guild: $guild }, limit: $limit) {
     ...soundboardItemFields
   }
 }

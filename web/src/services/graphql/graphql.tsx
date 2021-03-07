@@ -2809,6 +2809,7 @@ export type GetRecentsQuery = (
 
 export type GetSoundboardItemsQueryVariables = Exact<{
   guild: Scalars['String'];
+  limit?: Maybe<Scalars['Int']>;
 }>;
 
 
@@ -3252,8 +3253,8 @@ export type GetRecentsQueryHookResult = ReturnType<typeof useGetRecentsQuery>;
 export type GetRecentsLazyQueryHookResult = ReturnType<typeof useGetRecentsLazyQuery>;
 export type GetRecentsQueryResult = Apollo.QueryResult<GetRecentsQuery, GetRecentsQueryVariables>;
 export const GetSoundboardItemsDocument = gql`
-    query GetSoundboardItems($guild: String!) {
-  soundboardItemMany(filter: {guild: $guild}) {
+    query GetSoundboardItems($guild: String!, $limit: Int) {
+  soundboardItemMany(filter: {guild: $guild}, limit: $limit) {
     ...soundboardItemFields
   }
 }
@@ -3272,6 +3273,7 @@ export const GetSoundboardItemsDocument = gql`
  * const { data, loading, error } = useGetSoundboardItemsQuery({
  *   variables: {
  *      guild: // value for 'guild'
+ *      limit: // value for 'limit'
  *   },
  * });
  */

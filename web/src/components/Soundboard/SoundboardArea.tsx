@@ -70,7 +70,7 @@ function SoundboardArea(props: Props) {
   const soundboardItemsQuery = useGetSoundboardItemsQuery({
     fetchPolicy: "cache-and-network",
     pollInterval: 2000,
-    variables: { guild: props.guildID }
+    variables: { guild: props.guildID, limit: 200 }
   })
 
   const [editableItemId, setEditableItemId] = React.useState<string | undefined>(undefined)
