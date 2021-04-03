@@ -215,6 +215,8 @@ class MusicPlayer {
         const error = message.data
         trackError(error, "MusicPlayer.startStreaming on-dispatcher-error")
         this.subject.next({ messageType: "error", message: error.message })
+        console.log("Skipping forward due to error")
+        this.skipForward(1, false)
         break
     }
   }

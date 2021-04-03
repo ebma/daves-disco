@@ -8,7 +8,8 @@ const song_starting: { [name: string]: string } = {
   "lets-go": "https://www.myinstants.com/media/sounds/lets-go_kOKQu9q.mp3",
   "ready-for-a-trip": "https://www.myinstants.com/media/sounds/ready-for-a-trip.mp3",
   "this-is-my-remix": "https://www.myinstants.com/media/sounds/this-is-my-remix.mp3",
-  "we-did-this-new-record": "https://www.myinstants.com/media/sounds/we-did-this-new-record.mp3"
+  "we-did-this-new-record": "https://www.myinstants.com/media/sounds/we-did-this-new-record.mp3",
+  "shoutout-to-his-family": "https://www.myinstants.com/media/sounds/shoutout-to-his-family.mp3"
 }
 const song_ended: { [name: string]: string } = {
   "i-love-you": "https://www.myinstants.com/media/sounds/i-love-you_IO2ZNdu.mp3",
@@ -21,6 +22,7 @@ const comment: { [name: string]: string } = {
   "giving-goosebumps": "https://www.myinstants.com/media/sounds/goosebumps.mp3",
   "incredible-day": "https://www.myinstants.com/media/sounds/such-an-incredible-day.mp3",
   "keep-raving": "https://www.myinstants.com/media/sounds/keep-raving.mp3",
+  "having-a-good-time": "https://www.myinstants.com/media/sounds/good-time.mp3",
   "how-are-we-feeling": "https://www.myinstants.com/media/sounds/how-are-we-feeling.mp3",
   "my-name-is-dave": "https://www.myinstants.com/media/sounds/my-name-is_y2Uih5t.mp3",
   "let-me-see-your-hands": "https://www.myinstants.com/media/sounds/let-me-see-your-hands.mp3",

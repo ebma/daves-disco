@@ -102,6 +102,7 @@ export class Youtube {
         if (info) {
           const track: Track = {
             description: info.videoDetails.description,
+            identifier: info.videoDetails.videoId,
             url: info.videoDetails.video_url,
             source: "youtube",
             title: info.videoDetails.title,
@@ -124,6 +125,7 @@ export class Youtube {
         let tracks: Track[] = []
         _.forEach(playlist.items, item => {
           const newTrack: Track = {
+            identifier: item.id,
             thumbnail: { medium: item.bestThumbnail.url },
             source: "youtube",
             title: item.title,

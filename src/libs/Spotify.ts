@@ -51,7 +51,7 @@ class Spotify {
         tracks: items.map(item => {
           return {
             artists: item.track.artists.map(x => x.name).join(", "),
-            id: item.track.id,
+            identifier: item.track.id,
             source: "spotify",
             title: item.track.name,
             thumbnail: {

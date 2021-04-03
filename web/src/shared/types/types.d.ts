@@ -13,6 +13,7 @@ interface TrackSearchResult {
 
 interface Track {
   artists?: string
+  identifier: string
   title: string
   url?: string
   thumbnail?: Thumbnail

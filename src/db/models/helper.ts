@@ -1,14 +1,12 @@
-import Playlist from "./playlist"
-import Track from "./track"
-import WebSocketHandler from "../../socket/WebSocketHandler"
-import { Messages } from "../../shared/ipc"
 import Spotify from "../../libs/Spotify"
 import Youtube from "../../libs/Youtube"
+import Playlist from "./playlist"
+import Track from "./track"
 
 export async function createTrackModels(tracks: Track[]) {
   const trackModels = await Promise.all(
     tracks.map(async track => {
-      let trackModel = await Track.findOne({ title: track.title })
+      let trackModel = await Track.findOne({ identifier: track.identifier })
       if (!trackModel) {
         trackModel = new Track({ ...track })
         await trackModel.save()
@@ -30,7 +28,7 @@ export async function repopulatePlaylistTracks(
 
   const populatedTracks = await Promise.all(
     populatedPlaylist.tracks.map(async track => {
-      const savedTrack = await Track.findOne({ title: track.title })
+      const savedTrack = await Track.findOne({ identifier: track.identifier })
       return savedTrack || track
     })
   )
@@ -46,12 +44,17 @@ export async function repopulatePlaylistTracks(
 }
 
 export async function createAndSavePlaylistModel(playlist: Playlist, guildID: GuildID) {
-  let playlistModel = await Playlist.findOne({ identifier: playlist.identifier })
+  let playlistModel = await Playlist.findOne({
+    identifier: playlist.identifier
+  })
   if (!playlistModel) {
     playlistModel = new Playlist({ ...playlist })
   }
 
-  const newLastTouchedItem = { guild: guildID, date: Date.now().toString() }
+  const newLastTouchedItem = {
+    guild: guildID,
+    date: Date.now().toString()
+  }
   const lastTouchedItemIndex = playlistModel.lastTouchedAt.findIndex(value => value.guild === guildID)
   if (lastTouchedItemIndex !== -1) {
     playlistModel.lastTouchedAt[lastTouchedItemIndex] = newLastTouchedItem
@@ -59,7 +62,10 @@ export async function createAndSavePlaylistModel(playlist: Playlist, guildID: Gu
     playlistModel.lastTouchedAt.push(newLastTouchedItem)
   }
 
-  const defaultFavouriteItem = { guild: guildID, favourite: false }
+  const defaultFavouriteItem = {
+    guild: guildID,
+    favourite: false
+  }
   const favouriteItemIndex = playlistModel.favourite.findIndex(value => value.guild === guildID)
   if (favouriteItemIndex === -1) {
     playlistModel.favourite.push(defaultFavouriteItem)
@@ -72,11 +78,11 @@ export async function createAndSavePlaylistModel(playlist: Playlist, guildID: Gu
     playlistModel.tracks.push(trackModel)
   }
 
-  return playlistModel
+  return playlistModel.save()
 }
 
 export async function createAndSaveTrackModel(track: Track, guildID: GuildID) {
-  let trackModel = await Track.findOne({ title: track.title })
+  let trackModel = await Track.findOne({ identifier: track.identifier })
   if (!trackModel) {
     trackModel = new Track({ ...track })
   }
@@ -98,9 +104,10 @@ export async function createAndSaveTrackModel(track: Track, guildID: GuildID) {
   if (favouriteItemIndex === -1) {
     trackModel.favourite.push(defaultFavouriteItem)
   }
-  return Track.findOneAndUpdate({ title: track.title }, trackModel, { new: true, upsert: true }).exec()
+
+  return trackModel.save()
 }
 
 export async function updateTrackModel(updatedModel: TrackModel) {
-  return Track.findOneAndUpdate({ title: updatedModel.title }, updatedModel)
+  return Track.findOneAndUpdate({ identifier: updatedModel.identifier }, updatedModel)
 }

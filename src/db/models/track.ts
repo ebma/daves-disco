@@ -5,6 +5,7 @@ export type ITrack = Document & TrackModel
 const TrackSchema = new Schema({
   artists: { type: String, required: false },
   favourite: [{ guild: String, favourite: Boolean }],
+  identifier: { type: String, required: true },
   lastTouchedAt: [{ guild: String, date: String }],
   source: { type: String, required: true },
   title: { type: String, required: true },

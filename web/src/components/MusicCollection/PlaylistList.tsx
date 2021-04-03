@@ -104,11 +104,15 @@ interface PlaylistListProps {
 function PlaylistList(props: PlaylistListProps) {
   const { guildID, playlist, onBack, onEnqueueAll, onTrackSelect } = props
 
+  console.log("playlist", playlist)
+
   const { loading, error, data } = useGetTracksByIdsQuery({
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-only",
     variables: { ids: playlist.tracks, limit: 200 }
   })
+
+  console.log("data", data)
 
   const ItemList = React.useMemo(() => {
     return data ? (

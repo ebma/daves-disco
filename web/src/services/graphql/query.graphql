@@ -164,6 +164,7 @@ fragment playlistFields on Playlist {
 fragment trackFields on Track {
   _id
   artists
+  identifier
   favourite {
     guild
     favourite

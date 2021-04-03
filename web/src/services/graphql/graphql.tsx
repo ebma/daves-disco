@@ -301,6 +301,7 @@ export type Track = {
   __typename?: 'Track';
   artists?: Maybe<Scalars['String']>;
   favourite?: Maybe<Array<Maybe<TrackFavourite>>>;
+  identifier: Scalars['String'];
   lastTouchedAt?: Maybe<Array<Maybe<TrackLastTouchedAt>>>;
   source: Scalars['String'];
   title: Scalars['String'];
@@ -347,6 +348,7 @@ export enum SortFindByIdsTrackInput {
 export type FilterFindOneTrackInput = {
   artists?: Maybe<Scalars['String']>;
   favourite?: Maybe<Array<Maybe<FilterFindOneTrackFavouriteInput>>>;
+  identifier?: Maybe<Scalars['String']>;
   lastTouchedAt?: Maybe<Array<Maybe<FilterFindOneTrackLastTouchedAtInput>>>;
   source?: Maybe<Scalars['String']>;
   title?: Maybe<Scalars['String']>;
@@ -408,6 +410,7 @@ export enum SortFindOneTrackInput {
 export type FilterFindManyTrackInput = {
   artists?: Maybe<Scalars['String']>;
   favourite?: Maybe<Array<Maybe<FilterFindManyTrackFavouriteInput>>>;
+  identifier?: Maybe<Scalars['String']>;
   lastTouchedAt?: Maybe<Array<Maybe<FilterFindManyTrackLastTouchedAtInput>>>;
   source?: Maybe<Scalars['String']>;
   title?: Maybe<Scalars['String']>;
@@ -449,6 +452,7 @@ export type FilterFindManyTrackTouchedByUserInput = {
 export type FilterFindManyTrackOperatorsInput = {
   artists?: Maybe<FilterFindManyTrackArtistsOperatorsInput>;
   favourite?: Maybe<FilterFindManyTrackFavouriteOperatorsInput>;
+  identifier?: Maybe<FilterFindManyTrackIdentifierOperatorsInput>;
   lastTouchedAt?: Maybe<FilterFindManyTrackLastTouchedAtOperatorsInput>;
   source?: Maybe<FilterFindManyTrackSourceOperatorsInput>;
   title?: Maybe<FilterFindManyTrackTitleOperatorsInput>;
@@ -508,6 +512,18 @@ export type FilterFindManyTrackFavourite_IdOperatorsInput = {
   ne?: Maybe<Scalars['MongoID']>;
   in?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
   nin?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
+  exists?: Maybe<Scalars['Boolean']>;
+};
+
+export type FilterFindManyTrackIdentifierOperatorsInput = {
+  gt?: Maybe<Scalars['String']>;
+  gte?: Maybe<Scalars['String']>;
+  lt?: Maybe<Scalars['String']>;
+  lte?: Maybe<Scalars['String']>;
+  ne?: Maybe<Scalars['String']>;
+  in?: Maybe<Array<Maybe<Scalars['String']>>>;
+  nin?: Maybe<Array<Maybe<Scalars['String']>>>;
+  regex?: Maybe<Scalars['RegExpAsString']>;
   exists?: Maybe<Scalars['Boolean']>;
 };
 
@@ -689,6 +705,7 @@ export enum SortFindManyTrackInput {
 export type FilterCountTrackInput = {
   artists?: Maybe<Scalars['String']>;
   favourite?: Maybe<Array<Maybe<FilterCountTrackFavouriteInput>>>;
+  identifier?: Maybe<Scalars['String']>;
   lastTouchedAt?: Maybe<Array<Maybe<FilterCountTrackLastTouchedAtInput>>>;
   source?: Maybe<Scalars['String']>;
   title?: Maybe<Scalars['String']>;
@@ -1529,6 +1546,7 @@ export type CreateOneTrackPayload = {
 export type CreateOneTrackInput = {
   artists?: Maybe<Scalars['String']>;
   favourite?: Maybe<Array<Maybe<TrackFavouriteInput>>>;
+  identifier: Scalars['String'];
   lastTouchedAt?: Maybe<Array<Maybe<TrackLastTouchedAtInput>>>;
   source: Scalars['String'];
   title: Scalars['String'];
@@ -1576,6 +1594,7 @@ export type CreateManyTrackPayload = {
 export type CreateManyTrackInput = {
   artists?: Maybe<Scalars['String']>;
   favourite?: Maybe<Array<Maybe<TrackFavouriteInput>>>;
+  identifier: Scalars['String'];
   lastTouchedAt?: Maybe<Array<Maybe<TrackLastTouchedAtInput>>>;
   source: Scalars['String'];
   title: Scalars['String'];
@@ -1597,6 +1616,7 @@ export type UpdateByIdTrackPayload = {
 export type UpdateByIdTrackInput = {
   artists?: Maybe<Scalars['String']>;
   favourite?: Maybe<Array<Maybe<UpdateByIdTrackFavouriteInput>>>;
+  identifier?: Maybe<Scalars['String']>;
   lastTouchedAt?: Maybe<Array<Maybe<UpdateByIdTrackLastTouchedAtInput>>>;
   source?: Maybe<Scalars['String']>;
   title?: Maybe<Scalars['String']>;
@@ -1642,6 +1662,7 @@ export type UpdateOneTrackPayload = {
 export type UpdateOneTrackInput = {
   artists?: Maybe<Scalars['String']>;
   favourite?: Maybe<Array<Maybe<UpdateOneTrackFavouriteInput>>>;
+  identifier?: Maybe<Scalars['String']>;
   lastTouchedAt?: Maybe<Array<Maybe<UpdateOneTrackLastTouchedAtInput>>>;
   source?: Maybe<Scalars['String']>;
   title?: Maybe<Scalars['String']>;
@@ -1677,6 +1698,7 @@ export type UpdateOneTrackTouchedByUserInput = {
 export type FilterUpdateOneTrackInput = {
   artists?: Maybe<Scalars['String']>;
   favourite?: Maybe<Array<Maybe<FilterUpdateOneTrackFavouriteInput>>>;
+  identifier?: Maybe<Scalars['String']>;
   lastTouchedAt?: Maybe<Array<Maybe<FilterUpdateOneTrackLastTouchedAtInput>>>;
   source?: Maybe<Scalars['String']>;
   title?: Maybe<Scalars['String']>;
@@ -1746,6 +1768,7 @@ export type UpdateManyTrackPayload = {
 export type UpdateManyTrackInput = {
   artists?: Maybe<Scalars['String']>;
   favourite?: Maybe<Array<Maybe<UpdateManyTrackFavouriteInput>>>;
+  identifier?: Maybe<Scalars['String']>;
   lastTouchedAt?: Maybe<Array<Maybe<UpdateManyTrackLastTouchedAtInput>>>;
   source?: Maybe<Scalars['String']>;
   title?: Maybe<Scalars['String']>;
@@ -1781,6 +1804,7 @@ export type UpdateManyTrackTouchedByUserInput = {
 export type FilterUpdateManyTrackInput = {
   artists?: Maybe<Scalars['String']>;
   favourite?: Maybe<Array<Maybe<FilterUpdateManyTrackFavouriteInput>>>;
+  identifier?: Maybe<Scalars['String']>;
   lastTouchedAt?: Maybe<Array<Maybe<FilterUpdateManyTrackLastTouchedAtInput>>>;
   source?: Maybe<Scalars['String']>;
   title?: Maybe<Scalars['String']>;
@@ -1862,6 +1886,7 @@ export type RemoveOneTrackPayload = {
 export type FilterRemoveOneTrackInput = {
   artists?: Maybe<Scalars['String']>;
   favourite?: Maybe<Array<Maybe<FilterRemoveOneTrackFavouriteInput>>>;
+  identifier?: Maybe<Scalars['String']>;
   lastTouchedAt?: Maybe<Array<Maybe<FilterRemoveOneTrackLastTouchedAtInput>>>;
   source?: Maybe<Scalars['String']>;
   title?: Maybe<Scalars['String']>;
@@ -1931,6 +1956,7 @@ export type RemoveManyTrackPayload = {
 export type FilterRemoveManyTrackInput = {
   artists?: Maybe<Scalars['String']>;
   favourite?: Maybe<Array<Maybe<FilterRemoveManyTrackFavouriteInput>>>;
+  identifier?: Maybe<Scalars['String']>;
   lastTouchedAt?: Maybe<Array<Maybe<FilterRemoveManyTrackLastTouchedAtInput>>>;
   source?: Maybe<Scalars['String']>;
   title?: Maybe<Scalars['String']>;
@@ -3066,7 +3092,7 @@ export type PlaylistFieldsFragment = (
 
 export type TrackFieldsFragment = (
   { __typename?: 'Track' }
-  & Pick<Track, '_id' | 'artists' | 'title' | 'source' | 'url'>
+  & Pick<Track, '_id' | 'artists' | 'identifier' | 'title' | 'source' | 'url'>
   & { favourite?: Maybe<Array<Maybe<(
     { __typename?: 'TrackFavourite' }
     & Pick<TrackFavourite, 'guild' | 'favourite'>
@@ -3142,6 +3168,7 @@ export const TrackFieldsFragmentDoc = gql`
     fragment trackFields on Track {
   _id
   artists
+  identifier
   favourite {
     guild
     favourite
