@@ -110,7 +110,10 @@ mutation RemoveSoundboardItemById($id: MongoID!) {
 
 mutation UpdateQueue($guild: String!, $queueIDs: [String!]!) {
   updateQueue(guild: $guild, queueIDs: $queueIDs) {
-    queueIDs
+    queueIDs {
+      trackModelID
+      uuid
+    }
   }
 }
 
@@ -192,9 +195,15 @@ fragment soundboardItemFields on SoundboardItem {
 
 fragment playerFields on Player {
   available
-  currentTrackID
+  currentTrackID {
+    trackModelID
+    uuid
+  }
   loopState
   paused
-  queueIDs
+  queueIDs {
+    trackModelID
+    uuid
+  }
   volume
 }

@@ -78,7 +78,7 @@ function PlayerArea(props: Props) {
 
   React.useEffect(() => {
     if (currentTrackID) {
-      loadTrack({ variables: { id: currentTrackID } })
+      loadTrack({ variables: { id: currentTrackID.trackModelID } })
     }
   }, [currentTrackID, loadTrack])
 

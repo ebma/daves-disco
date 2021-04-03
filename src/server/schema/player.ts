@@ -3,17 +3,24 @@ import { MyClient } from "../../bot/MyClient"
 import MusicPlayerManager from "../../libs/MusicPlayerManager"
 
 export function getPlayerTC(client: MyClient) {
+  const QueuedTrackTC = schemaComposer.createObjectTC({
+    name: "QueuedTrack",
+    fields: { trackModelID: "MongoID!", uuid: "String!" }
+  })
+
   const PlayerTC = schemaComposer.createObjectTC({
     name: "Player",
     fields: {
       available: "Boolean!",
-      currentTrackID: "MongoID",
+      currentTrackID: "QueuedTrack",
       loopState: "String!",
       paused: "Boolean!",
-      queueIDs: "[MongoID!]!",
+      queueIDs: "[QueuedTrack!]!",
       volume: "Int!"
     }
   })
+
+  PlayerTC.addNestedFields({})
 
   PlayerTC.addResolver({
     name: "getPlayer",

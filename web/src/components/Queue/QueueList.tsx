@@ -61,9 +61,9 @@ const useStyles = makeStyles(theme => ({
 }))
 
 interface Props {
-  currentTrackID?: string
+  currentTrackID?: QueuedTrack
   guildID: GuildID
-  queueIDs: string[]
+  queueIDs: QueuedTrack[]
 }
 
 function QueueList(props: Props) {
@@ -74,7 +74,7 @@ function QueueList(props: Props) {
   const queueTracksQuery = useGetTracksByIdsQuery({
     fetchPolicy: "cache-and-network",
     pollInterval: 2000,
-    variables: { ids: props.queueIDs }
+    variables: { ids: props.queueIDs.map(queueID => queueID.trackModelID) }
   })
 
   const [updateQueueMutation] = useUpdateQueueMutation({})
@@ -82,8 +82,13 @@ function QueueList(props: Props) {
   const [localQueue, setLocalQueue] = React.useState<TrackFieldsFragment[]>([])
   const indexOfCurrentSong = React.useMemo(
     () =>
-      props.currentTrackID ? localQueue.findIndex(track => track._id === props.currentTrackID) : localQueue.length,
-    [props.currentTrackID, localQueue]
+      props.currentTrackID
+        ? props.queueIDs.findIndex(
+            track =>
+              track.trackModelID === props.currentTrackID?.trackModelID && track.uuid === props.currentTrackID?.uuid
+          )
+        : props.queueIDs.length,
+    [props.currentTrackID, props.queueIDs]
   )
 
   const [updateTrack] = useUpdateTrackByIdMutation({})
@@ -103,7 +108,7 @@ function QueueList(props: Props) {
       const fetchedTracks = queueTracksQuery.data.trackByIds
       // sort response items to correct order
       const orderedResponse = props.queueIDs.reduce<TrackFieldsFragment[]>((prev, current) => {
-        const correspondingItem = fetchedTracks.find(track => track._id === current)
+        const correspondingItem = fetchedTracks.find(track => track._id === current.trackModelID)
         if (correspondingItem) {
           return prev.concat(correspondingItem)
         } else {

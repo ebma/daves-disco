@@ -7,31 +7,50 @@ import ObservableQueue from "./ObservableQueue"
 import StreamManager from "./StreamManager"
 import VoiceModerator from "./VoiceModerator"
 import Youtube from "./Youtube"
+import { v4 as uuidv4 } from "uuid"
+
+function createQueuedTrack(trackModelID: TrackModelID): QueuedTrack {
+  return { trackModelID, uuid: uuidv4() }
+}
+
+function createQueuedTrackModel(trackModel: TrackModel): QueuedTrackModel {
+  return {
+    trackModel,
+    uuid: uuidv4()
+  }
+}
 
 class MusicPlayer {
   destroyed = false
-  queue: ObservableQueue<TrackModelID>
+  queue: ObservableQueue<QueuedTrack>
   private streamManager: StreamManager
   private streamSubscription: Subscription
   private subject: Subject<MusicPlayerSubjectMessage>
-  private playingTrack: TrackModel
+  private playingTrack?: QueuedTrackModel
   private voiceModerator: VoiceModerator
 
   constructor(streamManager: StreamManager) {
     this.streamManager = streamManager
-    this.queue = new ObservableQueue<TrackModelID>()
+    this.queue = new ObservableQueue<QueuedTrack>()
     this.subject = new Subject<MusicPlayerSubjectMessage>()
     this.voiceModerator = new VoiceModerator(this)
     this.voiceModerator.init()
 
     this.queue.subscribeCurrentElement(async currentTrack => {
-      if (currentTrack !== this.playingTrack?._id.toString() || this.queue.loopState !== "none") {
-        const currentTrackModel = await Track.findById(currentTrack)
+      if (!currentTrack) {
+        this.playingTrack = null
+        streamManager.endCurrent()
+      } else if (
+        currentTrack.trackModelID !== this.playingTrack?.trackModel._id.toString() ||
+        currentTrack.uuid !== this.playingTrack?.uuid ||
+        this.queue.loopState !== "none"
+      ) {
+        const currentTrackModel = await Track.findById(currentTrack?.trackModelID)
         if (currentTrackModel) {
-          this.playingTrack = currentTrackModel.toJSON()
+          this.playingTrack = createQueuedTrackModel(currentTrackModel.toJSON())
           // it's important to change playingTrack before ending the current song
           streamManager.endCurrent()
-          this.startStreaming(currentTrackModel.toJSON())
+          this.startStreaming(this.playingTrack)
         } else {
           this.playingTrack = null
           streamManager.endCurrent()
@@ -75,11 +94,11 @@ class MusicPlayer {
   }
 
   enqueue(track: TrackModel) {
-    this.queue.addElement(track._id.toString())
+    this.queue.addElement(createQueuedTrack(track._id.toString()))
   }
 
   enqueueAll(tracks: TrackModel[]) {
-    this.queue.addAll(tracks.map(track => track._id.toString()))
+    this.queue.addAll(tracks.map(track => createQueuedTrack(track._id.toString())))
   }
 
   muteModerator() {
@@ -154,16 +173,19 @@ class MusicPlayer {
     this.subject.next({ messageType: "status", message: "loop-state-changed" })
   }
 
-  updateQueue(newItems: TrackModelID[]) {
+  updateQueue(newItems: QueuedTrack[]) {
     const currentItem = this.queue.getCurrent()
 
-    const foundIndex = newItems.findIndex(track => track === currentItem)
+    const foundIndex = newItems.findIndex(
+      track => track.trackModelID === currentItem.trackModelID && track.uuid === currentItem.uuid
+    )
     const newIndex = foundIndex !== -1 ? foundIndex : 0
 
     this.queue.replace(newItems, newIndex)
   }
 
-  private async startStreaming(track: TrackModel) {
+  private async startStreaming(queuedTrack: QueuedTrackModel) {
+    const track = queuedTrack.trackModel
     try {
       if (!track.url) {
         const success = await Youtube.completePartialTrack(track)
@@ -175,7 +197,7 @@ class MusicPlayer {
       this.streamManager.play(track)
       this.streamSubscription?.unsubscribe()
       this.streamSubscription = this.streamManager.subscribe({
-        next: message => this.observeStream(message, track)
+        next: message => this.observeStream(message, queuedTrack)
       })
     } catch (error) {
       const errorMessage = `Could not start stream for track '${track.title}': ${error}`
@@ -188,7 +210,8 @@ class MusicPlayer {
     return this.subject.subscribe(observer)
   }
 
-  private observeStream(message: StreamManagerObservableMessage, track: TrackModel) {
+  private observeStream(message: StreamManagerObservableMessage, queuedTrack: QueuedTrackModel) {
+    const track = queuedTrack.trackModel
     switch (message.type) {
       case "debug":
         console.log("observeStream debug info: ", message.data)
@@ -206,7 +229,10 @@ class MusicPlayer {
 
         if (_.isNil(this.queue.getCurrent())) {
           this.subject.next({ messageType: "status", message: "idle" })
-        } else if (track?._id.toString() === this.playingTrack?._id.toString()) {
+        } else if (
+          queuedTrack?.trackModel._id.toString() === this.playingTrack?.trackModel._id.toString() &&
+          queuedTrack?.uuid === this.playingTrack?.uuid
+        ) {
           this.skipForward(1, false)
         }
 

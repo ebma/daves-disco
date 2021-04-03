@@ -1317,11 +1317,17 @@ export type Member = {
 export type Player = {
   __typename?: 'Player';
   available: Scalars['Boolean'];
-  currentTrackID?: Maybe<Scalars['MongoID']>;
+  currentTrackID?: Maybe<QueuedTrack>;
   loopState: Scalars['String'];
   paused: Scalars['Boolean'];
-  queueIDs: Array<Scalars['MongoID']>;
+  queueIDs: Array<QueuedTrack>;
   volume: Scalars['Int'];
+};
+
+export type QueuedTrack = {
+  __typename?: 'QueuedTrack';
+  trackModelID: Scalars['MongoID'];
+  uuid: Scalars['String'];
 };
 
 export type Mutation = {
@@ -3056,7 +3062,10 @@ export type UpdateQueueMutation = (
   { __typename?: 'Mutation' }
   & { updateQueue?: Maybe<(
     { __typename?: 'Player' }
-    & Pick<Player, 'queueIDs'>
+    & { queueIDs: Array<(
+      { __typename?: 'QueuedTrack' }
+      & Pick<QueuedTrack, 'trackModelID' | 'uuid'>
+    )> }
   )> }
 );
 
@@ -3112,7 +3121,14 @@ export type SoundboardItemFieldsFragment = (
 
 export type PlayerFieldsFragment = (
   { __typename?: 'Player' }
-  & Pick<Player, 'available' | 'currentTrackID' | 'loopState' | 'paused' | 'queueIDs' | 'volume'>
+  & Pick<Player, 'available' | 'loopState' | 'paused' | 'volume'>
+  & { currentTrackID?: Maybe<(
+    { __typename?: 'QueuedTrack' }
+    & Pick<QueuedTrack, 'trackModelID' | 'uuid'>
+  )>, queueIDs: Array<(
+    { __typename?: 'QueuedTrack' }
+    & Pick<QueuedTrack, 'trackModelID' | 'uuid'>
+  )> }
 );
 
 export const PlaylistFieldsWithoutTracksFragmentDoc = gql`
@@ -3198,10 +3214,16 @@ export const SoundboardItemFieldsFragmentDoc = gql`
 export const PlayerFieldsFragmentDoc = gql`
     fragment playerFields on Player {
   available
-  currentTrackID
+  currentTrackID {
+    trackModelID
+    uuid
+  }
   loopState
   paused
-  queueIDs
+  queueIDs {
+    trackModelID
+    uuid
+  }
   volume
 }
     `;
@@ -3697,7 +3719,10 @@ export type RemoveSoundboardItemByIdMutationOptions = Apollo.BaseMutationOptions
 export const UpdateQueueDocument = gql`
     mutation UpdateQueue($guild: String!, $queueIDs: [String!]!) {
   updateQueue(guild: $guild, queueIDs: $queueIDs) {
-    queueIDs
+    queueIDs {
+      trackModelID
+      uuid
+    }
   }
 }
     `;

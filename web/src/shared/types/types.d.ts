@@ -68,12 +68,22 @@ interface YoutubePlaylist extends Playlist {
 
 type TrackModelID = string
 
+interface QueuedTrack {
+  trackModelID: TrackModelID
+  uuid: string
+}
+
+interface QueuedTrackModel {
+  trackModel: TrackModel
+  uuid: string
+}
+
 interface PlayerModel {
   available: boolean
-  currentTrackID: TrackModelID | null
+  currentTrackID: QueuedTrack | null
   loopState: LoopState
   paused: boolean
-  queueIDs: TrackModelID[]
+  queueIDs: QueuedTrack[]
   volume: number
 }
 

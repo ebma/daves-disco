@@ -59,7 +59,7 @@ class MusicPlayerObserver {
           break
         case "current-track":
           if (this.musicPlayer.currentTrack) {
-            Track.findById(this.musicPlayer.currentTrack).then(trackModel => {
+            Track.findById(this.musicPlayer.currentTrack.trackModelID).then(trackModel => {
               if (trackModel) ActivityManager.setPlaying(trackModel.title, trackModel.url)
             })
           }
