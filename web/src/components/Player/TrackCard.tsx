@@ -58,9 +58,20 @@ function TrackCard(props: { currentTrack: TrackFieldsFragment }) {
     }
   }, [currentTrack])
 
+  const googleProxyURL =
+    "https://images1-focus-opensocial.googleusercontent.com/gadgets/proxy?container=focus&refresh=2592000&url="
+  const src = googleProxyURL + thumbnail
+
   return (
     <Paper className={classes.root}>
-      <Avatar className={classes.avatar} src={thumbnail!} />
+      <Avatar
+        className={classes.avatar}
+        imgProps={{
+          crossOrigin: "anonymous"
+        }}
+        id="track-avatar"
+        src={src}
+      />
       <Typography align="center" gutterBottom variant="h6" color="textPrimary" style={{ marginTop: 16 }}>
         {SpotifyHelper.isSpotifyTrack(currentTrack as Track)
           ? `${currentTrack.title} - ${currentTrack.artists}`

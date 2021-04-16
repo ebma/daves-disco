@@ -29,6 +29,7 @@ import { useGetPlayerQuery } from "../../services/graphql/graphql"
 import { darkShades, lightShades } from "../../theme"
 import Footer from "../Footer"
 import QueryWrapper from "../QueryWrapper/QueryWrapper"
+import Waves from "../Waves/Waves"
 import { MainListItems } from "./ListItems"
 
 const drawerWidth = 240
@@ -197,6 +198,7 @@ function Dashboard(props: Props) {
         style={{ background: colorScheme === "dark" ? darkShades.dim : lightShades.dim }}
       >
         <div className={classes.appBarSpacer} />
+        <Waves avatarID="track-avatar" currentTrack={player?.currentTrackID?.trackModelID} />
         <Container maxWidth="xl" className={classes.container}>
           <Switch>
             <Route path="/home">
@@ -214,7 +216,7 @@ function Dashboard(props: Props) {
               </Fade>
             </Route>
           </Switch>
-          <Box pt={4}>
+          <Box pt={4} style={{ position: "relative" }}>
             <Footer />
           </Box>
         </Container>
