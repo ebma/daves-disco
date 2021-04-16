@@ -11,6 +11,7 @@
     "@sentry/browser": "^5.15.5",
     "axios": "^0.21.1",
     "colorthief": "^2.3.2",
+    "framer-motion": "^4.1.4",
     "graphql": "^15.4.0",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.20",
