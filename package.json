@@ -38,7 +38,7 @@
     "watch-debug": "concurrently -k -p \"[{name}]\" -n \"Sass,TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run serve-debug\""
   },
   "dependencies": {
-    "@discordjs/opus": "^0.3.2",
+    "@discordjs/opus": "^0.5.0",
     "@sentry/node": "^5.15.5",
     "apollo-server-express": "^2.19.2",
     "async": "^3.1.0",
@@ -61,7 +61,6 @@
     "lodash": "^4.17.20",
     "moment": "^2.24.0",
     "mongoose": "^5.11.4",
-    "opusscript": "0.0.7",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
     "rxjs": "^6.5.3",
@@ -74,8 +73,7 @@
     "winston": "^3.2.1",
     "youtube-search": "^1.1.6",
     "ytdl-core": "^4.5.0",
-    "ytdl-core-discord": "^1.2.5",
-    "ytpl": "^2.0.4",
+    "ytpl": "^2.1.1",
     "zlib-sync": "^0.1.7"
   },
   "devDependencies": {
