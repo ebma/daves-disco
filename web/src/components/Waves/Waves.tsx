@@ -1,7 +1,8 @@
 import { makeStyles } from "@material-ui/core/styles"
 import ColorThief, { Color, ColorArray } from "colorthief"
+import { motion, useMotionTemplate, useSpring } from "framer-motion"
 import React from "react"
-import { motion, useMotionTemplate, useMotionValue, useSpring } from "framer-motion"
+import { useGetTrackByIdLazyQuery } from "../../services/graphql/graphql"
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -46,19 +47,57 @@ function Wave(props: { color: Color; index?: number }) {
   )
 }
 
+function HiddenImageProxy(props: { src?: string; onLoad: (imageRef: HTMLImageElement) => void }) {
+  const { onLoad: onLoadCallback } = props
+  const ref = React.createRef<HTMLImageElement>()
+
+  const onLoad = React.useCallback(() => {
+    if (ref.current) {
+      onLoadCallback(ref.current)
+    }
+  }, [ref, onLoadCallback])
+
+  const proxySrc = React.useMemo(() => {
+    if (props.src) {
+      const googleProxyURL =
+        "https://images1-focus-opensocial.googleusercontent.com/gadgets/proxy?container=focus&refresh=2592000&url="
+
+      return googleProxyURL + props.src // proxy needed because colorthief won't work without it
+    } else {
+      return undefined
+    }
+  }, [props.src])
+
+  return (
+    <img
+      alt="hidden thumbnail for colorthief"
+      crossOrigin="anonymous"
+      src={proxySrc}
+      ref={ref}
+      onLoad={onLoad}
+      style={{ display: "none" }}
+    />
+  )
+}
+
 interface Props {
   avatarID: string
-  currentTrack?: string
+  currentTrack?: TrackModelID
   waveCount?: number
 }
 
 function Waves(props: Props) {
-  const classes = useStyles()
-
   const { waveCount = 3 } = props
+
+  const classes = useStyles()
 
   const [palette, setPalette] = React.useState<ColorArray | null>(null)
   const [color, setColor] = React.useState<Color | null>(null)
+
+  const [loadTrack, trackQuery] = useGetTrackByIdLazyQuery({
+    fetchPolicy: "cache-only",
+    pollInterval: 3000
+  })
 
   const r = useSpring(255, {})
   const g = useSpring(255, {})
@@ -76,35 +115,31 @@ function Waves(props: Props) {
     } else {
       a.set(0)
     }
-  }, [r, g, b, color])
+  }, [a, r, g, b, color])
 
   React.useEffect(() => {
-    const colorThief = new ColorThief()
-
-    const getPalette = () => {
-      if (!props.currentTrack) {
-        setPalette(null)
-        setColor(null)
-      } else {
-        const image = document.querySelector(`#${props.avatarID} img`)
-        if (image) {
-          try {
-            const resultPalette = colorThief.getPalette(image, waveCount)
-            setPalette(resultPalette)
-            const resultColor = colorThief.getColor(image)
-            setColor(resultColor)
-          } catch (error) {
-            // ignore error that's thrown because the image is not loaded yet
-            // console.error(error)
-          }
-        }
-      }
+    if (props.currentTrack) {
+      loadTrack({ variables: { id: props.currentTrack } })
+    } else {
+      setPalette(null)
+      setColor(null)
     }
-    getPalette()
+  }, [props.currentTrack, loadTrack])
 
-    const interval = setInterval(getPalette, 1000) // use interval because html image has to load first
-    return () => clearInterval(interval)
-  }, [props.avatarID, props.currentTrack, waveCount])
+  const loadPalette = React.useCallback(
+    (image: HTMLImageElement) => {
+      try {
+        const colorThief = new ColorThief()
+        const resultPalette = colorThief.getPalette(image, waveCount)
+        const resultColor = colorThief.getColor(image)
+        setPalette(resultPalette)
+        setColor(resultColor)
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    [waveCount]
+  )
 
   const WaveArray = React.useMemo(() => {
     return Array.from(Array(waveCount), (v, k) => <Wave color={palette ? palette[k] : [255, 255, 255]} index={k} />)
@@ -112,6 +147,10 @@ function Waves(props: Props) {
 
   return (
     <motion.div className={classes.root} style={{ background }}>
+      <HiddenImageProxy
+        src={(props.currentTrack && trackQuery.data?.trackById?.thumbnail?.small) || undefined}
+        onLoad={loadPalette}
+      />
       <motion.div
         className={classes.root}
         layout
