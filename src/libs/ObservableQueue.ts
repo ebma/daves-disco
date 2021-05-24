@@ -129,7 +129,7 @@ class ObservableQueue<T extends object | string> {
     this.itemList = newItems
     this.currentIndex = newCurrentIndex
     const newCurrent = this.getCurrent()
-    if (oldCurrent !== newCurrent) {
+    if (!_.isEqual(oldCurrent, newCurrent)) {
       this.notifyElementObservers()
     }
     this.notifyQueueObservers()
