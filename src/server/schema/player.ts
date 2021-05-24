@@ -74,8 +74,6 @@ export function getPlayerTC(client: MyClient) {
         const player = MusicPlayerManager.getPlayerFor(guild.id)
         player.updateQueue(queueIDs)
 
-        console.log("player.currentTrack", player.currentTrack)
-
         return {
           available: true,
           currentTrackID: player.currentTrack,
