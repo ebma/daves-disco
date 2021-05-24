@@ -18,7 +18,6 @@ import {
   updateLoopState
 } from "../../redux/playerSlice"
 import { PlayerFieldsFragment, useGetTrackByIdLazyQuery } from "../../services/graphql/graphql"
-import QueryWrapper from "../QueryWrapper/QueryWrapper"
 import QueueList from "../Queue/QueueList"
 import StyledButton from "../StyledButton"
 import {
@@ -47,7 +46,8 @@ const useStyles = makeStyles(theme => ({
     justifyContent: "center",
     display: "flex",
     padding: 16,
-    height: "65%"
+    height: "65%",
+    marginTop: 48
   },
   actions: {
     position: "absolute",
@@ -138,11 +138,7 @@ function PlayerArea(props: Props) {
           {showQueue ? (
             <QueueList currentTrackID={currentTrackID || undefined} guildID={guildID} queueIDs={queueIDs} />
           ) : (
-            currentTrackID && (
-              <QueryWrapper height={400} loading={trackQuery.loading} error={trackQuery.error}>
-                {trackQuery.data && trackQuery.data.trackById && <TrackCard currentTrack={trackQuery.data.trackById} />}
-              </QueryWrapper>
-            )
+            currentTrackID && <TrackCard currentTrack={trackQuery.data?.trackById || undefined} paused={paused} />
           )}
         </Grid>
         <Grid item xs={12} style={{ padding: 16 }}>
