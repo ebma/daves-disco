@@ -62,7 +62,7 @@ export function getPlayerTC(client: MyClient) {
 
   PlayerTC.addResolver({
     name: "updateQueue",
-    args: { guild: "String!", queueIDs: "[String!]!" },
+    args: { guild: "String!", queueIDs: QueuedTrackTC.getITC().NonNull.List.NonNull },
     type: PlayerTC,
     resolve: async (data: any) => {
       const guildID = data.args.guild
@@ -73,6 +73,8 @@ export function getPlayerTC(client: MyClient) {
       if (guild) {
         const player = MusicPlayerManager.getPlayerFor(guild.id)
         player.updateQueue(queueIDs)
+
+        console.log("player.currentTrack", player.currentTrack)
 
         return {
           available: true,

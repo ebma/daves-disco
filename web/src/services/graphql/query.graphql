@@ -108,7 +108,7 @@ mutation RemoveSoundboardItemById($id: MongoID!) {
   }
 }
 
-mutation UpdateQueue($guild: String!, $queueIDs: [String!]!) {
+mutation UpdateQueue($guild: String!, $queueIDs: [QueuedTrackInput!]!) {
   updateQueue(guild: $guild, queueIDs: $queueIDs) {
     queueIDs {
       trackModelID

@@ -129,9 +129,14 @@ function QueueList(props: Props) {
           : () => undefined
 
       const onDeleteClick = () => {
-        const copiedQueue = localQueue.slice(0).filter((_, i) => i !== index)
+        const copiedQueue = props.queueIDs.slice(0).filter((_, i) => i !== index)
 
-        updateQueueMutation({ variables: { guild: props.guildID, queueIDs: copiedQueue.map(track => track._id) } })
+        updateQueueMutation({
+          variables: {
+            guild: props.guildID,
+            queueIDs: copiedQueue.map(v => ({ trackModelID: v.trackModelID, uuid: v.uuid }))
+          }
+        })
       }
 
       return (
@@ -149,7 +154,7 @@ function QueueList(props: Props) {
         />
       )
     })
-  }, [dispatch, indexOfCurrentSong, localQueue, props.guildID, updateQueueMutation, toggleFavourite])
+  }, [dispatch, indexOfCurrentSong, localQueue, props.guildID, props.queueIDs, updateQueueMutation, toggleFavourite])
 
   const EmptyQueueItem = React.useMemo(
     () => (
@@ -174,9 +179,15 @@ function QueueList(props: Props) {
 
       const orderedQueue = reorder(localQueue, result.source.index, result.destination.index)
       setLocalQueue(orderedQueue)
-      updateQueueMutation({ variables: { guild: props.guildID, queueIDs: orderedQueue.map(track => track._id) } })
+      const orderedQueueIDs = reorder(props.queueIDs, result.source.index, result.destination.index)
+      updateQueueMutation({
+        variables: {
+          guild: props.guildID,
+          queueIDs: orderedQueueIDs.map(v => ({ trackModelID: v.trackModelID, uuid: v.uuid }))
+        }
+      })
     },
-    [localQueue, updateQueueMutation, props.guildID]
+    [localQueue, updateQueueMutation, props.guildID, props.queueIDs]
   )
 
   return (

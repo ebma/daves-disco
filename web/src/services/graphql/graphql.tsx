@@ -1536,7 +1536,7 @@ export type MutationSoundboardItemRemoveManyArgs = {
 
 export type MutationUpdateQueueArgs = {
   guild: Scalars['String'];
-  queueIDs: Array<Scalars['String']>;
+  queueIDs: Array<QueuedTrackInput>;
 };
 
 export type CreateOneTrackPayload = {
@@ -2807,6 +2807,11 @@ export type FilterRemoveManySoundboardItem_IdOperatorsInput = {
   exists?: Maybe<Scalars['Boolean']>;
 };
 
+export type QueuedTrackInput = {
+  trackModelID: Scalars['MongoID'];
+  uuid: Scalars['String'];
+};
+
 export type GetFavouritesQueryVariables = Exact<{
   guild: Scalars['String'];
 }>;
@@ -3054,7 +3059,7 @@ export type RemoveSoundboardItemByIdMutation = (
 
 export type UpdateQueueMutationVariables = Exact<{
   guild: Scalars['String'];
-  queueIDs: Array<Scalars['String']> | Scalars['String'];
+  queueIDs: Array<QueuedTrackInput> | QueuedTrackInput;
 }>;
 
 
@@ -3717,7 +3722,7 @@ export type RemoveSoundboardItemByIdMutationHookResult = ReturnType<typeof useRe
 export type RemoveSoundboardItemByIdMutationResult = Apollo.MutationResult<RemoveSoundboardItemByIdMutation>;
 export type RemoveSoundboardItemByIdMutationOptions = Apollo.BaseMutationOptions<RemoveSoundboardItemByIdMutation, RemoveSoundboardItemByIdMutationVariables>;
 export const UpdateQueueDocument = gql`
-    mutation UpdateQueue($guild: String!, $queueIDs: [String!]!) {
+    mutation UpdateQueue($guild: String!, $queueIDs: [QueuedTrackInput!]!) {
   updateQueue(guild: $guild, queueIDs: $queueIDs) {
     queueIDs {
       trackModelID
