@@ -140,7 +140,7 @@ function QueueList(props: Props) {
       }
 
       // make id unique by combining trackmodelID and uuid
-      const id = props.queueIDs[index].trackModelID + props.queueIDs[index].uuid
+      const id = props.queueIDs[index] ? props.queueIDs[index].trackModelID + props.queueIDs[index].uuid : index
 
       return (
         <QueueListItem
