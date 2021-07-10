@@ -6,12 +6,14 @@ export const breakpoints = createBreakpoints({})
 export const lightShades = {
   dim: "#F0F0F0",
   bright: "#F4F4F4",
+  brightTransparent: "#F4F4F499",
   brightest: "#FFFFFF"
 }
 
 export const darkShades = {
   dim: "#303030",
   bright: "#3d3d3d",
+  brightTransparent: "#3d3d3d99",
   brightest: "#484848"
 }
 
@@ -47,7 +49,7 @@ const createTheme = (darkMode: boolean) =>
       overrides: {
         MuiPaper: {
           root: {
-            background: darkMode ? darkShades.bright : lightShades.bright
+            backgroundColor: darkMode ? darkShades.brightTransparent : lightShades.brightTransparent
           }
         },
         MuiTab: {
