@@ -26,15 +26,16 @@ node -e "console.log('Running Node.js ' + process.version)"
 sudo setcap 'cap_net_bind_service=+ep' $(which node)
 
 # install required packages
-sudo apt-get install build-essential libtool -y
+sudo apt-get install build-essential libtool autoconf libsodium-dev -y
 # npm install
 echo "Installing npm dependencies..."
 npm i --also=dev
 
 # if .env does not exist or is empty add env vars
-test -s .env || echo "PORT=443" && \ 
-  echo "KEY_PATH=/etc/letsencrypt/live/daves-disco.marcel-ebert.de/privkey.pem" >> .env && \
-  echo "CERT_PATH=/etc/letsencrypt/live/daves-disco.marcel-ebert.de/fullchain.pem" >> .env 
+test -s .env || echo "PORT=443" >> .env && \ 
+  echo "NODE_ENV=production" >> .env && \
+  echo "KEY_PATH=/etc/letsencrypt/live/marcel-ebert.de/privkey.pem" >> .env && \
+  echo "CERT_PATH=/etc/letsencrypt/live/marcel-ebert.de/fullchain.pem" >> .env 
 
 npm install pm2 -g
 # setup startup script
