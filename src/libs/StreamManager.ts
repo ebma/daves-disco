@@ -145,11 +145,10 @@ class StreamManager {
       })
     })
 
-    this.streamSource = input
+    this.streamSource = stream
 
     const dispatcher = this.voiceConnection.play(stream, {
-      volume: this.volume,
-      highWaterMark: 512
+      volume: this.volume
     })
 
     dispatcher
