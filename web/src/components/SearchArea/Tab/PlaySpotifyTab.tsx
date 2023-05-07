@@ -51,7 +51,7 @@ function PlaySpotifyTab(props: PlaySpotifyTabProps) {
         />
       </div>
       <Typography component="div" color="textSecondary" variant="caption" style={{ paddingTop: 8 }}>
-        <b>Hint:</b> You can find the URI of your playlist by right-clicking it in the overview and selecting "Share" >
+        <b>Hint:</b> You can find the URI of your playlist by right-clicking it in the overview and selecting "Share" &gt;
         "Copy Spotify Link" or "Copy Spotify URI" (both work).
       </Typography>
     </>
