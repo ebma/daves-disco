@@ -45,7 +45,7 @@
     "async": "^3.2.4",
     "bufferutil": "^4.0.7",
     "cors": "^2.8.5",
-    "discord-akairo": "^8.1.0",
+    "discord-akairo": "discord-akairo/discord-akairo",
     "discord-ytdl-core": "^5.0.4",
     "discord.js": "^14.11.0",
     "dotenv": "^16.0.3",

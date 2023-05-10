@@ -18,7 +18,9 @@ export function initApp(client: MyClient) {
   const schema = createSchema(client)
 
   const apolloServer = new ApolloServer({ schema })
-  apolloServer.applyMiddleware({ app })
+  apolloServer.start().then(() => {
+    apolloServer.applyMiddleware({ app })
+  })
 
   const loginRouter = createLoginRouter(client)
 

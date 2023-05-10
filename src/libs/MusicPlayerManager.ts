@@ -1,19 +1,24 @@
-import { VoiceChannel } from "discord.js"
+import { VoiceBasedChannel } from "discord.js"
 import { trackError } from "../utils/trackError"
 import MusicPlayer from "./MusicPlayer"
 import MusicPlayerObserver from "./MusicPlayerObserver"
 import StreamManager from "./StreamManager"
+import { joinVoiceChannel } from "@discordjs/voice"
 
 export class MusicPlayerManager {
   private musicPlayerMap: { [key in GuildID]: MusicPlayer } = {}
   private musicPlayerObserverMap: { [key in GuildID]: MusicPlayerObserver } = {}
 
-  async createPlayerFor(guildID: GuildID, channel: VoiceChannel): Promise<MusicPlayer> {
+  async createPlayerFor(guildID: GuildID, channel: VoiceBasedChannel): Promise<MusicPlayer> {
     if (this.musicPlayerMap[guildID] !== undefined && !this.musicPlayerMap[guildID].destroyed) {
       throw new Error(`Player already exists for guild ${guildID}`)
     }
 
-    const connection = await channel.join()
+    const connection = joinVoiceChannel({
+      channelId: channel.id,
+      guildId: channel.guild.id,
+      adapterCreator: channel.guild.voiceAdapterCreator,
+    })
     const musicPlayer = new MusicPlayer(new StreamManager(connection))
     this.musicPlayerMap[guildID] = musicPlayer
 

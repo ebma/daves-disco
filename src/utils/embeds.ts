@@ -1,9 +1,9 @@
-import { GuildMember, MessageEmbed } from "discord.js"
+import { GuildMember, EmbedBuilder } from "discord.js";
 import _ from "lodash"
 import { SpotifyHelper } from "../shared/utils/helpers"
 
 export function createEmbedForTrack(track: Track, requester?: GuildMember) {
-  const embed = new MessageEmbed()
+  const embed = new EmbedBuilder()
     .setColor("#0099ff")
     .setTitle(track.title)
     .setURL(track.url)
@@ -15,7 +15,7 @@ export function createEmbedForTrack(track: Track, requester?: GuildMember) {
 }
 
 export function createEmbedForTracks(tracks: Track[], requester?: GuildMember) {
-  const embed = new MessageEmbed()
+  const embed = new EmbedBuilder()
     .setColor("#0099ff")
     .setTitle("Playlist")
     .setTimestamp()
@@ -32,30 +32,30 @@ export function createEmbedForTracks(tracks: Track[], requester?: GuildMember) {
   const validStrings = splitIntoValidStrings(trackDescription)
   _.forEach(validStrings, (description, index) => {
     if (index === 0) {
-      embed.addField("Tracks", description)
+      embed.addFields({ name: "Tracks", value: description })
     } else if (index <= 2) {
-      embed.addField("More...", description)
+      embed.addFields({ name: "More", value: description })
     } else {
-      embed.addField("And even more", "...")
+      embed.addFields({ name: "And even more", value: "..." })
     }
   })
 
   if (requester) {
-    embed.setFooter(`Songs requested from ${requester.displayName}`)
+    embed.setFooter({text: `Songs requested from ${requester.displayName}`})
   }
 
   return embed
 }
 
 export function createEmbedsForSpotifyPlaylist(playlist: Playlist, requester?: GuildMember) {
-  const playlistEmbed = new MessageEmbed()
+  const playlistEmbed = new EmbedBuilder()
     .setColor("#0099ff")
     .setTitle(playlist.name)
-    .setAuthor(playlist.owner)
+    .setAuthor({name: playlist.owner})
     .setTimestamp()
 
   if (requester) {
-    playlistEmbed.setFooter(`Songs requested from ${requester.displayName}`)
+    playlistEmbed.setFooter({text: `Songs requested from ${requester.displayName}`})
   }
 
   let tracklistDescription = ""
@@ -68,11 +68,11 @@ export function createEmbedsForSpotifyPlaylist(playlist: Playlist, requester?: G
 
   _.forEach(descriptions, (description, index) => {
     if (index === 0) {
-      playlistEmbed.addField("Tracks", description)
+      playlistEmbed.addFields({ name: "Tracks", value: description })
     } else if (index <= 2) {
-      playlistEmbed.addField("More...", description)
+      playlistEmbed.addFields({ name: "More", value: description })
     } else {
-      playlistEmbed.addField("And even more", "...")
+      playlistEmbed.addFields({ name: "And even more", value: "..." })
     }
   })
 

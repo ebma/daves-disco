@@ -11,7 +11,7 @@ interface Timeout {
 }
 
 // TODO change timeouts to use ip addresses
-let loginTimeouts: Record<UserID, Timeout> = {}
+const loginTimeouts: Record<UserID, Timeout> = {}
 
 function getTimeout(user: GuildMember) {
   return loginTimeouts[user.id]
@@ -40,12 +40,12 @@ async function initLogin(user: GuildMember) {
     return response.content.toLowerCase().startsWith("y") || response.content.toLowerCase().startsWith("n")
   }
 
-  const collected = await dmChannel.awaitMessages(filter, { max: 1, time: 60000, errors: ["time"] })
+  const collected = await dmChannel.awaitMessages({ filter, max: 1, time: 60000, errors: ["time"] })
   const answer = collected.first().content
   if (answer.toLowerCase().startsWith("y")) {
     try {
       const token = jwt.sign({ guildID: user.guild.id, userID: user.id }, config.SECRET, {
-        expiresIn: "60d"
+        expiresIn: "60d",
       })
       dmChannel.send("Login successful. You can head back to your browser.")
       return token
@@ -72,16 +72,15 @@ export function createLoginRouter(client: MyClient) {
   loginRouter.post("/", async (request: LoginRequest, response) => {
     const body = request.body
 
-    const guild = client.guilds.cache.find(guild => guild.id === body.guildID)
-    const user = guild.members.cache.find(member => member.id === body.userID)
+    const guild = client.guilds.cache.find((guild) => guild.id === body.guildID)
+    const user = guild.members.cache.find((member) => member.id === body.userID)
 
     try {
       const token = await initLogin(user)
-      console.log("sending token", token)
       response.status(200).send({ token })
     } catch (error) {
       return response.status(401).json({
-        error: error.message
+        error: error.message,
       })
     }
   })

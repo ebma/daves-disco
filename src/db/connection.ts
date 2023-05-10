@@ -2,10 +2,7 @@ import mongoose from "mongoose"
 
 export function connect(databasePath: string) {
   mongoose.connect(databasePath, {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useUnifiedTopology: true,
-    useFindAndModify: false
+    autoIndex: true,
   })
 
   const db = mongoose.connection

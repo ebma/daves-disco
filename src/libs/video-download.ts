@@ -1,5 +1,5 @@
 import ytdlDiscordWrapper from "discord-ytdl-core"
-import Agent from "https-proxy-agent"
+import  { HttpsProxyAgent } from "https-proxy-agent";
 import _ from "lodash"
 
 const proxies: string[] = [
@@ -19,12 +19,11 @@ function selectRandomProxy(blacklist: string[] = []) {
 
 export function downloadVideoWithProxy(url: string, seek?: number) {
   let attempts = 0
-  let triedProxies: string[] = []
+  const triedProxies: string[] = []
   while (attempts < 3) {
     const proxyAddress = selectRandomProxy(triedProxies)
     try {
-      console.log("proxyAddress", proxyAddress)
-      const agent = Agent(proxyAddress)
+      const agent = new HttpsProxyAgent(proxyAddress)
 
       const stream = ytdlDiscordWrapper(url, {
         // encoderArgs: ["-af", "bass=g=5,dynaudnorm=f=200"],
@@ -35,6 +34,7 @@ export function downloadVideoWithProxy(url: string, seek?: number) {
       })
       return stream
     } catch (error) {
+      // tslint:disable-next-line:no-console
       console.error(error)
       triedProxies.push(proxyAddress)
     } finally {

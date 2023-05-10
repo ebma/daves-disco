@@ -1,10 +1,10 @@
-import { MessageEmbed } from "discord.js"
 import Youtube from "../../../libs/Youtube"
 import Spotify from "../../../libs/Spotify"
 import { createEmbedForTrack, createEmbedForTracks, createEmbedsForSpotifyPlaylist } from "../../../utils/embeds"
 import MusicPlayer from "../../../libs/MusicPlayer"
 import { SpotifyHelper } from "../../../shared/utils/helpers"
 import { createAndSavePlaylistModel, createAndSaveTrackModel } from "../../../db/models/helper"
+import { Embed, EmbedBuilder } from "discord.js";
 
 async function getTrackFromYoutubeVideo(videoURL: string) {
   const track = await Youtube.createTrackFromURL(videoURL)
@@ -32,7 +32,7 @@ async function handleSearch(searchTerm: string) {
 }
 
 export async function handlePlay(input: string, guildID: GuildID, musicPlayer: MusicPlayer) {
-  let reply: MessageEmbed | string = ""
+  let reply: EmbedBuilder | string = ""
 
   if (Youtube.describesYoutubePlaylist(input)) {
     const playlistID = new URL(input).searchParams.get("list")

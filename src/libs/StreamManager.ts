@@ -1,14 +1,14 @@
-import { StreamDispatcher, VoiceConnection } from "discord.js"
-import { get as httpGet, IncomingMessage } from "http"
+import { get as httpGet } from "http"
 import { get as httpsGet } from "https"
 import { PartialObserver, Subject } from "rxjs"
 import { Readable } from "stream"
 import Youtube from "../libs/Youtube"
 import { trackError } from "../utils/trackError"
+import { AudioPlayer, createAudioResource, StreamType, VoiceConnection } from "@discordjs/voice"
 
 class StreamManager {
   private voiceConnection: VoiceConnection
-  private musicDispatcher?: StreamDispatcher
+  private musicDispatcher?: AudioPlayer
   private streamSource?: Readable | Track
   private volume: number = 0.1
   private subject: Subject<StreamManagerObservableMessage>
@@ -24,7 +24,7 @@ class StreamManager {
     }
     this.volume = volume / 100
     if (this.musicDispatcher) {
-      this.musicDispatcher.setVolume(this.volume)
+      // this.streamSource.setVolume(this.volume)
     }
   }
 
@@ -33,7 +33,7 @@ class StreamManager {
   }
 
   get paused(): boolean {
-    return Boolean(this.musicDispatcher && this.musicDispatcher.paused)
+    return Boolean(this.musicDispatcher && this.musicDispatcher.state.status === "paused")
   }
 
   get playing(): boolean {
@@ -43,7 +43,7 @@ class StreamManager {
   pause() {
     if (!this.musicDispatcher) {
       throw new Error("Can't pause before starting to play something.")
-    } else if (this.musicDispatcher.paused) {
+    } else if (this.musicDispatcher.state.status === "paused") {
       throw new Error("Stream paused already.")
     } else {
       this.musicDispatcher.pause(true)
@@ -53,10 +53,10 @@ class StreamManager {
   resume() {
     if (!this.musicDispatcher) {
       throw new Error("Can't resume before starting to play something.")
-    } else if (!this.musicDispatcher.paused) {
+    } else if (!(this.musicDispatcher.state.status === "paused")) {
       throw new Error("Stream running already.")
     } else {
-      this.musicDispatcher.resume()
+      this.musicDispatcher.unpause()
     }
   }
 
@@ -65,13 +65,17 @@ class StreamManager {
     const trackPaused = this.paused
     const resourceGetter = source.startsWith("https:") ? httpsGet : httpGet
     try {
-      resourceGetter(source, result => {
+      resourceGetter(source, (result) => {
         if (this.streamSource instanceof Readable) this.streamSource.unpipe() // unpipe because otherwise the stream will not work with the next voice connection
-        const soundDispatcher = this.voiceConnection.play(result, { highWaterMark: 512, volume: vol })
-        soundDispatcher
-          .on("finish", () => {
-            if (this.streamSource) {
-              this.play(this.streamSource, trackPaused)
+        const audioResource = createAudioResource(result, { inlineVolume: true, inputType: StreamType.OggOpus })
+        audioResource.volume?.setVolume(vol)
+        this.musicDispatcher.play(audioResource)
+        audioResource.audioPlayer
+          .on("stateChange", (oldState, newState) => {
+            if (oldState.status === "playing" && newState.status === "idle") {
+              if (this.streamSource) {
+                this.play(this.streamSource, trackPaused)
+              }
             }
           })
           .on("error", (error: any) => {
@@ -85,7 +89,7 @@ class StreamManager {
 
   async play(input: Track | Readable, trackPaused: boolean = false) {
     try {
-      let dispatcher: StreamDispatcher = null
+      let dispatcher: AudioPlayer = null
       if (input instanceof Readable) {
         dispatcher = await this.playReadable(input)
       } else {
@@ -108,25 +112,23 @@ class StreamManager {
     const source = await Youtube.createReadableStreamFor(input)
     this.streamSource = source
 
-    const dispatcher = this.voiceConnection.play(source, {
-      volume: this.volume,
-      highWaterMark: 512,
-      type: "opus"
-    })
+    const audioResource = createAudioResource(source, { inlineVolume: true, inputType: StreamType.OggOpus })
+    audioResource.volume?.setVolume(this.volume)
+    this.musicDispatcher.play(audioResource)
 
-    dispatcher
-      .on("debug", info => this.subject.next({ type: "debug", data: info }))
-      .on("start", () => this.subject.next({ type: "start" }))
-      .on("finish", () => {
-        // check if this is still the current/only one
-        if (this.musicDispatcher === dispatcher) {
-          this.streamSource = null
-          this.musicDispatcher = null
-          this.subject.next({ type: "finish" })
+    audioResource.audioPlayer
+      .on("debug", (info: any) => this.subject.next({ type: "debug", data: info }))
+      .on("stateChange", (oldState, newState) => {
+        if (oldState.status === "playing" && newState.status === "idle") {
+          if (this.musicDispatcher === audioResource.audioPlayer) {
+            this.streamSource = null
+            this.musicDispatcher = null
+            this.subject.next({ type: "finish" })
+          }
         }
       })
       .on("error", (error: any) => {
-        if (this.musicDispatcher === dispatcher) {
+        if (this.musicDispatcher === audioResource.audioPlayer) {
           if (source instanceof Readable) source.destroy()
           this.streamSource = null
           this.musicDispatcher = null
@@ -134,67 +136,68 @@ class StreamManager {
         }
         trackError(error, "StreamManager.playYoutube error")
       })
-    return dispatcher
+    return audioResource.audioPlayer
   }
 
   private async playUnknown(input: Track) {
     const resourceGetter = input.url.startsWith("https:") ? httpsGet : httpGet
-    const stream: Readable = await new Promise(resolve => {
-      resourceGetter(input.url, result => {
+    const stream: Readable = await new Promise((resolve) => {
+      resourceGetter(input.url, (result) => {
         resolve(result)
       })
     })
 
     this.streamSource = stream
 
-    const dispatcher = this.voiceConnection.play(stream, {
-      volume: this.volume
-    })
+    const audioResource = createAudioResource(stream, { inlineVolume: true, inputType: StreamType.OggOpus })
+    audioResource.volume?.setVolume(this.volume)
+    this.musicDispatcher.play(audioResource)
 
-    dispatcher
-      .on("debug", info => this.subject.next({ type: "debug", data: info }))
-      .on("start", () => this.subject.next({ type: "start" }))
-      .on("finish", () => {
-        // check if this is still the current/only one
-        if (this.musicDispatcher === dispatcher) {
-          this.streamSource = null
-          this.musicDispatcher = null
-          this.subject.next({ type: "finish" })
+    audioResource.audioPlayer
+      .on("debug", (info: any) => this.subject.next({ type: "debug", data: info }))
+      .on("stateChange", (oldState, newState) => {
+        if (oldState.status === "playing" && newState.status === "idle") {
+          if (this.musicDispatcher === audioResource.audioPlayer) {
+            this.streamSource = null
+            this.musicDispatcher = null
+            this.subject.next({ type: "finish" })
+          }
+        } else if (oldState.status === "playing") {
+          this.subject.next({ type: "start" })
         }
       })
       .on("error", (error: any) => {
-        if (this.musicDispatcher === dispatcher) {
+        if (this.musicDispatcher === audioResource.audioPlayer) {
           this.streamSource = null
           this.musicDispatcher = null
           this.subject.next({ type: "error", data: error && error.message ? error.message : error })
         }
         trackError(error, "StreamManager.playUnknown error")
       })
-    return dispatcher
+    return audioResource.audioPlayer
   }
 
   private async playReadable(input: Readable) {
     this.streamSource = input
-    const dispatcher = this.voiceConnection.play(input, {
-      volume: this.volume,
-      highWaterMark: 512,
-      type: "opus"
-    })
+    const audioResource = createAudioResource(input, { inlineVolume: true, inputType: StreamType.OggOpus })
+    audioResource.volume?.setVolume(this.volume)
+    this.musicDispatcher.play(audioResource)
 
-    dispatcher
-      .on("debug", info => this.subject.next({ type: "debug", data: info }))
-      .on("start", () => this.subject.next({ type: "start" }))
-      .on("finish", () => {
-        // check if this is still the current/only one
-        if (this.musicDispatcher === dispatcher) {
-          input.destroy()
-          this.streamSource = null
-          this.musicDispatcher = null
-          this.subject.next({ type: "finish" })
+    this.musicDispatcher
+      .on("debug", (info: any) => this.subject.next({ type: "debug", data: info }))
+      .on("stateChange", (oldState, newState) => {
+        if (oldState.status === "playing" && newState.status === "idle") {
+          if (this.musicDispatcher === audioResource.audioPlayer) {
+            this.streamSource = null
+            this.musicDispatcher = null
+            this.subject.next({ type: "finish" })
+          }
+        } else if (oldState.status === "playing") {
+          this.subject.next({ type: "start" })
         }
       })
       .on("error", (error: any) => {
-        if (this.musicDispatcher === dispatcher) {
+        if (this.musicDispatcher === audioResource.audioPlayer) {
           input.destroy()
           this.streamSource = null
           this.musicDispatcher = null
@@ -203,7 +206,7 @@ class StreamManager {
         trackError(error, "StreamManager.playReadable error")
       })
 
-    return dispatcher
+    return audioResource.audioPlayer
   }
 
   subscribe(subscriber: PartialObserver<StreamManagerObservableMessage>) {
@@ -211,14 +214,12 @@ class StreamManager {
   }
 
   endCurrent() {
-    if (this.musicDispatcher && !this.musicDispatcher.writableFinished) {
-      this.musicDispatcher.end()
-    }
+    this.stop()
   }
 
   stop() {
-    if (this.musicDispatcher && !this.musicDispatcher.destroyed) {
-      this.musicDispatcher.destroy()
+    if (this.musicDispatcher && this.musicDispatcher.state.status !== "idle") {
+      this.musicDispatcher.stop()
     }
   }
 

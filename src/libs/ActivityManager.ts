@@ -13,13 +13,13 @@ class ActivityManager {
 
   setPlaying(content: string, url?: string) {
     if (this.user) {
-      this.user.setPresence({ activity: { type: "LISTENING", name: content, url }, afk: false, status: "online" })
+      this.user.setPresence({ activities: [{ type: 2, name: content, url }], afk: false, status: "online" })
     }
   }
 
   setIdle() {
     if (this.user) {
-      this.user.setPresence({})
+      this.user.setPresence({ status: "idle" })
     }
   }
 }

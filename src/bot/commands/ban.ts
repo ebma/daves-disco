@@ -11,8 +11,8 @@ class BanCommand extends Command {
           type: "member"
         }
       ],
-      clientPermissions: ["BAN_MEMBERS"],
-      userPermissions: ["BAN_MEMBERS"],
+      clientPermissions: ["BanMembers"],
+      userPermissions: ["BanMembers"],
       channel: "guild"
     })
   }

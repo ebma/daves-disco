@@ -3212,7 +3212,7 @@ __metadata:
     bufferutil: "npm:^4.0.7"
     concurrently: "npm:^8.0.1"
     cors: "npm:^2.8.5"
-    discord-akairo: "npm:^8.1.0"
+    discord-akairo: discord-akairo/discord-akairo
     discord-ytdl-core: "npm:^5.0.4"
     discord.js: "npm:^14.11.0"
     dotenv: "npm:^16.0.3"
@@ -3390,10 +3390,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"discord-akairo@npm:^8.1.0":
+discord-akairo@discord-akairo/discord-akairo:
   version: 8.1.0
-  resolution: "discord-akairo@npm:8.1.0"
-  checksum: e66761715c10fa34b0442a4560f337f616e00dfa4af913b20a4658676eabc0b225fc1e91a84fb6cd26b565a4322b9cbe11dbe009f2bc774b6a431a6dd9e3ca08
+  resolution: "discord-akairo@https://github.com/discord-akairo/discord-akairo.git#commit=905f69382957023601ebbb6f8a3a8b6b0f615bd1"
+  checksum: 471ed50dfc3f14e078e8f43181bbf3db5f1c468db2eb3f4c44773b723f2eaabaf950b67a4507602ed55043afc69d3f35500c14a9c79c395572debf19c056b2b1
   languageName: node
   linkType: hard
 

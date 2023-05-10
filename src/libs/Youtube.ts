@@ -82,7 +82,7 @@ export class Youtube {
     if (info.thumbnail_url) {
       return { medium: info.thumbnail_url }
     } else {
-      const thumbnails = info.player_response?.videoDetails?.thumbnail?.thumbnails
+      const thumbnails = info.player_response?.videoDetails?.thumbnails
       if (thumbnails) {
         return {
           small: thumbnails[0]?.url,

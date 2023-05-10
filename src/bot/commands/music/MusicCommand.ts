@@ -1,6 +1,6 @@
 import { Command } from "discord-akairo"
 import _ from "lodash"
-import { Guild, GuildMember, Message, TextChannel, MessageEmbed } from "discord.js"
+import { Guild, GuildMember, Message, TextChannel, Embed, EmbedBuilder } from "discord.js";
 import MusicPlayer from "../../../libs/MusicPlayer"
 import MusicPlayerManager from "../../../libs/MusicPlayerManager"
 import { trackError } from "../../../utils/trackError"
@@ -66,11 +66,11 @@ export abstract class MusicCommand extends Command {
     { leading: false, trailing: true }
   )
 
-  sendMessageToChannel(message: string | MessageEmbed) {
+  sendMessageToChannel(message: string | EmbedBuilder) {
     const defaultChannel = this.message.channel
 
-    if (message instanceof MessageEmbed) {
-      defaultChannel.send(message)
+    if (message instanceof EmbedBuilder) {
+      defaultChannel.send({ embeds: [message]})
     } else {
       messageQueue.push(message)
       this.sendStringMessage(defaultChannel)
