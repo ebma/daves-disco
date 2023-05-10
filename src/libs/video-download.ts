@@ -1,4 +1,4 @@
-import ytdlDiscordWrapper from "discord-ytdl-core"
+import ytdl from "ytdl-core"
 import  { HttpsProxyAgent } from "https-proxy-agent";
 import _ from "lodash"
 
@@ -25,12 +25,11 @@ export function downloadVideoWithProxy(url: string, seek?: number) {
     try {
       const agent = new HttpsProxyAgent(proxyAddress)
 
-      const stream = ytdlDiscordWrapper(url, {
-        // encoderArgs: ["-af", "bass=g=5,dynaudnorm=f=200"],
+      const stream = ytdl (url, {
         filter: "audioonly",
         highWaterMark: 1 << 25,
-        opusEncoded: true,
-        seek
+        quality: "highestaudio",
+        begin: seek
       })
       return stream
     } catch (error) {

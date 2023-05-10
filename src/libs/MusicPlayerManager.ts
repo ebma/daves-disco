@@ -3,7 +3,7 @@ import { trackError } from "../utils/trackError"
 import MusicPlayer from "./MusicPlayer"
 import MusicPlayerObserver from "./MusicPlayerObserver"
 import StreamManager from "./StreamManager"
-import { joinVoiceChannel } from "@discordjs/voice"
+import { entersState, joinVoiceChannel, VoiceConnectionStatus } from "@discordjs/voice"
 
 export class MusicPlayerManager {
   private musicPlayerMap: { [key in GuildID]: MusicPlayer } = {}
@@ -19,6 +19,8 @@ export class MusicPlayerManager {
       guildId: channel.guild.id,
       adapterCreator: channel.guild.voiceAdapterCreator,
     })
+    await entersState(connection, VoiceConnectionStatus.Ready, 30_000)
+
     const musicPlayer = new MusicPlayer(new StreamManager(connection))
     this.musicPlayerMap[guildID] = musicPlayer
 
