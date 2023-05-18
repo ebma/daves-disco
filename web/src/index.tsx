@@ -11,6 +11,11 @@ import "./index.css"
 import apolloClient from "./services/graphql/apollo-client"
 import createTheme from "./theme"
 
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
+
 Sentry.init({ dsn: "https://19a1181bedbf42d3bcdeed169eaf5af9@o394107.ingest.sentry.io/5243849" })
 
 function MaterialThemeProvider(props: { children: React.ReactNode }) {
