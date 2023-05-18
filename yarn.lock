@@ -3251,7 +3251,6 @@ __metadata:
     youtube-search: "npm:^1.1.6"
     ytdl-core: "npm:^4.11.4"
     ytpl: "npm:^2.3.0"
-    zlib-sync: "npm:^0.1.8"
   languageName: unknown
   linkType: soft
 
@@ -5974,15 +5973,6 @@ discord-akairo@discord-akairo/discord-akairo:
   languageName: node
   linkType: hard
 
-"nan@npm:^2.17.0":
-  version: 2.17.0
-  resolution: "nan@npm:2.17.0"
-  dependencies:
-    node-gyp: "npm:latest"
-  checksum: d424a730ee926fd928545c29ba19609bc1af03f8210c4465c825ba87070b83c546da2964a14d6acdacca847798184f48d5b8585f061dcb59459b300f2aff09c8
-  languageName: node
-  linkType: hard
-
 "natural-compare@npm:^1.4.0":
   version: 1.4.0
   resolution: "natural-compare@npm:1.4.0"
@@ -8322,15 +8312,5 @@ discord-akairo@discord-akairo/discord-akairo:
   dependencies:
     miniget: "npm:^4.2.2"
   checksum: f71b206ac21d42802e7bbe62f2fd7bcb84dad83bc915a4ac24328a936343ce2367332a2d2b465099613c608a8fcf2e8fcf63250c79a7c6e8f791072ab28a82b0
-  languageName: node
-  linkType: hard
-
-"zlib-sync@npm:^0.1.8":
-  version: 0.1.8
-  resolution: "zlib-sync@npm:0.1.8"
-  dependencies:
-    nan: "npm:^2.17.0"
-    node-gyp: "npm:latest"
-  checksum: 2089173142c2a08bb6c30ac42878aad3f22d4b77e2a863c6e90afc87e21818a2ca748a8fe0d3ad895ffbeb62886cd397eeba47341a0d2350f7b8bd621d730784
   languageName: node
   linkType: hard
