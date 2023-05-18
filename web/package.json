@@ -48,9 +48,20 @@
     "@types/redux-logger": "^3.0.7",
     "@types/socket.io-client": "^1.4.32",
     "@types/webpack-env": "^1.15.1",
+    "assert": "^2.0.0",
+    "buffer": "^6.0.3",
+    "crypto-browserify": "^3.12.0",
     "dotenv-webpack": "^8.0.1",
+    "https-browserify": "^1.0.0",
+    "os-browserify": "^0.3.0",
+    "process": "^0.11.10",
     "react-app-rewired": "^2.2.1",
-    "typescript": "^5.0.4"
+    "stream-browserify": "^3.0.0",
+    "stream-http": "^3.2.0",
+    "timers-browserify": "^2.0.12",
+    "typescript": "^5.0.4",
+    "url": "^0.11.0",
+    "vm-browserify": "^1.1.2"
   },
   "scripts": {
     "precommit": "lint-staged",
