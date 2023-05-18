@@ -1,9 +1,9 @@
 import React from "react"
-import Grid from "@material-ui/core/Grid"
-import Slider from "@material-ui/core/Slider"
-import Typography from "@material-ui/core/Typography"
-import VolumeDown from "@material-ui/icons/VolumeDown"
-import VolumeUp from "@material-ui/icons/VolumeUp"
+import Grid from "@mui/material/Grid"
+import Slider from "@mui/material/Slider"
+import Typography from "@mui/material/Typography"
+import VolumeDown from "@mui/icons-material/VolumeDown"
+import VolumeUp from "@mui/icons-material/VolumeUp"
 
 interface VolumeSliderProps {
   className?: string

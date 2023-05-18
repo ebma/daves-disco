@@ -1,4 +1,4 @@
-import { makeStyles } from "@material-ui/core/styles"
+import { makeStyles } from "@mui/styles"
 import ColorThief, { Color, ColorArray } from "colorthief"
 import { motion, useMotionTemplate, useSpring } from "framer-motion"
 import React from "react"

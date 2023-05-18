@@ -1,10 +1,10 @@
-import Button from "@material-ui/core/Button"
-import Fade from "@material-ui/core/Fade"
-import Grid from "@material-ui/core/Grid"
-import IconButton from "@material-ui/core/IconButton"
-import { makeStyles } from "@material-ui/core/styles"
-import Typography from "@material-ui/core/Typography"
-import EditIcon from "@material-ui/icons/Edit"
+import Button from "@mui/material/Button"
+import Fade from "@mui/material/Fade"
+import Grid from "@mui/material/Grid"
+import IconButton from "@mui/material/IconButton"
+import { makeStyles } from "@mui/styles"
+import Typography from "@mui/material/Typography"
+import EditIcon from "@mui/icons-material/Edit"
 import React from "react"
 
 const useStyles = makeStyles(theme => ({

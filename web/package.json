@@ -10,6 +10,7 @@
     "@mui/icons-material": "^5.11.16",
     "@mui/lab": "^5.0.0-alpha.130",
     "@mui/material": "^5.13.1",
+    "@mui/styles": "^5.13.1",
     "@reduxjs/toolkit": "^1.3.4",
     "@sentry/browser": "^5.15.5",
     "axios": "^1.4.0",

@@ -1,8 +1,8 @@
 import React from "react"
-import Typography from "@material-ui/core/Typography"
-import { makeStyles } from "@material-ui/core/styles"
-import Link from "@material-ui/core/Link"
-import Container from "@material-ui/core/Container"
+import Typography from "@mui/material/Typography"
+import { makeStyles } from "@mui/styles"
+import Link from "@mui/material/Link"
+import Container from "@mui/material/Container"
 
 function Copyright() {
   return (

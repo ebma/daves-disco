@@ -1,8 +1,8 @@
-import Button from "@material-ui/core/Button"
-import IconButton from "@material-ui/core/IconButton"
-import { makeStyles } from "@material-ui/core/styles"
-import TextField from "@material-ui/core/TextField"
-import CancelIcon from "@material-ui/icons/Cancel"
+import Button from "@mui/material/Button"
+import IconButton from "@mui/material/IconButton"
+import { makeStyles } from "@mui/styles"
+import TextField from "@mui/material/TextField"
+import CancelIcon from "@mui/icons-material/Cancel"
 import React from "react"
 import {
   useCreateSoundboardItemMutation,

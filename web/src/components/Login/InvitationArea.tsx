@@ -1,9 +1,9 @@
-import Box from "@material-ui/core/Box"
-import Divider from "@material-ui/core/Divider"
-import Link from "@material-ui/core/Link"
-import { makeStyles, useTheme } from "@material-ui/core/styles"
-import Typography from "@material-ui/core/Typography"
-import useMediaQuery from "@material-ui/core/useMediaQuery"
+import Box from "@mui/material/Box"
+import Divider from "@mui/material/Divider"
+import Link from "@mui/material/Link"
+import { makeStyles, useTheme } from "@mui/material/styles"
+import Typography from "@mui/material/Typography"
+import useMediaQuery from "@mui/material/useMediaQuery"
 import React from "react"
 
 const useStyles = makeStyles(theme => ({

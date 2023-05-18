@@ -1,7 +1,7 @@
 import React from "react"
-import PlayIcon from "@material-ui/icons/PlayArrow"
-import TextField from "@material-ui/core/TextField"
-import Typography from "@material-ui/core/Typography"
+import PlayIcon from "@mui/icons-material/PlayArrow"
+import TextField from "@mui/material/TextField"
+import Typography from "@mui/material/Typography"
 import StyledButton from "../../StyledButton"
 import { SpotifyHelper } from "../../../shared/utils/helpers"
 

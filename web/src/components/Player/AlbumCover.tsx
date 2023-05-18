@@ -1,4 +1,4 @@
-import { makeStyles } from "@material-ui/core"
+import { makeStyles } from "@mui/core"
 import { motion } from "framer-motion"
 import React from "react"
 

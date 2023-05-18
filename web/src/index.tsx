@@ -1,5 +1,5 @@
 import { ApolloProvider } from "@apollo/client"
-import { ThemeProvider } from "@material-ui/core/styles"
+import { ThemeProvider } from "@mui/material/styles"
 import * as Sentry from "@sentry/browser"
 import React from "react"
 import ReactDOM from "react-dom"
