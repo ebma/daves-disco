@@ -19,7 +19,7 @@ sudo chown $(whoami) /etc/letsencrypt/archive/ -R
 echo "Installing node..."
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
 . ~/.nvm/nvm.sh
-nvm install 14
+nvm install 16
 node -e "console.log('Running Node.js ' + process.version)"
 
 # allow non-root node to use ports 80 and 443
@@ -39,6 +39,6 @@ test -s .env || echo "PORT=443" >> .env && \
 
 npm install pm2 -g
 # setup startup script
-sudo env PATH=$PATH:/home/ubuntu/.nvm/versions/node/v14.16.0/bin /home/ubuntu/.nvm/versions/node/v14.16.0/lib/node_modules/pm2/bin/pm2 startup systemd -u ubuntu --hp /home/ubuntu
+sudo env PATH=$PATH:/home/ubuntu/.nvm/versions/node/v16.20.0/bin /home/ubuntu/.nvm/versions/node/v16.20.0/lib/node_modules/pm2/bin/pm2 startup systemd -u ubuntu --hp /home/ubuntu
 NODE_ENV=production pm2 start --name='daves-disco' npm -- run start
 pm2 save
