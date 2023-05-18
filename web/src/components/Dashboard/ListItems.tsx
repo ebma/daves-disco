@@ -7,7 +7,7 @@ import DashboardIcon from "@material-ui/icons/Dashboard"
 import LogoutIcon from "@material-ui/icons/ExitToApp"
 import SoundboardIcon from "@material-ui/icons/MusicNote"
 import React from "react"
-import { useHistory, useLocation } from "react-router"
+import { useNavigate, useLocation } from "react-router"
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -35,7 +35,7 @@ interface Props {
 }
 
 export function MainListItems(props: Props) {
-  const history = useHistory()
+  const navigate = useNavigate()
   const location = useLocation()
 
   const classes = useStyles()
@@ -46,7 +46,7 @@ export function MainListItems(props: Props) {
         button
         className={classes.item}
         selected={location.pathname.includes("/home")}
-        onClick={() => history.push("/home")}
+        onClick={() => navigate("/home")}
       >
         <ListItemIcon>
           <DashboardIcon className={classes.icon} />
@@ -57,7 +57,7 @@ export function MainListItems(props: Props) {
         button
         className={classes.item}
         selected={location.pathname.includes("/soundboard")}
-        onClick={() => history.push("/soundboard")}
+        onClick={() => navigate("/soundboard")}
       >
         <ListItemIcon>
           <SoundboardIcon className={classes.icon} />
