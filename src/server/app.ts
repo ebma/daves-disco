@@ -16,7 +16,7 @@ export function initApp(client: MyClient) {
   const app = express()
 
   const schema = createSchema(client)
-
+  
   const apolloServer = new ApolloServer({ schema, cache: "bounded" })
   apolloServer.start().then(() => {
     apolloServer.applyMiddleware({ app })

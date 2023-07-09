@@ -1,17 +1,16 @@
-import { makeStyles } from "@mui/core"
+import { makeStyles } from "@mui/styles"
 import Button from "@mui/material/Button"
 import Typography from "@mui/material/Typography"
 import React from "react"
 import { TrackFieldsFragment } from "../../services/graphql/graphql"
 import { SpotifyHelper } from "../../shared/utils/helpers"
-import { breakpoints } from "../../theme"
 import AlbumCover from "./AlbumCover"
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   noTrackIcon: {
     width: 100,
     height: 100,
-    margin: 32
+    margin: 32,
   },
   root: {
     alignItems: "center",
@@ -22,11 +21,11 @@ const useStyles = makeStyles({
     minWidth: "50%",
     maxWidth: "80%",
 
-    [breakpoints.down("xs")]: {
-      maxWidth: "95%"
-    }
-  }
-})
+    [theme.breakpoints.down("xs")]: {
+      maxWidth: "95%",
+    },
+  },
+}))
 
 function TrackCard(props: { currentTrack?: TrackFieldsFragment; paused: boolean }) {
   const { currentTrack } = props

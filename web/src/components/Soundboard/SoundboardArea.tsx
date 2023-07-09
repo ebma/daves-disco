@@ -22,19 +22,19 @@ function saveVolumeToLocalStorage(volume: number) {
   localStorage.setItem("volume", String(volume))
 }
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     alignItems: "center",
     flexGrow: 1,
     display: "flex",
-    flexDirection: "column"
+    flexDirection: "column",
   },
   header: {
     display: "flex",
     flexDirection: "row",
     flexWrap: "wrap",
     width: "100%",
-    justifyContent: "space-evenly"
+    justifyContent: "space-evenly",
   },
   searchField: {
     margin: 16,
@@ -43,8 +43,8 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down("sm")]: {
       minWidth: 200,
       marginTop: 8,
-      marginBottom: 8
-    }
+      marginBottom: 8,
+    },
   },
   volumeSlider: {
     maxWidth: 500,
@@ -54,9 +54,9 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down("sm")]: {
       minWidth: 200,
       marginTop: 8,
-      marginBottom: 8
-    }
-  }
+      marginBottom: 8,
+    },
+  },
 }))
 
 interface Props {
@@ -70,21 +70,21 @@ function SoundboardArea(props: Props) {
   const soundboardItemsQuery = useGetSoundboardItemsQuery({
     fetchPolicy: "cache-and-network",
     pollInterval: 2000,
-    variables: { guild: props.guildID, limit: 200 }
+    variables: { guild: props.guildID, limit: 200 },
   })
 
   const [editableItemId, setEditableItemId] = React.useState<string | undefined>(undefined)
   const [searchTerm, setSearchTerm] = React.useState("")
   const [volume, setVolume] = React.useState(getVolumeFromLocalStorage)
 
-  const play = React.useCallback((item: SoundboardItemModel) => () => dispatch(playSound(item.source, volume)), [
-    dispatch,
-    volume
-  ])
+  const play = React.useCallback(
+    (item: SoundboardItemModel) => () => dispatch(playSound(item.source, volume)),
+    [dispatch, volume]
+  )
 
   const sortedItems = React.useMemo(() => {
     const items = soundboardItemsQuery.data ? soundboardItemsQuery.data.soundboardItemMany : []
-    const matchingItems = items.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
+    const matchingItems = items.filter((item) => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
     return matchingItems.slice().sort((a, b) => a.name.localeCompare(b.name))
   }, [soundboardItemsQuery.data, searchTerm])
 
@@ -100,25 +100,25 @@ function SoundboardArea(props: Props) {
                   {searchTerm ? <CancelIcon fontSize="small" /> : undefined}
                 </IconButton>
               </InputAdornment>
-            )
+            ),
           }}
           label="Search"
           placeholder="..."
-          onChange={e => setSearchTerm(e.target.value)}
+          onChange={(e) => setSearchTerm(e.target.value)}
           value={searchTerm}
         />
         <VolumeSlider
           className={classes.volumeSlider}
           volume={volume}
-          onChange={value => {
+          onChange={(value) => {
             saveVolumeToLocalStorage(value)
             setVolume(value)
           }}
         />
       </div>
-      <Grid container spacing={3} justify="center">
+      <Grid container spacing={3} sx={{ justifyContent: "center" }}>
         <QueryWrapper loading={soundboardItemsQuery.loading} error={soundboardItemsQuery.error}>
-          {sortedItems.map(item => {
+          {sortedItems.map((item) => {
             return item._id === editableItemId ? (
               <SoundboardItemFields
                 editing

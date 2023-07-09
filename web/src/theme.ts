@@ -1,4 +1,9 @@
-import { createTheme, responsiveFontSizes } from "@mui/material/styles"
+import { Theme, createTheme, responsiveFontSizes } from "@mui/material/styles"
+
+declare module "@mui/styles" {
+  // tslint:disable-next-line:no-empty-interface
+  interface DefaultTheme extends Theme {}
+}
 
 export const lightShades = {
   dim: "#F0F0F0",
@@ -43,6 +48,7 @@ const createCustomTheme = (darkMode: boolean) =>
         primary: primaryColor,
         text: {},
       },
+      transitions: {},
       components: {
         MuiPaper: {
           styleOverrides: {

@@ -12,22 +12,22 @@ import { TrackFieldsFragment } from "../../../services/graphql/graphql"
 import { SpotifyHelper } from "../../../shared/utils/helpers"
 import { DeleteButton, FavorButton, PlayButton } from "./Buttons"
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   item: {
     borderRadius: 8,
     boxShadow: "1",
     display: "flex",
     padding: 0,
-    position: "relative"
+    position: "relative",
   },
   paper: {
     alignItems: "center",
     display: "flex",
     marginBottom: 8,
     marginTop: 8,
-    width: "100%"
+    width: "100%",
   },
-  avatar: {}
+  avatar: {},
 }))
 
 interface TrackItemProps {
@@ -72,15 +72,15 @@ export const TrackItem = React.forwardRef(function TrackItem(props: TrackItemPro
             style: {
               overflow: "hidden",
               whiteSpace: "nowrap",
-              textOverflow: "ellipsis"
-            }
+              textOverflow: "ellipsis",
+            },
           }}
           secondaryTypographyProps={{
             style: {
               overflow: "hidden",
               whiteSpace: "nowrap",
-              textOverflow: "ellipsis"
-            }
+              textOverflow: "ellipsis",
+            },
           }}
           primary={primaryText}
           secondary={
@@ -95,7 +95,7 @@ export const TrackItem = React.forwardRef(function TrackItem(props: TrackItemPro
         {showFavourite && (
           <FavorButton
             onClick={() => toggleFavourite && toggleFavourite(track)}
-            favourite={track.favourite?.find(value => value && value.guild === guildID)?.favourite || false}
+            favourite={track.favourite?.find((value) => value && value.guild === guildID)?.favourite || false}
           />
         )}
       </ListItem>
@@ -121,12 +121,16 @@ export function DraggableTrackItem(props: DraggableTrackItemProps) {
     }
   }, [current])
 
+  const Div = React.forwardRef(function Div(props: any, ref: React.Ref<HTMLDivElement>) {
+    return <div ref={ref} {...props} />
+  })
+
   return (
     <Draggable draggableId={id} key={id} index={index}>
-      {provided => (
-        <div ref={provided.innerRef} {...provided.dragHandleProps} {...provided.draggableProps}>
+      {(provided, snapshot) => (
+        <Div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
           <TrackItem {...props} ref={myRef} />
-        </div>
+        </Div>
       )}
     </Draggable>
   )

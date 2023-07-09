@@ -1,12 +1,12 @@
 import Box from "@mui/material/Box"
 import Divider from "@mui/material/Divider"
 import Link from "@mui/material/Link"
-import { makeStyles, useTheme } from "@mui/material/styles"
+import { makeStyles, useTheme } from "@mui/styles"
 import Typography from "@mui/material/Typography"
 import useMediaQuery from "@mui/material/useMediaQuery"
 import React from "react"
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   container: {
     padding: 16
   },

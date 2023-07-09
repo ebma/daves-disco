@@ -1,5 +1,5 @@
 import Box from "@mui/material/Box"
-import { createStyles, Theme } from "@mui/material/styles"
+import { createStyles } from "@mui/styles"
 import Tab from "@mui/material/Tab"
 import Tabs from "@mui/material/Tabs"
 import Typography from "@mui/material/Typography"
@@ -15,9 +15,9 @@ import PlaySpotifyTab from "./Tab/PlaySpotifyTab"
 import PlayYoutubeTab from "./Tab/PlayYoutubeTab"
 import SearchYoutubeTab from "./Tab/SearchYoutubeTab"
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles((theme) =>
   createStyles({
-    root: {}
+    root: {},
   })
 )
 
@@ -61,7 +61,7 @@ function SearchArea(props: SearchAreaProps) {
   }
 
   const onSearchDone = React.useCallback(
-    async searchTerm => {
+    async (searchTerm) => {
       if (user) {
         dispatch(playSearchTerm(searchTerm))
       }

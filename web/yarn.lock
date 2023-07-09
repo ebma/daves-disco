@@ -7082,6 +7082,7 @@ __metadata:
     assert: "npm:^2.0.0"
     axios: "npm:^1.4.0"
     buffer: "npm:^6.0.3"
+    clsx: "npm:^1.2.1"
     colorthief: "npm:^2.4.0"
     crypto-browserify: "npm:^3.12.0"
     dotenv-webpack: "npm:^8.0.1"

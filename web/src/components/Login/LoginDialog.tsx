@@ -1,30 +1,30 @@
-import { useTheme } from "@mui/core"
-import Dialog from "@mui/material/Dialog"
-import DialogContent from "@mui/material/DialogContent"
-import Divider from "@mui/material/Divider"
-import Slide from "@mui/material/Slide"
-import { TransitionProps } from "@mui/material/transitions/transition"
-import Typography from "@mui/material/Typography"
-import useMediaQuery from "@mui/material/useMediaQuery"
-import React from "react"
-import GuildSelectionArea from "./GuildSelectionArea"
-import InvitationArea from "./InvitationArea"
+import { useTheme } from "@mui/material";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import Divider from "@mui/material/Divider";
+import Slide from "@mui/material/Slide";
+import { TransitionProps } from "@mui/material/transitions/transition";
+import Typography from "@mui/material/Typography";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import React from "react";
+import GuildSelectionArea from "./GuildSelectionArea";
+import InvitationArea from "./InvitationArea";
 
 const Transition = React.forwardRef(function Transition(
-  props: TransitionProps & { children?: React.ReactElement },
+  props: TransitionProps & { children: React.ReactElement },
   ref: React.Ref<unknown>
 ) {
-  return <Slide direction="right" ref={ref} {...props} />
-})
+  return <Slide direction="right" ref={ref} {...props} children={props.children} />;
+});
 
 interface Props {
-  open: boolean
-  onClose: () => void
+  open: boolean;
+  onClose: () => void;
 }
 
 function LoginDialog(props: Props) {
-  const theme = useTheme()
-  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"))
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
     <Dialog
@@ -44,7 +44,7 @@ function LoginDialog(props: Props) {
         <InvitationArea />
       </DialogContent>
     </Dialog>
-  )
+  );
 }
 
-export default LoginDialog
+export default LoginDialog;

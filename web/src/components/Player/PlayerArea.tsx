@@ -1,6 +1,6 @@
 import Grid from "@mui/material/Grid"
 import Paper from "@mui/material/Paper"
-import makeStyles from "@mui/material/styles/makeStyles"
+import makeStyles from "@mui/styles/makeStyles"
 import Typography from "@mui/material/Typography"
 import ClearAllIcon from "@mui/icons-material/ClearAll"
 import QueueIcon from "@mui/icons-material/QueueMusic"
@@ -142,7 +142,7 @@ function PlayerArea(props: Props) {
           )}
         </Grid>
         <Grid item xs={12} style={{ padding: 16 }}>
-          <Grid alignItems="center" container direction="row" justify="center">
+          <Grid container direction="row" sx={{alignItems: "center", justifyContent: "center"}}>
             <Grid item>
               <ShuffleButton disabled={disabled} onClick={() => dispatch(shuffleTracks())} />
             </Grid>
