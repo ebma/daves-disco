@@ -88,6 +88,7 @@ class StreamManager {
         const audioResource = createAudioResource(result, { inlineVolume: true, inputType: StreamType.OggOpus })
         audioResource.volume?.setVolume(vol)
         this.player.play(audioResource)
+        audioResource.audioPlayer = this.player
         this.player
           .on("stateChange", (oldState, newState) => {
             if (oldState.status === "playing" && newState.status === "idle") {
@@ -133,6 +134,8 @@ class StreamManager {
     const audioResource = createAudioResource(source, { inlineVolume: true })
     audioResource.volume?.setVolume(this.volume)
     this.player.play(audioResource)
+    // It's important that this assignment happens after the play() call,
+    audioResource.audioPlayer = this.player
     entersState(this.player, AudioPlayerStatus.Playing, 5000000).catch((error) => {
       console.error("entersstate error", error)
     })
@@ -173,6 +176,7 @@ class StreamManager {
     const audioResource = createAudioResource(stream, { inlineVolume: true, inputType: StreamType.OggOpus })
     audioResource.volume?.setVolume(this.volume)
     this.player.play(audioResource)
+    audioResource.audioPlayer = this.player
 
     this.player
       .on("debug", (info: any) => this.subject.next({ type: "debug", data: info }))
@@ -203,6 +207,7 @@ class StreamManager {
     const audioResource = createAudioResource(input, { inlineVolume: true, inputType: StreamType.OggOpus })
     audioResource.volume?.setVolume(this.volume)
     this.player.play(audioResource)
+    audioResource.audioPlayer = this.player
 
     this.player
       .on("debug", (info: any) => this.subject.next({ type: "debug", data: info }))
