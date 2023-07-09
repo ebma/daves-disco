@@ -88,7 +88,6 @@ class StreamManager {
         const audioResource = createAudioResource(result, { inlineVolume: true, inputType: StreamType.OggOpus })
         audioResource.volume?.setVolume(vol)
         this.player.play(audioResource)
-        audioResource.audioPlayer = this.player
         this.audioResource = audioResource
         this.player
           .on("stateChange", (oldState, newState) => {
@@ -135,20 +134,20 @@ class StreamManager {
     const audioResource = createAudioResource(source, { inlineVolume: true })
     audioResource.volume?.setVolume(this.volume)
     this.player.play(audioResource)
-    // It's important that this assignment happens after the play() call,
-    audioResource.audioPlayer = this.player
     this.audioResource = audioResource
     entersState(this.player, AudioPlayerStatus.Playing, 5000000).catch((error) => {
       console.error("entersstate error", error)
     })
 
+    // We save a reference to the player at the time of the play() call,
+    const playerAtTheTime = this.player
+
     this.player
       .on("debug", (info: any) => this.subject.next({ type: "debug", data: info }))
       .on("stateChange", (oldState, newState) => {
         if (oldState.status === "playing" && newState.status === "idle") {
-          if (this.player === audioResource.audioPlayer) {
+          if (this.player === playerAtTheTime) {
             this.streamSource = null
-            // this.player = null
             this.subject.next({ type: "finish" })
           }
         }
@@ -157,7 +156,6 @@ class StreamManager {
         if (this.player === audioResource.audioPlayer) {
           if (source instanceof Readable) source.destroy()
           this.streamSource = null
-          // this.player = null
           this.subject.next({ type: "error", data: error && error.message ? error.message : error })
         }
         trackError(error, "StreamManager.playYoutube error")
@@ -178,16 +176,17 @@ class StreamManager {
     const audioResource = createAudioResource(stream, { inlineVolume: true, inputType: StreamType.OggOpus })
     audioResource.volume?.setVolume(this.volume)
     this.player.play(audioResource)
-    audioResource.audioPlayer = this.player
     this.audioResource = audioResource
+
+    // We save a reference to the player at the time of the play() call,
+    const playerAtTheTime = this.player
 
     this.player
       .on("debug", (info: any) => this.subject.next({ type: "debug", data: info }))
       .on("stateChange", (oldState, newState) => {
         if (oldState.status === "playing" && newState.status === "idle") {
-          if (this.player === audioResource.audioPlayer) {
+          if (this.player === playerAtTheTime) {
             this.streamSource = null
-            // this.player = null
             this.subject.next({ type: "finish" })
           }
         } else if (oldState.status === "playing") {
@@ -195,9 +194,8 @@ class StreamManager {
         }
       })
       .on("error", (error: any) => {
-        if (this.player === audioResource.audioPlayer) {
+        if (this.player === playerAtTheTime) {
           this.streamSource = null
-          // this.player = null
           this.subject.next({ type: "error", data: error && error.message ? error.message : error })
         }
         trackError(error, "StreamManager.playUnknown error")
@@ -210,16 +208,17 @@ class StreamManager {
     const audioResource = createAudioResource(input, { inlineVolume: true, inputType: StreamType.OggOpus })
     audioResource.volume?.setVolume(this.volume)
     this.player.play(audioResource)
-    audioResource.audioPlayer = this.player
     this.audioResource = audioResource
+
+    // We save a reference to the player at the time of the play() call,
+    const playerAtTheTime = this.player
 
     this.player
       .on("debug", (info: any) => this.subject.next({ type: "debug", data: info }))
       .on("stateChange", (oldState, newState) => {
         if (oldState.status === "playing" && newState.status === "idle") {
-          if (this.player === audioResource.audioPlayer) {
+          if (this.player === playerAtTheTime) {
             this.streamSource = null
-            // this.player = null
             this.subject.next({ type: "finish" })
           }
         } else if (oldState.status === "playing") {
@@ -227,10 +226,9 @@ class StreamManager {
         }
       })
       .on("error", (error: any) => {
-        if (this.player === audioResource.audioPlayer) {
+        if (this.player === playerAtTheTime) {
           input.destroy()
           this.streamSource = null
-          // this.player = null
           this.subject.next({ type: "error", data: error && error.message ? error.message : error })
         }
         trackError(error, "StreamManager.playReadable error")
