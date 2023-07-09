@@ -89,6 +89,7 @@ class StreamManager {
         audioResource.volume?.setVolume(vol)
         this.player.play(audioResource)
         audioResource.audioPlayer = this.player
+        this.audioResource = audioResource
         this.player
           .on("stateChange", (oldState, newState) => {
             if (oldState.status === "playing" && newState.status === "idle") {
@@ -136,6 +137,7 @@ class StreamManager {
     this.player.play(audioResource)
     // It's important that this assignment happens after the play() call,
     audioResource.audioPlayer = this.player
+    this.audioResource = audioResource
     entersState(this.player, AudioPlayerStatus.Playing, 5000000).catch((error) => {
       console.error("entersstate error", error)
     })
@@ -177,6 +179,7 @@ class StreamManager {
     audioResource.volume?.setVolume(this.volume)
     this.player.play(audioResource)
     audioResource.audioPlayer = this.player
+    this.audioResource = audioResource
 
     this.player
       .on("debug", (info: any) => this.subject.next({ type: "debug", data: info }))
@@ -208,6 +211,7 @@ class StreamManager {
     audioResource.volume?.setVolume(this.volume)
     this.player.play(audioResource)
     audioResource.audioPlayer = this.player
+    this.audioResource = audioResource
 
     this.player
       .on("debug", (info: any) => this.subject.next({ type: "debug", data: info }))
