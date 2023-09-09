@@ -27,13 +27,17 @@ class StreamManager {
   constructor(voiceConnection: VoiceConnection) {
     this.voiceConnection = voiceConnection
     this.subject = new Subject()
-    this.player = createAudioPlayer({
+    this.player = this.createPlayer()
+    this.voiceConnection.subscribe(this.player)
+  }
+
+  private createPlayer() {
+    return createAudioPlayer({
       behaviors: {
         noSubscriber: NoSubscriberBehavior.Stop,
         maxMissedFrames: Math.round(5000 / 20),
-      },
+      }
     })
-    this.voiceConnection.subscribe(this.player)
   }
 
   setVolume(volume: number) {
@@ -254,7 +258,7 @@ class StreamManager {
 
   disconnect() {
     this.stop()
-    this.player = null
+    this.player = this.createPlayer()
     this.voiceConnection.disconnect()
   }
 }

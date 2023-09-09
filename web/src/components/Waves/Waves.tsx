@@ -162,4 +162,4 @@ function Waves(props: Props) {
     </motion.div>
   )
 }
-export default React.memo(Waves)
+export default Waves

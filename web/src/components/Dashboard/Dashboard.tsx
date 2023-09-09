@@ -140,14 +140,6 @@ function Dashboard(props: Props) {
   const player = playerQuery.data?.getPlayer || null
   const available = player?.available || false
 
-  // const navigate = useNavigate()
-  //
-  // React.useEffect(() => {
-  //   if (!history.location.hash) {
-  //     navigate("/home")
-  //   }
-  // }, [history])
-
   return (
     <div className={classes.root}>
       <CssBaseline />
