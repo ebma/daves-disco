@@ -55,14 +55,14 @@ function SearchYoutubeTab(props: SearchYoutubeTabProps) {
     <div style={{ display: "flex", flexWrap: "wrap" }}>
       <Autocomplete
         style={{ flexGrow: 5, padding: 8, minWidth: "200px" }}
-        getOptionLabel={option => option.title}
-        filterOptions={x => x}
+        getOptionLabel={(option) => option.title}
+        filterOptions={(x) => x}
         options={options}
         autoComplete
         includeInputInList
         multiple={false}
-        onChange={(_: React.ChangeEvent<{}>, value: TrackSearchResult | null) => setSelectedTrack(value)}
-        renderInput={params => (
+        onChange={(_event: React.ChangeEvent<{}>, value: TrackSearchResult | null) => setSelectedTrack(value)}
+        renderInput={(params) => (
           <TextField
             {...params}
             fullWidth
@@ -72,7 +72,7 @@ function SearchYoutubeTab(props: SearchYoutubeTabProps) {
             onChange={handleChange}
           />
         )}
-        renderOption={(option: TrackSearchResult) => {
+        renderOption={(_props, option: TrackSearchResult) => {
           return (
             <Grid item xs>
               <Typography variant="body1" color="textPrimary">

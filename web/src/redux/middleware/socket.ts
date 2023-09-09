@@ -9,7 +9,7 @@ import {
   subscribeToMessagesAction,
   unsubscribeFromMessagesAction,
   setAuthError,
-  disconnectSocketAction
+  disconnectSocketAction,
 } from "../socketSlice"
 import { setAuthToken } from "../../services/axios-client"
 
@@ -29,12 +29,12 @@ interface SocketListener {
 function createSocket() {
   const socket = io.connect(path, {
     forceNew: true,
-    reconnectionAttempts: 10
+    reconnectionAttempts: 10,
   })
   return socket
 }
 
-const socketMiddleware: Middleware<{}, RootState> = store => {
+const socketMiddleware: Middleware<{}, RootState> = (store) => {
   const socket = createSocket()
 
   const listeners: SocketListener[] = []
@@ -56,12 +56,12 @@ const socketMiddleware: Middleware<{}, RootState> = store => {
       if (message.includes("jwt expired")) {
         store.dispatch(setAuthError("jwt-expired"))
       }
-    } catch (error) {
-      store.dispatch(setError(`unauthorized: ${JSON.stringify(error.data)}`))
+    } catch (error: any) {
+      store.dispatch(setError(`unauthorized: ${JSON.stringify(error?.data)}`))
     }
   })
 
-  return next => action => {
+  return (next) => (action) => {
     if (initAuthenticationAction.match(action)) {
       const { token } = action.payload
       socket.emit("authenticate", { token })
@@ -113,7 +113,7 @@ const socketMiddleware: Middleware<{}, RootState> = store => {
     } else if (unsubscribeFromMessagesAction.match(action)) {
       const { callback } = action.payload
 
-      const foundListener = listeners.find(listener => listener.callback === callback)
+      const foundListener = listeners.find((listener) => listener.callback === callback)
       if (foundListener) {
         socket.removeEventListener("message", foundListener.listener)
       }
