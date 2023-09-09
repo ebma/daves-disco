@@ -57,7 +57,7 @@ function getRandomSongPlayingComment() {
   return path
 }
 
-const RANDOM_START_COMMENT_PROBABILITY = 1 / 5
+const RANDOM_START_COMMENT_PROBABILITY = 0 // Set to 0 to disable
 const MIN_COMMENT_DELAY_MS = 15 * 60 * 1000
 const MAX_COMMENT_DELAY_MS = 45 * 60 * 1000
 
