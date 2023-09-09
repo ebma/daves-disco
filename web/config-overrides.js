@@ -15,6 +15,7 @@ module.exports = function override(config, env) {
     "https": require.resolve("https-browserify"),
     "timers": require.resolve("timers-browserify"),
     "os": require.resolve("os-browserify"),
+    "querystring": require.resolve("querystring-es3"),
     "url": require.resolve("url"),
     "vm": require.resolve("vm-browserify"),
   })

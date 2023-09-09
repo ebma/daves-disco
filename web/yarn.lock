@@ -7346,6 +7346,7 @@ __metadata:
     lodash: "npm:^4.17.21"
     os-browserify: "npm:^0.3.0"
     process: "npm:^0.11.10"
+    querystring-es3: "npm:^0.2.1"
     react: "npm:^18.2.0"
     react-app-rewired: "npm:^2.2.1"
     react-beautiful-dnd: "npm:^13.1.1"
@@ -14266,6 +14267,13 @@ __metadata:
   version: 6.5.3
   resolution: "qs@npm:6.5.3"
   checksum: 6a4be44c9bd3baef6db5d50905a5d305dce4aa11317c27c7599edee3aff835c1d96e582ff5b9205bcb07e8381d9e92de33570d459415c91d243ea926e27b0002
+  languageName: node
+  linkType: hard
+
+"querystring-es3@npm:^0.2.1":
+  version: 0.2.1
+  resolution: "querystring-es3@npm:0.2.1"
+  checksum: 7f5aaca4c82244148c157b4bf5ecc5e1471c936e0825e06eb8df45fce96f85fc9eb72fd3a76af077260db4b492e2199016d71b9a96e883854439d217019031e6
   languageName: node
   linkType: hard
 
