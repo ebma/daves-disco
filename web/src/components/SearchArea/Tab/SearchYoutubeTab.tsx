@@ -1,6 +1,6 @@
 import React from "react"
 import _ from "lodash"
-import Autocomplete from "@mui/lab/Autocomplete"
+import Autocomplete from "@mui/material/Autocomplete"
 import Grid from "@mui/material/Grid"
 import PlayIcon from "@mui/icons-material/PlayArrow"
 import TextField from "@mui/material/TextField"
@@ -72,18 +72,6 @@ function SearchYoutubeTab(props: SearchYoutubeTabProps) {
             onChange={handleChange}
           />
         )}
-        renderOption={(_props, option: TrackSearchResult) => {
-          return (
-            <Grid item xs>
-              <Typography variant="body1" color="textPrimary">
-                {option.title}
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
-                {option.url}
-              </Typography>
-            </Grid>
-          )
-        }}
       />
       <StyledButton
         disabled={!Boolean(selectedTrack)}
