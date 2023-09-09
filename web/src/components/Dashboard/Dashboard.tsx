@@ -31,6 +31,7 @@ import Footer from "../Footer"
 import QueryWrapper from "../QueryWrapper/QueryWrapper"
 import Waves from "../Waves/Waves"
 import { MainListItems } from "./ListItems"
+import { useAppDispatch } from "../../app/store";
 
 const drawerWidth = 240
 
@@ -127,7 +128,7 @@ function Dashboard(props: Props) {
 
   const { colorScheme, toggleColorScheme } = React.useContext(ColorSchemeContext)
 
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   const logout = React.useCallback(() => {
     dispatch(setAutoConnect(false))

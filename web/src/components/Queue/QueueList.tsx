@@ -4,8 +4,7 @@ import Typography from "@mui/material/Typography"
 import makeStyles from "@mui/styles/makeStyles"
 import React from "react"
 import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd"
-import { useDispatch } from "react-redux"
-import { AppDispatch } from "../../app/store"
+import { AppDispatch, useAppDispatch } from "../../app/store";
 import { skipPreviousTracks, skipTracks } from "../../redux/playerSlice"
 import {
   TrackFieldsFragment,
@@ -69,7 +68,7 @@ interface Props {
 function QueueList(props: Props) {
   const classes = useStyles()
 
-  const dispatch: AppDispatch = useDispatch()
+  const dispatch: AppDispatch = useAppDispatch()
 
   const queueTracksQuery = useGetTracksByIdsQuery({
     fetchPolicy: "cache-and-network",

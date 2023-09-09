@@ -5,9 +5,8 @@ import { makeStyles } from "@mui/styles"
 import TextField from "@mui/material/TextField"
 import Typography from "@mui/material/Typography"
 import React from "react"
-import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "../../app/rootReducer"
-import { AppDispatch } from "../../app/store"
+import { AppDispatch, useAppDispatch, useAppSelector } from "../../app/store";
 import { trackError } from "../../context/notifications"
 import { useTokenStorage } from "../../hooks/tokenStorage"
 import { disconnectSocketAction, initAuthenticationAction } from "../../redux/socketSlice"
@@ -59,7 +58,7 @@ interface SelectBoxProps {
 function SelectBox(props: SelectBoxProps) {
   const { guilds, user } = props
   const classes = useStyles()
-  const dispatch: AppDispatch = useDispatch()
+  const dispatch: AppDispatch = useAppDispatch()
 
   const [selectedGuildID, setSelectedGuild] = React.useState<GuildID>(user?.guildID || "")
   const [selectedMember, setSelectedMember] = React.useState<UserID>(user?.id || "")
@@ -151,12 +150,12 @@ function GuildSelectionArea(props: Props) {
 
   const tokenStorage = useTokenStorage()
 
-  const dispatch: AppDispatch = useDispatch()
-  const { authError, connectionState } = useSelector((state: RootState) => state.socket)
+  const dispatch: AppDispatch = useAppDispatch()
+  const { authError, connectionState } = useAppSelector((state: RootState) => state.socket)
 
   const guildsQuery = useGetGuildsQuery({ pollInterval: 5000 })
 
-  const { user } = useSelector((state: RootState) => state.user)
+  const { user } = useAppSelector((state: RootState) => state.user)
 
   const [authenticationPending, setAuthenticationPending] = React.useState<boolean>(false)
 

@@ -5,8 +5,7 @@ import { makeStyles } from "@mui/styles"
 import TextField from "@mui/material/TextField"
 import CancelIcon from "@mui/icons-material/Cancel"
 import React from "react"
-import { useDispatch } from "react-redux"
-import { AppDispatch } from "../../app/store"
+import { AppDispatch, useAppDispatch } from "../../app/store";
 import { playSound } from "../../redux/soundboardsSlice"
 import { useGetSoundboardItemsQuery } from "../../services/graphql/graphql"
 import { VolumeSlider } from "../Player/VolumeSlider"
@@ -66,7 +65,7 @@ interface Props {
 function SoundboardArea(props: Props) {
   const classes = useStyles()
 
-  const dispatch: AppDispatch = useDispatch()
+  const dispatch: AppDispatch = useAppDispatch()
   const soundboardItemsQuery = useGetSoundboardItemsQuery({
     fetchPolicy: "cache-and-network",
     pollInterval: 2000,

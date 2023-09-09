@@ -5,8 +5,7 @@ import Typography from "@mui/material/Typography"
 import ClearAllIcon from "@mui/icons-material/ClearAll"
 import QueueIcon from "@mui/icons-material/QueueMusic"
 import React from "react"
-import { useDispatch } from "react-redux"
-import { AppDispatch } from "../../app/store"
+import { AppDispatch, useAppDispatch } from "../../app/store";
 import {
   clearTracks,
   pausePlayer,
@@ -65,7 +64,7 @@ interface Props {
 function PlayerArea(props: Props) {
   const { player, guildID, style } = props
 
-  const dispatch: AppDispatch = useDispatch()
+  const dispatch: AppDispatch = useAppDispatch()
   const { available, currentTrackID, loopState, paused, queueIDs, volume } = player
   const [showQueue, setShowQueue] = React.useState(false)
 

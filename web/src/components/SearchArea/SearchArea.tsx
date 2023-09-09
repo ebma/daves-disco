@@ -5,9 +5,8 @@ import Tabs from "@mui/material/Tabs"
 import Typography from "@mui/material/Typography"
 import makeStyles from "@mui/styles/makeStyles"
 import React from "react"
-import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "../../app/rootReducer"
-import { AppDispatch } from "../../app/store"
+import { AppDispatch, useAppDispatch, useAppSelector } from "../../app/store";
 import { playSearchTerm, playRadio } from "../../redux/playerSlice"
 import { getTrackFromSearchTerm } from "../../redux/tracksSlice"
 import PlayRadioTab from "./Tab/PlayRadioTab"
@@ -50,8 +49,8 @@ interface SearchAreaProps {
 function SearchArea(props: SearchAreaProps) {
   const { style } = props
 
-  const dispatch: AppDispatch = useDispatch()
-  const { user } = useSelector((state: RootState) => state.user)
+  const dispatch: AppDispatch = useAppDispatch()
+  const { user } = useAppSelector((state: RootState) => state.user)
   const classes = useStyles()
 
   const [value, setValue] = React.useState(0)

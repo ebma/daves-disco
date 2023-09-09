@@ -1,14 +1,13 @@
 import React from "react"
-import { useDispatch, useSelector } from "react-redux"
 import { NotificationsContext } from "../context/notifications"
 import { setError as setSocketError } from "../redux/socketSlice"
 import { setError as setUserError } from "../redux/userSlice"
 import { RootState } from "./rootReducer"
-import { AppDispatch } from "./store"
+import { AppDispatch, useAppDispatch, useAppSelector } from "./store";
 
 function ErrorHandler() {
-  const dispatch: AppDispatch = useDispatch()
-  const rootState = useSelector((state: RootState) => state)
+  const dispatch: AppDispatch = useAppDispatch()
+  const rootState = useAppSelector((state: RootState) => state)
 
   const { showError } = React.useContext(NotificationsContext)
 

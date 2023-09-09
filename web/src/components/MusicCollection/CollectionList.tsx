@@ -1,6 +1,5 @@
 import React from "react"
-import { useDispatch } from "react-redux"
-import { AppDispatch } from "../../app/store"
+import { AppDispatch, useAppDispatch } from "../../app/store";
 import { NotificationsContext } from "../../context/notifications"
 import { playPlaylist } from "../../redux/playlistsSlice"
 import { playTrack } from "../../redux/tracksSlice"
@@ -32,7 +31,7 @@ function CollectionList(props: Props) {
   const [loadPlaylist, playlistByIDQuery] = useGetPlaylistByIdUpdatedLazyQuery({
     fetchPolicy: "cache-and-network"
   })
-  const dispatch: AppDispatch = useDispatch()
+  const dispatch: AppDispatch = useAppDispatch()
 
   const onTrackSelect = React.useCallback(
     (track: TrackFieldsFragment) => {
