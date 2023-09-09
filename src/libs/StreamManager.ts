@@ -88,7 +88,7 @@ class StreamManager {
         const audioResource = createAudioResource(result, { inlineVolume: true, inputType: StreamType.OggOpus })
         audioResource.volume?.setVolume(vol)
         this.player.play(audioResource)
-        this.audioResource = audioResource
+        // this.audioResource = audioResource
         this.player
           .on("stateChange", (oldState, newState) => {
             if (oldState.status === "playing" && newState.status === "idle") {

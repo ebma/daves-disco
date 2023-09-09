@@ -212,6 +212,7 @@ class MusicPlayer {
 
   private observeStream(message: StreamManagerObservableMessage, queuedTrack: QueuedTrackModel) {
     const track = queuedTrack.trackModel
+    console.log("observeStream message: ", message);
     switch (message.type) {
       case "debug":
         console.log("observeStream debug info: ", message.data)
@@ -225,6 +226,7 @@ class MusicPlayer {
         })
         break
       case "finish":
+        console.log("in observeStream finish: ", message.data)
         this.subject.next({ messageType: "info", message: `Played: *${track.title}*` })
 
         if (_.isNil(this.queue.getCurrent())) {

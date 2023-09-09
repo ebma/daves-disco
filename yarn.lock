@@ -2390,15 +2390,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^0.21.1":
-  version: 0.21.1
-  resolution: "axios@npm:0.21.1"
-  dependencies:
-    follow-redirects: "npm:^1.10.0"
-  checksum: 0bb3259ee9203da0c6a2780aa310c7f557b4fe80d09c975d536745519efe8c062b18ae942c7b89469226e4a5a2192ae4b0d33dcc4bcab5fc59486306ad59003f
-  languageName: node
-  linkType: hard
-
 "babel-jest@npm:^29.5.0":
   version: 29.5.0
   resolution: "babel-jest@npm:29.5.0"
@@ -3248,9 +3239,9 @@ __metadata:
     utf-8-validate: "npm:^6.0.3"
     uuid: "npm:^9.0.0"
     winston: "npm:^3.8.2"
-    youtube-search: "npm:^1.1.6"
-    ytdl-core: "npm:^4.11.4"
+    ytdl-core: "npm:4.10.0"
     ytpl: "npm:^2.3.0"
+    ytsr: "npm:^3.8.4"
   languageName: unknown
   linkType: soft
 
@@ -3832,16 +3823,6 @@ discord-akairo@discord-akairo/discord-akairo:
   version: 1.1.0
   resolution: "fn.name@npm:1.1.0"
   checksum: 54a27208733c14b3bae6118a6cdb6aa03b108f53491dd95fd956f31f2715ce977f48805c473fd0fdc0f93c15e8ffb7f5eaf36a953f781c21450221a2536fa2e7
-  languageName: node
-  linkType: hard
-
-"follow-redirects@npm:^1.10.0":
-  version: 1.14.1
-  resolution: "follow-redirects@npm:1.14.1"
-  peerDependenciesMeta:
-    debug:
-      optional: true
-  checksum: 93a09c5f3d1b1f4c1b49ff90db402d2ad01b260e281f6e429553318f530cd4dac4a5eee5a51afe990e6d5acbbbe075fc69eca9350295703f17b19ee5980047e6
   languageName: node
   linkType: hard
 
@@ -5484,7 +5465,7 @@ discord-akairo@discord-akairo/discord-akairo:
   languageName: node
   linkType: hard
 
-"m3u8stream@npm:^0.8.6":
+"m3u8stream@npm:^0.8.4":
   version: 0.8.6
   resolution: "m3u8stream@npm:0.8.6"
   dependencies:
@@ -5649,6 +5630,13 @@ discord-akairo@discord-akairo/discord-akairo:
   version: 4.0.0
   resolution: "mimic-fn@npm:4.0.0"
   checksum: 6854bdfe4abeb91b19fc0d1bbec01ad065fde2d2c03c81557eb7a1ed3354c1c956962e293bd97bc110b7b24fa30a3345d8756bbbed82e458cc68a45521eb7813
+  languageName: node
+  linkType: hard
+
+"miniget@npm:^4.0.0":
+  version: 4.2.3
+  resolution: "miniget@npm:4.2.3"
+  checksum: 90051107a8ee09bdad57d1de4724b82ee834b01a8ee0cbbb8a62b39a120c68c2c8fb0a985c557183e57da85448d0ab84bee5cdcad55741e265ade094edbb3001
   languageName: node
   linkType: hard
 
@@ -6910,13 +6898,6 @@ discord-akairo@discord-akairo/discord-akairo:
   dependencies:
     sparse-bitfield: "npm:^3.0.3"
   checksum: 23ebcda091621541fb9db9635ff36b9be81dc35a79a2adbf2a8309e162bcc9607513488aa3a9da757f11e856592ab8a727ac45c98c6084ff93d627509a882b84
-  languageName: node
-  linkType: hard
-
-"sax@npm:0.5.x":
-  version: 0.5.8
-  resolution: "sax@npm:0.5.8"
-  checksum: a574b730100fa02f5490b1881e3210a1ecabb167f29de51968e210f59055b09aa5f94bb1d03c32d69265ec0dc6c896884e15f13b47995f8d8819c65016089a5c
   languageName: node
   linkType: hard
 
@@ -8191,15 +8172,6 @@ discord-akairo@discord-akairo/discord-akairo:
   languageName: node
   linkType: hard
 
-"xml2js@npm:~0.2.8":
-  version: 0.2.8
-  resolution: "xml2js@npm:0.2.8"
-  dependencies:
-    sax: "npm:0.5.x"
-  checksum: 02fb815033d6d5b412031512fbad6346d0d8f50811588d2aa4d91a4b9d26e5ebcb3dab8ffda30f3363833f4f2b85d85df6368057c715f907c9cbd71ebcb5e32f
-  languageName: node
-  linkType: hard
-
 "xss@npm:^1.0.8":
   version: 1.0.9
   resolution: "xss@npm:1.0.9"
@@ -8285,24 +8257,14 @@ discord-akairo@discord-akairo/discord-akairo:
   languageName: node
   linkType: hard
 
-"youtube-search@npm:^1.1.6":
-  version: 1.1.6
-  resolution: "youtube-search@npm:1.1.6"
+"ytdl-core@npm:4.10.0":
+  version: 4.10.0
+  resolution: "ytdl-core@npm:4.10.0"
   dependencies:
-    axios: "npm:^0.21.1"
-    xml2js: "npm:~0.2.8"
-  checksum: 82f8fb7b8675d67443fe2544c97ea9d341fb1bfb17ec8a2848e54142292fe69c8e47f5106bf981345df7409762c384e0e49e440f45e773d9dd2d40c3b45e6870
-  languageName: node
-  linkType: hard
-
-"ytdl-core@npm:^4.11.4":
-  version: 4.11.4
-  resolution: "ytdl-core@npm:4.11.4"
-  dependencies:
-    m3u8stream: "npm:^0.8.6"
-    miniget: "npm:^4.2.2"
+    m3u8stream: "npm:^0.8.4"
+    miniget: "npm:^4.0.0"
     sax: "npm:^1.1.3"
-  checksum: 63e3f2849d8109f1e6191eb6c970de82ebd85424b2721885d092b828b501c3c81990c472a929dbc35cf04bb41691de68b94c31d6ec511be31016943bc64d633f
+  checksum: 4eb2aa73d13c2dfb9dbaeed7033fca33d6fa8e2c88a5a62d3e85e94452a1e7f523b705d43ff5effbc52933eb1657b75f4fbb51c97f588565382a62193afe8990
   languageName: node
   linkType: hard
 
@@ -8312,5 +8274,14 @@ discord-akairo@discord-akairo/discord-akairo:
   dependencies:
     miniget: "npm:^4.2.2"
   checksum: f71b206ac21d42802e7bbe62f2fd7bcb84dad83bc915a4ac24328a936343ce2367332a2d2b465099613c608a8fcf2e8fcf63250c79a7c6e8f791072ab28a82b0
+  languageName: node
+  linkType: hard
+
+"ytsr@npm:^3.8.4":
+  version: 3.8.4
+  resolution: "ytsr@npm:3.8.4"
+  dependencies:
+    miniget: "npm:^4.2.2"
+  checksum: 8b58440d948591a0fd858ad586a41734436a1ddfe57f247cf4286bc1627fae820d1588f44f42e23378eb1027dc955622a1e62eba36830d8263d63f1dfc43c06a
   languageName: node
   linkType: hard

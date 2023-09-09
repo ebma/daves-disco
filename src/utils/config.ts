@@ -10,8 +10,6 @@ const SECRET = process.env.JWT_SECRET
 const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID
 const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET
 
-const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY
-
 const BOT_TOKEN = process.env.BOT_TOKEN
 const OWNER_ID = process.env.OWNER_ID
 
@@ -35,5 +33,4 @@ export default {
   SECRET,
   SPOTIFY_CLIENT_ID,
   SPOTIFY_CLIENT_SECRET,
-  YOUTUBE_API_KEY
 }

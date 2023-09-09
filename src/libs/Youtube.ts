@@ -1,7 +1,7 @@
 import _ from "lodash"
 import config from "../utils/config"
 import { Readable } from "stream"
-import search from "youtube-search"
+import search from "ytsr"
 import ytdl from "ytdl-core"
 import ytpl from "ytpl"
 import { trackError } from "../utils/trackError"
@@ -9,13 +9,6 @@ import { SpotifyHelper } from "../shared/utils/helpers"
 import { downloadVideoWithProxy } from "./video-download"
 
 export class Youtube {
-  private key: string
-
-  constructor(apiKey: string) {
-    if (!apiKey) throw new Error("YouTube API key cannot be undefined!")
-    this.key = apiKey
-  }
-
   isYoutubeVideo(url: string): boolean {
     return ytdl.validateURL(url)
   }
@@ -34,18 +27,26 @@ export class Youtube {
         reject("Size of maxResults must be between 1 and 50")
       }
 
-      search(term, { maxResults, key: this.key, type: "video" }).then(
-        async value => {
-          const results = value.results
+      search(term, { limit: maxResults }).then(
+        async (value) => {
+          const results = value.items
           if (results.length > 0) {
-            const urls = results.map(result => result.link)
-            const tracks = await Promise.all(urls.map(url => this.createTrackFromURL(url)))
+            const urls = results
+              .map((result) => {
+                if (result.type === "video") {
+                  return result.url
+                } else {
+                  return undefined
+                }
+              })
+              .filter((url) => url !== undefined)
+            const tracks = await Promise.all(urls.map((url) => this.createTrackFromURL(url)))
             resolve(tracks)
           } else {
             reject("No results for search term.")
           }
         },
-        reason => {
+        (reason) => {
           reject(reason)
         }
       )
@@ -58,20 +59,26 @@ export class Youtube {
         reject("Size of maxResults must be between 1 and 50")
       }
 
-      search(term, { maxResults, key: this.key, type: "video" }).then(
-        async value => {
-          const results = value.results
+      search(term, { limit: maxResults }).then(
+        async (value) => {
+          const results = value.items
           if (results.length > 0) {
-            const trackSearchResults: TrackSearchResult[] = results.map(result => ({
-              title: result.title,
-              url: result.link
-            }))
+            const trackSearchResults: TrackSearchResult[] = results
+              .map((result) => {
+                if (result.type === "video") {
+                  return {
+                    title: result.title,
+                    url: result.url,
+                  }
+                } else return undefined
+              })
+              .filter((result) => result !== undefined)
             resolve(trackSearchResults)
           } else {
             reject("No results for search term.")
           }
         },
-        reason => {
+        (reason) => {
           reject(reason)
         }
       )
@@ -82,12 +89,12 @@ export class Youtube {
     if (info.thumbnail_url) {
       return { medium: info.thumbnail_url }
     } else {
-      const thumbnails = info.player_response?.videoDetails?.thumbnails
+      const thumbnails = info.player_response?.videoDetails?.thumbnail?.thumbnails
       if (thumbnails) {
         return {
           small: thumbnails[0]?.url,
           medium: thumbnails[1]?.url,
-          large: thumbnails[thumbnails.length - 1]?.url
+          large: thumbnails[thumbnails.length - 1]?.url,
         }
       } else {
         return {}
@@ -106,7 +113,7 @@ export class Youtube {
             url: info.videoDetails.video_url,
             source: "youtube",
             title: info.videoDetails.title,
-            thumbnail: this.getThumbnailFromInfo(info)
+            thumbnail: this.getThumbnailFromInfo(info),
           }
           resolve(track)
         } else {
@@ -122,14 +129,14 @@ export class Youtube {
     return new Promise<Playlist>(async (resolve, reject) => {
       try {
         const playlist = await ytpl(urlOrPlaylistID)
-        let tracks: Track[] = []
-        _.forEach(playlist.items, item => {
+        const tracks: Track[] = []
+        _.forEach(playlist.items, (item) => {
           const newTrack: Track = {
             identifier: item.id,
             thumbnail: { medium: item.bestThumbnail.url },
             source: "youtube",
             title: item.title,
-            url: item.url
+            url: item.url,
           }
           tracks.push(newTrack)
         })
@@ -140,7 +147,7 @@ export class Youtube {
           owner: playlist.author.name,
           source: "youtube",
           tracks,
-          url: playlist.url
+          url: playlist.url,
         })
       } catch (error) {
         trackError(error, "Youtube.createPlaylistFrom")
@@ -204,6 +211,6 @@ export class Youtube {
   }
 }
 
-const GlobalInstance = new Youtube(config.YOUTUBE_API_KEY)
+const GlobalInstance = new Youtube()
 
 export default GlobalInstance
