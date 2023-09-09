@@ -28,7 +28,7 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
 
       - name: Install dependencies
-        run: yarn install && cd web && yarn install
+        run: YARN_ENABLE_IMMUTABLE_INSTALLS=false yarn install && cd web && YARN_ENABLE_IMMUTABLE_INSTALLS=false yarn install
 
       - name: Define env variable No.1
         uses: TickX/var-to-dotenv@v1.1.4
