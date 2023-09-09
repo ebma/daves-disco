@@ -3,9 +3,9 @@ import Snackbar from "@mui/material/Snackbar"
 import MuiAlert, { AlertProps } from "@mui/material/Alert"
 import { NotificationsContext, Notification } from "../../context/notifications"
 
-function Alert(props: AlertProps) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />
-}
+const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
 
 function NotificationsContainer() {
   const { notifications } = React.useContext(NotificationsContext)
@@ -19,9 +19,10 @@ function NotificationsContainer() {
   // Reason: Notification might still be visible / in closing transition when it suddenly gets removed
   const visibleNotification = latestNotificationItem || lastShownNotification.current
 
-  const closeNotification = React.useCallback(() => setLastClosedNotificationID(visibleNotification.id), [
-    visibleNotification
-  ])
+  const closeNotification = React.useCallback(
+    () => setLastClosedNotificationID(visibleNotification.id),
+    [visibleNotification]
+  )
 
   if (latestNotificationItem && latestNotificationItem !== lastShownNotification.current) {
     lastShownNotification.current = latestNotificationItem
@@ -35,7 +36,13 @@ function NotificationsContainer() {
 
   return (
     <>
-      <Snackbar autoHideDuration={5000} onClick={onNotificationClick} onClose={closeNotification} open={open}>
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        autoHideDuration={5000}
+        onClick={onNotificationClick}
+        onClose={closeNotification}
+        open={open}
+      >
         <Alert onClose={closeNotification} severity={visibleNotification && visibleNotification.type}>
           {visibleNotification?.message}
         </Alert>
