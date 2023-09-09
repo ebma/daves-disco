@@ -56,7 +56,7 @@ jobs:
           envPath: "./web/.env"
 
       - name: Build
-        run: yarn build
+        run: CI=false yarn build
         working-directory: ./web
 
       - name: Deploy
