@@ -108,7 +108,7 @@ class StreamManager {
 
   async play(input: Track | Readable, trackPaused: boolean = false) {
     try {
-      let player: AudioPlayer = null
+      let player: AudioPlayer
       if (input instanceof Readable) {
         player = await this.playReadable(input)
       } else {
@@ -136,6 +136,7 @@ class StreamManager {
     this.player.play(audioResource)
     this.audioResource = audioResource
     entersState(this.player, AudioPlayerStatus.Playing, 5000000).catch((error) => {
+      // tslint:disable-next-line:no-console
       console.error("entersstate error", error)
     })
 

@@ -16,7 +16,7 @@ function createQueuedTrack(trackModelID: TrackModelID): QueuedTrack {
 function createQueuedTrackModel(trackModel: TrackModel): QueuedTrackModel {
   return {
     trackModel,
-    uuid: uuidv4()
+    uuid: uuidv4(),
   }
 }
 
@@ -36,7 +36,7 @@ class MusicPlayer {
     this.voiceModerator = new VoiceModerator(this)
     this.voiceModerator.init()
 
-    this.queue.subscribeCurrentElement(async currentTrack => {
+    this.queue.subscribeCurrentElement(async (currentTrack) => {
       if (!currentTrack) {
         this.playingTrack = null
         streamManager.endCurrent()
@@ -59,7 +59,7 @@ class MusicPlayer {
       this.subject.next({ messageType: "status", message: "current-track", data: currentTrack })
     })
 
-    this.queue.subscribeQueue(currentQueue => {
+    this.queue.subscribeQueue((currentQueue) => {
       this.subject.next({ messageType: "status", message: "current-queue", data: currentQueue })
     })
   }
@@ -98,7 +98,7 @@ class MusicPlayer {
   }
 
   enqueueAll(tracks: TrackModel[]) {
-    this.queue.addAll(tracks.map(track => createQueuedTrack(track._id.toString())))
+    this.queue.addAll(tracks.map((track) => createQueuedTrack(track._id.toString())))
   }
 
   muteModerator() {
@@ -153,7 +153,7 @@ class MusicPlayer {
 
   shuffle() {
     const currentItem = this.queue.getCurrent()
-    const shuffledItemList = _.shuffle(this.queue.getAll().filter(value => value !== currentItem))
+    const shuffledItemList = _.shuffle(this.queue.getAll().filter((value) => value !== currentItem))
 
     shuffledItemList.unshift(currentItem)
 
@@ -177,7 +177,7 @@ class MusicPlayer {
     const currentItem = this.queue.getCurrent()
 
     const foundIndex = newItems.findIndex(
-      track => track.trackModelID === currentItem.trackModelID && track.uuid === currentItem.uuid
+      (track) => track.trackModelID === currentItem.trackModelID && track.uuid === currentItem.uuid
     )
     const newIndex = foundIndex !== -1 ? foundIndex : 0
 
@@ -197,7 +197,7 @@ class MusicPlayer {
       this.streamManager.play(track)
       this.streamSubscription?.unsubscribe()
       this.streamSubscription = this.streamManager.subscribe({
-        next: message => this.observeStream(message, queuedTrack)
+        next: (message) => this.observeStream(message, queuedTrack),
       })
     } catch (error) {
       const errorMessage = `Could not start stream for track '${track.title}': ${error}`
@@ -212,21 +212,19 @@ class MusicPlayer {
 
   private observeStream(message: StreamManagerObservableMessage, queuedTrack: QueuedTrackModel) {
     const track = queuedTrack.trackModel
-    console.log("observeStream message: ", message);
     switch (message.type) {
       case "debug":
-        console.log("observeStream debug info: ", message.data)
         this.subject.next({ messageType: "info", message: `Debug Info: ${message.data}` })
+        break
       case "start":
         this.subject.next({ messageType: "status", message: "playing" })
         this.subject.next({ messageType: "status", message: "volume", data: this.volume })
         this.subject.next({
           messageType: "info",
-          message: `Let me see your hands while I play *${track.title}* :raised_hands:`
+          message: `Let me see your hands while I play *${track.title}* :raised_hands:`,
         })
         break
       case "finish":
-        console.log("in observeStream finish: ", message.data)
         this.subject.next({ messageType: "info", message: `Played: *${track.title}*` })
 
         if (_.isNil(this.queue.getCurrent())) {

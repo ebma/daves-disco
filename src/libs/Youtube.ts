@@ -1,5 +1,4 @@
 import _ from "lodash"
-import config from "../utils/config"
 import { Readable } from "stream"
 import search from "ytsr"
 import ytdl from "ytdl-core"
@@ -163,7 +162,7 @@ export class Youtube {
       } else if (!this.isYoutubeVideo(track.url)) {
         reject(`Track has an invalid url '${track.url}'`)
       } else {
-        const stream = downloadVideoWithProxy(track.url)
+        const stream = downloadVideoWithProxy(track.url, seek)
         if (stream) {
           resolve(stream)
         } else {
