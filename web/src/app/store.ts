@@ -3,7 +3,7 @@ import logger from "../redux/middleware/logger"
 import socket from "../redux/middleware/socket"
 import rootReducer, { RootState } from "./rootReducer"
 
-let middleware = getDefaultMiddleware()
+const middleware = getDefaultMiddleware()
 middleware.pop()
 middleware.push(socket)
 middleware.push(...getDefaultMiddleware())

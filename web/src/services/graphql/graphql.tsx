@@ -24,7 +24,7 @@ export type ValidationError = ErrorInterface & {
   /** Combined error message from all validators */
   message?: Maybe<Scalars['String']>;
   /** List of validator errors */
-  errors?: Maybe<Array<ValidatorError>>;
+  errors?: Maybe<ValidatorError[]>;
 };
 
 export type ErrorInterface = {
@@ -62,36 +62,36 @@ export type RuntimeError = ErrorInterface & {
 export type Query = {
   __typename?: 'Query';
   trackById?: Maybe<Track>;
-  trackByIds: Array<Track>;
+  trackByIds: Track[];
   trackOne?: Maybe<Track>;
-  trackMany: Array<Track>;
+  trackMany: Track[];
   trackDataLoader?: Maybe<Track>;
-  trackDataLoaderMany: Array<Maybe<Track>>;
+  trackDataLoaderMany: Maybe<Track>[];
   trackCount?: Maybe<Scalars['Int']>;
   trackConnection?: Maybe<TrackConnection>;
   trackPagination?: Maybe<TrackPagination>;
-  trackRecents: Array<Track>;
+  trackRecents: Track[];
   playlistById?: Maybe<Playlist>;
   playlistByIdUpdated?: Maybe<Playlist>;
-  playlistByIds: Array<Playlist>;
+  playlistByIds: Playlist[];
   playlistOne?: Maybe<Playlist>;
-  playlistMany: Array<Playlist>;
+  playlistMany: Playlist[];
   playlistDataLoader?: Maybe<Playlist>;
-  playlistDataLoaderMany: Array<Maybe<Playlist>>;
+  playlistDataLoaderMany: Maybe<Playlist>[];
   playlistCount?: Maybe<Scalars['Int']>;
   playlistConnection?: Maybe<PlaylistConnection>;
   playlistPagination?: Maybe<PlaylistPagination>;
-  playlistRecents: Array<Playlist>;
+  playlistRecents: Playlist[];
   soundboardItemById?: Maybe<SoundboardItem>;
-  soundboardItemByIds: Array<SoundboardItem>;
+  soundboardItemByIds: SoundboardItem[];
   soundboardItemOne?: Maybe<SoundboardItem>;
-  soundboardItemMany: Array<SoundboardItem>;
+  soundboardItemMany: SoundboardItem[];
   soundboardItemDataLoader?: Maybe<SoundboardItem>;
-  soundboardItemDataLoaderMany: Array<Maybe<SoundboardItem>>;
+  soundboardItemDataLoaderMany: Maybe<SoundboardItem>[];
   soundboardItemCount?: Maybe<Scalars['Int']>;
   soundboardItemConnection?: Maybe<SoundboardItemConnection>;
   soundboardItemPagination?: Maybe<SoundboardItemPagination>;
-  getGuilds?: Maybe<Array<Guild>>;
+  getGuilds?: Maybe<Guild[]>;
   getPlayer?: Maybe<Player>;
 };
 
@@ -102,7 +102,7 @@ export type QueryTrackByIdArgs = {
 
 
 export type QueryTrackByIdsArgs = {
-  _ids: Array<Scalars['MongoID']>;
+  _ids: Scalars['MongoID'][];
   limit?: Maybe<Scalars['Int']>;
   sort?: Maybe<SortFindByIdsTrackInput>;
 };
@@ -129,7 +129,7 @@ export type QueryTrackDataLoaderArgs = {
 
 
 export type QueryTrackDataLoaderManyArgs = {
-  _ids: Array<Scalars['MongoID']>;
+  _ids: Scalars['MongoID'][];
 };
 
 
@@ -173,7 +173,7 @@ export type QueryPlaylistByIdUpdatedArgs = {
 
 
 export type QueryPlaylistByIdsArgs = {
-  _ids: Array<Scalars['MongoID']>;
+  _ids: Scalars['MongoID'][];
   limit?: Maybe<Scalars['Int']>;
   sort?: Maybe<SortFindByIdsPlaylistInput>;
 };
@@ -190,7 +190,7 @@ export type QueryPlaylistManyArgs = {
   filter?: Maybe<FilterFindManyPlaylistInput>;
   skip?: Maybe<Scalars['Int']>;
   limit?: Maybe<Scalars['Int']>;
-  sort?: Maybe<Array<SortFindManyPlaylistInput>>;
+  sort?: Maybe<SortFindManyPlaylistInput[]>;
 };
 
 
@@ -200,7 +200,7 @@ export type QueryPlaylistDataLoaderArgs = {
 
 
 export type QueryPlaylistDataLoaderManyArgs = {
-  _ids: Array<Scalars['MongoID']>;
+  _ids: Scalars['MongoID'][];
 };
 
 
@@ -239,7 +239,7 @@ export type QuerySoundboardItemByIdArgs = {
 
 
 export type QuerySoundboardItemByIdsArgs = {
-  _ids: Array<Scalars['MongoID']>;
+  _ids: Scalars['MongoID'][];
   limit?: Maybe<Scalars['Int']>;
   sort?: Maybe<SortFindByIdsSoundboardItemInput>;
 };
@@ -266,7 +266,7 @@ export type QuerySoundboardItemDataLoaderArgs = {
 
 
 export type QuerySoundboardItemDataLoaderManyArgs = {
-  _ids: Array<Scalars['MongoID']>;
+  _ids: Scalars['MongoID'][];
 };
 
 
@@ -300,13 +300,13 @@ export type QueryGetPlayerArgs = {
 export type Track = {
   __typename?: 'Track';
   artists?: Maybe<Scalars['String']>;
-  favourite?: Maybe<Array<Maybe<TrackFavourite>>>;
+  favourite?: Maybe<Maybe<TrackFavourite>[]>;
   identifier: Scalars['String'];
-  lastTouchedAt?: Maybe<Array<Maybe<TrackLastTouchedAt>>>;
+  lastTouchedAt?: Maybe<Maybe<TrackLastTouchedAt>[]>;
   source: Scalars['String'];
   title: Scalars['String'];
   thumbnail?: Maybe<TrackThumbnail>;
-  touchedByUser?: Maybe<Array<Maybe<TrackTouchedByUser>>>;
+  touchedByUser?: Maybe<Maybe<TrackTouchedByUser>[]>;
   url?: Maybe<Scalars['String']>;
   _id: Scalars['MongoID'];
 };
@@ -347,19 +347,19 @@ export enum SortFindByIdsTrackInput {
 
 export type FilterFindOneTrackInput = {
   artists?: Maybe<Scalars['String']>;
-  favourite?: Maybe<Array<Maybe<FilterFindOneTrackFavouriteInput>>>;
+  favourite?: Maybe<Maybe<FilterFindOneTrackFavouriteInput>[]>;
   identifier?: Maybe<Scalars['String']>;
-  lastTouchedAt?: Maybe<Array<Maybe<FilterFindOneTrackLastTouchedAtInput>>>;
+  lastTouchedAt?: Maybe<Maybe<FilterFindOneTrackLastTouchedAtInput>[]>;
   source?: Maybe<Scalars['String']>;
   title?: Maybe<Scalars['String']>;
   thumbnail?: Maybe<FilterFindOneTrackThumbnailInput>;
-  touchedByUser?: Maybe<Array<Maybe<FilterFindOneTrackTouchedByUserInput>>>;
+  touchedByUser?: Maybe<Maybe<FilterFindOneTrackTouchedByUserInput>[]>;
   url?: Maybe<Scalars['String']>;
   _id?: Maybe<Scalars['MongoID']>;
   /** List of *indexed* fields that can be filtered via operators. */
   _operators?: Maybe<FilterFindOneTrackOperatorsInput>;
-  OR?: Maybe<Array<FilterFindOneTrackInput>>;
-  AND?: Maybe<Array<FilterFindOneTrackInput>>;
+  OR?: Maybe<FilterFindOneTrackInput[]>;
+  AND?: Maybe<FilterFindOneTrackInput[]>;
 };
 
 export type FilterFindOneTrackFavouriteInput = {
@@ -397,8 +397,8 @@ export type FilterFindOneTrack_IdOperatorsInput = {
   lt?: Maybe<Scalars['MongoID']>;
   lte?: Maybe<Scalars['MongoID']>;
   ne?: Maybe<Scalars['MongoID']>;
-  in?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
+  in?: Maybe<Maybe<Scalars['MongoID']>[]>;
+  nin?: Maybe<Maybe<Scalars['MongoID']>[]>;
   exists?: Maybe<Scalars['Boolean']>;
 };
 
@@ -409,19 +409,19 @@ export enum SortFindOneTrackInput {
 
 export type FilterFindManyTrackInput = {
   artists?: Maybe<Scalars['String']>;
-  favourite?: Maybe<Array<Maybe<FilterFindManyTrackFavouriteInput>>>;
+  favourite?: Maybe<Maybe<FilterFindManyTrackFavouriteInput>[]>;
   identifier?: Maybe<Scalars['String']>;
-  lastTouchedAt?: Maybe<Array<Maybe<FilterFindManyTrackLastTouchedAtInput>>>;
+  lastTouchedAt?: Maybe<Maybe<FilterFindManyTrackLastTouchedAtInput>[]>;
   source?: Maybe<Scalars['String']>;
   title?: Maybe<Scalars['String']>;
   thumbnail?: Maybe<FilterFindManyTrackThumbnailInput>;
-  touchedByUser?: Maybe<Array<Maybe<FilterFindManyTrackTouchedByUserInput>>>;
+  touchedByUser?: Maybe<Maybe<FilterFindManyTrackTouchedByUserInput>[]>;
   url?: Maybe<Scalars['String']>;
   _id?: Maybe<Scalars['MongoID']>;
   /** List of *indexed* fields that can be filtered via operators. */
   _operators?: Maybe<FilterFindManyTrackOperatorsInput>;
-  OR?: Maybe<Array<FilterFindManyTrackInput>>;
-  AND?: Maybe<Array<FilterFindManyTrackInput>>;
+  OR?: Maybe<FilterFindManyTrackInput[]>;
+  AND?: Maybe<FilterFindManyTrackInput[]>;
 };
 
 export type FilterFindManyTrackFavouriteInput = {
@@ -468,8 +468,8 @@ export type FilterFindManyTrackArtistsOperatorsInput = {
   lt?: Maybe<Scalars['String']>;
   lte?: Maybe<Scalars['String']>;
   ne?: Maybe<Scalars['String']>;
-  in?: Maybe<Array<Maybe<Scalars['String']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['String']>>>;
+  in?: Maybe<Maybe<Scalars['String']>[]>;
+  nin?: Maybe<Maybe<Scalars['String']>[]>;
   regex?: Maybe<Scalars['RegExpAsString']>;
   exists?: Maybe<Scalars['Boolean']>;
 };
@@ -487,8 +487,8 @@ export type FilterFindManyTrackFavouriteGuildOperatorsInput = {
   lt?: Maybe<Scalars['String']>;
   lte?: Maybe<Scalars['String']>;
   ne?: Maybe<Scalars['String']>;
-  in?: Maybe<Array<Maybe<Scalars['String']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['String']>>>;
+  in?: Maybe<Maybe<Scalars['String']>[]>;
+  nin?: Maybe<Maybe<Scalars['String']>[]>;
   regex?: Maybe<Scalars['RegExpAsString']>;
   exists?: Maybe<Scalars['Boolean']>;
 };
@@ -499,8 +499,8 @@ export type FilterFindManyTrackFavouriteFavouriteOperatorsInput = {
   lt?: Maybe<Scalars['Boolean']>;
   lte?: Maybe<Scalars['Boolean']>;
   ne?: Maybe<Scalars['Boolean']>;
-  in?: Maybe<Array<Maybe<Scalars['Boolean']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['Boolean']>>>;
+  in?: Maybe<Maybe<Scalars['Boolean']>[]>;
+  nin?: Maybe<Maybe<Scalars['Boolean']>[]>;
   exists?: Maybe<Scalars['Boolean']>;
 };
 
@@ -510,8 +510,8 @@ export type FilterFindManyTrackFavourite_IdOperatorsInput = {
   lt?: Maybe<Scalars['MongoID']>;
   lte?: Maybe<Scalars['MongoID']>;
   ne?: Maybe<Scalars['MongoID']>;
-  in?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
+  in?: Maybe<Maybe<Scalars['MongoID']>[]>;
+  nin?: Maybe<Maybe<Scalars['MongoID']>[]>;
   exists?: Maybe<Scalars['Boolean']>;
 };
 
@@ -521,8 +521,8 @@ export type FilterFindManyTrackIdentifierOperatorsInput = {
   lt?: Maybe<Scalars['String']>;
   lte?: Maybe<Scalars['String']>;
   ne?: Maybe<Scalars['String']>;
-  in?: Maybe<Array<Maybe<Scalars['String']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['String']>>>;
+  in?: Maybe<Maybe<Scalars['String']>[]>;
+  nin?: Maybe<Maybe<Scalars['String']>[]>;
   regex?: Maybe<Scalars['RegExpAsString']>;
   exists?: Maybe<Scalars['Boolean']>;
 };
@@ -539,8 +539,8 @@ export type FilterFindManyTrackLastTouchedAtGuildOperatorsInput = {
   lt?: Maybe<Scalars['String']>;
   lte?: Maybe<Scalars['String']>;
   ne?: Maybe<Scalars['String']>;
-  in?: Maybe<Array<Maybe<Scalars['String']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['String']>>>;
+  in?: Maybe<Maybe<Scalars['String']>[]>;
+  nin?: Maybe<Maybe<Scalars['String']>[]>;
   regex?: Maybe<Scalars['RegExpAsString']>;
   exists?: Maybe<Scalars['Boolean']>;
 };
@@ -551,8 +551,8 @@ export type FilterFindManyTrackLastTouchedAtDateOperatorsInput = {
   lt?: Maybe<Scalars['String']>;
   lte?: Maybe<Scalars['String']>;
   ne?: Maybe<Scalars['String']>;
-  in?: Maybe<Array<Maybe<Scalars['String']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['String']>>>;
+  in?: Maybe<Maybe<Scalars['String']>[]>;
+  nin?: Maybe<Maybe<Scalars['String']>[]>;
   regex?: Maybe<Scalars['RegExpAsString']>;
   exists?: Maybe<Scalars['Boolean']>;
 };
@@ -563,8 +563,8 @@ export type FilterFindManyTrackLastTouchedAt_IdOperatorsInput = {
   lt?: Maybe<Scalars['MongoID']>;
   lte?: Maybe<Scalars['MongoID']>;
   ne?: Maybe<Scalars['MongoID']>;
-  in?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
+  in?: Maybe<Maybe<Scalars['MongoID']>[]>;
+  nin?: Maybe<Maybe<Scalars['MongoID']>[]>;
   exists?: Maybe<Scalars['Boolean']>;
 };
 
@@ -574,8 +574,8 @@ export type FilterFindManyTrackSourceOperatorsInput = {
   lt?: Maybe<Scalars['String']>;
   lte?: Maybe<Scalars['String']>;
   ne?: Maybe<Scalars['String']>;
-  in?: Maybe<Array<Maybe<Scalars['String']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['String']>>>;
+  in?: Maybe<Maybe<Scalars['String']>[]>;
+  nin?: Maybe<Maybe<Scalars['String']>[]>;
   regex?: Maybe<Scalars['RegExpAsString']>;
   exists?: Maybe<Scalars['Boolean']>;
 };
@@ -586,8 +586,8 @@ export type FilterFindManyTrackTitleOperatorsInput = {
   lt?: Maybe<Scalars['String']>;
   lte?: Maybe<Scalars['String']>;
   ne?: Maybe<Scalars['String']>;
-  in?: Maybe<Array<Maybe<Scalars['String']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['String']>>>;
+  in?: Maybe<Maybe<Scalars['String']>[]>;
+  nin?: Maybe<Maybe<Scalars['String']>[]>;
   regex?: Maybe<Scalars['RegExpAsString']>;
   exists?: Maybe<Scalars['Boolean']>;
 };
@@ -604,8 +604,8 @@ export type FilterFindManyTrackThumbnailSmallOperatorsInput = {
   lt?: Maybe<Scalars['String']>;
   lte?: Maybe<Scalars['String']>;
   ne?: Maybe<Scalars['String']>;
-  in?: Maybe<Array<Maybe<Scalars['String']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['String']>>>;
+  in?: Maybe<Maybe<Scalars['String']>[]>;
+  nin?: Maybe<Maybe<Scalars['String']>[]>;
   regex?: Maybe<Scalars['RegExpAsString']>;
   exists?: Maybe<Scalars['Boolean']>;
 };
@@ -616,8 +616,8 @@ export type FilterFindManyTrackThumbnailMediumOperatorsInput = {
   lt?: Maybe<Scalars['String']>;
   lte?: Maybe<Scalars['String']>;
   ne?: Maybe<Scalars['String']>;
-  in?: Maybe<Array<Maybe<Scalars['String']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['String']>>>;
+  in?: Maybe<Maybe<Scalars['String']>[]>;
+  nin?: Maybe<Maybe<Scalars['String']>[]>;
   regex?: Maybe<Scalars['RegExpAsString']>;
   exists?: Maybe<Scalars['Boolean']>;
 };
@@ -628,8 +628,8 @@ export type FilterFindManyTrackThumbnailLargeOperatorsInput = {
   lt?: Maybe<Scalars['String']>;
   lte?: Maybe<Scalars['String']>;
   ne?: Maybe<Scalars['String']>;
-  in?: Maybe<Array<Maybe<Scalars['String']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['String']>>>;
+  in?: Maybe<Maybe<Scalars['String']>[]>;
+  nin?: Maybe<Maybe<Scalars['String']>[]>;
   regex?: Maybe<Scalars['RegExpAsString']>;
   exists?: Maybe<Scalars['Boolean']>;
 };
@@ -646,8 +646,8 @@ export type FilterFindManyTrackTouchedByUserGuildOperatorsInput = {
   lt?: Maybe<Scalars['String']>;
   lte?: Maybe<Scalars['String']>;
   ne?: Maybe<Scalars['String']>;
-  in?: Maybe<Array<Maybe<Scalars['String']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['String']>>>;
+  in?: Maybe<Maybe<Scalars['String']>[]>;
+  nin?: Maybe<Maybe<Scalars['String']>[]>;
   regex?: Maybe<Scalars['RegExpAsString']>;
   exists?: Maybe<Scalars['Boolean']>;
 };
@@ -658,8 +658,8 @@ export type FilterFindManyTrackTouchedByUserTouchedOperatorsInput = {
   lt?: Maybe<Scalars['Boolean']>;
   lte?: Maybe<Scalars['Boolean']>;
   ne?: Maybe<Scalars['Boolean']>;
-  in?: Maybe<Array<Maybe<Scalars['Boolean']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['Boolean']>>>;
+  in?: Maybe<Maybe<Scalars['Boolean']>[]>;
+  nin?: Maybe<Maybe<Scalars['Boolean']>[]>;
   exists?: Maybe<Scalars['Boolean']>;
 };
 
@@ -669,8 +669,8 @@ export type FilterFindManyTrackTouchedByUser_IdOperatorsInput = {
   lt?: Maybe<Scalars['MongoID']>;
   lte?: Maybe<Scalars['MongoID']>;
   ne?: Maybe<Scalars['MongoID']>;
-  in?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
+  in?: Maybe<Maybe<Scalars['MongoID']>[]>;
+  nin?: Maybe<Maybe<Scalars['MongoID']>[]>;
   exists?: Maybe<Scalars['Boolean']>;
 };
 
@@ -680,8 +680,8 @@ export type FilterFindManyTrackUrlOperatorsInput = {
   lt?: Maybe<Scalars['String']>;
   lte?: Maybe<Scalars['String']>;
   ne?: Maybe<Scalars['String']>;
-  in?: Maybe<Array<Maybe<Scalars['String']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['String']>>>;
+  in?: Maybe<Maybe<Scalars['String']>[]>;
+  nin?: Maybe<Maybe<Scalars['String']>[]>;
   regex?: Maybe<Scalars['RegExpAsString']>;
   exists?: Maybe<Scalars['Boolean']>;
 };
@@ -692,8 +692,8 @@ export type FilterFindManyTrack_IdOperatorsInput = {
   lt?: Maybe<Scalars['MongoID']>;
   lte?: Maybe<Scalars['MongoID']>;
   ne?: Maybe<Scalars['MongoID']>;
-  in?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
+  in?: Maybe<Maybe<Scalars['MongoID']>[]>;
+  nin?: Maybe<Maybe<Scalars['MongoID']>[]>;
   exists?: Maybe<Scalars['Boolean']>;
 };
 
@@ -704,19 +704,19 @@ export enum SortFindManyTrackInput {
 
 export type FilterCountTrackInput = {
   artists?: Maybe<Scalars['String']>;
-  favourite?: Maybe<Array<Maybe<FilterCountTrackFavouriteInput>>>;
+  favourite?: Maybe<Maybe<FilterCountTrackFavouriteInput>[]>;
   identifier?: Maybe<Scalars['String']>;
-  lastTouchedAt?: Maybe<Array<Maybe<FilterCountTrackLastTouchedAtInput>>>;
+  lastTouchedAt?: Maybe<Maybe<FilterCountTrackLastTouchedAtInput>[]>;
   source?: Maybe<Scalars['String']>;
   title?: Maybe<Scalars['String']>;
   thumbnail?: Maybe<FilterCountTrackThumbnailInput>;
-  touchedByUser?: Maybe<Array<Maybe<FilterCountTrackTouchedByUserInput>>>;
+  touchedByUser?: Maybe<Maybe<FilterCountTrackTouchedByUserInput>[]>;
   url?: Maybe<Scalars['String']>;
   _id?: Maybe<Scalars['MongoID']>;
   /** List of *indexed* fields that can be filtered via operators. */
   _operators?: Maybe<FilterCountTrackOperatorsInput>;
-  OR?: Maybe<Array<FilterCountTrackInput>>;
-  AND?: Maybe<Array<FilterCountTrackInput>>;
+  OR?: Maybe<FilterCountTrackInput[]>;
+  AND?: Maybe<FilterCountTrackInput[]>;
 };
 
 export type FilterCountTrackFavouriteInput = {
@@ -754,8 +754,8 @@ export type FilterCountTrack_IdOperatorsInput = {
   lt?: Maybe<Scalars['MongoID']>;
   lte?: Maybe<Scalars['MongoID']>;
   ne?: Maybe<Scalars['MongoID']>;
-  in?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
+  in?: Maybe<Maybe<Scalars['MongoID']>[]>;
+  nin?: Maybe<Maybe<Scalars['MongoID']>[]>;
   exists?: Maybe<Scalars['Boolean']>;
 };
 
@@ -767,7 +767,7 @@ export type TrackConnection = {
   /** Information to aid in pagination. */
   pageInfo: PageInfo;
   /** Information to aid in pagination. */
-  edges: Array<TrackEdge>;
+  edges: TrackEdge[];
 };
 
 /** Information about pagination in a connection. */
@@ -803,7 +803,7 @@ export type TrackPagination = {
   /** Total object count. */
   count?: Maybe<Scalars['Int']>;
   /** Array of objects. */
-  items?: Maybe<Array<Track>>;
+  items?: Maybe<Track[]>;
   /** Information to aid in pagination. */
   pageInfo: PaginationInfo;
 };
@@ -821,12 +821,12 @@ export type PaginationInfo = {
 export type Playlist = {
   __typename?: 'Playlist';
   identifier: Scalars['String'];
-  favourite?: Maybe<Array<Maybe<PlaylistFavourite>>>;
-  lastTouchedAt?: Maybe<Array<Maybe<PlaylistLastTouchedAt>>>;
+  favourite?: Maybe<Maybe<PlaylistFavourite>[]>;
+  lastTouchedAt?: Maybe<Maybe<PlaylistLastTouchedAt>[]>;
   name: Scalars['String'];
   owner?: Maybe<Scalars['String']>;
   source: Scalars['String'];
-  tracks?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
+  tracks?: Maybe<Maybe<Scalars['MongoID']>[]>;
   thumbnail?: Maybe<PlaylistThumbnail>;
   uri?: Maybe<Scalars['String']>;
   url?: Maybe<Scalars['String']>;
@@ -863,20 +863,20 @@ export enum SortFindByIdsPlaylistInput {
 
 export type FilterFindOnePlaylistInput = {
   identifier?: Maybe<Scalars['String']>;
-  favourite?: Maybe<Array<Maybe<FilterFindOnePlaylistFavouriteInput>>>;
-  lastTouchedAt?: Maybe<Array<Maybe<FilterFindOnePlaylistLastTouchedAtInput>>>;
+  favourite?: Maybe<Maybe<FilterFindOnePlaylistFavouriteInput>[]>;
+  lastTouchedAt?: Maybe<Maybe<FilterFindOnePlaylistLastTouchedAtInput>[]>;
   name?: Maybe<Scalars['String']>;
   owner?: Maybe<Scalars['String']>;
   source?: Maybe<Scalars['String']>;
-  tracks?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
+  tracks?: Maybe<Maybe<Scalars['MongoID']>[]>;
   thumbnail?: Maybe<FilterFindOnePlaylistThumbnailInput>;
   uri?: Maybe<Scalars['String']>;
   url?: Maybe<Scalars['String']>;
   _id?: Maybe<Scalars['MongoID']>;
   /** List of *indexed* fields that can be filtered via operators. */
   _operators?: Maybe<FilterFindOnePlaylistOperatorsInput>;
-  OR?: Maybe<Array<FilterFindOnePlaylistInput>>;
-  AND?: Maybe<Array<FilterFindOnePlaylistInput>>;
+  OR?: Maybe<FilterFindOnePlaylistInput[]>;
+  AND?: Maybe<FilterFindOnePlaylistInput[]>;
 };
 
 export type FilterFindOnePlaylistFavouriteInput = {
@@ -909,8 +909,8 @@ export type FilterFindOnePlaylistIdentifierOperatorsInput = {
   lt?: Maybe<Scalars['String']>;
   lte?: Maybe<Scalars['String']>;
   ne?: Maybe<Scalars['String']>;
-  in?: Maybe<Array<Maybe<Scalars['String']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['String']>>>;
+  in?: Maybe<Maybe<Scalars['String']>[]>;
+  nin?: Maybe<Maybe<Scalars['String']>[]>;
   regex?: Maybe<Scalars['RegExpAsString']>;
   exists?: Maybe<Scalars['Boolean']>;
 };
@@ -921,8 +921,8 @@ export type FilterFindOnePlaylist_IdOperatorsInput = {
   lt?: Maybe<Scalars['MongoID']>;
   lte?: Maybe<Scalars['MongoID']>;
   ne?: Maybe<Scalars['MongoID']>;
-  in?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
+  in?: Maybe<Maybe<Scalars['MongoID']>[]>;
+  nin?: Maybe<Maybe<Scalars['MongoID']>[]>;
   exists?: Maybe<Scalars['Boolean']>;
 };
 
@@ -935,20 +935,20 @@ export enum SortFindOnePlaylistInput {
 
 export type FilterFindManyPlaylistInput = {
   identifier?: Maybe<Scalars['String']>;
-  favourite?: Maybe<Array<Maybe<FilterFindManyPlaylistFavouriteInput>>>;
-  lastTouchedAt?: Maybe<Array<Maybe<FilterFindManyPlaylistLastTouchedAtInput>>>;
+  favourite?: Maybe<Maybe<FilterFindManyPlaylistFavouriteInput>[]>;
+  lastTouchedAt?: Maybe<Maybe<FilterFindManyPlaylistLastTouchedAtInput>[]>;
   name?: Maybe<Scalars['String']>;
   owner?: Maybe<Scalars['String']>;
   source?: Maybe<Scalars['String']>;
-  tracks?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
+  tracks?: Maybe<Maybe<Scalars['MongoID']>[]>;
   thumbnail?: Maybe<FilterFindManyPlaylistThumbnailInput>;
   uri?: Maybe<Scalars['String']>;
   url?: Maybe<Scalars['String']>;
   _id?: Maybe<Scalars['MongoID']>;
   /** List of *indexed* fields that can be filtered via operators. */
   _operators?: Maybe<FilterFindManyPlaylistOperatorsInput>;
-  OR?: Maybe<Array<FilterFindManyPlaylistInput>>;
-  AND?: Maybe<Array<FilterFindManyPlaylistInput>>;
+  OR?: Maybe<FilterFindManyPlaylistInput[]>;
+  AND?: Maybe<FilterFindManyPlaylistInput[]>;
 };
 
 export type FilterFindManyPlaylistFavouriteInput = {
@@ -981,8 +981,8 @@ export type FilterFindManyPlaylistIdentifierOperatorsInput = {
   lt?: Maybe<Scalars['String']>;
   lte?: Maybe<Scalars['String']>;
   ne?: Maybe<Scalars['String']>;
-  in?: Maybe<Array<Maybe<Scalars['String']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['String']>>>;
+  in?: Maybe<Maybe<Scalars['String']>[]>;
+  nin?: Maybe<Maybe<Scalars['String']>[]>;
   regex?: Maybe<Scalars['RegExpAsString']>;
   exists?: Maybe<Scalars['Boolean']>;
 };
@@ -993,8 +993,8 @@ export type FilterFindManyPlaylist_IdOperatorsInput = {
   lt?: Maybe<Scalars['MongoID']>;
   lte?: Maybe<Scalars['MongoID']>;
   ne?: Maybe<Scalars['MongoID']>;
-  in?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
+  in?: Maybe<Maybe<Scalars['MongoID']>[]>;
+  nin?: Maybe<Maybe<Scalars['MongoID']>[]>;
   exists?: Maybe<Scalars['Boolean']>;
 };
 
@@ -1007,20 +1007,20 @@ export enum SortFindManyPlaylistInput {
 
 export type FilterCountPlaylistInput = {
   identifier?: Maybe<Scalars['String']>;
-  favourite?: Maybe<Array<Maybe<FilterCountPlaylistFavouriteInput>>>;
-  lastTouchedAt?: Maybe<Array<Maybe<FilterCountPlaylistLastTouchedAtInput>>>;
+  favourite?: Maybe<Maybe<FilterCountPlaylistFavouriteInput>[]>;
+  lastTouchedAt?: Maybe<Maybe<FilterCountPlaylistLastTouchedAtInput>[]>;
   name?: Maybe<Scalars['String']>;
   owner?: Maybe<Scalars['String']>;
   source?: Maybe<Scalars['String']>;
-  tracks?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
+  tracks?: Maybe<Maybe<Scalars['MongoID']>[]>;
   thumbnail?: Maybe<FilterCountPlaylistThumbnailInput>;
   uri?: Maybe<Scalars['String']>;
   url?: Maybe<Scalars['String']>;
   _id?: Maybe<Scalars['MongoID']>;
   /** List of *indexed* fields that can be filtered via operators. */
   _operators?: Maybe<FilterCountPlaylistOperatorsInput>;
-  OR?: Maybe<Array<FilterCountPlaylistInput>>;
-  AND?: Maybe<Array<FilterCountPlaylistInput>>;
+  OR?: Maybe<FilterCountPlaylistInput[]>;
+  AND?: Maybe<FilterCountPlaylistInput[]>;
 };
 
 export type FilterCountPlaylistFavouriteInput = {
@@ -1053,8 +1053,8 @@ export type FilterCountPlaylistIdentifierOperatorsInput = {
   lt?: Maybe<Scalars['String']>;
   lte?: Maybe<Scalars['String']>;
   ne?: Maybe<Scalars['String']>;
-  in?: Maybe<Array<Maybe<Scalars['String']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['String']>>>;
+  in?: Maybe<Maybe<Scalars['String']>[]>;
+  nin?: Maybe<Maybe<Scalars['String']>[]>;
   regex?: Maybe<Scalars['RegExpAsString']>;
   exists?: Maybe<Scalars['Boolean']>;
 };
@@ -1065,8 +1065,8 @@ export type FilterCountPlaylist_IdOperatorsInput = {
   lt?: Maybe<Scalars['MongoID']>;
   lte?: Maybe<Scalars['MongoID']>;
   ne?: Maybe<Scalars['MongoID']>;
-  in?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
+  in?: Maybe<Maybe<Scalars['MongoID']>[]>;
+  nin?: Maybe<Maybe<Scalars['MongoID']>[]>;
   exists?: Maybe<Scalars['Boolean']>;
 };
 
@@ -1078,7 +1078,7 @@ export type PlaylistConnection = {
   /** Information to aid in pagination. */
   pageInfo: PageInfo;
   /** Information to aid in pagination. */
-  edges: Array<PlaylistEdge>;
+  edges: PlaylistEdge[];
 };
 
 /** An edge in a connection. */
@@ -1103,7 +1103,7 @@ export type PlaylistPagination = {
   /** Total object count. */
   count?: Maybe<Scalars['Int']>;
   /** Array of objects. */
-  items?: Maybe<Array<Playlist>>;
+  items?: Maybe<Playlist[]>;
   /** Information to aid in pagination. */
   pageInfo: PaginationInfo;
 };
@@ -1132,8 +1132,8 @@ export type FilterFindOneSoundboardItemInput = {
   _id?: Maybe<Scalars['MongoID']>;
   /** List of *indexed* fields that can be filtered via operators. */
   _operators?: Maybe<FilterFindOneSoundboardItemOperatorsInput>;
-  OR?: Maybe<Array<FilterFindOneSoundboardItemInput>>;
-  AND?: Maybe<Array<FilterFindOneSoundboardItemInput>>;
+  OR?: Maybe<FilterFindOneSoundboardItemInput[]>;
+  AND?: Maybe<FilterFindOneSoundboardItemInput[]>;
 };
 
 /** For performance reason this type contains only *indexed* fields. */
@@ -1148,8 +1148,8 @@ export type FilterFindOneSoundboardItemGuildOperatorsInput = {
   lt?: Maybe<Scalars['String']>;
   lte?: Maybe<Scalars['String']>;
   ne?: Maybe<Scalars['String']>;
-  in?: Maybe<Array<Maybe<Scalars['String']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['String']>>>;
+  in?: Maybe<Maybe<Scalars['String']>[]>;
+  nin?: Maybe<Maybe<Scalars['String']>[]>;
   regex?: Maybe<Scalars['RegExpAsString']>;
   exists?: Maybe<Scalars['Boolean']>;
 };
@@ -1160,8 +1160,8 @@ export type FilterFindOneSoundboardItem_IdOperatorsInput = {
   lt?: Maybe<Scalars['MongoID']>;
   lte?: Maybe<Scalars['MongoID']>;
   ne?: Maybe<Scalars['MongoID']>;
-  in?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
+  in?: Maybe<Maybe<Scalars['MongoID']>[]>;
+  nin?: Maybe<Maybe<Scalars['MongoID']>[]>;
   exists?: Maybe<Scalars['Boolean']>;
 };
 
@@ -1181,8 +1181,8 @@ export type FilterFindManySoundboardItemInput = {
   _id?: Maybe<Scalars['MongoID']>;
   /** List of *indexed* fields that can be filtered via operators. */
   _operators?: Maybe<FilterFindManySoundboardItemOperatorsInput>;
-  OR?: Maybe<Array<FilterFindManySoundboardItemInput>>;
-  AND?: Maybe<Array<FilterFindManySoundboardItemInput>>;
+  OR?: Maybe<FilterFindManySoundboardItemInput[]>;
+  AND?: Maybe<FilterFindManySoundboardItemInput[]>;
 };
 
 /** For performance reason this type contains only *indexed* fields. */
@@ -1197,8 +1197,8 @@ export type FilterFindManySoundboardItemGuildOperatorsInput = {
   lt?: Maybe<Scalars['String']>;
   lte?: Maybe<Scalars['String']>;
   ne?: Maybe<Scalars['String']>;
-  in?: Maybe<Array<Maybe<Scalars['String']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['String']>>>;
+  in?: Maybe<Maybe<Scalars['String']>[]>;
+  nin?: Maybe<Maybe<Scalars['String']>[]>;
   regex?: Maybe<Scalars['RegExpAsString']>;
   exists?: Maybe<Scalars['Boolean']>;
 };
@@ -1209,8 +1209,8 @@ export type FilterFindManySoundboardItem_IdOperatorsInput = {
   lt?: Maybe<Scalars['MongoID']>;
   lte?: Maybe<Scalars['MongoID']>;
   ne?: Maybe<Scalars['MongoID']>;
-  in?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
+  in?: Maybe<Maybe<Scalars['MongoID']>[]>;
+  nin?: Maybe<Maybe<Scalars['MongoID']>[]>;
   exists?: Maybe<Scalars['Boolean']>;
 };
 
@@ -1230,8 +1230,8 @@ export type FilterCountSoundboardItemInput = {
   _id?: Maybe<Scalars['MongoID']>;
   /** List of *indexed* fields that can be filtered via operators. */
   _operators?: Maybe<FilterCountSoundboardItemOperatorsInput>;
-  OR?: Maybe<Array<FilterCountSoundboardItemInput>>;
-  AND?: Maybe<Array<FilterCountSoundboardItemInput>>;
+  OR?: Maybe<FilterCountSoundboardItemInput[]>;
+  AND?: Maybe<FilterCountSoundboardItemInput[]>;
 };
 
 /** For performance reason this type contains only *indexed* fields. */
@@ -1246,8 +1246,8 @@ export type FilterCountSoundboardItemGuildOperatorsInput = {
   lt?: Maybe<Scalars['String']>;
   lte?: Maybe<Scalars['String']>;
   ne?: Maybe<Scalars['String']>;
-  in?: Maybe<Array<Maybe<Scalars['String']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['String']>>>;
+  in?: Maybe<Maybe<Scalars['String']>[]>;
+  nin?: Maybe<Maybe<Scalars['String']>[]>;
   regex?: Maybe<Scalars['RegExpAsString']>;
   exists?: Maybe<Scalars['Boolean']>;
 };
@@ -1258,8 +1258,8 @@ export type FilterCountSoundboardItem_IdOperatorsInput = {
   lt?: Maybe<Scalars['MongoID']>;
   lte?: Maybe<Scalars['MongoID']>;
   ne?: Maybe<Scalars['MongoID']>;
-  in?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
+  in?: Maybe<Maybe<Scalars['MongoID']>[]>;
+  nin?: Maybe<Maybe<Scalars['MongoID']>[]>;
   exists?: Maybe<Scalars['Boolean']>;
 };
 
@@ -1271,7 +1271,7 @@ export type SoundboardItemConnection = {
   /** Information to aid in pagination. */
   pageInfo: PageInfo;
   /** Information to aid in pagination. */
-  edges: Array<SoundboardItemEdge>;
+  edges: SoundboardItemEdge[];
 };
 
 /** An edge in a connection. */
@@ -1296,7 +1296,7 @@ export type SoundboardItemPagination = {
   /** Total object count. */
   count?: Maybe<Scalars['Int']>;
   /** Array of objects. */
-  items?: Maybe<Array<SoundboardItem>>;
+  items?: Maybe<SoundboardItem[]>;
   /** Information to aid in pagination. */
   pageInfo: PaginationInfo;
 };
@@ -1305,7 +1305,7 @@ export type Guild = {
   __typename?: 'Guild';
   id: Scalars['String'];
   name: Scalars['String'];
-  members?: Maybe<Array<Member>>;
+  members?: Maybe<Member[]>;
 };
 
 export type Member = {
@@ -1320,7 +1320,7 @@ export type Player = {
   currentTrackID?: Maybe<QueuedTrack>;
   loopState: Scalars['String'];
   paused: Scalars['Boolean'];
-  queueIDs: Array<QueuedTrack>;
+  queueIDs: QueuedTrack[];
   volume: Scalars['Int'];
 };
 
@@ -1390,7 +1390,7 @@ export type MutationTrackCreateOneArgs = {
 
 
 export type MutationTrackCreateManyArgs = {
-  records: Array<CreateManyTrackInput>;
+  records: CreateManyTrackInput[];
 };
 
 
@@ -1440,7 +1440,7 @@ export type MutationPlaylistCreateOneArgs = {
 
 
 export type MutationPlaylistCreateManyArgs = {
-  records: Array<CreateManyPlaylistInput>;
+  records: CreateManyPlaylistInput[];
 };
 
 
@@ -1490,7 +1490,7 @@ export type MutationSoundboardItemCreateOneArgs = {
 
 
 export type MutationSoundboardItemCreateManyArgs = {
-  records: Array<CreateManySoundboardItemInput>;
+  records: CreateManySoundboardItemInput[];
 };
 
 
@@ -1536,7 +1536,7 @@ export type MutationSoundboardItemRemoveManyArgs = {
 
 export type MutationUpdateQueueArgs = {
   guild: Scalars['String'];
-  queueIDs: Array<QueuedTrackInput>;
+  queueIDs: QueuedTrackInput[];
 };
 
 export type CreateOneTrackPayload = {
@@ -1551,13 +1551,13 @@ export type CreateOneTrackPayload = {
 
 export type CreateOneTrackInput = {
   artists?: Maybe<Scalars['String']>;
-  favourite?: Maybe<Array<Maybe<TrackFavouriteInput>>>;
+  favourite?: Maybe<Maybe<TrackFavouriteInput>[]>;
   identifier: Scalars['String'];
-  lastTouchedAt?: Maybe<Array<Maybe<TrackLastTouchedAtInput>>>;
+  lastTouchedAt?: Maybe<Maybe<TrackLastTouchedAtInput>[]>;
   source: Scalars['String'];
   title: Scalars['String'];
   thumbnail?: Maybe<TrackThumbnailInput>;
-  touchedByUser?: Maybe<Array<Maybe<TrackTouchedByUserInput>>>;
+  touchedByUser?: Maybe<Maybe<TrackTouchedByUserInput>[]>;
   url?: Maybe<Scalars['String']>;
 };
 
@@ -1588,9 +1588,9 @@ export type TrackTouchedByUserInput = {
 export type CreateManyTrackPayload = {
   __typename?: 'CreateManyTrackPayload';
   /** Documents IDs */
-  recordIds: Array<Scalars['MongoID']>;
+  recordIds: Scalars['MongoID'][];
   /** Created documents */
-  records?: Maybe<Array<Track>>;
+  records?: Maybe<Track[]>;
   /** Number of created documents */
   createdCount: Scalars['Int'];
   /** Error that may occur during operation. If you request this field in GraphQL query, you will receive typed error in payload; otherwise error will be provided in root `errors` field of GraphQL response. */
@@ -1599,13 +1599,13 @@ export type CreateManyTrackPayload = {
 
 export type CreateManyTrackInput = {
   artists?: Maybe<Scalars['String']>;
-  favourite?: Maybe<Array<Maybe<TrackFavouriteInput>>>;
+  favourite?: Maybe<Maybe<TrackFavouriteInput>[]>;
   identifier: Scalars['String'];
-  lastTouchedAt?: Maybe<Array<Maybe<TrackLastTouchedAtInput>>>;
+  lastTouchedAt?: Maybe<Maybe<TrackLastTouchedAtInput>[]>;
   source: Scalars['String'];
   title: Scalars['String'];
   thumbnail?: Maybe<TrackThumbnailInput>;
-  touchedByUser?: Maybe<Array<Maybe<TrackTouchedByUserInput>>>;
+  touchedByUser?: Maybe<Maybe<TrackTouchedByUserInput>[]>;
   url?: Maybe<Scalars['String']>;
 };
 
@@ -1621,13 +1621,13 @@ export type UpdateByIdTrackPayload = {
 
 export type UpdateByIdTrackInput = {
   artists?: Maybe<Scalars['String']>;
-  favourite?: Maybe<Array<Maybe<UpdateByIdTrackFavouriteInput>>>;
+  favourite?: Maybe<Maybe<UpdateByIdTrackFavouriteInput>[]>;
   identifier?: Maybe<Scalars['String']>;
-  lastTouchedAt?: Maybe<Array<Maybe<UpdateByIdTrackLastTouchedAtInput>>>;
+  lastTouchedAt?: Maybe<Maybe<UpdateByIdTrackLastTouchedAtInput>[]>;
   source?: Maybe<Scalars['String']>;
   title?: Maybe<Scalars['String']>;
   thumbnail?: Maybe<UpdateByIdTrackThumbnailInput>;
-  touchedByUser?: Maybe<Array<Maybe<UpdateByIdTrackTouchedByUserInput>>>;
+  touchedByUser?: Maybe<Maybe<UpdateByIdTrackTouchedByUserInput>[]>;
   url?: Maybe<Scalars['String']>;
 };
 
@@ -1667,13 +1667,13 @@ export type UpdateOneTrackPayload = {
 
 export type UpdateOneTrackInput = {
   artists?: Maybe<Scalars['String']>;
-  favourite?: Maybe<Array<Maybe<UpdateOneTrackFavouriteInput>>>;
+  favourite?: Maybe<Maybe<UpdateOneTrackFavouriteInput>[]>;
   identifier?: Maybe<Scalars['String']>;
-  lastTouchedAt?: Maybe<Array<Maybe<UpdateOneTrackLastTouchedAtInput>>>;
+  lastTouchedAt?: Maybe<Maybe<UpdateOneTrackLastTouchedAtInput>[]>;
   source?: Maybe<Scalars['String']>;
   title?: Maybe<Scalars['String']>;
   thumbnail?: Maybe<UpdateOneTrackThumbnailInput>;
-  touchedByUser?: Maybe<Array<Maybe<UpdateOneTrackTouchedByUserInput>>>;
+  touchedByUser?: Maybe<Maybe<UpdateOneTrackTouchedByUserInput>[]>;
   url?: Maybe<Scalars['String']>;
 };
 
@@ -1703,19 +1703,19 @@ export type UpdateOneTrackTouchedByUserInput = {
 
 export type FilterUpdateOneTrackInput = {
   artists?: Maybe<Scalars['String']>;
-  favourite?: Maybe<Array<Maybe<FilterUpdateOneTrackFavouriteInput>>>;
+  favourite?: Maybe<Maybe<FilterUpdateOneTrackFavouriteInput>[]>;
   identifier?: Maybe<Scalars['String']>;
-  lastTouchedAt?: Maybe<Array<Maybe<FilterUpdateOneTrackLastTouchedAtInput>>>;
+  lastTouchedAt?: Maybe<Maybe<FilterUpdateOneTrackLastTouchedAtInput>[]>;
   source?: Maybe<Scalars['String']>;
   title?: Maybe<Scalars['String']>;
   thumbnail?: Maybe<FilterUpdateOneTrackThumbnailInput>;
-  touchedByUser?: Maybe<Array<Maybe<FilterUpdateOneTrackTouchedByUserInput>>>;
+  touchedByUser?: Maybe<Maybe<FilterUpdateOneTrackTouchedByUserInput>[]>;
   url?: Maybe<Scalars['String']>;
   _id?: Maybe<Scalars['MongoID']>;
   /** List of *indexed* fields that can be filtered via operators. */
   _operators?: Maybe<FilterUpdateOneTrackOperatorsInput>;
-  OR?: Maybe<Array<FilterUpdateOneTrackInput>>;
-  AND?: Maybe<Array<FilterUpdateOneTrackInput>>;
+  OR?: Maybe<FilterUpdateOneTrackInput[]>;
+  AND?: Maybe<FilterUpdateOneTrackInput[]>;
 };
 
 export type FilterUpdateOneTrackFavouriteInput = {
@@ -1753,8 +1753,8 @@ export type FilterUpdateOneTrack_IdOperatorsInput = {
   lt?: Maybe<Scalars['MongoID']>;
   lte?: Maybe<Scalars['MongoID']>;
   ne?: Maybe<Scalars['MongoID']>;
-  in?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
+  in?: Maybe<Maybe<Scalars['MongoID']>[]>;
+  nin?: Maybe<Maybe<Scalars['MongoID']>[]>;
   exists?: Maybe<Scalars['Boolean']>;
 };
 
@@ -1773,13 +1773,13 @@ export type UpdateManyTrackPayload = {
 
 export type UpdateManyTrackInput = {
   artists?: Maybe<Scalars['String']>;
-  favourite?: Maybe<Array<Maybe<UpdateManyTrackFavouriteInput>>>;
+  favourite?: Maybe<Maybe<UpdateManyTrackFavouriteInput>[]>;
   identifier?: Maybe<Scalars['String']>;
-  lastTouchedAt?: Maybe<Array<Maybe<UpdateManyTrackLastTouchedAtInput>>>;
+  lastTouchedAt?: Maybe<Maybe<UpdateManyTrackLastTouchedAtInput>[]>;
   source?: Maybe<Scalars['String']>;
   title?: Maybe<Scalars['String']>;
   thumbnail?: Maybe<UpdateManyTrackThumbnailInput>;
-  touchedByUser?: Maybe<Array<Maybe<UpdateManyTrackTouchedByUserInput>>>;
+  touchedByUser?: Maybe<Maybe<UpdateManyTrackTouchedByUserInput>[]>;
   url?: Maybe<Scalars['String']>;
 };
 
@@ -1809,19 +1809,19 @@ export type UpdateManyTrackTouchedByUserInput = {
 
 export type FilterUpdateManyTrackInput = {
   artists?: Maybe<Scalars['String']>;
-  favourite?: Maybe<Array<Maybe<FilterUpdateManyTrackFavouriteInput>>>;
+  favourite?: Maybe<Maybe<FilterUpdateManyTrackFavouriteInput>[]>;
   identifier?: Maybe<Scalars['String']>;
-  lastTouchedAt?: Maybe<Array<Maybe<FilterUpdateManyTrackLastTouchedAtInput>>>;
+  lastTouchedAt?: Maybe<Maybe<FilterUpdateManyTrackLastTouchedAtInput>[]>;
   source?: Maybe<Scalars['String']>;
   title?: Maybe<Scalars['String']>;
   thumbnail?: Maybe<FilterUpdateManyTrackThumbnailInput>;
-  touchedByUser?: Maybe<Array<Maybe<FilterUpdateManyTrackTouchedByUserInput>>>;
+  touchedByUser?: Maybe<Maybe<FilterUpdateManyTrackTouchedByUserInput>[]>;
   url?: Maybe<Scalars['String']>;
   _id?: Maybe<Scalars['MongoID']>;
   /** List of *indexed* fields that can be filtered via operators. */
   _operators?: Maybe<FilterUpdateManyTrackOperatorsInput>;
-  OR?: Maybe<Array<FilterUpdateManyTrackInput>>;
-  AND?: Maybe<Array<FilterUpdateManyTrackInput>>;
+  OR?: Maybe<FilterUpdateManyTrackInput[]>;
+  AND?: Maybe<FilterUpdateManyTrackInput[]>;
 };
 
 export type FilterUpdateManyTrackFavouriteInput = {
@@ -1859,8 +1859,8 @@ export type FilterUpdateManyTrack_IdOperatorsInput = {
   lt?: Maybe<Scalars['MongoID']>;
   lte?: Maybe<Scalars['MongoID']>;
   ne?: Maybe<Scalars['MongoID']>;
-  in?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
+  in?: Maybe<Maybe<Scalars['MongoID']>[]>;
+  nin?: Maybe<Maybe<Scalars['MongoID']>[]>;
   exists?: Maybe<Scalars['Boolean']>;
 };
 
@@ -1891,19 +1891,19 @@ export type RemoveOneTrackPayload = {
 
 export type FilterRemoveOneTrackInput = {
   artists?: Maybe<Scalars['String']>;
-  favourite?: Maybe<Array<Maybe<FilterRemoveOneTrackFavouriteInput>>>;
+  favourite?: Maybe<Maybe<FilterRemoveOneTrackFavouriteInput>[]>;
   identifier?: Maybe<Scalars['String']>;
-  lastTouchedAt?: Maybe<Array<Maybe<FilterRemoveOneTrackLastTouchedAtInput>>>;
+  lastTouchedAt?: Maybe<Maybe<FilterRemoveOneTrackLastTouchedAtInput>[]>;
   source?: Maybe<Scalars['String']>;
   title?: Maybe<Scalars['String']>;
   thumbnail?: Maybe<FilterRemoveOneTrackThumbnailInput>;
-  touchedByUser?: Maybe<Array<Maybe<FilterRemoveOneTrackTouchedByUserInput>>>;
+  touchedByUser?: Maybe<Maybe<FilterRemoveOneTrackTouchedByUserInput>[]>;
   url?: Maybe<Scalars['String']>;
   _id?: Maybe<Scalars['MongoID']>;
   /** List of *indexed* fields that can be filtered via operators. */
   _operators?: Maybe<FilterRemoveOneTrackOperatorsInput>;
-  OR?: Maybe<Array<FilterRemoveOneTrackInput>>;
-  AND?: Maybe<Array<FilterRemoveOneTrackInput>>;
+  OR?: Maybe<FilterRemoveOneTrackInput[]>;
+  AND?: Maybe<FilterRemoveOneTrackInput[]>;
 };
 
 export type FilterRemoveOneTrackFavouriteInput = {
@@ -1941,8 +1941,8 @@ export type FilterRemoveOneTrack_IdOperatorsInput = {
   lt?: Maybe<Scalars['MongoID']>;
   lte?: Maybe<Scalars['MongoID']>;
   ne?: Maybe<Scalars['MongoID']>;
-  in?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
+  in?: Maybe<Maybe<Scalars['MongoID']>[]>;
+  nin?: Maybe<Maybe<Scalars['MongoID']>[]>;
   exists?: Maybe<Scalars['Boolean']>;
 };
 
@@ -1961,19 +1961,19 @@ export type RemoveManyTrackPayload = {
 
 export type FilterRemoveManyTrackInput = {
   artists?: Maybe<Scalars['String']>;
-  favourite?: Maybe<Array<Maybe<FilterRemoveManyTrackFavouriteInput>>>;
+  favourite?: Maybe<Maybe<FilterRemoveManyTrackFavouriteInput>[]>;
   identifier?: Maybe<Scalars['String']>;
-  lastTouchedAt?: Maybe<Array<Maybe<FilterRemoveManyTrackLastTouchedAtInput>>>;
+  lastTouchedAt?: Maybe<Maybe<FilterRemoveManyTrackLastTouchedAtInput>[]>;
   source?: Maybe<Scalars['String']>;
   title?: Maybe<Scalars['String']>;
   thumbnail?: Maybe<FilterRemoveManyTrackThumbnailInput>;
-  touchedByUser?: Maybe<Array<Maybe<FilterRemoveManyTrackTouchedByUserInput>>>;
+  touchedByUser?: Maybe<Maybe<FilterRemoveManyTrackTouchedByUserInput>[]>;
   url?: Maybe<Scalars['String']>;
   _id?: Maybe<Scalars['MongoID']>;
   /** List of *indexed* fields that can be filtered via operators. */
   _operators?: Maybe<FilterRemoveManyTrackOperatorsInput>;
-  OR?: Maybe<Array<FilterRemoveManyTrackInput>>;
-  AND?: Maybe<Array<FilterRemoveManyTrackInput>>;
+  OR?: Maybe<FilterRemoveManyTrackInput[]>;
+  AND?: Maybe<FilterRemoveManyTrackInput[]>;
 };
 
 export type FilterRemoveManyTrackFavouriteInput = {
@@ -2011,8 +2011,8 @@ export type FilterRemoveManyTrack_IdOperatorsInput = {
   lt?: Maybe<Scalars['MongoID']>;
   lte?: Maybe<Scalars['MongoID']>;
   ne?: Maybe<Scalars['MongoID']>;
-  in?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
+  in?: Maybe<Maybe<Scalars['MongoID']>[]>;
+  nin?: Maybe<Maybe<Scalars['MongoID']>[]>;
   exists?: Maybe<Scalars['Boolean']>;
 };
 
@@ -2028,12 +2028,12 @@ export type CreateOnePlaylistPayload = {
 
 export type CreateOnePlaylistInput = {
   identifier: Scalars['String'];
-  favourite?: Maybe<Array<Maybe<PlaylistFavouriteInput>>>;
-  lastTouchedAt?: Maybe<Array<Maybe<PlaylistLastTouchedAtInput>>>;
+  favourite?: Maybe<Maybe<PlaylistFavouriteInput>[]>;
+  lastTouchedAt?: Maybe<Maybe<PlaylistLastTouchedAtInput>[]>;
   name: Scalars['String'];
   owner?: Maybe<Scalars['String']>;
   source: Scalars['String'];
-  tracks?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
+  tracks?: Maybe<Maybe<Scalars['MongoID']>[]>;
   thumbnail?: Maybe<PlaylistThumbnailInput>;
   uri?: Maybe<Scalars['String']>;
   url?: Maybe<Scalars['String']>;
@@ -2060,9 +2060,9 @@ export type PlaylistThumbnailInput = {
 export type CreateManyPlaylistPayload = {
   __typename?: 'CreateManyPlaylistPayload';
   /** Documents IDs */
-  recordIds: Array<Scalars['MongoID']>;
+  recordIds: Scalars['MongoID'][];
   /** Created documents */
-  records?: Maybe<Array<Playlist>>;
+  records?: Maybe<Playlist[]>;
   /** Number of created documents */
   createdCount: Scalars['Int'];
   /** Error that may occur during operation. If you request this field in GraphQL query, you will receive typed error in payload; otherwise error will be provided in root `errors` field of GraphQL response. */
@@ -2071,12 +2071,12 @@ export type CreateManyPlaylistPayload = {
 
 export type CreateManyPlaylistInput = {
   identifier: Scalars['String'];
-  favourite?: Maybe<Array<Maybe<PlaylistFavouriteInput>>>;
-  lastTouchedAt?: Maybe<Array<Maybe<PlaylistLastTouchedAtInput>>>;
+  favourite?: Maybe<Maybe<PlaylistFavouriteInput>[]>;
+  lastTouchedAt?: Maybe<Maybe<PlaylistLastTouchedAtInput>[]>;
   name: Scalars['String'];
   owner?: Maybe<Scalars['String']>;
   source: Scalars['String'];
-  tracks?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
+  tracks?: Maybe<Maybe<Scalars['MongoID']>[]>;
   thumbnail?: Maybe<PlaylistThumbnailInput>;
   uri?: Maybe<Scalars['String']>;
   url?: Maybe<Scalars['String']>;
@@ -2094,12 +2094,12 @@ export type UpdateByIdPlaylistPayload = {
 
 export type UpdateByIdPlaylistInput = {
   identifier?: Maybe<Scalars['String']>;
-  favourite?: Maybe<Array<Maybe<UpdateByIdPlaylistFavouriteInput>>>;
-  lastTouchedAt?: Maybe<Array<Maybe<UpdateByIdPlaylistLastTouchedAtInput>>>;
+  favourite?: Maybe<Maybe<UpdateByIdPlaylistFavouriteInput>[]>;
+  lastTouchedAt?: Maybe<Maybe<UpdateByIdPlaylistLastTouchedAtInput>[]>;
   name?: Maybe<Scalars['String']>;
   owner?: Maybe<Scalars['String']>;
   source?: Maybe<Scalars['String']>;
-  tracks?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
+  tracks?: Maybe<Maybe<Scalars['MongoID']>[]>;
   thumbnail?: Maybe<UpdateByIdPlaylistThumbnailInput>;
   uri?: Maybe<Scalars['String']>;
   url?: Maybe<Scalars['String']>;
@@ -2135,12 +2135,12 @@ export type UpdateOnePlaylistPayload = {
 
 export type UpdateOnePlaylistInput = {
   identifier?: Maybe<Scalars['String']>;
-  favourite?: Maybe<Array<Maybe<UpdateOnePlaylistFavouriteInput>>>;
-  lastTouchedAt?: Maybe<Array<Maybe<UpdateOnePlaylistLastTouchedAtInput>>>;
+  favourite?: Maybe<Maybe<UpdateOnePlaylistFavouriteInput>[]>;
+  lastTouchedAt?: Maybe<Maybe<UpdateOnePlaylistLastTouchedAtInput>[]>;
   name?: Maybe<Scalars['String']>;
   owner?: Maybe<Scalars['String']>;
   source?: Maybe<Scalars['String']>;
-  tracks?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
+  tracks?: Maybe<Maybe<Scalars['MongoID']>[]>;
   thumbnail?: Maybe<UpdateOnePlaylistThumbnailInput>;
   uri?: Maybe<Scalars['String']>;
   url?: Maybe<Scalars['String']>;
@@ -2166,20 +2166,20 @@ export type UpdateOnePlaylistThumbnailInput = {
 
 export type FilterUpdateOnePlaylistInput = {
   identifier?: Maybe<Scalars['String']>;
-  favourite?: Maybe<Array<Maybe<FilterUpdateOnePlaylistFavouriteInput>>>;
-  lastTouchedAt?: Maybe<Array<Maybe<FilterUpdateOnePlaylistLastTouchedAtInput>>>;
+  favourite?: Maybe<Maybe<FilterUpdateOnePlaylistFavouriteInput>[]>;
+  lastTouchedAt?: Maybe<Maybe<FilterUpdateOnePlaylistLastTouchedAtInput>[]>;
   name?: Maybe<Scalars['String']>;
   owner?: Maybe<Scalars['String']>;
   source?: Maybe<Scalars['String']>;
-  tracks?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
+  tracks?: Maybe<Maybe<Scalars['MongoID']>[]>;
   thumbnail?: Maybe<FilterUpdateOnePlaylistThumbnailInput>;
   uri?: Maybe<Scalars['String']>;
   url?: Maybe<Scalars['String']>;
   _id?: Maybe<Scalars['MongoID']>;
   /** List of *indexed* fields that can be filtered via operators. */
   _operators?: Maybe<FilterUpdateOnePlaylistOperatorsInput>;
-  OR?: Maybe<Array<FilterUpdateOnePlaylistInput>>;
-  AND?: Maybe<Array<FilterUpdateOnePlaylistInput>>;
+  OR?: Maybe<FilterUpdateOnePlaylistInput[]>;
+  AND?: Maybe<FilterUpdateOnePlaylistInput[]>;
 };
 
 export type FilterUpdateOnePlaylistFavouriteInput = {
@@ -2212,8 +2212,8 @@ export type FilterUpdateOnePlaylistIdentifierOperatorsInput = {
   lt?: Maybe<Scalars['String']>;
   lte?: Maybe<Scalars['String']>;
   ne?: Maybe<Scalars['String']>;
-  in?: Maybe<Array<Maybe<Scalars['String']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['String']>>>;
+  in?: Maybe<Maybe<Scalars['String']>[]>;
+  nin?: Maybe<Maybe<Scalars['String']>[]>;
   regex?: Maybe<Scalars['RegExpAsString']>;
   exists?: Maybe<Scalars['Boolean']>;
 };
@@ -2224,8 +2224,8 @@ export type FilterUpdateOnePlaylist_IdOperatorsInput = {
   lt?: Maybe<Scalars['MongoID']>;
   lte?: Maybe<Scalars['MongoID']>;
   ne?: Maybe<Scalars['MongoID']>;
-  in?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
+  in?: Maybe<Maybe<Scalars['MongoID']>[]>;
+  nin?: Maybe<Maybe<Scalars['MongoID']>[]>;
   exists?: Maybe<Scalars['Boolean']>;
 };
 
@@ -2246,12 +2246,12 @@ export type UpdateManyPlaylistPayload = {
 
 export type UpdateManyPlaylistInput = {
   identifier?: Maybe<Scalars['String']>;
-  favourite?: Maybe<Array<Maybe<UpdateManyPlaylistFavouriteInput>>>;
-  lastTouchedAt?: Maybe<Array<Maybe<UpdateManyPlaylistLastTouchedAtInput>>>;
+  favourite?: Maybe<Maybe<UpdateManyPlaylistFavouriteInput>[]>;
+  lastTouchedAt?: Maybe<Maybe<UpdateManyPlaylistLastTouchedAtInput>[]>;
   name?: Maybe<Scalars['String']>;
   owner?: Maybe<Scalars['String']>;
   source?: Maybe<Scalars['String']>;
-  tracks?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
+  tracks?: Maybe<Maybe<Scalars['MongoID']>[]>;
   thumbnail?: Maybe<UpdateManyPlaylistThumbnailInput>;
   uri?: Maybe<Scalars['String']>;
   url?: Maybe<Scalars['String']>;
@@ -2277,20 +2277,20 @@ export type UpdateManyPlaylistThumbnailInput = {
 
 export type FilterUpdateManyPlaylistInput = {
   identifier?: Maybe<Scalars['String']>;
-  favourite?: Maybe<Array<Maybe<FilterUpdateManyPlaylistFavouriteInput>>>;
-  lastTouchedAt?: Maybe<Array<Maybe<FilterUpdateManyPlaylistLastTouchedAtInput>>>;
+  favourite?: Maybe<Maybe<FilterUpdateManyPlaylistFavouriteInput>[]>;
+  lastTouchedAt?: Maybe<Maybe<FilterUpdateManyPlaylistLastTouchedAtInput>[]>;
   name?: Maybe<Scalars['String']>;
   owner?: Maybe<Scalars['String']>;
   source?: Maybe<Scalars['String']>;
-  tracks?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
+  tracks?: Maybe<Maybe<Scalars['MongoID']>[]>;
   thumbnail?: Maybe<FilterUpdateManyPlaylistThumbnailInput>;
   uri?: Maybe<Scalars['String']>;
   url?: Maybe<Scalars['String']>;
   _id?: Maybe<Scalars['MongoID']>;
   /** List of *indexed* fields that can be filtered via operators. */
   _operators?: Maybe<FilterUpdateManyPlaylistOperatorsInput>;
-  OR?: Maybe<Array<FilterUpdateManyPlaylistInput>>;
-  AND?: Maybe<Array<FilterUpdateManyPlaylistInput>>;
+  OR?: Maybe<FilterUpdateManyPlaylistInput[]>;
+  AND?: Maybe<FilterUpdateManyPlaylistInput[]>;
 };
 
 export type FilterUpdateManyPlaylistFavouriteInput = {
@@ -2323,8 +2323,8 @@ export type FilterUpdateManyPlaylistIdentifierOperatorsInput = {
   lt?: Maybe<Scalars['String']>;
   lte?: Maybe<Scalars['String']>;
   ne?: Maybe<Scalars['String']>;
-  in?: Maybe<Array<Maybe<Scalars['String']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['String']>>>;
+  in?: Maybe<Maybe<Scalars['String']>[]>;
+  nin?: Maybe<Maybe<Scalars['String']>[]>;
   regex?: Maybe<Scalars['RegExpAsString']>;
   exists?: Maybe<Scalars['Boolean']>;
 };
@@ -2335,8 +2335,8 @@ export type FilterUpdateManyPlaylist_IdOperatorsInput = {
   lt?: Maybe<Scalars['MongoID']>;
   lte?: Maybe<Scalars['MongoID']>;
   ne?: Maybe<Scalars['MongoID']>;
-  in?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
+  in?: Maybe<Maybe<Scalars['MongoID']>[]>;
+  nin?: Maybe<Maybe<Scalars['MongoID']>[]>;
   exists?: Maybe<Scalars['Boolean']>;
 };
 
@@ -2369,20 +2369,20 @@ export type RemoveOnePlaylistPayload = {
 
 export type FilterRemoveOnePlaylistInput = {
   identifier?: Maybe<Scalars['String']>;
-  favourite?: Maybe<Array<Maybe<FilterRemoveOnePlaylistFavouriteInput>>>;
-  lastTouchedAt?: Maybe<Array<Maybe<FilterRemoveOnePlaylistLastTouchedAtInput>>>;
+  favourite?: Maybe<Maybe<FilterRemoveOnePlaylistFavouriteInput>[]>;
+  lastTouchedAt?: Maybe<Maybe<FilterRemoveOnePlaylistLastTouchedAtInput>[]>;
   name?: Maybe<Scalars['String']>;
   owner?: Maybe<Scalars['String']>;
   source?: Maybe<Scalars['String']>;
-  tracks?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
+  tracks?: Maybe<Maybe<Scalars['MongoID']>[]>;
   thumbnail?: Maybe<FilterRemoveOnePlaylistThumbnailInput>;
   uri?: Maybe<Scalars['String']>;
   url?: Maybe<Scalars['String']>;
   _id?: Maybe<Scalars['MongoID']>;
   /** List of *indexed* fields that can be filtered via operators. */
   _operators?: Maybe<FilterRemoveOnePlaylistOperatorsInput>;
-  OR?: Maybe<Array<FilterRemoveOnePlaylistInput>>;
-  AND?: Maybe<Array<FilterRemoveOnePlaylistInput>>;
+  OR?: Maybe<FilterRemoveOnePlaylistInput[]>;
+  AND?: Maybe<FilterRemoveOnePlaylistInput[]>;
 };
 
 export type FilterRemoveOnePlaylistFavouriteInput = {
@@ -2415,8 +2415,8 @@ export type FilterRemoveOnePlaylistIdentifierOperatorsInput = {
   lt?: Maybe<Scalars['String']>;
   lte?: Maybe<Scalars['String']>;
   ne?: Maybe<Scalars['String']>;
-  in?: Maybe<Array<Maybe<Scalars['String']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['String']>>>;
+  in?: Maybe<Maybe<Scalars['String']>[]>;
+  nin?: Maybe<Maybe<Scalars['String']>[]>;
   regex?: Maybe<Scalars['RegExpAsString']>;
   exists?: Maybe<Scalars['Boolean']>;
 };
@@ -2427,8 +2427,8 @@ export type FilterRemoveOnePlaylist_IdOperatorsInput = {
   lt?: Maybe<Scalars['MongoID']>;
   lte?: Maybe<Scalars['MongoID']>;
   ne?: Maybe<Scalars['MongoID']>;
-  in?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
+  in?: Maybe<Maybe<Scalars['MongoID']>[]>;
+  nin?: Maybe<Maybe<Scalars['MongoID']>[]>;
   exists?: Maybe<Scalars['Boolean']>;
 };
 
@@ -2449,20 +2449,20 @@ export type RemoveManyPlaylistPayload = {
 
 export type FilterRemoveManyPlaylistInput = {
   identifier?: Maybe<Scalars['String']>;
-  favourite?: Maybe<Array<Maybe<FilterRemoveManyPlaylistFavouriteInput>>>;
-  lastTouchedAt?: Maybe<Array<Maybe<FilterRemoveManyPlaylistLastTouchedAtInput>>>;
+  favourite?: Maybe<Maybe<FilterRemoveManyPlaylistFavouriteInput>[]>;
+  lastTouchedAt?: Maybe<Maybe<FilterRemoveManyPlaylistLastTouchedAtInput>[]>;
   name?: Maybe<Scalars['String']>;
   owner?: Maybe<Scalars['String']>;
   source?: Maybe<Scalars['String']>;
-  tracks?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
+  tracks?: Maybe<Maybe<Scalars['MongoID']>[]>;
   thumbnail?: Maybe<FilterRemoveManyPlaylistThumbnailInput>;
   uri?: Maybe<Scalars['String']>;
   url?: Maybe<Scalars['String']>;
   _id?: Maybe<Scalars['MongoID']>;
   /** List of *indexed* fields that can be filtered via operators. */
   _operators?: Maybe<FilterRemoveManyPlaylistOperatorsInput>;
-  OR?: Maybe<Array<FilterRemoveManyPlaylistInput>>;
-  AND?: Maybe<Array<FilterRemoveManyPlaylistInput>>;
+  OR?: Maybe<FilterRemoveManyPlaylistInput[]>;
+  AND?: Maybe<FilterRemoveManyPlaylistInput[]>;
 };
 
 export type FilterRemoveManyPlaylistFavouriteInput = {
@@ -2495,8 +2495,8 @@ export type FilterRemoveManyPlaylistIdentifierOperatorsInput = {
   lt?: Maybe<Scalars['String']>;
   lte?: Maybe<Scalars['String']>;
   ne?: Maybe<Scalars['String']>;
-  in?: Maybe<Array<Maybe<Scalars['String']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['String']>>>;
+  in?: Maybe<Maybe<Scalars['String']>[]>;
+  nin?: Maybe<Maybe<Scalars['String']>[]>;
   regex?: Maybe<Scalars['RegExpAsString']>;
   exists?: Maybe<Scalars['Boolean']>;
 };
@@ -2507,8 +2507,8 @@ export type FilterRemoveManyPlaylist_IdOperatorsInput = {
   lt?: Maybe<Scalars['MongoID']>;
   lte?: Maybe<Scalars['MongoID']>;
   ne?: Maybe<Scalars['MongoID']>;
-  in?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
+  in?: Maybe<Maybe<Scalars['MongoID']>[]>;
+  nin?: Maybe<Maybe<Scalars['MongoID']>[]>;
   exists?: Maybe<Scalars['Boolean']>;
 };
 
@@ -2531,9 +2531,9 @@ export type CreateOneSoundboardItemInput = {
 export type CreateManySoundboardItemPayload = {
   __typename?: 'CreateManySoundboardItemPayload';
   /** Documents IDs */
-  recordIds: Array<Scalars['MongoID']>;
+  recordIds: Scalars['MongoID'][];
   /** Created documents */
-  records?: Maybe<Array<SoundboardItem>>;
+  records?: Maybe<SoundboardItem[]>;
   /** Number of created documents */
   createdCount: Scalars['Int'];
   /** Error that may occur during operation. If you request this field in GraphQL query, you will receive typed error in payload; otherwise error will be provided in root `errors` field of GraphQL response. */
@@ -2585,8 +2585,8 @@ export type FilterUpdateOneSoundboardItemInput = {
   _id?: Maybe<Scalars['MongoID']>;
   /** List of *indexed* fields that can be filtered via operators. */
   _operators?: Maybe<FilterUpdateOneSoundboardItemOperatorsInput>;
-  OR?: Maybe<Array<FilterUpdateOneSoundboardItemInput>>;
-  AND?: Maybe<Array<FilterUpdateOneSoundboardItemInput>>;
+  OR?: Maybe<FilterUpdateOneSoundboardItemInput[]>;
+  AND?: Maybe<FilterUpdateOneSoundboardItemInput[]>;
 };
 
 /** For performance reason this type contains only *indexed* fields. */
@@ -2601,8 +2601,8 @@ export type FilterUpdateOneSoundboardItemGuildOperatorsInput = {
   lt?: Maybe<Scalars['String']>;
   lte?: Maybe<Scalars['String']>;
   ne?: Maybe<Scalars['String']>;
-  in?: Maybe<Array<Maybe<Scalars['String']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['String']>>>;
+  in?: Maybe<Maybe<Scalars['String']>[]>;
+  nin?: Maybe<Maybe<Scalars['String']>[]>;
   regex?: Maybe<Scalars['RegExpAsString']>;
   exists?: Maybe<Scalars['Boolean']>;
 };
@@ -2613,8 +2613,8 @@ export type FilterUpdateOneSoundboardItem_IdOperatorsInput = {
   lt?: Maybe<Scalars['MongoID']>;
   lte?: Maybe<Scalars['MongoID']>;
   ne?: Maybe<Scalars['MongoID']>;
-  in?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
+  in?: Maybe<Maybe<Scalars['MongoID']>[]>;
+  nin?: Maybe<Maybe<Scalars['MongoID']>[]>;
   exists?: Maybe<Scalars['Boolean']>;
 };
 
@@ -2648,8 +2648,8 @@ export type FilterUpdateManySoundboardItemInput = {
   _id?: Maybe<Scalars['MongoID']>;
   /** List of *indexed* fields that can be filtered via operators. */
   _operators?: Maybe<FilterUpdateManySoundboardItemOperatorsInput>;
-  OR?: Maybe<Array<FilterUpdateManySoundboardItemInput>>;
-  AND?: Maybe<Array<FilterUpdateManySoundboardItemInput>>;
+  OR?: Maybe<FilterUpdateManySoundboardItemInput[]>;
+  AND?: Maybe<FilterUpdateManySoundboardItemInput[]>;
 };
 
 /** For performance reason this type contains only *indexed* fields. */
@@ -2664,8 +2664,8 @@ export type FilterUpdateManySoundboardItemGuildOperatorsInput = {
   lt?: Maybe<Scalars['String']>;
   lte?: Maybe<Scalars['String']>;
   ne?: Maybe<Scalars['String']>;
-  in?: Maybe<Array<Maybe<Scalars['String']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['String']>>>;
+  in?: Maybe<Maybe<Scalars['String']>[]>;
+  nin?: Maybe<Maybe<Scalars['String']>[]>;
   regex?: Maybe<Scalars['RegExpAsString']>;
   exists?: Maybe<Scalars['Boolean']>;
 };
@@ -2676,8 +2676,8 @@ export type FilterUpdateManySoundboardItem_IdOperatorsInput = {
   lt?: Maybe<Scalars['MongoID']>;
   lte?: Maybe<Scalars['MongoID']>;
   ne?: Maybe<Scalars['MongoID']>;
-  in?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
+  in?: Maybe<Maybe<Scalars['MongoID']>[]>;
+  nin?: Maybe<Maybe<Scalars['MongoID']>[]>;
   exists?: Maybe<Scalars['Boolean']>;
 };
 
@@ -2717,8 +2717,8 @@ export type FilterRemoveOneSoundboardItemInput = {
   _id?: Maybe<Scalars['MongoID']>;
   /** List of *indexed* fields that can be filtered via operators. */
   _operators?: Maybe<FilterRemoveOneSoundboardItemOperatorsInput>;
-  OR?: Maybe<Array<FilterRemoveOneSoundboardItemInput>>;
-  AND?: Maybe<Array<FilterRemoveOneSoundboardItemInput>>;
+  OR?: Maybe<FilterRemoveOneSoundboardItemInput[]>;
+  AND?: Maybe<FilterRemoveOneSoundboardItemInput[]>;
 };
 
 /** For performance reason this type contains only *indexed* fields. */
@@ -2733,8 +2733,8 @@ export type FilterRemoveOneSoundboardItemGuildOperatorsInput = {
   lt?: Maybe<Scalars['String']>;
   lte?: Maybe<Scalars['String']>;
   ne?: Maybe<Scalars['String']>;
-  in?: Maybe<Array<Maybe<Scalars['String']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['String']>>>;
+  in?: Maybe<Maybe<Scalars['String']>[]>;
+  nin?: Maybe<Maybe<Scalars['String']>[]>;
   regex?: Maybe<Scalars['RegExpAsString']>;
   exists?: Maybe<Scalars['Boolean']>;
 };
@@ -2745,8 +2745,8 @@ export type FilterRemoveOneSoundboardItem_IdOperatorsInput = {
   lt?: Maybe<Scalars['MongoID']>;
   lte?: Maybe<Scalars['MongoID']>;
   ne?: Maybe<Scalars['MongoID']>;
-  in?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
+  in?: Maybe<Maybe<Scalars['MongoID']>[]>;
+  nin?: Maybe<Maybe<Scalars['MongoID']>[]>;
   exists?: Maybe<Scalars['Boolean']>;
 };
 
@@ -2774,8 +2774,8 @@ export type FilterRemoveManySoundboardItemInput = {
   _id?: Maybe<Scalars['MongoID']>;
   /** List of *indexed* fields that can be filtered via operators. */
   _operators?: Maybe<FilterRemoveManySoundboardItemOperatorsInput>;
-  OR?: Maybe<Array<FilterRemoveManySoundboardItemInput>>;
-  AND?: Maybe<Array<FilterRemoveManySoundboardItemInput>>;
+  OR?: Maybe<FilterRemoveManySoundboardItemInput[]>;
+  AND?: Maybe<FilterRemoveManySoundboardItemInput[]>;
 };
 
 /** For performance reason this type contains only *indexed* fields. */
@@ -2790,8 +2790,8 @@ export type FilterRemoveManySoundboardItemGuildOperatorsInput = {
   lt?: Maybe<Scalars['String']>;
   lte?: Maybe<Scalars['String']>;
   ne?: Maybe<Scalars['String']>;
-  in?: Maybe<Array<Maybe<Scalars['String']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['String']>>>;
+  in?: Maybe<Maybe<Scalars['String']>[]>;
+  nin?: Maybe<Maybe<Scalars['String']>[]>;
   regex?: Maybe<Scalars['RegExpAsString']>;
   exists?: Maybe<Scalars['Boolean']>;
 };
@@ -2802,8 +2802,8 @@ export type FilterRemoveManySoundboardItem_IdOperatorsInput = {
   lt?: Maybe<Scalars['MongoID']>;
   lte?: Maybe<Scalars['MongoID']>;
   ne?: Maybe<Scalars['MongoID']>;
-  in?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
-  nin?: Maybe<Array<Maybe<Scalars['MongoID']>>>;
+  in?: Maybe<Maybe<Scalars['MongoID']>[]>;
+  nin?: Maybe<Maybe<Scalars['MongoID']>[]>;
   exists?: Maybe<Scalars['Boolean']>;
 };
 
@@ -2819,13 +2819,13 @@ export type GetFavouritesQueryVariables = Exact<{
 
 export type GetFavouritesQuery = (
   { __typename?: 'Query' }
-  & { playlistMany: Array<(
+  & { playlistMany: (
     { __typename?: 'Playlist' }
     & PlaylistFieldsWithoutTracksFragment
-  )>, trackMany: Array<(
+  )[], trackMany: (
     { __typename?: 'Track' }
     & TrackFieldsFragment
-  )> }
+  )[] }
 );
 
 export type GetRecentsQueryVariables = Exact<{
@@ -2835,13 +2835,13 @@ export type GetRecentsQueryVariables = Exact<{
 
 export type GetRecentsQuery = (
   { __typename?: 'Query' }
-  & { playlistRecents: Array<(
+  & { playlistRecents: (
     { __typename?: 'Playlist' }
     & PlaylistFieldsWithoutTracksFragment
-  )>, trackRecents: Array<(
+  )[], trackRecents: (
     { __typename?: 'Track' }
     & TrackFieldsFragment
-  )> }
+  )[] }
 );
 
 export type GetSoundboardItemsQueryVariables = Exact<{
@@ -2852,10 +2852,10 @@ export type GetSoundboardItemsQueryVariables = Exact<{
 
 export type GetSoundboardItemsQuery = (
   { __typename?: 'Query' }
-  & { soundboardItemMany: Array<(
+  & { soundboardItemMany: (
     { __typename?: 'SoundboardItem' }
     & SoundboardItemFieldsFragment
-  )> }
+  )[] }
 );
 
 export type GetPlaylistByIdQueryVariables = Exact<{
@@ -2885,17 +2885,17 @@ export type GetPlaylistByIdUpdatedQuery = (
 );
 
 export type GetTracksByIdsQueryVariables = Exact<{
-  ids: Array<Scalars['MongoID']> | Scalars['MongoID'];
+  ids: Scalars['MongoID'][] | Scalars['MongoID'];
   limit?: Maybe<Scalars['Int']>;
 }>;
 
 
 export type GetTracksByIdsQuery = (
   { __typename?: 'Query' }
-  & { trackByIds: Array<(
+  & { trackByIds: (
     { __typename?: 'Track' }
     & TrackFieldsFragment
-  )> }
+  )[] }
 );
 
 export type GetTrackByIdQueryVariables = Exact<{
@@ -2916,14 +2916,14 @@ export type GetGuildsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetGuildsQuery = (
   { __typename?: 'Query' }
-  & { getGuilds?: Maybe<Array<(
+  & { getGuilds?: Maybe<(
     { __typename?: 'Guild' }
     & Pick<Guild, 'id' | 'name'>
-    & { members?: Maybe<Array<(
+    & { members?: Maybe<(
       { __typename?: 'Member' }
       & Pick<Member, 'id' | 'name'>
-    )>> }
-  )>> }
+    )[]> }
+  )[]> }
 );
 
 export type GetPlayerQueryVariables = Exact<{
@@ -3059,7 +3059,7 @@ export type RemoveSoundboardItemByIdMutation = (
 
 export type UpdateQueueMutationVariables = Exact<{
   guild: Scalars['String'];
-  queueIDs: Array<QueuedTrackInput> | QueuedTrackInput;
+  queueIDs: QueuedTrackInput[] | QueuedTrackInput;
 }>;
 
 
@@ -3067,23 +3067,23 @@ export type UpdateQueueMutation = (
   { __typename?: 'Mutation' }
   & { updateQueue?: Maybe<(
     { __typename?: 'Player' }
-    & { queueIDs: Array<(
+    & { queueIDs: (
       { __typename?: 'QueuedTrack' }
       & Pick<QueuedTrack, 'trackModelID' | 'uuid'>
-    )> }
+    )[] }
   )> }
 );
 
 export type PlaylistFieldsWithoutTracksFragment = (
   { __typename?: 'Playlist' }
   & Pick<Playlist, '_id' | 'identifier' | 'name' | 'owner' | 'source' | 'uri' | 'url'>
-  & { favourite?: Maybe<Array<Maybe<(
+  & { favourite?: Maybe<Maybe<(
     { __typename?: 'PlaylistFavourite' }
     & Pick<PlaylistFavourite, 'guild' | 'favourite'>
-  )>>>, lastTouchedAt?: Maybe<Array<Maybe<(
+  )>[]>, lastTouchedAt?: Maybe<Maybe<(
     { __typename?: 'PlaylistLastTouchedAt' }
     & Pick<PlaylistLastTouchedAt, 'guild' | 'date'>
-  )>>>, thumbnail?: Maybe<(
+  )>[]>, thumbnail?: Maybe<(
     { __typename?: 'PlaylistThumbnail' }
     & Pick<PlaylistThumbnail, 'small' | 'medium' | 'large'>
   )> }
@@ -3092,13 +3092,13 @@ export type PlaylistFieldsWithoutTracksFragment = (
 export type PlaylistFieldsFragment = (
   { __typename?: 'Playlist' }
   & Pick<Playlist, '_id' | 'identifier' | 'name' | 'owner' | 'source' | 'tracks' | 'uri' | 'url'>
-  & { favourite?: Maybe<Array<Maybe<(
+  & { favourite?: Maybe<Maybe<(
     { __typename?: 'PlaylistFavourite' }
     & Pick<PlaylistFavourite, 'guild' | 'favourite'>
-  )>>>, lastTouchedAt?: Maybe<Array<Maybe<(
+  )>[]>, lastTouchedAt?: Maybe<Maybe<(
     { __typename?: 'PlaylistLastTouchedAt' }
     & Pick<PlaylistLastTouchedAt, 'guild' | 'date'>
-  )>>>, thumbnail?: Maybe<(
+  )>[]>, thumbnail?: Maybe<(
     { __typename?: 'PlaylistThumbnail' }
     & Pick<PlaylistThumbnail, 'small' | 'medium' | 'large'>
   )> }
@@ -3107,13 +3107,13 @@ export type PlaylistFieldsFragment = (
 export type TrackFieldsFragment = (
   { __typename?: 'Track' }
   & Pick<Track, '_id' | 'artists' | 'identifier' | 'title' | 'source' | 'url'>
-  & { favourite?: Maybe<Array<Maybe<(
+  & { favourite?: Maybe<Maybe<(
     { __typename?: 'TrackFavourite' }
     & Pick<TrackFavourite, 'guild' | 'favourite'>
-  )>>>, lastTouchedAt?: Maybe<Array<Maybe<(
+  )>[]>, lastTouchedAt?: Maybe<Maybe<(
     { __typename?: 'TrackLastTouchedAt' }
     & Pick<TrackLastTouchedAt, 'guild' | 'date'>
-  )>>>, thumbnail?: Maybe<(
+  )>[]>, thumbnail?: Maybe<(
     { __typename?: 'TrackThumbnail' }
     & Pick<TrackThumbnail, 'small' | 'medium' | 'large'>
   )> }
@@ -3130,10 +3130,10 @@ export type PlayerFieldsFragment = (
   & { currentTrackID?: Maybe<(
     { __typename?: 'QueuedTrack' }
     & Pick<QueuedTrack, 'trackModelID' | 'uuid'>
-  )>, queueIDs: Array<(
+  )>, queueIDs: (
     { __typename?: 'QueuedTrack' }
     & Pick<QueuedTrack, 'trackModelID' | 'uuid'>
-  )> }
+  )[] }
 );
 
 export const PlaylistFieldsWithoutTracksFragmentDoc = gql`

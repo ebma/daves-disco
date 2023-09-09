@@ -37,7 +37,7 @@ function createSocket() {
 const socketMiddleware: Middleware<{}, RootState> = store => {
   const socket = createSocket()
 
-  let listeners: SocketListener[] = []
+  const listeners: SocketListener[] = []
   let messageID = 1
 
   socket.on("disconnect", () => store.dispatch(setConnectionState("disconnected")))
@@ -106,7 +106,7 @@ const socketMiddleware: Middleware<{}, RootState> = store => {
         }
       }
 
-      const socketListener = { listener: eventListener, callback: callback }
+      const socketListener = { listener: eventListener, callback }
       listeners.push(socketListener)
 
       socket.on("message", eventListener)

@@ -23,7 +23,7 @@ export function useTokenStorage() {
 
   function saveToken(token: Token) {
     const tokens = getTokensFromStorage()
-    let tokensWithoutUser = tokens.filter(t => t.guild !== token.guild || t.user !== token.user)
+    const tokensWithoutUser = tokens.filter(t => t.guild !== token.guild || t.user !== token.user)
     tokensWithoutUser.push(token)
     localStorage.setItem("auth-tokens", JSON.stringify(tokensWithoutUser))
   }
