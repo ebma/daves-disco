@@ -3091,7 +3091,7 @@ __metadata:
     express-async-errors: "npm:^3.1.1"
     ffmpeg-static: "npm:^5.1.0"
     fs: "npm:^0.0.1-security"
-    graphql: "npm:^16.8.0"
+    graphql: "npm:^16.6.0"
     graphql-compose: "npm:^9.0.10"
     graphql-compose-mongoose: "npm:^9.8.0"
     https-proxy-agent: "npm:^6.1.0"
@@ -4011,7 +4011,7 @@ discord-akairo@discord-akairo/discord-akairo:
   languageName: node
   linkType: hard
 
-"graphql@npm:^16.8.0":
+"graphql@npm:^16.6.0":
   version: 16.8.0
   resolution: "graphql@npm:16.8.0"
   checksum: 93a2e9e0ff33f05bb64c4f46595814549155e88d27e79a266e9493ded10e66afac0d15fdb44804321b2d54bf1ab25530f0817cb61f33cfb2fabd68ad4c627356

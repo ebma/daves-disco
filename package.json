@@ -54,7 +54,7 @@
     "express-async-errors": "^3.1.1",
     "ffmpeg-static": "^5.1.0",
     "fs": "^0.0.1-security",
-    "graphql": "^16.8.0",
+    "graphql": "^16.6.0",
     "graphql-compose": "^9.0.10",
     "graphql-compose-mongoose": "^9.8.0",
     "https-proxy-agent": "^6.1.0",

@@ -7340,11 +7340,10 @@ __metadata:
     crypto-browserify: "npm:^3.12.0"
     dotenv-webpack: "npm:^8.0.1"
     framer-motion: "npm:^10.12.8"
-    graphql: "npm:^16.8.0"
+    graphql: "npm:^16.6.0"
     https-browserify: "npm:^1.0.0"
     jsonwebtoken: "npm:^9.0.0"
     lodash: "npm:^4.17.21"
-    miniget: "npm:^4.2.3"
     os-browserify: "npm:^0.3.0"
     process: "npm:^0.11.10"
     react: "npm:^18.2.0"
@@ -9484,7 +9483,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql@npm:^16.8.0":
+"graphql@npm:^16.6.0":
   version: 16.8.0
   resolution: "graphql@npm:16.8.0"
   checksum: 93a2e9e0ff33f05bb64c4f46595814549155e88d27e79a266e9493ded10e66afac0d15fdb44804321b2d54bf1ab25530f0817cb61f33cfb2fabd68ad4c627356
@@ -12164,13 +12163,6 @@ __metadata:
   version: 4.2.2
   resolution: "miniget@npm:4.2.2"
   checksum: 52b4706199824eb522d450711a1e36104d6e077735ae2d1fc15646cf21cc238fcce0ed319ee80d2bcf00d0f98188f25c7478513062ff8b9721816d040794084f
-  languageName: node
-  linkType: hard
-
-"miniget@npm:^4.2.3":
-  version: 4.2.3
-  resolution: "miniget@npm:4.2.3"
-  checksum: 90051107a8ee09bdad57d1de4724b82ee834b01a8ee0cbbb8a62b39a120c68c2c8fb0a985c557183e57da85448d0ab84bee5cdcad55741e265ade094edbb3001
   languageName: node
   linkType: hard
 
