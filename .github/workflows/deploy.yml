@@ -56,9 +56,9 @@ jobs:
           envPath: "./web/.env"
 
       - name: Build
-        run: npm run build
+        run: yarn build
         working-directory: ./web
 
       - name: Deploy
-        run: npx surge ./build ${{ secrets.SURGE_DOMAIN }} --token ${{ secrets.SURGE_TOKEN }}
+        run: yarn surge ./build ${{ secrets.SURGE_DOMAIN }} --token ${{ secrets.SURGE_TOKEN }}
         working-directory: ./web
