@@ -15,30 +15,34 @@ if (process.env.NODE_ENV === "production") {
 
 process.on("unhandledRejection", (error: any) => trackError(error, "Unhandled Promise Rejection"))
 
-const client = new MyClient()
+async function start() {
+  const client = new MyClient()
 
-const app = initApp(client)
+  const app = await initApp(client)
 
-const port = config.PORT || 1234
-const server =
-  process.env.NODE_ENV == "production"
-    ? https
-        .createServer(
-          {
-            key: fs.readFileSync(config.KEY_PATH),
-            cert: fs.readFileSync(config.CERT_PATH)
-          },
-          app
-        )
-        .listen(port, () => {
-          console.log(`HTTPS server listening on port ${port}`)
+  const port = config.PORT || 1234
+  const server =
+    process.env.NODE_ENV == "production"
+      ? https
+          .createServer(
+            {
+              key: fs.readFileSync(config.KEY_PATH),
+              cert: fs.readFileSync(config.CERT_PATH),
+            },
+            app
+          )
+          .listen(port, () => {
+            console.log(`HTTPS server listening on port ${port}`)
+          })
+      : http.createServer(app).listen(port, () => {
+          console.log(`HTTP server listening on port ${port}`)
         })
-    : http.createServer(app).listen(port, () => {
-        console.log(`HTTP server listening on port ${port}`)
-      })
 
-startSocketConnection(server, client)
+  startSocketConnection(server, client)
 
-client.login(config.BOT_TOKEN).then(() => {
-  ActivityManager.setUser(client.user)
-})
+  client.login(config.BOT_TOKEN).then(() => {
+    ActivityManager.setUser(client.user)
+  })
+}
+
+start()

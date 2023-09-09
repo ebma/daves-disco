@@ -1,4 +1,5 @@
-import { ApolloServer } from "apollo-server-express"
+import { ApolloServer } from "@apollo/server"
+import { startStandaloneServer } from "@apollo/server/standalone"
 import cors from "cors"
 import express from "express"
 import { MyClient } from "../bot/MyClient"
@@ -8,19 +9,23 @@ import { createLoginRouter } from "./controllers/login"
 import youtubeRouter from "./controllers/youtube"
 import middleware from "./middleware"
 import { createSchema } from "./schema/schema"
+import { expressMiddleware } from "@apollo/server/express4"
+import pkg from "body-parser"
+
+const { json } = pkg
 require("express-async-errors")
 
 connect(config.MONGODB_URI)
 
-export function initApp(client: MyClient) {
+export async function initApp(client: MyClient) {
   const app = express()
 
   const schema = createSchema(client)
-  
+
   const apolloServer = new ApolloServer({ schema, cache: "bounded" })
-  apolloServer.start().then(() => {
-    apolloServer.applyMiddleware({ app })
-  })
+  await apolloServer.start()
+
+  app.use("/graphql", cors<cors.CorsRequest>(), json(), expressMiddleware(apolloServer, {}))
 
   const loginRouter = createLoginRouter(client)
 
