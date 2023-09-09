@@ -26,7 +26,8 @@ node -e "console.log('Running Node.js ' + process.version)"
 sudo setcap 'cap_net_bind_service=+ep' $(which node)
 
 # install required packages
-sudo apt-get install build-essential libtool autoconf libsodium-dev -y
+sudo apt update && sudo apt upgrade -y
+sudo apt-get install build-essential libtool autoconf libsodium-dev ffmpeg -y
 # npm install
 echo "Installing npm dependencies..."
 npm i --also=dev
