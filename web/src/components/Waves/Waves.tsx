@@ -142,7 +142,7 @@ function Waves(props: Props) {
   )
 
   const WaveArray = React.useMemo(() => {
-    return Array.from(Array(waveCount), (v, k) => <Wave color={palette ? palette[k] : [255, 255, 255]} index={k} />)
+    return Array.from(Array(waveCount), (v, k) => <Wave key={k} color={palette ? palette[k] : [255, 255, 255]} index={k} />)
   }, [palette, waveCount])
 
   return (

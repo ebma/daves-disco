@@ -17,7 +17,6 @@ import MenuIcon from "@mui/icons-material/Menu"
 import PowerIcon from "@mui/icons-material/PowerSettingsNew"
 import clsx from "clsx"
 import React from "react"
-import { useDispatch } from "react-redux"
 import { Route, Routes } from "react-router-dom"
 import { ColorSchemeContext } from "../../context/colorScheme"
 import HomePage from "../../pages/HomePage"
@@ -31,7 +30,8 @@ import Footer from "../Footer"
 import QueryWrapper from "../QueryWrapper/QueryWrapper"
 import Waves from "../Waves/Waves"
 import { MainListItems } from "./ListItems"
-import { useAppDispatch } from "../../app/store";
+import { useAppDispatch } from "../../app/store"
+import { Navigate } from "react-router"
 
 const drawerWidth = 240
 
@@ -202,7 +202,7 @@ function Dashboard(props: Props) {
         <Waves avatarID="track-avatar" currentTrack={player?.currentTrackID?.trackModelID} />
         <Container maxWidth="xl" className={classes.container}>
           <Routes>
-            {/*<Route path="/" element={<Redirect to="/home" />} />*/}
+            <Route index element={<Navigate to="/home" replace />} />
             <Route
               path="/home"
               element={
