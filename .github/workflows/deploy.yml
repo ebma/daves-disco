@@ -36,12 +36,6 @@ jobs:
           key: "BOT_SERVER_PATH"
           value: ${{ secrets.BOT_SERVER_PATH }}
           envPath: "./web/.env"
-      - name: Define env variable No.2
-        uses: TickX/var-to-dotenv@v1.1.4
-        with:
-          key: "YOUTUBE_API_KEY"
-          value: ${{ secrets.YOUTUBE_API_KEY }}
-          envPath: "./web/.env"
       - name: Define env variable No.3
         uses: TickX/var-to-dotenv@v1.1.4
         with:

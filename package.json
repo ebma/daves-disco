@@ -46,7 +46,7 @@
     "body-parser": "^1.20.2",
     "bufferutil": "^4.0.7",
     "cors": "^2.8.5",
-    "discord-akairo": "discord-akairo/discord-akairo",
+    "discord-akairo": "https://github.com/discord-akairo/discord-akairo",
     "discord-ytdl-core": "^5.0.4",
     "discord.js": "^14.11.0",
     "dotenv": "^16.0.3",
