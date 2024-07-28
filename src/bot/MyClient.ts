@@ -7,6 +7,7 @@ export class MyClient extends AkairoClient {
   inhibitorHandler: InhibitorHandler
   listenerHandler: ListenerHandler
 
+
   constructor() {
     const intents = [
       GatewayIntentBits.Guilds,

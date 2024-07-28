@@ -1,10 +1,10 @@
 import { Server as HttpServer } from "http"
 import jwt from "jsonwebtoken"
 import { Server, Socket } from "socket.io"
-import { MyClient } from "../bot/MyClient"
 import config from "../utils/config"
 import { initHandlers } from "./handlers/init"
 import WebSocketHandler from "./WebSocketHandler"
+import { Client } from "discord.js"
 
 function initializeSocket(socket: Socket, guildID: GuildID, userID: UserID) {
   WebSocketHandler.addSocket(socket, guildID, userID)
@@ -12,14 +12,14 @@ function initializeSocket(socket: Socket, guildID: GuildID, userID: UserID) {
 
 const trustedOrigins = ["https://daves-disco.marcel-ebert.de", "http://localhost:3000"]
 
-export function startSocketConnection(httpServer: HttpServer, client: MyClient) {
+export function startSocketConnection(httpServer: HttpServer, client: Client) {
   const io = new Server(httpServer, {
     cors: {
       origin: trustedOrigins
     }
   })
 
-  initHandlers(client)
+  // initHandlers(client)
 
   io.on("connection", socket => {
     socket.on("authenticate", (data: any) => {

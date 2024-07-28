@@ -89,7 +89,7 @@
     "@types/libsodium-wrappers": "^0",
     "@types/lodash": "^4.14.138",
     "@types/mongoose": "^5.7.8",
-    "@types/node": "^12.7.3",
+    "@types/node": "^22.0.0",
     "@types/request": "^2.48.2",
     "@types/socket.io": "^2.1.2",
     "@types/socketio-jwt": "0.0.0",

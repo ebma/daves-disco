@@ -1714,10 +1714,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^12.7.3":
-  version: 12.20.55
-  resolution: "@types/node@npm:12.20.55"
-  checksum: e4f86785f4092706e0d3b0edff8dca5a13b45627e4b36700acd8dfe6ad53db71928c8dee914d4276c7fd3b6ccd829aa919811c9eb708a2c8e4c6eb3701178c37
+"@types/node@npm:^22.0.0":
+  version: 22.0.0
+  resolution: "@types/node@npm:22.0.0"
+  dependencies:
+    undici-types: ~6.11.1
+  checksum: ef58d59bbffd9a79449ef632ea9a4f3b006496926cac2717368f80fdd152b1937e44093c17c9fac74650309c9d5387bb5c5bf4fd304adafebcbda1e6e4435fe4
   languageName: node
   linkType: hard
 
@@ -2923,7 +2925,7 @@ __metadata:
     "@types/libsodium-wrappers": ^0
     "@types/lodash": ^4.14.138
     "@types/mongoose": ^5.7.8
-    "@types/node": ^12.7.3
+    "@types/node": ^22.0.0
     "@types/request": ^2.48.2
     "@types/socket.io": ^2.1.2
     "@types/socketio-jwt": 0.0.0
@@ -7335,6 +7337,13 @@ __metadata:
   version: 2.0.5
   resolution: "undefsafe@npm:2.0.5"
   checksum: f42ab3b5770fedd4ada175fc1b2eb775b78f609156f7c389106aafd231bfc210813ee49f54483d7191d7b76e483bc7f537b5d92d19ded27156baf57592eb02cc
+  languageName: node
+  linkType: hard
+
+"undici-types@npm:~6.11.1":
+  version: 6.11.1
+  resolution: "undici-types@npm:6.11.1"
+  checksum: d7fc11bded93bc55ef3b88464e856ab061a747cf50ef2eff5df5ba3be18b9fcafe60e1b36a8c99e28aac2eade12891d32a504f2a32422452c44662e598e3b188
   languageName: node
   linkType: hard
 

@@ -1,4 +1,4 @@
-import { GuildMember } from "discord.js"
+import { Client, GuildMember } from "discord.js"
 import { Request, Router } from "express"
 import jwt from "jsonwebtoken"
 import moment from "moment"
@@ -66,7 +66,7 @@ interface LoginRequest extends Request {
   }
 }
 
-export function createLoginRouter(client: MyClient) {
+export function createLoginRouter(client: Client) {
   const loginRouter = Router()
 
   loginRouter.post("/", async (request: LoginRequest, response) => {

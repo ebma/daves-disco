@@ -1,8 +1,6 @@
 import { ApolloServer } from "@apollo/server"
-import { startStandaloneServer } from "@apollo/server/standalone"
 import cors from "cors"
 import express from "express"
-import { MyClient } from "../bot/MyClient"
 import { connect } from "../db/connection"
 import config from "../utils/config"
 import { createLoginRouter } from "./controllers/login"
@@ -11,13 +9,14 @@ import middleware from "./middleware"
 import { createSchema } from "./schema/schema"
 import { expressMiddleware } from "@apollo/server/express4"
 import pkg from "body-parser"
+import { Client } from "discord.js"
 
 const { json } = pkg
 require("express-async-errors")
 
 connect(config.MONGODB_URI)
 
-export async function initApp(client: MyClient) {
+export async function initApp(client: Client) {
   const app = express()
 
   const schema = createSchema(client)

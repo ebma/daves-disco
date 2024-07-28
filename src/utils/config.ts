@@ -22,7 +22,7 @@ if (process.env.NODE_ENV === "test") {
   MONGODB_URI = process.env.TEST_MONGODB_URI
 }
 
-export default {
+const config = {
   BOT_TOKEN,
   CERT_PATH,
   KEY_PATH,
@@ -34,3 +34,5 @@ export default {
   SPOTIFY_CLIENT_ID,
   SPOTIFY_CLIENT_SECRET,
 }
+
+export default config;

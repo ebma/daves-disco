@@ -1,8 +1,8 @@
 import { schemaComposer } from "graphql-compose"
-import { MyClient } from "../../bot/MyClient"
 import MusicPlayerManager from "../../libs/MusicPlayerManager"
+import { Client } from "discord.js"
 
-export function getPlayerTC(client: MyClient) {
+export function getPlayerTC(client: Client) {
   const QueuedTrackTC = schemaComposer.createObjectTC({
     name: "QueuedTrack",
     fields: { trackModelID: "MongoID!", uuid: "String!" }

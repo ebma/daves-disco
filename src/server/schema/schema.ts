@@ -1,12 +1,12 @@
 import { Resolver, schemaComposer } from "graphql-compose"
-import { MyClient } from "../../bot/MyClient"
 import { getGuildTC } from "./guild"
 import { getPlayerTC } from "./player"
 import PlaylistTC from "./playlist"
 import SoundboardItemTC from "./soundboard"
 import TrackTC from "./track"
+import { Client } from "discord.js"
 
-export function createSchema(client: MyClient) {
+export function createSchema(client: Client) {
   const GuildTC = getGuildTC(client)
 
   const PlayerTC = getPlayerTC(client)

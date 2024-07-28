@@ -8,6 +8,8 @@ import { initApp } from "./server/app"
 import { startSocketConnection } from "./socket/socket"
 import config from "./utils/config"
 import { trackError } from "./utils/trackError"
+import { Bot } from "./structs/Bot"
+import { Client, GatewayIntentBits } from "discord.js"
 
 if (process.env.NODE_ENV === "production") {
   Sentry.init({ dsn: "https://c75d13359eb84b34b69108028e056e8a@o394107.ingest.sentry.io/5243834" })
@@ -15,8 +17,22 @@ if (process.env.NODE_ENV === "production") {
 
 process.on("unhandledRejection", (error: any) => trackError(error, "Unhandled Promise Rejection"))
 
+// Export bot instance for use in other files
+export let bot: Bot
+
 async function start() {
-  const client = new MyClient()
+  const client = new Client({
+    intents: [
+      GatewayIntentBits.Guilds,
+      GatewayIntentBits.GuildVoiceStates,
+      GatewayIntentBits.GuildMessages,
+      GatewayIntentBits.GuildMessageReactions,
+      GatewayIntentBits.MessageContent,
+      GatewayIntentBits.DirectMessages,
+    ],
+  })
+
+  bot = new Bot(client)
 
   const app = await initApp(client)
 

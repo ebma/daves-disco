@@ -1,5 +1,5 @@
 import { schemaComposer } from "graphql-compose"
-import { MyClient } from "../../bot/MyClient"
+import { Client } from "discord.js"
 
 const MemberTC = schemaComposer.createObjectTC({
   name: "Member",
@@ -9,7 +9,7 @@ const MemberTC = schemaComposer.createObjectTC({
   }
 })
 
-export function getGuildTC(client: MyClient) {
+export function getGuildTC(client: Client) {
   const GuildTC = schemaComposer.createObjectTC({
     name: "Guild",
     fields: {
