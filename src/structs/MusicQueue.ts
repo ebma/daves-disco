@@ -30,22 +30,28 @@ import { safeReply } from "../utils/safeReply";
 
 const wait = promisify(setTimeout);
 
+const config = {
+  DEFAULT_VOLUME: 100,
+  PRUNING: false,
+  STAY_TIME: 30
+};
+
 export const canModifyQueue = (member: GuildMember) =>
   member.voice.channelId === member.guild.members.me!.voice.channelId;
 
 export class MusicQueue {
-  public readonly interaction: CommandInteraction;
-  public readonly connection: VoiceConnection;
-  public readonly player: AudioPlayer;
-  public readonly textChannel: TextChannel;
-  public readonly bot = bot;
+  readonly interaction: CommandInteraction;
+  readonly connection: VoiceConnection;
+  readonly player: AudioPlayer;
+  readonly textChannel: TextChannel;
+  readonly bot = bot;
 
-  public resource: AudioResource;
-  public songs: Song[] = [];
-  public volume = config.DEFAULT_VOLUME || 100;
-  public loop = false;
-  public muted = false;
-  public waitTimeout: NodeJS.Timeout | null;
+  resource: AudioResource<Song> | void;
+  songs: Song[] = [];
+  volume = config.DEFAULT_VOLUME || 100;
+  loop = false;
+  muted = false;
+  waitTimeout: NodeJS.Timeout | null;
   private queueLock = false;
   private readyLock = false;
   private stopped = false;
@@ -57,7 +63,7 @@ export class MusicQueue {
    * a stable connection for audio streaming.
    * @param options
    */
-  public constructor(options: QueueOptions) {
+  constructor(options: QueueOptions) {
     Object.assign(this, options);
 
     this.player = createAudioPlayer({ behaviors: { noSubscriber: NoSubscriberBehavior.Play } });
@@ -117,7 +123,7 @@ export class MusicQueue {
           if (!this.songs.length) return this.stop();
         }
 
-        if (this.songs.length || this.resource.audioPlayer) this.processQueue();
+        if (this.songs.length || this.resource?.audioPlayer) this.processQueue();
       } else if (oldState.status === AudioPlayerStatus.Buffering && newState.status === AudioPlayerStatus.Playing) {
         this.sendPlayingMessage(newState);
       }
@@ -136,7 +142,7 @@ export class MusicQueue {
     });
   }
 
-  public enqueue(...songs: Song[]) {
+  enqueue(...songs: Song[]) {
     if (this.waitTimeout !== null) clearTimeout(this.waitTimeout);
     this.waitTimeout = null;
     this.stopped = false;
@@ -144,7 +150,7 @@ export class MusicQueue {
     this.processQueue();
   }
 
-  public stop() {
+  stop() {
     if (this.stopped) return;
 
     this.stopped = true;
@@ -174,7 +180,7 @@ export class MusicQueue {
    * for handling playback errors and retrying song playback when necessary. It ensures that the queue
    * continues to play smoothly, handling transitions between songs, including loop and stop behaviors.
    */
-  public async processQueue(): Promise<void> {
+  async processQueue(): Promise<void> {
     if (this.queueLock || this.player.state.status !== AudioPlayerStatus.Idle) {
       return;
     }
@@ -237,7 +243,7 @@ export class MusicQueue {
 
     this.volume = Math.max(this.volume - 10, 0);
 
-    this.resource.volume?.setVolumeLogarithmic(this.volume / 100);
+    this.resource?.volume?.setVolumeLogarithmic(this.volume / 100);
 
     safeReply(interaction, i18n.__mf("play.decreasedVolume", { author: interaction.user, volume: this.volume })).catch(
       console.error
@@ -251,7 +257,7 @@ export class MusicQueue {
 
     this.volume = Math.min(this.volume + 10, 100);
 
-    this.resource.volume?.setVolumeLogarithmic(this.volume / 100);
+    this.resource?.volume?.setVolumeLogarithmic(this.volume / 100);
 
     safeReply(interaction, i18n.__mf("play.increasedVolume", { author: interaction.user, volume: this.volume })).catch(
       console.error

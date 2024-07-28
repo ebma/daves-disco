@@ -6,10 +6,10 @@ const MAX_PLAYLIST_SIZE = 100;
 const pattern = /^.*(youtu.be\/|list=)([^#\&\?]*).*/i;
 
 export class Playlist {
-  public data: YoutubePlaylist;
-  public videos: Song[];
+  data: YoutubePlaylist;
+  videos: Song[];
 
-  public constructor(playlist: YoutubePlaylist) {
+  constructor(playlist: YoutubePlaylist) {
     this.data = playlist;
 
     this.videos = this.data.videos
@@ -24,7 +24,7 @@ export class Playlist {
       });
   }
 
-  public static async from(url: string = "", search: string = "") {
+  static async from(url: string = "", search: string = "") {
     const urlValid = pattern.test(url);
     let playlist;
 

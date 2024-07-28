@@ -11,17 +11,17 @@ export interface SongData {
 }
 
 export class Song {
-  public readonly url: string;
-  public readonly title: string;
-  public readonly duration: number;
+  readonly url: string;
+  readonly title: string;
+  readonly duration: number;
 
-  public constructor({ url, title, duration }: SongData) {
+  constructor({ url, title, duration }: SongData) {
     this.url = url;
     this.title = title;
     this.duration = duration;
   }
 
-  public static async from(url: string = "", search: string = "") {
+  static async from(url: string = "", search: string = "") {
     const isYoutubeUrl = videoPattern.test(url);
 
     let songInfo;
@@ -40,7 +40,7 @@ export class Song {
       result ? null : console.log(`No results found for ${search}`);
 
       if (!result) {
-        let err = new Error(`No search results found for ${search}`);
+        const err = new Error(`No search results found for ${search}`);
 
         err.name = "NoResults";
 
@@ -59,7 +59,7 @@ export class Song {
     }
   }
 
-  public async makeResource(): Promise<AudioResource<Song> | void> {
+  async makeResource(): Promise<AudioResource<Song> | void> {
     let playStream;
 
     const source = this.url.includes("youtube") ? "youtube" : "soundcloud";
@@ -73,7 +73,7 @@ export class Song {
     return createAudioResource(playStream.stream, { metadata: this, inputType: playStream.type, inlineVolume: true });
   }
 
-  public startMessage() {
+  startMessage() {
     return "Now playing: " + this.title;
   }
 }
