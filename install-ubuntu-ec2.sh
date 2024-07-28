@@ -19,7 +19,7 @@ sudo chown $(whoami) /etc/letsencrypt/archive/ -R
 echo "Installing node..."
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
 . ~/.nvm/nvm.sh
-nvm install 16
+nvm install 18
 node -e "console.log('Running Node.js ' + process.version)"
 
 # allow non-root node to use ports 80 and 443
