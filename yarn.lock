@@ -2954,6 +2954,7 @@ __metadata:
     moment: ^2.29.4
     mongoose: ^7.1.0
     nodemon: ^2.0.22
+    opusscript: ^0.1.1
     play-dl: ^1.9.7
     prettier: ^2.8.8
     request: ^2.88.2
@@ -5846,6 +5847,13 @@ __metadata:
   dependencies:
     mimic-fn: ^4.0.0
   checksum: 0846ce78e440841335d4e9182ef69d5762e9f38aa7499b19f42ea1c4cd40f0b4446094c455c713f9adac3f4ae86f613bb5e30c99e52652764d06a89f709b3788
+  languageName: node
+  linkType: hard
+
+"opusscript@npm:^0.1.1":
+  version: 0.1.1
+  resolution: "opusscript@npm:0.1.1"
+  checksum: 0c3d6035e201db2aaa04ba90823d385142c526e708b5d2ae0e1f16c03334fedb14e89e71c9e85c0d3e9bbf431eeffeae5742665b3c31714dd2b13b84c4a7c841
   languageName: node
   linkType: hard
 
