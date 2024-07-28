@@ -689,7 +689,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@discordjs/node-pre-gyp@npm:^0.4.4":
+"@discordjs/node-pre-gyp@npm:^0.4.5":
   version: 0.4.5
   resolution: "@discordjs/node-pre-gyp@npm:0.4.5"
   dependencies:
@@ -708,13 +708,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@discordjs/opus@npm:0.8.0":
-  version: 0.8.0
-  resolution: "@discordjs/opus@npm:0.8.0"
+"@discordjs/opus@npm:^0.9.0":
+  version: 0.9.0
+  resolution: "@discordjs/opus@npm:0.9.0"
   dependencies:
-    "@discordjs/node-pre-gyp": ^0.4.4
+    "@discordjs/node-pre-gyp": ^0.4.5
     node-addon-api: ^5.0.0
-  checksum: 7ec5c9618b9f8cf5cc00952c207c7e63117fb3e5706ba14f2c09c3e06920a6b1c029af3f620dc4b1d0764a6954dcd577d8b4ae8fa69428f68ef49bbd040f98cc
+  checksum: 1bb17efcece86b5d0f025dcb301e87a01c50db3267776b608cc103e3f6fbbb0b0ea4e61dcb5700fbeb27039b50c771db9efc1b7af628b9c2329120f497e1c20e
   languageName: node
   linkType: hard
 
@@ -2911,7 +2911,7 @@ __metadata:
   resolution: "daves-disco@workspace:."
   dependencies:
     "@apollo/server": ^4.9.3
-    "@discordjs/opus": 0.8.0
+    "@discordjs/opus": ^0.9.0
     "@discordjs/voice": ^0.16.0
     "@distube/ytdl-core": ^4.13.5
     "@sentry/node": ^5.15.5
