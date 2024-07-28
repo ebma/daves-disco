@@ -19,7 +19,7 @@ sudo chown $(whoami) /etc/letsencrypt/archive/ -R
 echo "Installing node..."
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
 . ~/.nvm/nvm.sh
-nvm install 18
+nvm install 18.20.4
 node -e "console.log('Running Node.js ' + process.version)"
 
 # allow non-root node to use ports 80 and 443
@@ -29,8 +29,10 @@ sudo setcap 'cap_net_bind_service=+ep' $(which node)
 sudo apt update && sudo apt upgrade -y
 sudo apt-get install build-essential libtool autoconf libsodium-dev ffmpeg -y
 # npm install
+# install yarn
+npm i -g yarn
 echo "Installing npm dependencies..."
-npm i --also=dev
+yarn
 
 # if .env does not exist or is empty add env vars
 test -s .env || echo "PORT=443" >> .env && \ 
@@ -40,6 +42,6 @@ test -s .env || echo "PORT=443" >> .env && \
 
 npm install pm2 -g
 # setup startup script
-sudo env PATH=$PATH:/home/ubuntu/.nvm/versions/node/v16.20.0/bin /home/ubuntu/.nvm/versions/node/v16.20.0/lib/node_modules/pm2/bin/pm2 startup systemd -u ubuntu --hp /home/ubuntu
+sudo env PATH=$PATH:/home/ubuntu/.nvm/versions/node/v18.20.4/bin /home/ubuntu/.nvm/versions/node/v18.20.4/lib/node_modules/pm2/bin/pm2 startup systemd -u ubuntu --hp /home/ubuntu
 NODE_ENV=production pm2 start --name='daves-disco' npm -- run start
 pm2 save
