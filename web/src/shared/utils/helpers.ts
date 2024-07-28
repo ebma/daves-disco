@@ -1,4 +1,4 @@
-import ytdl from "ytdl-core"
+// import ytdl from "@distube/ytdl-core"
 
 function describesYoutubePlaylist(term: string): boolean {
   const regex = /(^|\s)(https?:\/\/)?(www\.)?youtube\.com\/(playlist)\?(list)=([^\s&]+)[^\s]*($|\s)/g
@@ -7,7 +7,8 @@ function describesYoutubePlaylist(term: string): boolean {
 }
 
 function isYoutubeVideo(url: string): boolean {
-  return ytdl.validateURL(url)
+  // return ytdl.validateURL(url)
+  return true
 }
 
 function isYoutubePlaylist(playlist: Playlist): playlist is YoutubePlaylist {

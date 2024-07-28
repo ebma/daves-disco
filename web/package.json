@@ -32,7 +32,6 @@
     "socket.io": "^4.6.1",
     "socket.io-client": "^4.6.1",
     "surge": "^0.23.1",
-    "ytdl-core": "^4.10.0",
     "ytsr": "^3.8.4"
   },
   "devDependencies": {

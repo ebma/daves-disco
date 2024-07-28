@@ -1,7 +1,7 @@
 import _ from "lodash"
 import { Readable } from "stream"
 import search from "ytsr"
-import ytdl from "ytdl-core"
+import ytdl from "@distube/ytdl-core"
 import ytpl from "ytpl"
 import { trackError } from "../utils/trackError"
 import { SpotifyHelper } from "../shared/utils/helpers"
@@ -88,7 +88,7 @@ export class Youtube {
     if (info.thumbnail_url) {
       return { medium: info.thumbnail_url }
     } else {
-      const thumbnails = info.player_response?.videoDetails?.thumbnail?.thumbnails
+      const thumbnails = info.player_response?.videoDetails?.thumbnails
       if (thumbnails) {
         return {
           small: thumbnails[0]?.url,

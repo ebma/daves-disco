@@ -1,4 +1,4 @@
-import ytdl from "ytdl-core"
+import ytdl from "@distube/ytdl-core"
 import  { HttpsProxyAgent } from "https-proxy-agent";
 import _ from "lodash"
 
