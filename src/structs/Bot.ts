@@ -16,16 +16,17 @@ import { checkPermissions, PermissionResult } from "../utils/checkPermissions"
 import { MissingPermissionsException } from "../utils/MissingPermissionsException"
 import { MusicQueue } from "./MusicQueue"
 import config from "../utils/config"
+import { i18n } from "../utils/i18n";
 
 export class Bot {
-  public readonly prefix = "/"
-  public commands = new Collection<string, Command>()
-  public slashCommands = new Array<ApplicationCommandDataResolvable>()
-  public slashCommandsMap = new Collection<string, Command>()
-  public cooldowns = new Collection<string, Collection<Snowflake, number>>()
-  public queues = new Collection<Snowflake, MusicQueue>()
+  readonly prefix = "/"
+  commands = new Collection<string, Command>()
+  slashCommands = new Array<ApplicationCommandDataResolvable>()
+  slashCommandsMap = new Collection<string, Command>()
+  cooldowns = new Collection<string, Collection<Snowflake, number>>()
+  queues = new Collection<Snowflake, MusicQueue>()
 
-  public constructor(public readonly client: Client) {
+  constructor(readonly client: Client) {
     this.client.login(config.BOT_TOKEN)
 
     this.client.on("ready", () => {
@@ -104,7 +105,7 @@ export class Bot {
         if (error.message.includes("permissions")) {
           interaction.reply({ content: error.toString(), ephemeral: true }).catch(console.error)
         } else {
-          interaction.reply({ content: "Command errored", ephemeral: true }).catch(console.error)
+          interaction.reply({ content: i18n.__("common.errorCommand"), ephemeral: true }).catch(console.error);
         }
       }
     })
