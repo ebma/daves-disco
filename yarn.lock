@@ -779,9 +779,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@distube/ytdl-core@npm:^4.13.5":
-  version: 4.13.5
-  resolution: "@distube/ytdl-core@npm:4.13.5"
+"@distube/ytdl-core@npm:~4.13.7":
+  version: 4.13.7
+  resolution: "@distube/ytdl-core@npm:4.13.7"
   dependencies:
     http-cookie-agent: ^6.0.5
     m3u8stream: ^0.8.6
@@ -789,7 +789,7 @@ __metadata:
     sax: ^1.4.1
     tough-cookie: ^4.1.4
     undici: ^6.19.2
-  checksum: 6f90215b3d7c681b5ad64f90adf9a5ec29165d8be13525801650da74a735453b794390ea51df3fb9eb9d519622491bcc712904df95c3cbeca0ffdd253f046bab
+  checksum: 4c56f7d2524f4cd1c23c05fd48a7d30ad100c21df917540bf35577d529f1148e7cd459da606b6a2f8beaa3ad4857048f760e4998afaa584ef44419d757ce9a81
   languageName: node
   linkType: hard
 
@@ -2973,7 +2973,7 @@ __metadata:
     "@apollo/server": ^4.9.3
     "@discordjs/opus": ^0.9.0
     "@discordjs/voice": ^0.17.0
-    "@distube/ytdl-core": ^4.13.5
+    "@distube/ytdl-core": ~4.13.7
     "@sentry/node": ^5.15.5
     "@types/async": ^3.0.1
     "@types/body-parser": ^1
