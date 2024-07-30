@@ -1,8 +1,9 @@
 import { AudioResource, createAudioResource, StreamType } from "@discordjs/voice"
 import youtube from "youtube-sr"
-import { videoPattern, isURL } from "../utils/patterns"
+import { isURL, videoPattern } from "../utils/patterns"
 
 import { stream, video_basic_info } from "play-dl"
+import Youtube from "../libs/Youtube"
 
 export interface SongData {
   url: string
@@ -65,12 +66,18 @@ export class Song {
     const source = this.url.includes("youtube") ? "youtube" : "soundcloud"
 
     if (source === "youtube") {
-      playStream = await stream(this.url)
+      playStream = await Youtube.createReadableStreamFor({
+        identifier: this.url,
+        title: this.title,
+        url: this.url,
+        source: "youtube",
+      })
+      // playStream = await stream(this.url, { discordPlayerCompatibility: true })
     }
 
     if (!stream) return
 
-    return createAudioResource(playStream.stream, { metadata: this, inputType: playStream.type, inlineVolume: true })
+    return createAudioResource(playStream, { metadata: this, inputType: StreamType.OggOpus, inlineVolume: true })
   }
 
   startMessage() {

@@ -116,6 +116,7 @@ export class MusicQueue {
     })
 
     this.player.on("stateChange", async (oldState: AudioPlayerState, newState: AudioPlayerState) => {
+      console.log("Audio player state changed", oldState.status, newState.status)
       if (oldState.status !== AudioPlayerStatus.Idle && newState.status === AudioPlayerStatus.Idle) {
         if (this.loop && this.songs.length) {
           this.songs.push(this.songs.shift()!)
@@ -182,11 +183,14 @@ export class MusicQueue {
    * continues to play smoothly, handling transitions between songs, including loop and stop behaviors.
    */
   async processQueue(): Promise<void> {
+    console.log("Processing queue")
     if (this.queueLock || this.player.state.status !== AudioPlayerStatus.Idle) {
+      console.log("Queue locked or player busy")
       return
     }
 
     if (!this.songs.length) {
+      console.log("No songs in queue")
       return this.stop()
     }
 
@@ -194,12 +198,16 @@ export class MusicQueue {
 
     const next = this.songs[0]
 
+    console.log("Playing next song", next)
+
     try {
       const resource = await next.makeResource()
 
       this.resource = resource || undefined
       this.player.play(this.resource)
-      this.resource.volume?.setVolumeLogarithmic(this.volume / 100)
+      console.log("Playing song", next.title, "on player")
+      this.resource.volume?.setVolume(this.volume / 100)
+      console.log("Player volume is at ", this.resource.volume.volume)
     } catch (error) {
       console.error(error)
 
@@ -227,11 +235,11 @@ export class MusicQueue {
     this.muted = !this.muted
 
     if (this.muted) {
-      this.resource.volume?.setVolumeLogarithmic(0)
+      this.resource.volume?.setVolume(0)
 
       safeReply(interaction, "Song muted").catch(console.error)
     } else {
-      this.resource.volume?.setVolumeLogarithmic(this.volume / 100)
+      this.resource.volume?.setVolume(this.volume / 100)
 
       safeReply(interaction, "Song unmuted").catch(console.error)
     }
@@ -244,19 +252,19 @@ export class MusicQueue {
 
     this.volume = Math.max(this.volume - 10, 0)
 
-    this.resource?.volume?.setVolumeLogarithmic(this.volume / 100)
+    this.resource?.volume?.setVolume(this.volume / 100)
 
     safeReply(interaction, "Volume decreased").catch(console.error)
   }
 
   private async handleIncreaseVolume(interaction: ButtonInteraction): Promise<void> {
-    if (this.volume == 100) return
+    if (this.volume === 100) return
 
     if (!canModifyQueue(interaction.member as GuildMember)) return
 
     this.volume = Math.min(this.volume + 10, 100)
 
-    this.resource?.volume?.setVolumeLogarithmic(this.volume / 100)
+    this.resource?.volume?.setVolume(this.volume / 100)
 
     safeReply(interaction, "Volume increased").catch(console.error)
   }
