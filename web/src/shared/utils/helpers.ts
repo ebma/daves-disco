@@ -1,5 +1,3 @@
-// import ytdl from "@distube/ytdl-core"
-
 function describesYoutubePlaylist(term: string): boolean {
   const regex = /(^|\s)(https?:\/\/)?(www\.)?youtube\.com\/(playlist)\?(list)=([^\s&]+)[^\s]*($|\s)/g
   const valid = term.match(regex)

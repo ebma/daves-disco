@@ -1,7 +1,7 @@
 import _ from "lodash"
 import { Readable } from "stream"
 import search from "ytsr"
-import ytdl from "@distube/ytdl-core"
+import ytdl from "ytdl-core"
 import ytpl from "ytpl"
 import { trackError } from "../utils/trackError"
 import { SpotifyHelper } from "../shared/utils/helpers"

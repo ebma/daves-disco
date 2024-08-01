@@ -1,8 +1,6 @@
 import i18n from "i18n"
 import { join } from "path"
 
-console.log("Loading i18n...")
-
 i18n.configure({
   directory: join(__dirname, "..", "..", "locales"),
   objectNotation: true,
@@ -27,8 +25,6 @@ i18n.configure({
     disable: false,
   },
 })
-
-console.log("i18n loaded", i18n.getLocales(), i18n.getCatalog())
 
 i18n.setLocale("en")
 
