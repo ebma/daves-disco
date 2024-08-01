@@ -1,0 +1,13 @@
+diff --git a/lib/sig.js b/lib/sig.js
+index eb7bfaa7961918968cd4591815fb1164c8f6cb4f..027b08f7f278c64ead71366773c69a41c6637b2b 100644
+--- a/lib/sig.js
++++ b/lib/sig.js
+@@ -55,7 +55,7 @@ exports.extractFunctions = body => {
+     }
+   };
+   const extractNCode = () => {
+-    let functionName = utils.between(body, `&&(b=a.get("n"))&&(b=`, `(b)`);
++    let functionName = utils.between(body, `&&(b=a.j.n||null)&&(b=`, `(b)`);
+     if (functionName.includes('[')) functionName = utils.between(body, `var ${functionName.split('[')[0]}=[`, `]`);
+     if (functionName && functionName.length) {
+       const functionStart = `${functionName}=function(a)`;
