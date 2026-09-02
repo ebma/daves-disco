@@ -1,0 +1,11 @@
+services:
+  bot:
+    build: .
+    image: daves-disco:3
+    restart: unless-stopped
+    env_file: .env
+    mem_limit: 512m
+    # to use a burner-account cookie file: put cookies.txt next to this file,
+    # set YTDLP_COOKIES=/app/cookies.txt in .env and uncomment:
+    # volumes:
+    #   - ./cookies.txt:/app/cookies.txt:ro
