@@ -8,4 +8,4 @@ services:
     # burner-account cookie file (gitignored). Create an empty cookies.txt if you have none,
     # and set YTDLP_COOKIES=/app/cookies.txt in .env to use it.
     volumes:
-      - ./cookies.txt:/app/cookies.txt:ro
+      - ./cookies.txt:/app/cookies.txt
