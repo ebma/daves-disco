@@ -22,7 +22,8 @@ Source: https://github.com/ebma/daves-disco branch `v3`.
 ## Diagnosing
 
 - **Health is `unhealthy`**: the bot has not written its heartbeat for 90 s. Check logs, then restart.
-- **Logs say `skipping "<title>": ... Sign in to confirm you're not a bot`**: YouTube blocks this IP. First rebuild to get the newest yt-dlp and PO-token plugin. If it persists, tell Marcel a cookie file from a burner account is needed (see README, `compose.yaml`).
+- **Logs say `skipping "<title>": ... Sign in to confirm you're not a bot`**: YouTube blocks this IP. A burner-account cookie file is mounted at `/app/cookies.txt` (from `~/daves-disco/cookies.txt`). First rebuild to get the newest yt-dlp and PO-token plugin. If it persists, the cookies have expired or the burner account was banned: tell Marcel to export a fresh `cookies.txt` and copy it to `~/daves-disco/`, then `docker compose restart bot`.
+- **Quick cookie check**: `docker compose exec bot yt-dlp --cookies /app/cookies.txt -g -f bestaudio https://www.youtube.com/watch?v=8EJ3zbKTWQ8` should print a googlevideo URL.
 - **Logs say `missing env ...`**: `.env` lost a key. Never guess tokens; ask Marcel.
 - **Voice close code 4017**: DAVE encryption rejected. `@discordjs/voice` must be updated in `package.json`; report it, do not patch blindly.
 - **Container restarts in a loop**: `docker compose logs --tail 50 bot` and report the first error line.
