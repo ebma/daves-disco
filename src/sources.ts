@@ -15,7 +15,7 @@ export function classify(input: string): Kind | 'search' {
 }
 
 const ytdlpBase = () => [
-  '--no-warnings',
+  '--no-warnings', '--js-runtimes', 'node',
   ...(config.cookies ? ['--cookies', config.cookies] : []),
   ...(config.bgutilHome ? ['--extractor-args', `youtubepot-bgutilscript:server_home=${config.bgutilHome}`] : []),
 ]
