@@ -3,6 +3,6 @@ dist
 .env
 .env.*
 !.env.example
-cookies.txt
+*cookies*.txt
 .idea
 .DS_Store
