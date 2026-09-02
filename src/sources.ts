@@ -54,8 +54,9 @@ async function suno(input: string): Promise<Track> {
   const page = await fetch(input, { headers: UA, redirect: 'follow' })
   const id = new URL(page.url).pathname.match(/\/song\/([0-9a-f-]{36})/i)?.[1]
   if (!id) throw new Error('no Suno song id in URL')
-  const clip = await (await fetch(`https://studio-api.prod.suno.com/api/clip/${id}`, { headers: UA })).json()
-  return parseSunoClip(clip, input)
+  const res = await fetch(`https://studio-api.prod.suno.com/api/clip/${id}`, { headers: UA })
+  if (res.status === 404) throw new Error('Suno song not found (private or removed)')
+  return parseSunoClip(await res.json(), input)
 }
 
 export function parseSunoClip(clip: any, fallbackTitle: string): Track {
