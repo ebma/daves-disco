@@ -8,7 +8,7 @@ export type Kind = 'ytdlp' | 'raw' | 'suno'
 export type Track = { title: string; url: string; durationSec?: number; kind: Kind }
 
 export function classify(input: string): Kind | 'search' {
-  if (/^https?:\/\/(www\.)?suno\.com\/song\//i.test(input)) return 'suno'
+  if (/^https?:\/\/(www\.)?suno\.com\/(song|s)\//i.test(input)) return 'suno'
   if (/^https?:\/\/([^/]+\.)?(youtube\.com|youtu\.be|soundcloud\.com)\//i.test(input)) return 'ytdlp'
   if (/^https?:\/\//i.test(input)) return 'raw'
   return 'search'
@@ -24,7 +24,7 @@ const ytdlpBase = () => [
 export async function resolve(input: string): Promise<Track[]> {
   const kind = classify(input)
   if (kind === 'raw') return [{ title: input, url: input, kind }]
-  if (kind === 'suno') return [parseSuno(await (await fetch(input)).text(), input)]
+  if (kind === 'suno') return [await suno(input)]
   const target = kind === 'search' ? `ytsearch1:${input}` : input
   const { stdout } = await run('yt-dlp', ['-J', '--flat-playlist', ...ytdlpBase(), target], { maxBuffer: 50e6 })
   const info = JSON.parse(stdout)
@@ -46,12 +46,21 @@ export async function mediaUrl(t: Track): Promise<string> {
   return url
 }
 
-/** ponytail: unofficial. Suno pages expose the mp3 in og:audio; breaks if the page changes. */
-export function parseSuno(html: string, pageUrl: string): Track {
-  const meta = (p: string) =>
-    html.match(new RegExp(`<meta[^>]+property="${p}"[^>]+content="([^"]+)"`))?.[1] ??
-    html.match(new RegExp(`<meta[^>]+content="([^"]+)"[^>]+property="${p}"`))?.[1]
-  const audio = meta('og:audio')
-  if (!audio || /silence/.test(audio)) throw new Error('no audio found on Suno page')
-  return { title: meta('og:title') ?? pageUrl, url: audio, kind: 'suno' }
+const UA = { 'user-agent': 'Mozilla/5.0' }
+
+/** ponytail: unofficial. Anonymous clip API hides the mp3 but exposes the mp4; ffmpeg drops the video. */
+async function suno(input: string): Promise<Track> {
+  // follow /s/ short links; the final URL carries the clip id
+  const page = await fetch(input, { headers: UA, redirect: 'follow' })
+  const id = new URL(page.url).pathname.match(/\/song\/([0-9a-f-]{36})/i)?.[1]
+  if (!id) throw new Error('no Suno song id in URL')
+  const clip = await (await fetch(`https://studio-api.prod.suno.com/api/clip/${id}`, { headers: UA })).json()
+  return parseSunoClip(clip, input)
+}
+
+export function parseSunoClip(clip: any, fallbackTitle: string): Track {
+  const url: string | undefined = clip?.video_url
+  if (!url) throw new Error('Suno clip has no playable media')
+  const durationSec = clip.metadata?.duration
+  return { title: clip.title || fallbackTitle, url, kind: 'suno', ...(durationSec ? { durationSec } : {}) }
 }
